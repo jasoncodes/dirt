@@ -6,13 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.55 2003-05-05 09:29:07 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.56 2003-05-06 06:58:11 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
 #include "Modifiers.h"
 #include "FileTransfers.h"
 #include "Crypt.h"
+#include "ClientTimers.h"
+#include "URL.h"
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;

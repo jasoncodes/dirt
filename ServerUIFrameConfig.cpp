@@ -6,8 +6,9 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.33 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.34 2003-05-06 06:58:12 jason Exp $)
 
+#include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
 #include <wx/filename.h>
 

@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: BroadcastSocket.cpp,v 1.4 2003-04-28 13:02:25 jason Exp $)
+RCS_ID($Id: BroadcastSocket.cpp,v 1.5 2003-05-06 06:58:11 jason Exp $)
 
 #include "BroadcastSocket.h"
+#include "ByteBuffer.h"
 #include "util.h"
 
 const wxEventType wxEVT_BROADCAST_SOCKET = wxNewEventType();

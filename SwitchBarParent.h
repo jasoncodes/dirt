@@ -1,8 +1,7 @@
 #ifndef SwitchBarParent_H_
 #define SwitchBarParent_H_
 
-#include "SwitchBar.h"
-
+class SwitchBar;
 class SwitchBarChild;
 class SwitchBarCanvas;
 

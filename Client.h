@@ -1,11 +1,12 @@
 #ifndef Client_H_
 #define Client_H_
 
-#include "FileTransfer.h"
-#include "URL.h"
-#include "ByteBuffer.h"
+class FileTransfer;
+class URL;
+class ClientTimers;
+class ClientTimersEvent;
+
 #include "util.h"
-#include "ClientTimers.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 

@@ -3,7 +3,7 @@
 
 #ifdef KDE_AVAILABLE
 
-#include <kapplication.h>
+class KApplication;
 
 bool DoesDCOPFileExist();
 

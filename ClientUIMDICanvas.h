@@ -2,15 +2,15 @@
 #define ClientUIMDICanvas_H_
 
 #include "SwitchBarCanvas.h"
-#include "LogControl.h"
-#include "InputControl.h"
-#include "ClientUIMDITransferPanel.h"
 #include <wx/sashwin.h>
-#include "LogWriter.h"
 
 class NickListControl;
+class LogControl;
+class InputControl;
 class Client;
 class ClientUIMDIFrame;
+class ClientUIMDITransferPanel;
+class LogWriter;
 
 enum CanvasType
 {

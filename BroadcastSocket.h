@@ -6,8 +6,8 @@ class BroadcastSocketData;
 #include <wx/dynarray.h>
 WX_DEFINE_ARRAY(BroadcastSocketData*, BroadcastSocketDataArray);
 
-#include "ByteBuffer.h"
 #include "IPInfo.h"
+#include "ByteBuffer.h"
 
 class BroadcastSocket : public wxEvtHandler
 {

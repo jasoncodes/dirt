@@ -6,7 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.41 2003-04-30 02:57:27 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.42 2003-05-06 06:58:12 jason Exp $)
+
+#include <stdio.h>
+#include <wx/cmdline.h>
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -16,8 +19,7 @@ RCS_ID($Id: Dirt.cpp,v 1.41 2003-04-30 02:57:27 jason Exp $)
 #include "LogViewerFrame.h"
 #include "LanListFrame.h"
 #include "Splash.h"
-#include <stdio.h>
-#include <wx/cmdline.h>
+#include "URL.h"
 
 IMPLEMENT_APP(DirtApp)
 

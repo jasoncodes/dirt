@@ -2,8 +2,9 @@
 #define Server_H_
 
 #include <wx/datetime.h>
-#include "util.h"
 #include <wx/wave.h>
+#include "ByteBuffer.h"
+#include "util.h"
 #include "LogWriter.h"
 
 //////// ServerEventHandler ////////

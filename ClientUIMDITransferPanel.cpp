@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.16 2003-03-01 09:42:08 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.17 2003-05-06 06:58:12 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -15,6 +15,7 @@ RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.16 2003-03-01 09:42:08 jason Exp $)
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
+#include "SwitchBar.h"
 
 BEGIN_EVENT_TABLE(ClientUIMDITransferPanel, wxPanel)
 	EVT_SIZE(ClientUIMDITransferPanel::OnSize)

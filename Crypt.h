@@ -1,8 +1,7 @@
 #ifndef Crypt_H_
 #define Crypt_H_
 
-#include "ByteBuffer.h"
-
+class ByteBuffer;
 class CryptPrivate;
 
 class Crypt

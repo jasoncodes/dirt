@@ -6,10 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.12 2003-04-12 03:35:24 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.13 2003-05-06 06:58:13 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
+#include "SwitchBarCanvas.h"
+#include "SwitchBar.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>

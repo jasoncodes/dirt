@@ -2,6 +2,8 @@
 #define ClientDefault_H_
 
 #include "Client.h"
+#include "URL.h"
+
 class CryptSocketClient;
 class CryptSocketEvent;
 class DNS;

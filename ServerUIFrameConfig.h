@@ -1,7 +1,8 @@
 #ifndef ServerUIFrameConfig_H_
 #define ServerUIFrameConfig_H_
 
-#include "ServerUIFrame.h"
+class ServerUIFrame;
+class Server;
 
 class ServerUIFrameConfig : public wxDialog
 {

@@ -10,9 +10,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.11 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.12 2003-05-06 06:58:12 jason Exp $)
 
 #include "Crypt.h"
+#include "ByteBuffer.h"
 
 #ifdef _MSC_VER
 	#pragma warning ( push, 1)

@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.1 2003-04-27 06:58:13 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.2 2003-05-06 06:58:12 jason Exp $)
 
 #include "IPInfo.h"
+#include "util.h"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(IPInfoEntryArray)

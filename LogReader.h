@@ -1,11 +1,12 @@
 #ifndef LogReader_H_
 #define LogReader_H_
 
+#include <wx/file.h>
+#include <wx/datetime.h>
+
 #include "Log.h"
-#include "ByteBuffer.h"
 #include "Crypt.h"
 #include "util.h"
-#include <wx/file.h>
 
 class LogReader
 {

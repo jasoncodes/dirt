@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.10 2003-03-21 07:43:06 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.11 2003-05-06 06:58:12 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
 #include <wx/filename.h>
+#include "Log.h"
 
 LogWriter::LogWriter(const wxString &filename)
 {

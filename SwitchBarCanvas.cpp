@@ -6,10 +6,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarCanvas.cpp,v 1.4 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: SwitchBarCanvas.cpp,v 1.5 2003-05-06 06:58:13 jason Exp $)
 
 #include "SwitchBarCanvas.h"
 #include "SwitchBarParent.h"
+#include "SwitchBar.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -85,3 +86,7 @@ void SwitchBarCanvas::SetIcon(const wxIcon &icon)
 	}
 }
 
+SwitchBar* SwitchBarCanvas::GetSwitchBar()
+{
+	return m_parent->GetSwitchBar();
+}

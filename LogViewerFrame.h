@@ -4,8 +4,9 @@
 #include <wx/sashwin.h>
 #include <wx/dirctrl.h>
 #include <wx/treectrl.h>
-#include "LogControl.h"
 #include "ConfigFile.h"
+
+class LogControl;
 
 class LogViewerFrame : public wxFrame
 {

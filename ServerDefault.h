@@ -2,10 +2,13 @@
 #define ServerDefault_H_
 
 #include "Server.h"
-#include "CryptSocket.h"
 #include "HTTP.h"
-#include "BroadcastSocket.h"
 
+class CryptSocketClient;
+class CryptSocketServer;
+class CryptSocketEvent;
+class BroadcastSocket;
+class BroadcastSocketEvent;
 class ServerDefault;
 
 class ServerDefaultConnection : public ServerConnection

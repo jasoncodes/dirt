@@ -2,7 +2,6 @@
 #define IPInfo_H_
 
 #include <wx/socket.h>
-#include "util.h"
 
 struct IPInfoEntry
 {
