@@ -3,6 +3,7 @@
 
 #include "ConfigFile.h"
 #include "RadioBoxPanel.h"
+#include <wx/wave.h>
 
 class TristateConfigPanel : public RadioBoxPanel
 {
@@ -27,6 +28,7 @@ public:
 protected:
 	void OnText(wxCommandEvent &event);
 	void OnBrowse(wxCommandEvent &event);
+	void OnWavePreview(wxCommandEvent &event);
 
 protected:
 	virtual void OnSelectionChanged(int n);
@@ -37,6 +39,9 @@ protected:
 	wxBitmapButton *m_cmdWavePreview;
 	wxString m_filespec;
 	bool m_wave_preview;
+	#if wxUSE_WAVE
+		wxWave m_wave;
+	#endif
 
 private:
 	DECLARE_EVENT_TABLE()

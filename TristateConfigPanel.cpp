@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.2 2003-05-30 10:38:05 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.3 2003-05-30 10:56:55 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
@@ -24,6 +24,7 @@ enum
 BEGIN_EVENT_TABLE(TristateConfigPanel, RadioBoxPanel)
 	EVT_TEXT(ID_TEXT, TristateConfigPanel::OnText)
 	EVT_BUTTON(ID_BROWSE, TristateConfigPanel::OnBrowse)
+	EVT_BUTTON(ID_WAVE_PREVIEW, TristateConfigPanel::OnWavePreview)
 END_EVENT_TABLE()
 
 wxString choices[3] = { wxT("None"), wxT("Default"), wxT("Custom") }; 
@@ -77,12 +78,24 @@ void TristateConfigPanel::OnSelectionChanged(int n)
 	m_cmdBrowse->Enable(b);
 	if (m_cmdWavePreview)
 	{
-		m_cmdWavePreview->Enable(b);
+		#if wxUSE_WAVE
+			m_cmdWavePreview->Enable(b && m_txt->GetValue().Length());
+		#else
+			m_cmdWavePreview->Enable(false);
+		#endif
 	}
 }
 
 void TristateConfigPanel::OnText(wxCommandEvent &event)
 {
+	if (m_cmdWavePreview)
+	{
+		#if wxUSE_WAVE
+			m_cmdWavePreview->Enable(m_txt->IsEnabled() && m_txt->GetValue().Length());
+		#else
+			m_cmdWavePreview->Enable(false);
+		#endif
+	}
 	SendChangeEvent();
 }
 
@@ -112,6 +125,23 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &event)
 			SendChangeEvent();
 		}
 	}
+}
+
+void TristateConfigPanel::OnWavePreview(wxCommandEvent &event)
+{
+	#if wxUSE_WAVE
+		if (wxFileName(GetPath()).FileExists())
+		{
+			m_wave.Create(GetPath(), false);
+			if (m_wave.IsOk() && m_wave.Play())
+			{
+				return;
+			}
+		}
+		wxMessageBox(wxT("Error playing wave file: ") + GetPath(), wxT("Unable to play wave file"), wxICON_ERROR);
+	#else
+		wxMessageBox(wxT("Wave file support not available"), wxT("Unable to play wave file"), wxICON_ERROR);
+	#endif
 }
 
 Config::TristateMode TristateConfigPanel::GetMode() const
