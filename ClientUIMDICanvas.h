@@ -6,6 +6,8 @@
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
 
+class NickListControl;
+
 enum CanvasType
 {
 	ChannelCanvas,
@@ -27,15 +29,17 @@ public:
 	virtual CanvasType GetType() { return m_type; }
 
 	LogControl* GetLog() { return m_txtLog; }
-	wxListBox* GetNickList() { return m_lstNickList; }
+	NickListControl* GetNickList() { return m_lstNickList; }
 
 	void LogControlTest();
 
 protected:
-	void OnSize(wxSizeEvent& event);
+	void OnSize(wxSizeEvent &event);
 	void OnFocus(wxFocusEvent &event);
-	void OnInputEnter(wxCommandEvent& event);
-	void OnLinkClicked(wxCommandEvent& event);
+	void OnInputEnter(wxCommandEvent &event);
+	void OnLinkClicked(wxCommandEvent &event);
+	void OnNickListDblClick(wxCommandEvent &event);
+
 	virtual void OnAttach();
 	virtual void OnActivate();
 
@@ -48,7 +52,7 @@ protected:
 	LogControl *m_txtLog;
 	InputControl *m_txtInput;
 
-	wxListBox *m_lstNickList;
+	NickListControl *m_lstNickList;
 
 	ClientUIMDITransferPanel *m_pnlTransfer;
 

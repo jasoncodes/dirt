@@ -11,6 +11,7 @@
 #include "ClientUIMDICanvas.h"
 #include "ClientDefault.h"
 #include "util.h"
+#include "NickListControl.h"
 
 #include "res/dirt.xpm"
 
@@ -152,7 +153,7 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 
 void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert)
 {
-	
+
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
 	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour);
 	
@@ -263,7 +264,7 @@ void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
 	m_lstNickList->Clear();
 	for (size_t i = 0; i < nicklist.GetCount(); ++i)
 	{
-		m_lstNickList->Append(nicklist[i]);
+		m_lstNickList->Add(nicklist[i]);
 	}
 }
 
@@ -279,7 +280,7 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 	msg << " has joined the chat";
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
 
-	m_lstNickList->Append(nick);
+	m_lstNickList->Add(nick);
 
 }
 
@@ -299,13 +300,6 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 	}
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
 
-	for (int i = 0; i < m_lstNickList->GetCount(); ++i)
-	{
-		if (m_lstNickList->GetString(i) == nick)
-		{
-			m_lstNickList->Delete(i);
-			break;
-		}
-	}
+	m_lstNickList->Remove(nick);
 
 }

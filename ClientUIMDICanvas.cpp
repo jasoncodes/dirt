@@ -11,6 +11,7 @@
 #include "SwitchBarParent.h"
 #include "ClientUIMDIFrame.h"
 #include "util.h"
+#include "NickListControl.h"
 
 #include "res/channel.xpm"
 #include "res/query.xpm"
@@ -31,6 +32,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_TEXT_ENTER(ID_INPUT, ClientUIMDICanvas::OnInputEnter)
 	EVT_BUTTON(ID_LOG, ClientUIMDICanvas::OnLinkClicked)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
+	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
@@ -81,16 +83,8 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	if (type == ChannelCanvas)
 	{
-		m_lstNickList = new wxListBox(
-			this, ID_NICKLIST,
-			wxDefaultPosition, wxDefaultSize,
-			0, NULL,
-			wxLB_SINGLE | wxLB_SORT | wxLB_HSCROLL | wxLB_NEEDED_SB);
+		m_lstNickList = new NickListControl(this, ID_NICKLIST);
 		m_lstNickList->SetFont(m_txtInput->GetFont());
-		FixBorder(m_lstNickList);
-		m_lstNickList->Append("First");
-		m_lstNickList->Append("Second");
-		m_lstNickList->Append("Third");
 	}
 	else
 	{
@@ -233,6 +227,11 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 
 	#endif
 
+}
+
+void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
+{
+	wxMessageBox("dbl click on " + m_lstNickList->GetNick(event.GetInt()));
 }
 
 void ClientUIMDICanvas::LogControlTest()

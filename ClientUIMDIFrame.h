@@ -5,6 +5,7 @@
 #include "Client.h"
 
 class ClientUIMDICanvas;
+class NickListControl;
 
 class ClientUIMDIFrame : public SwitchBarParent, public ClientEventHandler
 {
@@ -38,7 +39,7 @@ protected:
 	wxTimer *tmrFocus;
 	Client *m_client;
 	bool m_focused;
-	wxListBox *m_lstNickList;
+	NickListControl *m_lstNickList;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true);
 	void AddLine(const wxString &context, const wxString &line, const wxColour &line_colour = *wxBLACK, bool create_if_not_exist = true, bool suppress_alert = false);
