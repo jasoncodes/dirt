@@ -45,6 +45,7 @@ public:
 	long timeleft;
 	long cps;
 	wxLongLong_t filesent;
+	wxLongLong_t resume;
 	wxString status;
 
 protected:

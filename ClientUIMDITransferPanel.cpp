@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.25 2003-05-18 09:05:48 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.26 2003-06-17 08:21:15 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -163,7 +163,25 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 	SetFileSize(transfer.filesize);
 	SetTime(transfer.time);
 	SetTimeleft(IsCompleteOrFail(transfer.state)?0:transfer.timeleft);
-	SetCPS(IsCompleteOrFail(transfer.state)?(-1):transfer.cps);
+	long cps;
+	if (IsCompleteOrFail(transfer.state))
+	{
+		if (transfer.time)
+		{
+			cps = long(
+				double(transfer.filesent - transfer.resume) /
+				double(transfer.time) );
+		}
+		else
+		{
+			cps = -1;
+		}
+	}
+	else
+	{
+		cps = transfer.cps;
+	}
+	SetCPS(cps);
 	SetFileSent(transfer.filesent);
 	SetStatus(transfer.status);
 	int index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);

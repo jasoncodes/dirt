@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.46 2003-06-17 08:14:43 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.47 2003-06-17 08:21:15 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -162,6 +162,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->timeleft = -1;
 	t->cps = -1;
 	t->filesent = 0;
+	t->resume = 0;
 	t->m_cps.Reset();
 	t->m_last_tick = GetMillisecondTicks();
 	t->OnTimer(t->m_last_tick);
@@ -423,6 +424,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				t->timeleft = -1;
 				t->cps = -1;
 				t->filesent = 0;
+				t->resume = 0;
 				t->m_IPs = IPs;
 				t->m_ports = ports;
 				t->m_last_tick = GetMillisecondTicks();
@@ -479,6 +481,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 							}
 
 							t.filesent = ll;
+							t.resume = ll;
 							t.m_pos = ll;
 							t.m_got_accept = true;
 							MaybeSendData(t);
@@ -879,6 +882,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		t.filename = fn.GetFullPath();
 		t.state = ftsGetConnecting;
 		t.filesent = resume ? File::Length(t.filename) : 0;
+		t.resume = t.filesent;
 		t.status = wxT("Connecting...");
 		t.m_last_tick = GetMillisecondTicks();
 		
