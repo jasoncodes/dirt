@@ -17,6 +17,10 @@ public:
 	virtual bool Enable(bool enabled);
 	virtual void Enable(int n, bool enabled);
 
+#ifdef __WXMSW__
+	virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+#endif
+
 protected:
 	void OnSize(wxSizeEvent &event);
 	void OnRadio(wxCommandEvent &event);

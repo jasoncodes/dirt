@@ -6,9 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RadioBoxPanel.cpp,v 1.3 2003-08-01 07:48:02 jason Exp $)
+RCS_ID($Id: RadioBoxPanel.cpp,v 1.4 2003-08-14 04:22:17 jason Exp $)
 
 #include "RadioBoxPanel.h"
+
+#ifdef __WXMSW__
+#include <windows.h>
+#include <wx/msw/winundef.h>
+#include <wx/msw/private.h>
+#endif
 
 enum
 {
@@ -94,3 +100,32 @@ void RadioBoxPanel::Enable(int n, bool enabled)
 {
 	m_boxRadio->Enable(n, enabled);
 }
+
+#ifdef __WXMSW__
+long RadioBoxPanel::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+{
+
+	switch (nMsg)
+	{
+
+		case WM_CTLCOLORSTATIC:
+			// set the colour of the radio buttons to be the same as ours
+			{
+			HDC hdc = (HDC)wParam;
+
+			const wxColour& colBack = GetBackgroundColour();
+			::SetBkColor(hdc, wxColourToRGB(colBack));
+			::SetTextColor(hdc, wxColourToRGB(GetForegroundColour()));
+
+			wxBrush *brush = wxTheBrushList->FindOrCreateBrush(colBack, wxSOLID);
+
+			return (WXHBRUSH)brush->GetResourceHandle();
+			}
+
+		default:
+			return wxPanel::MSWWindowProc(nMsg, wParam, lParam);
+
+	}
+
+}
+#endif
