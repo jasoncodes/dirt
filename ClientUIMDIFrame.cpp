@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.81 2003-03-23 04:48:57 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.82 2003-03-27 06:13:32 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -211,6 +211,7 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 		{
 			child->GetCanvas()->OnActivate();
 		}
+		m_focused = true;
 	}
 	if (m_alert && m_flash > 0)
 	{
@@ -404,10 +405,10 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 		
 		if (bFlashWindow)
 		{
+			m_alert = true;
 			#ifdef __WXMSW__
 				::FlashWindow((HWND)GetHandle(), TRUE);
 			#else
-				m_alert = true;
 				m_flash = 8;
 				UpdateCaption();
 			#endif
@@ -537,11 +538,11 @@ void ClientUIMDIFrame::OnClientStateChange()
 void ClientUIMDIFrame::UpdateCaption()
 {
 	wxString title;
-	if (m_alert)
+	if (m_alert && !IsWin32())
 	{
 		title << wxT("* ");
 	}
-	if (!m_alert || (m_flash % 2) == 0)
+	if (IsWin32() || !m_alert || (m_flash % 2) == 0)
 	{
 		title << AppTitle(wxT("Client"));
 		if (m_client && m_client->IsConnected())
@@ -588,6 +589,12 @@ void ClientUIMDIFrame::UpdateCaption()
 		m_tray->SetToolTip(m_title);
 	}
 	SetTitle(title);
+	#ifdef __WXMSW__
+		if (m_alert)
+		{
+			::FlashWindow((HWND)GetHandle(), TRUE);
+		}
+	#endif
 }
 
 void ClientUIMDIFrame::NickPrompt(const wxString &nick)
