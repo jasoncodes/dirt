@@ -7,6 +7,7 @@
 #endif
 
 #include "util.h"
+#include <wx/datetime.h>
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -59,4 +60,9 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail)
 		head = text;
 		tail = "";
 	}
+}
+
+wxString Timestamp()
+{
+	return wxDateTime::Now().Format("[%H:%M] ");
 }

@@ -10,12 +10,11 @@
 #include "SwitchBarChild.h"
 #include "ClientUIMDICanvas.h"
 #include "ClientDefault.h"
+#include "util.h"
 
 #include "res/dirt.xpm"
 #include "res/channel.xpm"
 #include "res/query.xpm"
-
-#include <wx/datetime.h>
 
 enum
 {
@@ -135,9 +134,8 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 
 void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist)
 {
-	wxString timestamp = wxDateTime::Now().Format("[%H:%M] ");
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
-	canvas->GetLog()->AddTextLine(timestamp + line, line_colour);
+	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour);
 	if (GetActiveChild() != canvas->GetParent())
 	{
 		int button_index = m_switchbar->GetIndexFromUserData(canvas);

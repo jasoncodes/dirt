@@ -190,6 +190,42 @@ SOURCE=.\ClientDefault.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIConsole.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIConsole.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDICanvas.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDICanvas.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDIFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDIFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Dirt.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Dirt.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Dirt.rc
+# End Source File
+# Begin Source File
+
 SOURCE=.\InputControl.cpp
 # End Source File
 # Begin Source File
@@ -203,10 +239,6 @@ SOURCE=.\LogControl.cpp
 # Begin Source File
 
 SOURCE=.\LogControl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Dirt.rc
 # End Source File
 # Begin Source File
 
@@ -251,30 +283,6 @@ SOURCE=.\SwitchBarParent.cpp
 # Begin Source File
 
 SOURCE=.\SwitchBarParent.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Dirt.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Dirt.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ClientUIMDICanvas.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ClientUIMDICanvas.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ClientUIMDIFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ClientUIMDIFrame.h
 # End Source File
 # Begin Source File
 
