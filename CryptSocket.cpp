@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.18 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.19 2003-03-12 07:49:03 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -359,14 +359,17 @@ void CryptSocketBase::MaybeSendData()
 
 		int iSendLen = wxMin(4096, len);
 		m_sck->Write(ptr, iSendLen);
-		if (m_sck->Error() && m_sck->LastError() == wxSOCKET_WOULDBLOCK)
+		if (m_sck->Error())
 		{
+			if (m_sck->LastError() != wxSOCKET_WOULDBLOCK)
+			{
+				CloseWithEvent();
+			}
 			m_bOutputOkay = false;
 			break;
 		}
 		else
 		{
-			CRYPTSOCKET_CHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 			iSendLen = m_sck->LastCount();
 			ptr += iSendLen;
 			len -= iSendLen;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.36 2003-03-12 07:49:03 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.37 2003-03-12 07:51:31 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -237,6 +237,7 @@ void ServerUIFrame::OnSize(wxSizeEvent &event)
 void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
 {
 	ForceForegroundWindow(this);
+	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
 }
 
 void ServerUIFrame::OnIconize(wxIconizeEvent &event)
@@ -247,6 +248,7 @@ void ServerUIFrame::OnIconize(wxIconizeEvent &event)
 	}
 	else
 	{
+		m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
 		event.Skip();
 	}
 }
@@ -267,6 +269,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 void ServerUIFrame::OnRestore(wxCommandEvent &event)
 {
 	ForceForegroundWindow(this);
+	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
 }
 
 void ServerUIFrame::OnIdle(wxIdleEvent &event)
