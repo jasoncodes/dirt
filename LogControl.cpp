@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.39 2003-04-03 03:28:43 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.40 2003-04-12 11:33:04 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1555,10 +1555,10 @@ bool LogControl::IsEmail(const wxString &token)
 wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 {
 
-	const wxString char1 = wxT("\x0fe");
-	const wxString char2 = wxT("\x0ff");
+	const wxString char1 = wxT('\x005');
+	const wxString char2 = wxT('\x006');
 
-	wxString delims = wxT("\t\r\n '\"<>()");
+	wxString delims = wxT("\t\r\n '\"()");
 
 	wxString tmp(text);
 
@@ -1569,6 +1569,10 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 		tmp.Replace(wxT("&lt;"), char1);
 		tmp.Replace(wxT("&gt;"), char2);
 		delims += char1 + char2;
+	}
+	else
+	{
+		delims += wxT("<>");
 	}
 
 	wxStringTokenizer st(tmp, delims, wxTOKEN_RET_DELIMS);
