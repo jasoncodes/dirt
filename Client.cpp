@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.58 2003-05-07 03:06:49 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.59 2003-05-07 04:23:48 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -753,8 +753,8 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 				m_nickname = nick2;
 				m_event_handler->OnClientStateChange();
 			}
+			m_file_transfers->OnClientUserNick(nick1, nick2);
 			m_event_handler->OnClientUserNick(nick1, nick2);
-			// add handling for file transfers here
 		}
 		else
 		{

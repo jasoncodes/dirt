@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.13 2003-05-07 01:59:56 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.14 2003-05-07 04:23:48 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -14,6 +14,11 @@ RCS_ID($Id: FileTransfers.cpp,v 1.13 2003-05-07 01:59:56 jason Exp $)
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(FileTransferArray);
+
+#ifdef ASSERT_CONNECTED
+	#undef ASSERT_CONNECTED
+#endif
+#define ASSERT_CONNECTED() { if (!m_client->IsConnected()) { m_client->m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 
 enum
 {
@@ -75,12 +80,15 @@ static off_t GetFileLength(const wxString &filename)
 void FileTransfers::Test()
 {
 
+	wxString context;
+	ASSERT_CONNECTED();
+
 	FileTransfer t(this);
 	
 	t.transferid = GetNewId();
 	t.issend = true;
 	t.state = ftsSendTransfer;
-	t.nickname = wxT("Jason");
+	t.nickname = m_client->GetNickname();
 	t.filename = GetSelf();
 	t.filesize = GetFileLength(t.filename);
 	t.time = t.filesize / 3000;
@@ -150,6 +158,18 @@ const FileTransfer& FileTransfers::GetTransferByIndex(int index)
 	return m_transfers.Item(index);
 }
 
+void FileTransfers::OnClientUserNick(const wxString &old_nick, const wxString &new_nick)
+{
+	for (int i = 0; i < GetTransferCount(); ++i)
+	{
+		if (m_transfers.Item(i).nickname == old_nick)
+		{
+			m_transfers.Item(i).nickname = new_nick;
+			m_client->m_event_handler->OnClientTransferTimer(m_transfers.Item(i));
+		}
+	}
+}
+	
 bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	return false;
@@ -183,6 +203,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 	}
 	else if (cmd == wxT("TEST"))
 	{
+		ASSERT_CONNECTED();
 		Test();
 	}
 	else if (cmd == wxT("STATUS") || cmd == wxT(""))

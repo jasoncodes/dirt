@@ -41,6 +41,7 @@ protected:
 	void Warning(const wxString &context, const wxString &text);
 
 protected:
+	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);
 	virtual bool OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual bool OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual bool OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
