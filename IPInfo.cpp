@@ -1,3 +1,25 @@
+/*
+    Copyright 2002, 2003 General Software Laboratories
+    
+    
+    This file is part of Dirt Secure Chat.
+
+    Dirt Secure Chat is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    Dirt Secure Chat is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Dirt Secure Chat; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+
 #include "wx/wxprec.h"
 #ifdef __BORLANDC__
 	#pragma hdrstop
@@ -6,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.8 2003-09-14 04:47:00 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.9 2004-05-16 04:42:45 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -111,10 +133,10 @@ IPInfoEntryArray GetIPInfo()
 							if (row->dwAddr != 0 || row->dwMask != 0)
 							{
 								IPInfoEntry entry;
-								entry.IPAddress = row->dwAddr;
-								entry.SubnetMask = row->dwMask;
-								entry.NetworkAddress = (row->dwAddr & row->dwMask);
-								entry.BroadcastAddress  = (row->dwAddr & row->dwMask) | ~(row->dwMask);
+								entry.IPAddress = ntohl(row->dwAddr);
+								entry.SubnetMask = ntohl(row->dwMask);
+								entry.NetworkAddress = ntohl(row->dwAddr & row->dwMask);
+								entry.BroadcastAddress  = ntohl((row->dwAddr & row->dwMask) | ~(row->dwMask));
 								entry.IPAddressString = GetIPV4AddressString(entry.IPAddress);
 								entry.SubnetMaskString = GetIPV4AddressString(entry.SubnetMask);
 								entry.NetworkAddressString = GetIPV4AddressString(entry.NetworkAddress);
@@ -188,12 +210,12 @@ IPInfoEntryArray GetIPInfo()
 				IPInfoEntry entry;
 				entry.InterfaceName = wxString(ifr->ifr_name, wxConvLocal);
 				entry.IPAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-				entry.IPAddress = inet_addr(entry.IPAddressString.mb_str());
+				entry.IPAddress = ntohl(inet_addr(entry.IPAddressString.mb_str()));
 
 				if (0 == ioctl(sockfd, SIOCGIFNETMASK, ifr))
 				{
 					entry.SubnetMaskString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-					entry.SubnetMask = inet_addr(entry.SubnetMaskString.mb_str());
+					entry.SubnetMask = ntohl(inet_addr(entry.SubnetMaskString.mb_str()));
 				}
 
 				if (ifr->ifr_flags & IFF_BROADCAST)
@@ -201,7 +223,7 @@ IPInfoEntryArray GetIPInfo()
 					if (0 == ioctl(sockfd, SIOCGIFBRDADDR, ifr))
 					{
 						entry.BroadcastAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-						entry.BroadcastAddress = inet_addr(entry.BroadcastAddressString.mb_str());
+						entry.BroadcastAddress = ntohl(inet_addr(entry.BroadcastAddressString.mb_str()));
 					}
 				}
 
@@ -245,7 +267,7 @@ IPInfoEntryArray GetIPInfo()
 					const char *ip = inet_ntoa(addr);
 					IPInfoEntry entry;
 					entry.IPAddressString = ByteBuffer((const byte*)ip, strlen(ip));
-					entry.IPAddress = inet_addr(entry.IPAddressString);
+					entry.IPAddress = ntohl(inet_addr(entry.IPAddressString));
 					found_localhost != (entry.IPAddressString == localhost_str);
 					entries.Add(entry);
 				}
@@ -255,7 +277,7 @@ IPInfoEntryArray GetIPInfo()
 				{
 					IPInfoEntry entry;
 					entry.IPAddressString = localhost_str;
-					entry.IPAddress = inet_addr(entry.IPAddressString);
+					entry.IPAddress = ntohl(inet_addr(entry.IPAddressString));
 					entries.Add(entry);
 				}
 
@@ -286,8 +308,6 @@ wxUint32 GetIPV4Address(wxSockAddress &addr)
 
 wxString GetIPV4AddressString(wxUint32 ip)
 {
-	
-	ip = wxUINT32_SWAP_ON_LE(ip);
 	
 	wxString result = wxString()
 		<< ((ip >> 24) & 0xff) << wxT(".")

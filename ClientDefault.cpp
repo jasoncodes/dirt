@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.44 2004-04-25 18:27:19 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.45 2004-05-16 04:42:42 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -117,10 +117,12 @@ bool ClientDefault::Connect(const URL &url, bool is_reconnect)
 	{
 		return false;
 	}
+	// these two lines shouldn't be called if the 
+	// away message should be restored
+	m_is_away = false;
+	m_away_message.Empty();
 	if (!is_reconnect)
 	{
-		m_is_away = false;
-		m_away_message.Empty();
 		m_last_auth = ByteBuffer();
 	}
 	m_server_name = wxEmptyString;

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.86 2004-04-25 17:06:00 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.87 2004-05-16 04:42:42 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1157,9 +1157,14 @@ void Client::OnConnect()
 	m_latency = -1;
 	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
 	m_event_handler->OnClientStateChange();
+	const wxString userid = ::wxGetUserId();
+	const wxString username = ::wxGetUserName();
 	wxString userdetails;
-	userdetails << ::wxGetUserId() << wxT('@') << ::wxGetHostName();
-	userdetails << wxT(" (\"") << ::wxGetUserName() << wxT("\")");
+	userdetails << userid << wxT('@') << ::wxGetHostName();
+	if (userid != username)
+	{
+		userdetails << wxT(" (\"") << username << wxT("\")");
+	}
 	userdetails << wxT(" on ") << GetOSDescription();
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));

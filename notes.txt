@@ -1,3 +1,12 @@
+win32+possibly others: Failed to retrieve file times for 'C:\...\dirt,ini' (error 32: ... used by another process)
+many of them, use wxLogNull and place in a few second loop or maybe there's an alt function to use
+
+win32: sometimes hitting ctrl-alt-d doesnt bring to top (although it appears to focus)
+
+*** Jason is away: Coke (was: Phone [37:08])
+
+win32: handling of scroll wheel events
+
 win32: pressing ctrl-enter in the middle of a line of input results in the
 line being split into two lines, it should do the same thing as pressing
 ctrl-enter at the end of the input line
@@ -32,8 +41,6 @@ GTK2: input control not font'd
 
 GTK2: TristateConfigPanel does not render correctly
 
-mintotray on non-supporting build should minimize if possible otherwise "Not supported"
-
 prompt when pasting multiple lines
 
 implement digest auth in http.cpp
@@ -46,8 +53,6 @@ default tab to work like it does in bash (dont pick unless not ambiguous, show l
 /././././././././././././././.
 
 see if possible to not use GTK yet on linux
-
-change KB to KiB
 
 When a message is filtered, it becomes ASCII, breaking all unicode characters. If the word internet is filtered, for instance, and one types: internet café (using the alt-0233 unicode  é), then the second word comes out caf?.
 
@@ -69,14 +74,6 @@ console@server. use say to force broadcast or a / prefix to force
 command.
 
 optional alert sound if certain words are mentioned (i.e. your name)
-
----------------------------
-Dirt Error
----------------------------
-can't open file '\sentry\jason\dirtlogs\Client 20031118190259.dirtlog' (error 3: the system cannot find the path specified.)
----------------------------
-OK   
----------------------------
 
 public list updates stopped working in gtk ver. i have a feeling it blocked and never
 timed out. check that there is a hard timeout on all operations
@@ -184,8 +181,6 @@ option to disable red and beep for a mdi child (for server console)
 
 * stop flash after x seconds 3rd icon should be a yellow exclaimation point
 
-* strip formatting chars from nick before checking if valid
-
 * Word Filters: need some way to allow case preservation
   and a way to match whole word only both on a selective
   filter by filter case. also must be easily usable via
@@ -211,16 +206,14 @@ option to disable red and beep for a mdi child (for server console)
   "Entry Y appears more than once in Client"
   Is something in ConfigFile not mutex protected?
 
-* do dupe nick check after content enhancing
-
-* win32: only setfocus in timer if GetForegroundWindow is mdi frame
-
 * option to minimize to tray by default (invert ctrl flag)
 
 * only flash 2 times then display maybe a third icon option for system tray
 
 * dirt.pl should not count private ips (192.168.*.*, 172.16.*.* ->
   172.32.*.*, 10.*.*.*) in choosing something for the hostname field
+
+* dirt.pl should remove dupe ips from ip list and place detected ips last
 
 * ability to search logs
 	* how load the log search frame?
@@ -237,6 +230,7 @@ option to disable red and beep for a mdi child (for server console)
 
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
+  probably via a short timer to make sure is processed after taking a breath7
 
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
   reproduces in unmodified controls sample
@@ -375,8 +369,6 @@ option to disable red and beep for a mdi child (for server console)
 * confirm exit when connected option for client?
 
 * prefix caption with number in brackets showing how many msgs are waiting?
-
-* remove msvcp60.dll (and late msvcrt.dll) dependency (maybe something in Crypto++?)
 
 * research that log control gdi thing in 9x
   seems to be caused by LOTS of wxFont instances

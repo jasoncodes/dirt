@@ -1,3 +1,25 @@
+/*
+    Copyright 2002, 2003 General Software Laboratories
+    
+    
+    This file is part of Dirt Secure Chat.
+
+    Dirt Secure Chat is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    Dirt Secure Chat is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Dirt Secure Chat; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+
 #include "wx/wxprec.h"
 #ifdef __BORLANDC__
 	#pragma hdrstop
@@ -6,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.144 2004-04-25 17:06:01 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.145 2004-05-16 04:42:43 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -252,6 +274,7 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 	bool m_last_focused = m_focused;
 	m_focused = IsFocused();
 
+/*** This shouldn't be needed ***
 	if (m_focused || !IsWin32())
 	{
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
@@ -260,6 +283,7 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 			child->GetCanvas()->OnActivate();
 		}
 	}
+***/
 	if (m_alert && m_flash > 0)
 	{
 		m_flash--;
