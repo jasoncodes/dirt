@@ -6,6 +6,7 @@ class ClientConfig;
 class TristateConfigPanel;
 class DestNetworkPanel;
 class DestPortsPanel;
+class CryptSocketProxySettings;
 
 class ClientUIMDIConfigDialog : public wxDialog
 {
@@ -21,9 +22,11 @@ protected:
 protected:
 	virtual void LoadSettings();
 	virtual bool SaveSettings();
+	bool ErrMsg(const wxString &msg);
 
 protected:
 	ClientConfig *m_config;
+	CryptSocketProxySettings *m_proxy_settings;
 
 	wxCheckBox *m_chkProxy;
 	wxStaticText *m_lblProtocol;

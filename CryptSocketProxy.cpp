@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.4 2003-06-02 05:57:48 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.5 2003-06-02 06:01:40 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -44,7 +44,9 @@ bool CryptSocketProxySettings::LoadSettings()
 
 	LoadDefaults();
 	
-	Read(wxT("Enabled"), &CryptSocketProxySettings::SetEnabled);
+	int failcount = 0;
+
+	failcount += !Read(wxT("Enabled"), &CryptSocketProxySettings::SetEnabled);
 
 	return true;
 

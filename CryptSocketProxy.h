@@ -82,7 +82,7 @@ protected:
 		bool b = m_config.m_config->Read(m_config.m_path + wxT("/Proxy/") + key, &x);
 		if (b)
 		{
-			return fn(x);
+			return this->fn(x);
 		}
 		return true;
 	}
@@ -90,7 +90,7 @@ protected:
 	template <typename T>
 	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)())
 	{
-		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, fn());
+		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, this->fn());
 	}
 
 protected:

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.7 2003-05-31 07:36:55 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.8 2003-06-02 05:57:48 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -49,6 +49,11 @@ public:
 		SetSizes();
 
 	}
+
+	wxString GetNetwork() const { return m_txtNetwork->GetValue(); }
+	void SetNetwork(const wxString &str) { m_txtNetwork->SetValue(str); }
+	wxString GetSubnet() const { return m_txtSubnet->GetValue(); }
+	void SetSubnet(const wxString &str) { m_txtSubnet->SetValue(str); }
 
 protected:
 	virtual void OnSelectionChanged(int n)
@@ -96,6 +101,9 @@ public:
 
 	}
 
+	wxString GetString() const { return m_txtPorts->GetValue(); }
+	void SetString(const wxString &str) { m_txtPorts->SetValue(str); }
+
 protected:
 	virtual void OnSelectionChanged(int n)
 	{
@@ -129,6 +137,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 {
 	
 	m_config = &(parent->GetClient()->GetConfig());
+	m_proxy_settings = new CryptSocketProxySettings(*m_config);
 	
 	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
@@ -155,24 +164,6 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_pnlDestNetwork = new DestNetworkPanel(panel, wxID_ANY);
 	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
 
-/*	m_chkProxy->Enable(false);
-	m_lblProtocol->Enable(false);
-	m_cmbProtocol->Enable(false);
-	m_lblHostname->Enable(false);
-	m_txtHostname->Enable(false);
-	m_lblPort->Enable(false);
-	m_txtPort->Enable(false);
-	m_lblUsername->Enable(false);
-	m_txtUsername->Enable(false);
-	m_lblPassword->Enable(false);
-	m_txtPassword->Enable(false);
-	m_fraProxyTypes->Enable(false);
-	m_chkTypeServer->Enable(false);
-	m_chkTypeDCCConnect->Enable(false);
-	m_chkTypeDCCListen->Enable(false);
-	m_pnlDestNetwork->Enable(false);
-	m_pnlDestPorts->Enable(false);
-*/
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
 
@@ -274,6 +265,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 ClientUIMDIConfigDialog::~ClientUIMDIConfigDialog()
 {
+	delete m_proxy_settings;
 }
 
 void ClientUIMDIConfigDialog::OnOK(wxCommandEvent &event)
@@ -286,12 +278,17 @@ void ClientUIMDIConfigDialog::OnOK(wxCommandEvent &event)
 
 void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
 {
+	
 	bool enabled = m_chkProxy->IsChecked();
+	
 	CryptSocketProxyProtocol protocol =
 		CryptSocketProxySettings::ProtocolFromString(m_cmbProtocol->GetValue());
+	
 	wxASSERT(protocol != ppUnknown);
+	
 	bool can_auth =
 		CryptSocketProxySettings::DoesProtocolSupportAuthentication(protocol);
+
 	m_lblProtocol->Enable(enabled);
 	m_cmbProtocol->Enable(enabled);
 	m_lblHostname->Enable(enabled);
@@ -308,6 +305,7 @@ void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
 	m_chkTypeDCCListen->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctDCCListen));
 	m_pnlDestNetwork->Enable(enabled);
 	m_pnlDestPorts->Enable(enabled);
+
 }
 
 void ClientUIMDIConfigDialog::LoadSettings()
@@ -333,9 +331,47 @@ void ClientUIMDIConfigDialog::LoadSettings()
 		}
 	#endif
 
+	if (m_proxy_settings->LoadSettings())
+	{
+
+		m_chkProxy->SetValue(m_proxy_settings->GetEnabled());
+
+		m_cmbProtocol->SetValue(
+			CryptSocketProxySettings::ProtocolToString(
+			m_proxy_settings->GetProtocol()));
+
+		m_txtHostname->SetValue(m_proxy_settings->GetHostname());
+		m_txtPort->SetValue(wxString() << (int)m_proxy_settings->GetPort());
+		m_txtUsername->SetValue(m_proxy_settings->GetUsername());
+		m_txtPassword->SetValue(m_proxy_settings->GetPassword(false));
+
+		m_chkTypeServer->SetValue(m_proxy_settings->GetConnectionType(pctServer));
+		m_chkTypeDCCConnect->SetValue(m_proxy_settings->GetConnectionType(pctDCCConnect));
+		m_chkTypeDCCListen->SetValue(m_proxy_settings->GetConnectionType(pctDCCListen));
+
+		m_pnlDestNetwork->SetSelection(m_proxy_settings->GetDestNetworkMode());
+		m_pnlDestNetwork->SetNetwork(m_proxy_settings->GetDestNetworkNetwork());
+		m_pnlDestNetwork->SetSubnet(m_proxy_settings->GetDestNetworkSubnet());
+
+		m_pnlDestPorts->SetSelection(m_proxy_settings->GetDestPortsMode());
+		m_pnlDestPorts->SetString(m_proxy_settings->GetDestPortRanges());
+
+	}
+	else
+	{
+		m_chkProxy->Enable(false);
+		m_chkProxy->SetValue(false);
+	}
+
 	wxCommandEvent evt;
 	OnProxy(evt);
 
+}
+
+bool ClientUIMDIConfigDialog::ErrMsg(const wxString &msg)
+{
+	wxMessageBox(msg, GetTitle(), wxOK|wxICON_ERROR, this);
+	return true;
 }
 
 bool ClientUIMDIConfigDialog::SaveSettings()
@@ -357,17 +393,60 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		}
 		else
 		{
-			wxMessageBox(wxT("Error setting log directory"), GetTitle(), wxOK|wxICON_ERROR, this);
+			ErrMsg(wxT("Error setting log directory"));
 		}
 	}
 	
-	success &= m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath());
-	if (!success)
-	{
-		wxMessageBox(wxT("Error setting notification sound"), GetTitle(), wxOK|wxICON_ERROR, this);
-	}
+	success &= m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath()) ||
+		ErrMsg(wxT("Error setting notification sound"));
+
+	success &= m_proxy_settings->SetEnabled(m_chkProxy->GetValue())
+		|| ErrMsg(wxT("Error setting proxy enabled"));
+
+	success &= m_proxy_settings->SetProtocol(m_cmbProtocol->GetValue())
+		|| ErrMsg(wxT("Error setting proxy protocol"));
+
+	success &= m_proxy_settings->SetHostname(m_txtHostname->GetValue())
+		|| ErrMsg(wxT("Error setting proxy hostname"));
+
+	success &= m_proxy_settings->SetPort(m_txtPort->GetValue())
+		|| ErrMsg(wxT("Error setting proxy port"));
+
+	success &= m_proxy_settings->SetUsername(m_txtUsername->GetValue())
+		|| ErrMsg(wxT("Error setting proxy username"));
+
+	success &= m_proxy_settings->SetPassword(m_txtPassword->GetValue())
+		|| ErrMsg(wxT("Error setting proxy password"));
+
+	success &= m_proxy_settings->SetConnectionType(pctServer, m_chkTypeServer->GetValue())
+		|| ErrMsg(wxT("Error setting proxy connection type (Server)"));
+
+	success &= m_proxy_settings->SetConnectionType(pctDCCConnect, m_chkTypeDCCConnect->GetValue())
+		|| ErrMsg(wxT("Error setting proxy connection type (DCC Connect)"));
+
+	success &= m_proxy_settings->SetConnectionType(pctDCCListen, m_chkTypeDCCListen->GetValue())
+		|| ErrMsg(wxT("Error setting proxy connection type (DCC Listen)"));
+
+	success &= m_proxy_settings->SetDestNetworkMode((CryptSocketProxyDestMode)m_pnlDestNetwork->GetSelection())
+		|| ErrMsg(wxT("Error setting destination network mode"));
+
+	success &= m_proxy_settings->SetDestNetworkNetwork(m_pnlDestNetwork->GetNetwork())
+		|| ErrMsg(wxT("Error setting destination network"));
+
+	success &= m_proxy_settings->SetDestNetworkSubnet(m_pnlDestNetwork->GetSubnet())
+		|| ErrMsg(wxT("Error setting destination subnet"));
+
+	success &= m_proxy_settings->SetDestPortsMode((CryptSocketProxyDestMode)m_pnlDestPorts->GetSelection())
+		|| ErrMsg(wxT("Error setting destination ports mode"));
+
+	success &= m_proxy_settings->SetDestPortRanges(m_pnlDestPorts->GetString())
+		|| ErrMsg(wxT("Error setting destination ports"));
+
+	success &= m_proxy_settings->SaveSettings() ||
+		ErrMsg(wxT("Error saving proxy settings"));
 	
-	success &= m_config->Flush();
+	success &= m_config->Flush() ||
+		ErrMsg(wxT("Error flushing settings to disk"));
 
 	return success;
 
