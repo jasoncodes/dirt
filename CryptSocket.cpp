@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.36 2003-06-16 03:10:32 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.37 2003-06-16 08:39:02 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -55,6 +55,7 @@ CryptSocketBase::CryptSocketBase()
 	m_userdata = NULL;
 	m_bOutputOkay = false;
 	m_bInitialOutputEventSent = false;
+	InitBuffers();
 }
 
 CryptSocketBase::~CryptSocketBase()
@@ -106,6 +107,8 @@ void CryptSocketBase::InitBuffers()
 	m_bInitialOutputEventSent = false;
 	m_keyLocal = ByteBuffer();
 	m_keyRemote = ByteBuffer();
+	m_crypt.ZlibResetCompress();
+	m_crypt.ZlibResetDecompress();
 }
 
 void CryptSocketBase::InitSocketEvents()
@@ -270,9 +273,17 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decryping message"));
 		}
 		CRYPTSOCKET_CHECK_RET(data_len <= dec.Length(), wxT("Data length greater than packet length"));
-		ByteBuffer plain(dec.LockRead(), data_len);
+		ByteBuffer compressed(dec.LockRead(), data_len);
 		dec.Unlock();
-		// do decompression here
+		ByteBuffer plain;
+		try
+		{
+			plain = m_crypt.ZlibDecompress(compressed);
+		}
+		catch (...)
+		{
+			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decompressing message"));
+		}
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_INPUT, this, plain);
 		m_handler->AddPendingEvent(evt);
 
@@ -473,10 +484,18 @@ void CryptSocketBase::Send(const ByteBuffer &data)
 			GenerateNewBlockKey();
 		}
 		CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, wxT("No local block key"));
+		ByteBuffer compressed;
 		try
 		{
-			// do compression here
-			AddToSendQueue(Uint16ToBytes(data.Length()) + m_crypt.AESEncrypt(data));
+			compressed = m_crypt.ZlibCompress(data);
+		}
+		catch (...)
+		{
+			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error compressing message"));
+		}
+		try
+		{
+			AddToSendQueue(Uint16ToBytes(compressed.Length()) + m_crypt.AESEncrypt(compressed));
 		}
 		catch (...)
 		{

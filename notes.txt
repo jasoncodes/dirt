@@ -51,12 +51,6 @@
 
 * nice about screen (wxHtmlWindow maybe?)
 
-* compression for CryptSockets
-	use some sort of handshake before or after public key exchange
-	to work out what compression to use (0 = none, 1 = zlib, etc)
-	should send a list of what each side supports, then both sides
-	send back what they are going to use for their sends
-
 * /notice
 
 * /lock
