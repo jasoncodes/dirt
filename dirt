@@ -2,7 +2,7 @@
 
 if [ "$DISPLAY" == "" ];
 then
-	exec ./dirtconsole "$@"
+	exec `dirname $0`/dirtconsole "$@"
 else
-	exec ./Dirt "$@"
+	exec `dirname $0`/Dirt "$@"
 fi

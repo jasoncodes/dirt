@@ -68,7 +68,7 @@ then
 else
 
 	export DISPLAY=:$DISPLAY
-	./Dirt --console "$@"
+	`dirname $0`/Dirt --console "$@"
 
 	kill $XVFB_PID
 
