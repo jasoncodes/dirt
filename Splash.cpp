@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.8 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.9 2003-02-14 06:21:55 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -37,7 +37,7 @@ Splash::Splash()
 	: wxFrame(NULL, -1, "Dirt Secure Chat " + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
 {
 
-	SetIcon(wxIcon( dirt_xpm ));
+	SetIcon(wxIcon(dirt_xpm));
 
 	const int pos_y = 140;
 	const int gap_x = 16;

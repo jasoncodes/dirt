@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.8 2003-02-14 06:04:59 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.9 2003-02-14 06:21:55 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -33,28 +33,47 @@ END_EVENT_TABLE()
 ServerUIFrame::ServerUIFrame()
 	: wxFrame(
 		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
-		wxDefaultPosition, wxDefaultSize)
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
 
-	SetIcon(wxIcon( dirt_xpm ));
+	SetIcon(wxIcon(dirt_xpm));
 
-	wxPanel *pnlLog = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN);
+	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE);
 
-	m_txtInput = new InputControl(pnlLog, ID_INPUT);
-	m_txtLog = new wxTextCtrl(pnlLog, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
+	m_txtInput = new InputControl(panel, ID_INPUT);
+	m_txtLog = new wxTextCtrl(panel, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
 
-	wxBoxSizer *szrLog = new wxBoxSizer( wxVERTICAL );
+	wxBoxSizer *szrLog = new wxBoxSizer(wxVERTICAL);
 	{
 		szrLog->Add(m_txtLog, 1, wxEXPAND);
 		szrLog->Add(m_txtInput, 0, wxEXPAND);
 	}
-	pnlLog->SetAutoLayout( TRUE );
-	pnlLog->SetSizer( szrLog );
 
-	szrLog->SetSizeHints( this );
+	wxButton *m_cmdStartStop = new wxButton(panel, -1, "&Start");
+	wxButton *m_cmdConfiguration = new wxButton(panel, -1, "&Configuration");
+	wxButton *m_cmdClient = new wxButton(panel, -1, "&Launch Client");
+	wxButton *m_cmdClearLog = new wxButton(panel, -1, "Clear Lo&g");
 
+	wxBoxSizer *szrButtons = new wxBoxSizer(wxVERTICAL);
+	{
+		szrButtons->Add(m_cmdStartStop, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
+		szrButtons->Add(m_cmdConfiguration, 0, wxBOTTOM | wxEXPAND, 8);
+		szrButtons->Add(m_cmdClient, 0, wxBOTTOM | wxEXPAND, 8);
+		szrButtons->Add(m_cmdClearLog, 0, wxBOTTOM | wxEXPAND, 8);
+	}
+
+	wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
+	szrLeft->Add(szrLog, 1, wxEXPAND);
+
+	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
+	szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
+	szrAll->Add(szrButtons, 0, wxALL | wxEXPAND, 8);
+
+	panel->SetAutoLayout(TRUE);
+	panel->SetSizer(szrAll);
+	szrAll->SetSizeHints( this );
 
 	m_server = new ServerDefault(this);
 
@@ -140,8 +159,8 @@ bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
 bool ServerUIFrame::ResetWindowPos()
 {
 	wxRect rtWorkArea = ::wxGetClientDisplayRect();
-	int width = 500;
-	int height = 350;
+	int width = 576;
+	int height = 352;
 	wxRect rtDefaultPos(
 		rtWorkArea.GetRight() - width + 1,
 		rtWorkArea.GetBottom() - height + 1,

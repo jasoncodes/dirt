@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.40 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.41 2003-02-14 06:21:54 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -42,7 +42,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_focused = true;
 
-	SetIcon(wxIcon( dirt_xpm ));
+	SetIcon(wxIcon(dirt_xpm));
 
 	wxMenuBar *mnu = new wxMenuBar;
 
