@@ -26,6 +26,7 @@ enum
 static void Output(wxString &line)
 {
 	puts(Timestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
+	fflush(stdout);
 }
 
 #if 0
