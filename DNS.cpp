@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.1 2003-03-05 04:52:16 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.2 2003-03-05 05:16:26 jason Exp $)
 
 #include "DNS.h"
 
@@ -91,6 +91,47 @@ void DNS::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 bool DNS::IsBusy() const
 {
 	return m_worker && m_worker->IsAlive();
+}
+
+bool DNS::Cancel()
+{
+	bool was_busy = IsBusy();
+	bool entered = false;
+	if (m_worker && IsBusy())
+	{
+		m_worker->m_no_event = true;
+		m_section.Enter();
+		entered = true;
+		if (IsBusy())
+		{
+			m_worker->Kill();
+		}
+		else
+		{
+			m_worker->Delete();
+		}
+		delete m_worker;
+		m_worker = NULL;
+	}
+	if (!m_worker)
+	{
+		if (!entered)
+		{
+			m_section.Enter();
+			entered = true;
+		}
+		m_worker = new DNSWorker(this);
+		if (m_worker->Create() != wxTHREAD_NO_ERROR)
+		{
+			delete m_worker;
+			m_worker = NULL;
+		}
+	}
+	if (entered)
+	{
+		m_section.Leave();
+	}
+	return was_busy && !IsBusy();
 }
 
 bool DNS::Lookup(const wxString &hostname)

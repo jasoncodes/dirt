@@ -15,10 +15,9 @@ public:
 	DNS();
 	virtual ~DNS();
 
-	bool IsBusy() const;
-
 	bool Lookup(const wxString &hostname);
-
+	bool Cancel();
+	bool IsBusy() const;
 
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
 
