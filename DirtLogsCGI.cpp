@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.7 2004-07-25 05:55:07 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.8 2004-07-27 18:28:35 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,11 +41,6 @@ RCS_ID($Id: DirtLogsCGI.cpp,v 1.7 2004-07-25 05:55:07 jason Exp $)
 #include "LogReader.h"
 #include "TextTools.h"
 #include "URL.h"
-
-#ifdef wxPuts
-#undef wxPuts
-#endif
-#define wxPuts ConsoleOutput
 
 wxString GetConfigFilename()
 {

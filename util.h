@@ -26,6 +26,12 @@
 // fix VC++'s broken "for" scope
 #define for if(true)for
 
+// we'll use our own wxPuts function as the built-in fails on some input
+#ifdef wxPuts
+#undef wxPuts
+#endif
+#define wxPuts ConsoleOutput
+
 #include "ByteBuffer.h"
 class wxDateTime;
 class wxConfigBase;
