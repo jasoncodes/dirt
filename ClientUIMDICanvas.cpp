@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.60 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.61 2004-05-16 10:07:11 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -240,6 +240,36 @@ void ClientUIMDICanvas::OnActivate()
 		((ClientUIMDIFrame*)m_parent)->ResetRedLines();
 	}
 	DoGotFocus();
+}
+
+void ClientUIMDICanvas::OnFocusCheck()
+{
+
+	if (m_txtInput->IsShown())
+	{
+		if (FindFocus() == m_txtInput)
+		{
+			puts("all good");
+			return;
+		}
+	}
+	else if (m_txtPassword && m_txtPassword->IsShown())
+	{
+		if (FindFocus() == m_txtPassword)
+		{
+			puts("all good (2)");
+			return;
+		}
+	}
+
+	puts("fixing focus");
+
+	if (((ClientUIMDIFrame*)m_parent)->IsFocused())
+	{
+		((ClientUIMDIFrame*)m_parent)->ResetRedLines();
+	}
+	DoGotFocus();
+
 }
 
 void ClientUIMDICanvas::OnClose()
