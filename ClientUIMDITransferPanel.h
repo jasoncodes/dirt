@@ -2,6 +2,7 @@
 #define ClientUIMDITransferPanel_H_
 
 class ClientUIMDICanvas;
+class FileTransfer;
 
 class ClientUIMDITransferPanel : public wxPanel
 {
@@ -15,6 +16,9 @@ public:
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER | wxCLIP_CHILDREN);
 
 	virtual ~ClientUIMDITransferPanel();
+
+	void Update(const FileTransfer &transfer);
+	void OnClose();
 
 	long GetTransferId();
 	wxString GetNickname();

@@ -24,6 +24,9 @@ protected:
 	virtual void OnClientUserList(const wxArrayString &nicklist);
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);
+	virtual void OnClientTransferNew(int transferid);
+	virtual void OnClientTransferDelete(int transferid);
+	virtual void OnClientTransferState(int transferid, FileTransferState state, const wxString &desc);
 
 protected:
 	Client *m_client;

@@ -13,6 +13,7 @@
 #include "util.h"
 #include "NickListControl.h"
 #include "Modifiers.h"
+#include "FileTransfers.h"
 
 #include "res/dirt.xpm"
 
@@ -20,13 +21,15 @@ enum
 {
 	ID_FILE_EXIT = 1,
 	ID_HELP_ABOUT,
-	ID_FOCUSTIMER
+	ID_FOCUSTIMER,
+	ID_TRANSFERTIMER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
+	EVT_TIMER(ID_TRANSFERTIMER, ClientUIMDIFrame::OnTransferTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
 END_EVENT_TABLE()
 
@@ -65,6 +68,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
 	tmrFocus->Start(100);
 
+	tmrTransfer = new wxTimer(this, ID_TRANSFERTIMER);
+
 	m_client = new ClientDefault(this);
 
 }
@@ -72,6 +77,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
 	delete tmrFocus;
+	delete tmrTransfer;
 	delete m_client;
 }
 
@@ -246,22 +252,6 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		GetContext(context)->LogControlTest();
 		return true;
 	}
-	else if (cmd == "TEST2")
-	{
-		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, TransferSendCanvas);
-		ClientUIMDITransferPanel *transfer = canvas->GetTransferPanel();
-		transfer->SetTransferId(1);
-		transfer->SetNickname("Jason");
-		transfer->SetFilename("D:\\Archive\\Stuff\\Dirt.exe");
-		transfer->SetFileSize(363520);
-		transfer->SetTime(133);
-		transfer->SetTimeleft(67);
-		transfer->SetCPS(363520/200);
-		transfer->SetFileSent(363520/3*2);
-		transfer->SetStatus("Sending...");
-		NewWindow(canvas, true);
-		return true;
-	}
 	else if (cmd == "QUERY")
 	{
 		HeadTail ht = SplitHeadTail(params);
@@ -278,6 +268,11 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		{
 			OnClientWarning(context, "/resetwindowpos: Unavailable on this platform");
 		}
+		return true;
+	}
+	else if (cmd == "TEST2")
+	{
+		m_client->GetFileTransfers()->Test();
 		return true;
 	}
 	else if (cmd == "HELP")
@@ -367,4 +362,58 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 
 	m_lstNickList->Remove(nick);
 
+}
+
+void ClientUIMDIFrame::OnClientTransferNew(int transferid)
+{
+	const FileTransfer &transfer = m_client->GetFileTransfers()->GetTransferById(transferid);
+	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, transfer.issend ? TransferSendCanvas : TransferReceiveCanvas);
+	ClientUIMDITransferPanel *pnl = canvas->GetTransferPanel();
+	pnl->SetTransferId(transferid);
+	pnl->Update(transfer);
+	NewWindow(canvas, true);
+	if (!tmrTransfer->IsRunning())
+	{
+		tmrTransfer->Start(1000);
+	}
+}
+
+void ClientUIMDIFrame::OnClientTransferDelete(int transferid)
+{
+	ClientUIMDITransferPanel *pnl = GetContext(transferid);
+	if (pnl)
+	{
+		pnl->SetTransferId(-1);
+		pnl->SetStatus(pnl->GetStatus() + " -- OnClientTransferDelete()");
+	}
+	if (m_client->GetFileTransfers()->GetTransferCount() == 1) // is last active transfer
+	{
+		tmrTransfer->Stop();
+	}
+}
+
+void ClientUIMDIFrame::OnClientTransferState(int transferid, FileTransferState state, const wxString &desc)
+{
+	bool bIsError = ((state == ftsSendFail) || (state == ftsGetFail));
+	if (bIsError)
+	{
+		OnClientInformation(wxEmptyString, desc);
+	}
+	else
+	{
+		OnClientWarning(wxEmptyString, desc);
+	}
+}
+
+void ClientUIMDIFrame::OnTransferTimer(wxTimerEvent& event)
+{
+	FileTransfers *transfers = m_client->GetFileTransfers();
+	wxASSERT(transfers->GetTransferCount() > 0);
+	for (int i = 0; i < transfers->GetTransferCount(); ++i)
+	{
+		const FileTransfer &transfer = transfers->GetTransferByIndex(i);
+		ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
+		wxASSERT(pnl);
+		pnl->Update(transfer);
+	}
 }

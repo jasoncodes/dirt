@@ -149,6 +149,14 @@ void ClientUIMDICanvas::OnActivate()
 	DoGotFocus();
 }
 
+void ClientUIMDICanvas::OnClose()
+{
+	if (GetTransferPanel())
+	{
+		GetTransferPanel()->OnClose();
+	}
+}
+
 void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
 {
 	if (event.GetDragStatus() == wxSASH_STATUS_OK)

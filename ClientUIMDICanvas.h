@@ -33,6 +33,7 @@ public:
 	LogControl* GetLog() { return m_txtLog; }
 	NickListControl* GetNickList() { return m_lstNickList; }
 	ClientUIMDITransferPanel* GetTransferPanel() { return m_pnlTransfer; }
+	Client* GetClient();
 
 	void LogControlTest();
 
@@ -48,10 +49,10 @@ protected:
 
 	virtual void OnAttach();
 	virtual void OnActivate();
+	virtual void OnClose();
 
 	void ResizeChildren();
 	void DoGotFocus();
-	Client* GetClient();
 
 protected:
 	CanvasType m_type;

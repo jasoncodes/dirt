@@ -9,6 +9,7 @@
 #include "Client.h"
 #include "util.h"
 #include "Modifiers.h"
+#include "FileTransfers.h"
 
 BEGIN_EVENT_TABLE(Client, wxEvtHandler)
 END_EVENT_TABLE()
@@ -16,10 +17,12 @@ END_EVENT_TABLE()
 Client::Client(ClientEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler)
 {
+	m_file_transfers = new FileTransfers(this);
 }
 
 Client::~Client()
 {
+	delete m_file_transfers;
 }
 
 void Client::Debug(const wxString &context, const wxString &text)

@@ -10,6 +10,8 @@
 #include "ClientUIMDICanvas.h"
 #include "util.h"
 #include <wx/filename.h>
+#include "FileTransfers.h"
+#include "Client.h"
 
 BEGIN_EVENT_TABLE(ClientUIMDITransferPanel, wxPanel)
 	EVT_SIZE(ClientUIMDITransferPanel::OnSize)
@@ -113,6 +115,20 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 
 }
 
+void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
+{
+	wxASSERT(GetTransferId() == transfer.transferid);
+	wxASSERT(IsSend() == transfer.issend);
+	SetNickname(transfer.nickname);
+	SetFilename(transfer.filename);
+	SetFileSize(transfer.filesize);
+	SetTime(transfer.time);
+	SetTimeleft(transfer.timeleft);
+	SetCPS(transfer.cps);
+	SetFileSent(transfer.filesent);
+	SetStatus(transfer.status);
+}
+
 bool ClientUIMDITransferPanel::IsSend()
 {
 	switch (m_canvas->GetType())
@@ -140,6 +156,14 @@ void ClientUIMDITransferPanel::UpdateProgress()
 	m_gauge->SetValue(progress);
 	int button_index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
 	m_canvas->GetSwitchBar()->SetButtonProgress(button_index, progress);
+}
+
+void ClientUIMDITransferPanel::OnClose()
+{
+	if (GetTransferId() > -1)
+	{
+		m_canvas->GetClient()->GetFileTransfers()->DeleteTransfer(GetTransferId());
+	}
 }
 
 wxString ClientUIMDITransferPanel::GetShortFilename()

@@ -24,3 +24,6 @@
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
 * consecutive spaces that seperated by formatting (ctrl-k) get stripped
+
+* file transfer firewall note: maybe should try connecting both ways
+  at same time, and close the alt route if main succeeds, etc

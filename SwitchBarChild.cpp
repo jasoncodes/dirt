@@ -82,11 +82,6 @@ void SwitchBarChild::OnMove(wxMoveEvent& event)
 		m_canvas->Show(false);
 	}
 
-	if (GetPosition().x < 0 || GetPosition().y < 0)
-	{
-		m_canvas->Show(false);
-	}
-
 	m_parent->UpdateWindowMenu();
 	event.Skip();
 
@@ -117,6 +112,7 @@ void SwitchBarChild::OnClose(wxCloseEvent& event)
 	}
 	else
 	{
+		m_canvas->OnClose();
 		event.Skip();
 	}
 }

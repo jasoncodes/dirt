@@ -24,6 +24,7 @@ public:
 	virtual void OnAttach() {}
 	virtual void OnDetach() {}
 	virtual void OnActivate() {}
+	virtual void OnClose() {}
 
 	SwitchBar* GetSwitchBar() { return m_parent->GetSwitchBar(); }
 

@@ -14,6 +14,7 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include "Dirt.h"
+#include "FileTransfers.h"
 
 DECLARE_APP(DirtApp)
 
@@ -344,4 +345,27 @@ void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &det
 		msg << " (" << message << ")";
 	}
 	Output(msg);
+}
+
+void ClientUIConsole::OnClientTransferNew(int transferid)
+{
+	// not implemented
+}
+
+void ClientUIConsole::OnClientTransferDelete(int transferid)
+{
+	// not implemented
+}
+
+void ClientUIConsole::OnClientTransferState(int transferid, FileTransferState state, const wxString &desc)
+{
+	bool bIsError = ((state == ftsSendFail) || (state == ftsGetFail));
+	if (bIsError)
+	{
+		OnClientInformation(wxEmptyString, desc);
+	}
+	else
+	{
+		OnClientWarning(wxEmptyString, desc);
+	}
 }
