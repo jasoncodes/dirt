@@ -1,7 +1,7 @@
 -include $(shell pwd)/Makefile.config
 
 ifneq ($(NOKDE),1)
-	KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
+	KAPP_H := $(shell kde-config --prefix 2> /dev/null)/include/kde/kapplication.h
 	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
 		QAPP_H := $(QTDIR)/include/qapplication.h
 		ifeq ($(wildcard $(QAPP_H)),$(QAPP_H))
@@ -15,7 +15,10 @@ ifneq ($(NOKDE),1)
 	endif
 endif
 
-BASENAME = $(shell wx-config --basename)
+BASENAME = $(shell wx-config --basename 2> /dev/null)
+ifeq (,$(BASENAME))
+	BASENAME = $(shell wx-config --libs | tr ' ' '\n' | grep wx_)
+endif
 ifneq (,$(findstring wx_gtk2,$(BASENAME)))
 	GTK_EXTRAS = pkg-config --cflags gtk+-2.0
 else
