@@ -9,7 +9,7 @@
 * need a portable way open a URL
   ShellExecute works good on Win32, but what about others?
 
-* animations, flickering, etc, happening when minimize, ctrl-tab, etc
+* flickering when ctrl-tab
 
 * copy w/o formatting, find text, etc
 

@@ -427,17 +427,41 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 
 	if (event.GetInt() == -1)
 	{
+
 		child->Show(false);
-		if (child->IsIconized())
-		{
-			child->Iconize(false);
-		}
-		canvas->saved_state_maximized = child->IsMaximized();
-		if (child->IsMaximized())
-		{
-			child->Maximize(false);
-		}
-		canvas->saved_state_rect = child->GetRect();
+
+		#ifdef __WXMSW__
+
+			WINDOWPLACEMENT wndpl;
+			wndpl.length = sizeof WINDOWPLACEMENT;
+			::GetWindowPlacement((HWND)child->GetHandle(), &wndpl);
+			canvas->saved_state_rect.x =
+				wndpl.rcNormalPosition.left;
+			canvas->saved_state_rect.y =
+				wndpl.rcNormalPosition.top;
+			canvas->saved_state_rect.width =
+				wndpl.rcNormalPosition.right - wndpl.rcNormalPosition.left;
+			canvas->saved_state_rect.height =
+				wndpl.rcNormalPosition.bottom - wndpl.rcNormalPosition.top;
+
+			canvas->saved_state_maximized =
+				(wndpl.flags & WPF_RESTORETOMAXIMIZED) != 0;
+				
+		#else
+
+			if (child->IsIconized())
+			{
+				child->Iconize(false);
+			}
+			canvas->saved_state_maximized = child->IsMaximized();
+			if (child->IsMaximized())
+			{
+				child->Maximize(false);
+			}
+			canvas->saved_state_rect = child->GetRect();
+
+		#endif
+
 		canvas->saved_state_valid = true;
 		canvas->Show(false);
 		canvas->OnDetach();
