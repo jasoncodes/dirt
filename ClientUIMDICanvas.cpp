@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.37 2003-03-05 12:05:54 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.38 2003-03-13 03:15:08 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -419,4 +419,6 @@ void ClientUIMDICanvas::LogControlTest()
 	m_txtLog->AddHtmlLine(wxT("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line"));
 	m_txtLog->AddHtmlLine(wxT("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--"));
 	m_txtLog->AddTextLine(wxString() << ctrl_c << wxT("2,15blue-grey ") << ctrl_r << wxT("reverse") << ctrl_r << wxT(" blue-grey ") << ctrl_c << wxT("4red-grey ") << ctrl_r << wxT("rev") << ctrl_c << ctrl_c << wxT("2erse") << ctrl_r << wxT(" blue-white ") << ctrl_c << wxT("black-white ") << ctrl_r << wxT("reverse"));
+	m_txtLog->AddTextLine(wxString() << wxT("Should have two spaces between letters: ") << ctrl_c << wxT("1t ") << ctrl_c << wxT("1 ") << ctrl_c << wxT("1e ") << ctrl_c << wxT("1 ") << ctrl_c << wxT("1s  t !"));
+	m_txtLog->AddTextLine(wxT("Space Test: 1 2  3   4    . exclamation line up -> !"));
 }
