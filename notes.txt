@@ -1,3 +1,8 @@
+* investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
+  for SwitchBar on Windows XP/2003
+
+* ctrl-min not working on gtk
+
 * SOCKS 4/5 BIND support for DCC Listen
 
 * Mutex (win32 + unix)

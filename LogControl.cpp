@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.49 2003-06-12 12:57:06 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.50 2003-06-21 10:37:01 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -20,6 +20,7 @@ RCS_ID($Id: LogControl.cpp,v 1.49 2003-06-12 12:57:06 jason Exp $)
 #include "SpanTag.h"
 #include "Modifiers.h"
 #include <wx/fdrepdlg.h>
+#include <wx/textbuf.h>
 
 DECLARE_APP(DirtApp)
 
@@ -935,10 +936,32 @@ static void FirstCellFirst(wxHtmlCell **start_cell, wxHtmlCell **end_cell)
 
 wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell, bool strip_prefix)
 {
+
 	wxString buffer;
 	wxHtmlCell *cell = start_cell;
 	bool last_was_new_line = false;
-	const wxString CRLF = wxT("\r\n");
+	
+	wxString line_sep;
+	switch (wxTextBuffer::typeDefault)
+	{
+
+		case wxTextFileType_Unix:
+		case wxTextFileType_None:
+		default:
+			line_sep = wxT("\n");
+			break;
+
+		case wxTextFileType_Dos:
+		case wxTextFileType_Os2:
+			line_sep = wxT("\r\n");
+			break;
+
+		case wxTextFileType_Mac:
+			line_sep = wxT("\r");
+			break;
+
+	}
+
 	while (cell != NULL)
 	{
 		if (cell->IsTerminalCell())
@@ -961,7 +984,7 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 		{
 			if (!last_was_new_line)
 			{
-				buffer += CRLF;
+				buffer += line_sep;
 				last_was_new_line = true;
 			}
 		}
@@ -970,7 +993,7 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 	}
 	if (strip_prefix)
 	{
-		wxArrayString lines = SplitString(buffer, CRLF);
+		wxArrayString lines = SplitString(buffer, line_sep);
 		for (size_t i = 0; i < lines.GetCount(); ++i)
 		{
 			wxString line = lines[i];
@@ -1000,7 +1023,7 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 			}
 			lines[i] = line;
 		}
-		buffer = JoinArray(lines, CRLF);
+		buffer = JoinArray(lines, line_sep);
 	}
 	return buffer; 
 }
