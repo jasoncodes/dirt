@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.46 2003-03-31 06:57:01 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.47 2003-03-31 07:05:57 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -816,9 +816,9 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool sh
 
 	#else
 
-		is_maximized |= frm->IsMaximized();
+		is_already_maximized |= frm->IsMaximized();
 
-		if (!(is_maximized && maximize))
+		if (!(is_already_maximized && maximized))
 		{
 			frm->SetSize(r);
 			frm->Maximize(maximized);
