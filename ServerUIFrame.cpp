@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.6 2003-02-14 04:57:07 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.7 2003-02-14 05:09:36 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -19,12 +19,16 @@ RCS_ID($Id: ServerUIFrame.cpp,v 1.6 2003-02-14 04:57:07 jason Exp $)
 enum
 {
 	ID_LOG = 1,
-	ID_INPUT
+	ID_INPUT,
+	ID_FILE_EXIT,
+	ID_HELP_ABOUT,
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_SIZE(ServerUIFrame::OnSize)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
+	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
+	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
@@ -32,15 +36,33 @@ ServerUIFrame::ServerUIFrame()
 		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
 		wxDefaultPosition, wxDefaultSize)
 {
+
 	SetIcon(wxIcon( dirt_xpm ));
+
 	m_txtInput = new InputControl(this, ID_INPUT);
 	m_txtLog = new wxTextCtrl(this, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
+
 	m_server = new ServerDefault(this);
+
+	wxMenuBar *mnu = new wxMenuBar;
+
+	wxMenu *mnuFile = new wxMenu;
+	mnuFile->Append(ID_FILE_EXIT, "E&xit\tAlt-F4", "Quit the program");
+	mnu->Append(mnuFile, "&File");
+
+	wxMenu *mnuHelp = new wxMenu;
+	mnuHelp->Append(ID_HELP_ABOUT, "&About\tF1");
+	mnu->Append(mnuHelp, "&Help");
+
+	SetMenuBar(mnu);
+
 	ResetWindowPos();
 	Show();
+
 	m_txtInput->SetFocus();
+
 }
 
 ServerUIFrame::~ServerUIFrame()
@@ -138,4 +160,21 @@ bool ServerUIFrame::ResetWindowPos()
 		height);
 	SetSize(rtDefaultPos);
 	return true;
+}
+
+void ServerUIFrame::OnFileExit(wxCommandEvent& event)
+{
+	Close();
+}
+
+void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
+{
+	wxMessageBox(wxString()
+		<< "Dirt Secure Chat 3.0.0 Alpha 0\n"
+		<< "\n"
+		<< "Last revision date: " << GetRCSDate() << " UTC\n"
+		<< "Last revision author: " << GetRCSAuthor() << "\n"
+		<< "\n"
+		<< "http://dirtchat.sourceforge.net/",
+		"About Dirt Secure Chat", wxICON_INFORMATION);
 }

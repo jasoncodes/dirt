@@ -22,6 +22,8 @@ protected:
 protected:
 	void OnSize(wxSizeEvent &event);
 	void OnInput(wxCommandEvent &event);
+	void OnFileExit(wxCommandEvent& event);
+	void OnHelpAbout(wxCommandEvent& event);
 
 protected:
 	virtual bool ResetWindowPos();
