@@ -281,6 +281,14 @@ LINK32=link.exe
 # Name "Dirt - Win32 Console Debug"
 # Begin Source File
 
+SOURCE=.\ByteBuffer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ByteBuffer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Client.cpp
 # End Source File
 # Begin Source File
@@ -342,6 +350,22 @@ SOURCE=.\CPSCalc.cpp
 # Begin Source File
 
 SOURCE=.\CPSCalc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Crypt.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Crypt.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CryptSocket.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CryptSocket.h
 # End Source File
 # Begin Source File
 

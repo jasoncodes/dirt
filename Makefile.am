@@ -9,7 +9,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 	$(CC) -c `wx-config --cxxflags` -o $@ $<
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) -o $(PROGRAM) $(OBJECTS) `wx-config --libs`
+	$(CC) -o $(PROGRAM) $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
 	chmod +x dirt dirtconsole
 
 clean:

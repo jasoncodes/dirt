@@ -10,6 +10,7 @@
 #include <wx/datetime.h>
 #include <wx/html/htmlwin.h>
 #include <math.h>
+#include "ByteBuffer.h"
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -221,4 +222,44 @@ wxString SecondsToMMSS(long seconds)
 
 	return result;
 
+}
+
+ByteBuffer Uint32ToBytes(wxUint32 num)
+{
+	ByteBuffer bytes(4);
+	byte *ptr = bytes.Lock();
+	ptr[0] = ((num >> 24) & 0xff);
+	ptr[1] = ((num >> 16) & 0xff);
+	ptr[2] = ((num >> 8)  & 0xff);
+	ptr[3] = ((num >> 0)  & 0xff);
+	bytes.Unlock();
+	return bytes;
+}
+
+wxUint32 BytesToUint32(const byte *data, int len)
+{
+	wxASSERT((len == 4) && (len == sizeof (wxUint32)));
+	return
+		(data[0] << 24) +
+		(data[1] << 16) +
+		(data[2] << 8) +
+		(data[3] << 0);
+}
+
+ByteBuffer Uint16ToBytes(wxUint16 num)
+{
+	ByteBuffer bytes(2);
+	byte *ptr = bytes.Lock();
+	ptr[0] = ((num >> 8)  & 0xff);
+	ptr[1] = ((num >> 0)  & 0xff);
+	bytes.Unlock();
+	return bytes;
+}
+
+wxUint16 BytesToUint16(const byte *data, int len)
+{
+	wxASSERT((len == 2) && (len == sizeof (wxUint16)));
+	return
+		(data[0] << 8) +
+		(data[1] << 0);
 }

@@ -2,6 +2,7 @@
 #define UTIL_H_
 
 class wxHtmlWinParser;
+#include "ByteBuffer.h"
 
 struct HeadTail
 {
@@ -21,5 +22,9 @@ wxString AddCommas(double size);
 wxString SizeToString(off_t size);
 wxString SizeToLongString(off_t size, wxString suffix = wxEmptyString);
 wxString SecondsToMMSS(long seconds);
+ByteBuffer Uint32ToBytes(wxUint32 num);
+wxUint32 BytesToUint32(const byte *data, int len);
+ByteBuffer Uint16ToBytes(wxUint16 num);
+wxUint16 BytesToUint16(const byte *data, int len);
 
 #endif
