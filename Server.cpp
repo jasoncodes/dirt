@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.61 2003-07-10 14:06:16 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.62 2003-07-15 15:00:36 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -1015,12 +1015,13 @@ wxString Server::ProcessWordFilters(const wxString &text) const
 		wxString new_value = m_config.GetConfig()->Read(wxT("/Server/Word Filters/") + old_value);
 		output = CaseInsensitiveReplace(output, m_filtered_words_list[i], new_value);
 	}
-	return (output != text_no_formatting) ? output : (const wxString&)text;
+	return (output != text_no_formatting) ? output : text;
 }
 
 ByteBuffer Server::ProcessWordFilters(const ByteBuffer &data) const
 {
 	wxString text = data;
 	wxString text_filtered = ProcessWordFilters(text);
-	return (text != text_filtered) ? (const ByteBuffer&)text_filtered : data;
+	ByteBuffer buff_filtered = text_filtered;
+	return (text != text_filtered) ? buff_filtered : data;
 }
