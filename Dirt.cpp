@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.22 2003-02-21 07:53:13 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.23 2003-02-23 06:15:50 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -20,6 +20,11 @@ RCS_ID($Id: Dirt.cpp,v 1.22 2003-02-21 07:53:13 jason Exp $)
 IMPLEMENT_APP(DirtApp)
 
 #ifdef __WIN32__
+
+	// Why is it that people don't run late versions of Platform SDK? :)
+	#ifndef INVALID_SET_FILE_POINTER
+		#define INVALID_SET_FILE_POINTER ((DWORD)-1)
+	#endif
 
 	BOOL ReadBytes(HANDLE hFile, LPVOID buffer, DWORD size)
 	{
