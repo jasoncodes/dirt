@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.16 2003-02-17 14:10:12 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.17 2003-02-17 15:01:40 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -117,11 +117,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				{
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
-					wxASSERT(conn->m_sck == event.GetSocket());
-					size_t old_count = m_connections.GetCount();
 					m_connections.Remove(conn);
-					size_t new_count = m_connections.GetCount();
-					wxASSERT(old_count - 1 == new_count);
 					delete conn;
 					m_event_handler->OnServerInformation(wxT("Connection to ") + ::GetIPV4String(addr) + wxT(" lost"));
 					m_event_handler->OnServerConnectionChange();

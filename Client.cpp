@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.17 2003-02-17 14:37:47 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.18 2003-02-17 14:59:51 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -40,7 +40,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	
 	if (input[0] == wxT('/'))
 	{
-		SplitHeadTail(input, cmd, params);
+		SplitQuotedHeadTail(input, cmd, params);
 		cmd = cmd.Mid(1);
 		cmd.MakeUpper();
 	}
@@ -71,7 +71,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	else if (cmd == wxT("MSG"))
 	{
 		wxString nick, msg;
-		SplitHeadTail(params, nick, msg);
+		SplitQuotedHeadTail(params, nick, msg);
 		if (nick.Length() == 0)
 		{
 			m_event_handler->OnClientInformation(context, wxT("/msg: insufficient parameters"));
@@ -155,6 +155,26 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			text = ByteBuffer();
 		}
 		m_event_handler->OnClientMessageIn(nick, text, false);
+	}
+	else if (cmd == wxT("PRIVMSG"))
+	{
+		ByteBuffer nick, text;
+		if (!Unpack(data, nick, text))
+		{
+			nick = data;
+			text = ByteBuffer();
+		}
+		m_event_handler->OnClientMessageIn(nick, text, true);
+	}
+	else if (cmd == wxT("PRIVMSGOK"))
+	{
+		ByteBuffer nick, text;
+		if (!Unpack(data, nick, text))
+		{
+			nick = data;
+			text = ByteBuffer();
+		}
+		m_event_handler->OnClientMessageOut(nick, text);
 	}
 	else if (cmd == wxT("ERROR"))
 	{

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.9 2003-02-17 14:37:47 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.10 2003-02-17 14:59:51 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -71,7 +71,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 
 	wxString cmd, params;
 	
-	SplitHeadTail(input, cmd, params);
+	SplitQuotedHeadTail(input, cmd, params);
 	if (input[0] == wxT('/'))
 	{
 		cmd = cmd.Mid(1);

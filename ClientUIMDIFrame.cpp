@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.43 2003-02-17 14:10:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.44 2003-02-17 14:59:51 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -235,7 +235,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("QUERY"))
 	{
-		HeadTail ht = SplitHeadTail(params);
+		HeadTail ht = SplitQuotedHeadTail(params);
 		if (ht.head.Length() > 0)
 		{
 			FocusCanvas(GetContext(ht.head));
