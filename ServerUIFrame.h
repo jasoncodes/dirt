@@ -2,6 +2,7 @@
 #define ServerUIFrame_H_
 
 #include "Server.h"
+#include <wx/listctrl.h>
 
 class InputControl;
 
@@ -17,6 +18,7 @@ public:
 protected:
 	virtual bool OnServerPreprocess(wxString &cmd, wxString &params);
 	virtual void OnServerStateChange();
+	virtual void OnServerConnectionChange();
 	virtual void OnServerInformation(const wxString &line);
 	virtual void OnServerWarning(const wxString &line);
 
@@ -28,18 +30,22 @@ protected:
 	void OnConfiguration(wxCommandEvent& event);
 	void OnClient(wxCommandEvent& event);
 	void OnClear(wxCommandEvent& event);
+	void OnTimerUpdateConnections(wxTimerEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();
+	virtual void UpdateConnectionList();
 
 protected:
 	Server *m_server;
 	wxTextCtrl *m_txtLog;
 	InputControl *m_txtInput;
+	wxListCtrl *m_lstConnections;
 	wxButton *m_cmdStartStop;
 	wxButton *m_cmdConfiguration;
 	wxButton *m_cmdClient;
 	wxButton *m_cmdClear;
+	wxTimer *m_tmrUpdateConnections;
 
 private:
 	DECLARE_EVENT_TABLE()

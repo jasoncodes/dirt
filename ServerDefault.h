@@ -6,7 +6,7 @@
 
 class ServerDefault;
 
-class ServerDefaultConnection
+class ServerDefaultConnection : public ServerConnection
 {
 
 	friend ServerDefault;
@@ -21,9 +21,6 @@ protected:
 	CryptSocketClient *m_sck;
 
 };
-
-#include <wx/dynarray.h>
-WX_DECLARE_OBJARRAY(ServerDefaultConnection, ServerDefaultConnectionArray);
 
 class ServerDefault : public Server
 {
@@ -44,7 +41,6 @@ protected:
 
 protected:
 	CryptSocketServer *m_sckListen;
-	ServerDefaultConnectionArray m_connections;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,12 +6,9 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.9 2003-02-15 03:39:35 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.10 2003-02-15 11:50:38 jason Exp $)
 
 #include "ServerDefault.h"
-
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ServerDefaultConnectionArray);
 
 ServerDefaultConnection::ServerDefaultConnection()
 {
@@ -36,7 +33,6 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 {
 	m_sckListen = new CryptSocketServer;
 	m_sckListen->SetEventHandler(this, ID_SOCK);
-	m_connections.Alloc(10);
 }
 
 ServerDefault::~ServerDefault()
@@ -88,6 +84,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 			conn->m_sck = m_sckListen->Accept();
 			conn->m_sck->SetUserData(conn);
 			m_connections.Add(conn);
+			m_event_handler->OnServerConnectionChange();
 		}
 		else
 		{
@@ -97,6 +94,8 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 	}
 	else
 	{
+
+		ServerDefaultConnection *conn = (ServerDefaultConnection*)event.GetUserData();
 
 		switch (event.GetSocketEvent())
 		{
@@ -113,8 +112,6 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				{
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
-					m_event_handler->OnServerInformation("Connection to " + ::GetIPV4String(addr) + " lost");
-					ServerDefaultConnection *conn = (ServerDefaultConnection*)event.GetUserData();
 					wxASSERT(conn->m_sck == event.GetSocket());
 					size_t old_count = m_connections.GetCount();
 					int index = m_connections.Index(*conn);
@@ -123,6 +120,8 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					size_t new_count = m_connections.GetCount();
 					wxASSERT(old_count - 1 == new_count);
 					delete conn;
+					m_event_handler->OnServerInformation("Connection to " + ::GetIPV4String(addr) + " lost");
+					m_event_handler->OnServerConnectionChange();
 				}
 				break;
 

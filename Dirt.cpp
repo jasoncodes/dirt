@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.15 2003-02-15 03:39:34 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.16 2003-02-15 11:50:37 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -258,7 +258,7 @@ bool DirtApp::ProcessCommandLine()
 	{
 		m_appmode = appServer;
 	}
-	else if (cmdline->Found("l"))
+	else if (cmdline->Found("client"))
 	{
 		m_appmode = appClient;
 	}

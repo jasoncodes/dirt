@@ -2,7 +2,8 @@
 #define UTIL_H_
 
 class wxHtmlWinParser;
-#include "ByteBuffer.h"
+class ByteBuffer;
+class wxDateTime;
 
 struct HeadTail
 {
@@ -16,6 +17,7 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const w
 HeadTail SplitHeadTail(const wxString &text, const wxString &sep = " ");
 wxString GetLongTimestamp();
 wxString GetShortTimestamp();
+wxString FormatISODateTime(const wxDateTime &datetime);
 void FixBorder(wxWindow *wnd);
 void SetHtmlParserFonts(wxHtmlWinParser *parser);
 wxString AddCommas(off_t size);

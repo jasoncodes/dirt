@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.17 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.18 2003-02-15 11:50:38 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -82,6 +82,11 @@ wxString GetShortTimestamp()
 wxString GetLongTimestamp()
 {
 	return wxDateTime::Now().Format("%Y/%m/%d %H:%M:%S ");
+}
+
+wxString FormatISODateTime(const wxDateTime &datetime)
+{
+	return datetime.Format("%Y/%m/%d %H:%M:%S");
 }
 
 void FixBorder(wxWindow *wnd)

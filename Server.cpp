@@ -3,11 +3,14 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.3 2003-02-14 12:43:01 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.4 2003-02-15 11:50:38 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ServerConnectionArray);
 
 BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
@@ -15,6 +18,7 @@ END_EVENT_TABLE()
 Server::Server(ServerEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler)
 {
+	m_connections.Alloc(10);
 }
 
 Server::~Server()
