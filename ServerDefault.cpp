@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.51 2003-04-27 09:53:52 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.52 2003-04-27 10:37:34 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -332,6 +332,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 				Information(wxT("Your IP addresses are: ") + JoinArray(m_ip_list, wxT(", ")));
 			}
 			SendToAll(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list), false);
+			m_next_list_update = wxMin(m_next_list_update, now + 5000);
 		}
 	}
 	if (m_public_server && m_next_list_update <= now && !m_list_updating)
