@@ -237,6 +237,8 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 		wxLongLong_t next_update = 0;
 
 		wxProgressDialog dlg(wxT("Loading..."), filename, reader.GetLength(), this, wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME);
+
+		bool had_text = false;
 		
 		while (!reader.Eof())
 		{
@@ -245,9 +247,13 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 			{
 				case letText:
 					m_log->AddTextLine(reader.GetText(), reader.GetTextColour(), tmmParse, reader.GetTextConvertURLs());
+					had_text = true;
 					break;
 				case letSeparator:
-					//m_log->AddSeparator(); // not implemented yet
+					if (had_text)
+					{
+						m_log->AddSeparator();
+					}
 					break;
 			}
 
@@ -255,7 +261,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 			{
 				if (!dlg.Update(reader.GetPosition()))
 				{
-					//m_log->AddSeparator(); // not implemented yet
+					m_log->AddSeparator();
 					m_log->AddTextLine(wxT("Cancelled"), *wxRED);
 					break;
 				}

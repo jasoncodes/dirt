@@ -1,3 +1,5 @@
+* add --config=... to change the config file used by dirt
+
 * if convert err when wxString::wxString(unicode), '?' should be used vs empty string
 
 * option to delete log files (to recycle bin on win32) (right click popup and delete key)
@@ -13,8 +15,6 @@
 * research that log control gdi thing in 9x
 
 * suppress wxBell when /away?
-
-* separators for log control
 
 * scripting (/exec and /eval)
 
@@ -39,3 +39,4 @@
 * file transfers
 
 * flashing tray icon stops being orange sometimes. after a short delay it seems.
+  it'll be the updating of the frame caption for sure...

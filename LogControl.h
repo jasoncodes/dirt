@@ -8,6 +8,9 @@
 #include "wx/html/htmlwin.h"
 #include <wx/fdrepdlg.h>
 
+#include <wx/dynarray.h>
+WX_DEFINE_ARRAY(wxHtmlCell*, HtmlCellPointerArray);
+
 enum TextModifierMode
 {
 	tmmParse,
@@ -29,6 +32,7 @@ public:
 	void Clear();
 	void ResetRedLine();
 	void ShowFindDialog(bool show);
+	void AddSeparator();
 
 	void AddHtmlLine(const wxString &line, bool split_long_words = false, bool red_line = false);
 	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true, bool red_line = false);
@@ -87,6 +91,8 @@ protected:
 	bool last_start_end_valid;
 
 	wxHtmlCell *m_red_line;
+
+	HtmlCellPointerArray m_separators;
 
 	wxFindReplaceDialog *m_find_dlg;
 	wxFindReplaceData m_find_data;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.35 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.36 2003-03-23 04:14:12 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -728,6 +728,26 @@ void LogControl::OnDraw(wxDC& dcFront)
 			rect.GetTop() + y - 32,
 			rect.GetBottom() + y + 32);
 
+		if (m_separators.GetCount())
+		{
+			wxPen old_pen = dcBack.GetPen();
+			dcBack.SetPen(*wxLIGHT_GREY_PEN);
+			for (size_t i = 0; i < m_separators.GetCount(); ++i)
+			{
+				wxHtmlCell *cell = m_separators.Item(i);
+				if (cell)
+				{
+					cell = cell->GetNext();
+					if (cell)
+					{
+						wxRect red_rect = GetCellRect(cell);
+						dcBack.DrawLine(0, red_rect.y, GetClientSize().x, red_rect.y);
+					}
+				}
+			}
+			dcBack.SetPen(old_pen);
+		}
+
 		if (m_red_line)
 		{
 			wxPen old_pen = dcBack.GetPen();
@@ -1279,6 +1299,7 @@ void LogControl::ScrollToBottom()
 void LogControl::Clear()
 {
 	m_red_line = NULL;
+	m_separators.Empty();
 	last_start_end_valid = false;
 	m_find_pos1 = m_Cell;
 	m_find_pos2 = m_Cell;
@@ -1376,6 +1397,29 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 
 	Refresh();
 
+}
+
+class LogControlContainerCell : public wxHtmlContainerCell
+{
+
+public:
+    LogControlContainerCell(wxHtmlContainerCell *parent)
+		: wxHtmlContainerCell(parent)
+	{
+	}
+
+	inline wxHtmlCell* GetLastCell()
+	{
+		return m_LastCell;
+	}
+
+};
+
+void LogControl::AddSeparator()
+{
+	wxHtmlCell *last = ((LogControlContainerCell*)m_Cell)->GetLastCell();
+	m_separators.Add(last);
+	Refresh();
 }
 
 wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_mode)
