@@ -33,6 +33,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_BUTTON(ID_LOG, ClientUIMDICanvas::OnLinkClicked)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
+	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
@@ -232,7 +233,7 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 	#endif
 
 }
-//#include <wx/textdlg.h>
+
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 {
 	wxString nick = m_lstNickList->GetNick(event.GetInt());
@@ -244,6 +245,12 @@ void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 			GetClient()->SendMessage(nick, msg);
 		}
 	}
+}
+
+void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
+{
+	wxString nick = m_lstNickList->GetNick(event.GetInt());
+	wxMessageBox("Right click on " + nick);
 }
 
 void ClientUIMDICanvas::LogControlTest()

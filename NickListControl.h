@@ -1,6 +1,13 @@
 #ifndef _NickListControl_H
 #define _NickListControl_H
 
+/**
+ * EVT_MENU for right click
+ * EVT_LISTBOX_DCLICK for double click
+ *
+ * Get the nick index via event.GetInt() and
+ * use NickListControl::GetNick() to get the nick
+ */
 class NickListControl : public wxListBox
 {
 
@@ -15,6 +22,13 @@ public:
 	virtual wxString GetNick(int index);
 	virtual int GetCount();
 	virtual int GetNickIndex(const wxString &nick);
+	int GetSelectedIndex();
+
+protected:
+	void OnRightUp(wxMouseEvent &event);
+
+private:
+	DECLARE_EVENT_TABLE()
 
 };
 

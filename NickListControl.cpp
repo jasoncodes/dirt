@@ -9,6 +9,10 @@
 #include "NickListControl.h"
 #include "util.h"
 
+BEGIN_EVENT_TABLE(NickListControl, wxListBox)
+	EVT_RIGHT_UP(NickListControl::OnRightUp)
+END_EVENT_TABLE()
+
 NickListControl::NickListControl(wxWindow *parent, int id)
 	: wxListBox(
 		parent, id,
@@ -56,10 +60,27 @@ void NickListControl::Clear()
 
 wxString NickListControl::GetNick(int index)
 {
-	return GetString(index);
+	return wxListBox::GetString(index);
+}
+
+int NickListControl::GetSelectedIndex()
+{
+	return wxListBox::GetSelection();
 }
 
 int NickListControl::GetCount()
 {
 	return wxListBox::GetCount();
+}
+
+void NickListControl::OnRightUp(wxMouseEvent &event)
+{
+	if (GetSelectedIndex() > -1)
+	{
+		wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+		evt.SetId(GetId());
+		evt.SetInt(GetSelectedIndex());
+		evt.SetString(GetNick(GetSelectedIndex()));
+		ProcessEvent(evt);
+	}
 }

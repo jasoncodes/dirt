@@ -40,6 +40,7 @@ protected:
 	void OnInputEnter(wxCommandEvent &event);
 	void OnLinkClicked(wxCommandEvent &event);
 	void OnNickListDblClick(wxCommandEvent &event);
+	void OnNickListMenu(wxCommandEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnActivate();
