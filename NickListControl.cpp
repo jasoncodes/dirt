@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.12 2003-02-27 05:20:44 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.13 2003-02-27 05:27:10 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
@@ -69,7 +69,7 @@ bool NickListControl::SetAway(const wxString &nick, bool away)
 	int index = GetNickIndex(nick);
 	if (index > -1)
 	{
-		wxListBox::SetString(index, GetNick(index) + (away?AwayPostfix:wxEmptyString));
+		wxListBox::SetString(index, GetNick(index) + (away?AwayPostfix:(const wxString)wxEmptyString));
 		return true;
 	}
 	else
