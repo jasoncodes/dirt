@@ -1,3 +1,4 @@
 main icon moveable pure "res/dirt.ico"
+1 24 "res/manifest.xml"
 hand cursor discardable "res/hand.cur"
 #include "wx/msw/wx.rc"

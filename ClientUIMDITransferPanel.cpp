@@ -19,6 +19,12 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	long style)
 	: wxPanel(canvas, id, pos, size, style)
 {
+	m_canvas = canvas;
+	m_gauge = new wxGauge(
+		this, -1, 100,
+		wxPoint(32,64), wxSize(256, 24),
+		wxGA_SMOOTH | wxNO_BORDER);
+	m_gauge->SetValue(50);
 }
 
 ClientUIMDITransferPanel::~ClientUIMDITransferPanel()
