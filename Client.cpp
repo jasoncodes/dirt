@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.49 2003-04-12 11:25:39 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.50 2003-04-18 09:34:44 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -477,7 +477,14 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		bool bIsAlias = (cmd == wxT("ALIAS"));
 		if (ht.head.Length())
 		{
-			bool b = bIsAlias ? SetAlias(ht.head, ht.tail) : SetBinding(ht.head, ht.tail);
+			int index = bIsAlias ? -1 : GetValidBindNames().Index(ht.head.Upper());
+			if (index > -1)
+			{
+				ht.head = GetValidBindNames().Item(index);
+			}
+			bool b = bIsAlias ?
+				SetAlias(ht.head, ht.tail) :
+				((index > -1) && SetBinding(ht.head, ht.tail));
 			if (b)
 			{
 				m_event_handler->OnClientInformation(context, ht.head + wxT(" = ") + (ht.tail.Length()?(wxT('"')+ht.tail+wxT('"')):wxString(wxT("(Nothing)"))));
@@ -1032,6 +1039,21 @@ wxArrayString Client::GetBindingList() const
 	}
 	m_config.GetConfig()->SetPath(old_path);
 	return list;
+}
+
+wxArrayString Client::GetValidBindNames() const
+{
+	static wxArrayString names;
+	if (!names.GetCount())
+	{
+		WX_APPEND_ARRAY(names, SplitString(wxT(""), wxT(" ")));
+		for (size_t i = 1; i <= 12; ++i)
+		{
+			names.Add(wxString() << wxT('F') << i);
+		}
+		names.Sort();
+	}
+	return names;
 }
 
 wxString Client::GetBinding(const wxString &name) const

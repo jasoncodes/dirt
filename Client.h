@@ -88,6 +88,7 @@ public:
 	virtual wxString GetAlias(const wxString &name) const;
 	virtual bool SetAlias(const wxString &name, const wxString &value);
 	wxArrayString GetBindingList() const;
+	wxArrayString GetValidBindNames() const;
 	virtual wxString GetBinding(const wxString &name) const;
 	virtual bool SetBinding(const wxString &name, const wxString &value);
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
