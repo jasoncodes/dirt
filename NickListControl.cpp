@@ -72,7 +72,7 @@ int NickListControl::GetSelectedIndex()
 wxString NickListControl::GetSelectedNick()
 {
 	int index = GetSelectedIndex();
-	return (index > -1) ? GetNick(index) : wxEmptyString;
+	return (index > -1) ? GetNick(index) : "";
 }
 
 int NickListControl::GetCount()
