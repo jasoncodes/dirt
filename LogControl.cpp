@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.26 2003-03-10 08:26:07 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.27 2003-03-12 07:33:17 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1400,8 +1400,24 @@ bool LogControl::IsEmail(const wxString &token)
 
 wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 {
-	static const wxString delims = wxT("\t\r\n '\"<>()");
-	wxStringTokenizer st(text, delims, wxTOKEN_RET_DELIMS);
+
+	const wxString char1 = wxT("\x0fe");
+	const wxString char2 = wxT("\x0ff");
+
+	wxString delims = wxT("\t\r\n '\"<>()");
+
+	wxString tmp(text);
+
+	bool ltgt_fix = (tmp.Index(char1) == -1) && (tmp.Index(char2) == -1);
+
+	if (ltgt_fix)
+	{
+		tmp.Replace(wxT("&lt;"), char1);
+		tmp.Replace(wxT("&gt;"), char2);
+		delims += char1 + char2;
+	}
+
+	wxStringTokenizer st(tmp, delims, wxTOKEN_RET_DELIMS);
 
 	wxString output;
 
@@ -1471,6 +1487,12 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 	if (st.GetString().Length() > 0)
 	{
 		output += st.GetString();
+	}
+
+	if (ltgt_fix)
+	{
+		output.Replace(char1, wxT("&lt;"));
+		output.Replace(char2, wxT("&gt;"));
 	}
 
 	return output;

@@ -40,7 +40,9 @@
 
 * replace server log window w/ logcontrol
 
-* < and > around URLs not working
+* KDE tray icon code sometimes causes "Xlib: unexpected async reply (sequence 0x2f2)!"
+  or similar and freezes the GTK thread app. seems to always happen when moving mouse
+  over tray icon when the icon changes
 
 * client side ping
 * /bind
