@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.7 2003-03-19 07:08:21 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.8 2003-03-19 07:11:06 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -201,7 +201,7 @@ ByteBuffer LogReader::GetTextHelper()
 	else
 	{
 		wxFAIL_MSG(wxT("Text entry must be at least 4 bytes"));
-		return wxEmptyString;
+		return ByteBuffer();
 	}
 }
 
