@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.48 2003-06-12 07:26:08 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.49 2003-06-12 12:57:06 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1335,7 +1335,9 @@ void LogControl::Clear()
     parser.SetDC(dc);
 	m_Cell = (wxHtmlContainerCell*)parser.Parse(wxT(""));
 	delete dc;
+	CreateLayout();
 	ScrollToBottom();
+	Refresh();
 }
 
 void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool red_line)
