@@ -254,27 +254,27 @@ SOURCE=.\SwitchBarParent.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestApp.cpp
+SOURCE=.\Dirt.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestApp.h
+SOURCE=.\Dirt.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestCanvas.cpp
+SOURCE=.\ClientUIMDICanvas.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestCanvas.h
+SOURCE=.\ClientUIMDICanvas.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestFrame.cpp
+SOURCE=.\ClientUIMDIFrame.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TestFrame.h
+SOURCE=.\ClientUIMDIFrame.h
 # End Source File
 # Begin Source File
 
