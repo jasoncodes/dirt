@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.35 2003-05-18 09:05:48 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.36 2003-05-20 16:43:39 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -1157,7 +1157,7 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 
 		if (sck->Ok() && !sck->IsSendBufferFull() && t.m_pos < t.filesize)
 		{
-			const off_t max_block_size = 4096;
+			const off_t max_block_size = 512;
 			off_t block_size = wxMin(t.filesize - t.m_pos, max_block_size);
 			wxASSERT(block_size > 0);
 			ByteBuffer buff(block_size);
