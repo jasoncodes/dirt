@@ -4,6 +4,7 @@
 #include <wx/datetime.h>
 #include "util.h"
 #include <wx/wave.h>
+#include "LogWriter.h"
 
 //////// ServerEventHandler ////////
 
@@ -198,6 +199,8 @@ protected:
 	#if wxUSE_WAVE
 		wxWave m_wave;
 	#endif
+	LogWriter m_log;
+	bool m_log_warning_given;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.37 2003-03-16 12:24:21 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.38 2003-03-19 12:21:30 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -385,7 +385,8 @@ BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
 
 Server::Server(ServerEventHandler *event_handler)
-	: wxEvtHandler(), m_event_handler(event_handler)
+	: wxEvtHandler(), m_event_handler(event_handler),
+	m_log(LogWriter::GenerateFilename(wxT("Server"), LogWriter::GenerateNewLogDate(wxT("Server")))), m_log_warning_given(false)
 {
 	m_connections.Alloc(10);
 	m_config = new ServerConfig;
@@ -409,6 +410,15 @@ void Server::Information(const wxString &line)
 			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
 		}
 	}
+	if (m_log.Ok())
+	{
+		m_log.AddText(line, *wxBLACK, false);
+	}
+	else if (!m_log_warning_given)
+	{
+		m_log_warning_given = true;
+		Warning("Error writing log file");
+	}
 }
 
 void Server::Warning(const wxString &line)
@@ -421,6 +431,15 @@ void Server::Warning(const wxString &line)
 		{
 			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
 		}
+	}
+	if (m_log.Ok())
+	{
+		m_log.AddText(line, *wxRED, false);
+	}
+	else if (!m_log_warning_given)
+	{
+		m_log_warning_given = true;
+		Warning("Error writing log file");
 	}
 }
 

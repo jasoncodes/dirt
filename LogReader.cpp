@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.11 2003-03-19 10:45:16 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.12 2003-03-19 12:21:29 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -110,7 +110,7 @@ bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDate
 
 bool LogReader::Ok() const
 {
-	return m_file.IsOpened() && !m_file.Error();
+	return m_file.IsOpened();
 }
 
 ByteBuffer LogReader::GetPublicKey()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.7 2003-03-19 11:54:49 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.8 2003-03-19 12:21:29 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -14,6 +14,10 @@ RCS_ID($Id: LogWriter.cpp,v 1.7 2003-03-19 11:54:49 jason Exp $)
 
 LogWriter::LogWriter(const wxString &filename)
 {
+	wxLogNull supress_log;
+	wxFileName fn(filename);
+	wxString dir = fn.GetPath(wxPATH_GET_VOLUME);
+	wxFileName::Mkdir(dir, 0077, wxPATH_MKDIR_FULL);
 	m_file.Open(filename, wxFile::write_append);
 }
 
@@ -39,7 +43,7 @@ wxString LogWriter::GenerateFilename(const wxString &prefix, const wxDateTime &d
 
 bool LogWriter::Ok() const
 {
-	return m_file.IsOpened() && !m_file.Error();
+	return m_file.IsOpened();
 }
 
 void LogWriter::SetPublicKey(const ByteBuffer &public_key)
@@ -104,6 +108,7 @@ void LogWriter::Write(const ByteBuffer &data)
 	ByteBuffer tmp = Uint16ToBytes(data.Length()) + data;
 	m_file.SeekEnd();
 	m_file.Write(tmp.LockRead(), tmp.Length());
+	m_file.Flush();
 	tmp.Unlock();
 }
 
