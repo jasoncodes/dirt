@@ -1,1 +1,4 @@
 WINDRES := $(WINDRES) $(subst -I,--include-dir=,$(CXXINCS)) --include-dir=$(WXWIN)\include --include-dir=$(WXWIN)\lib\gcc_mswu
+
+all-before:
+	if not exist UnicodeRelease mkdir UnicodeRelease

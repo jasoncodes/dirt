@@ -1,0 +1,2 @@
+all-before:
+	if not exist Release mkdir Release
