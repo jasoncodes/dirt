@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.17 2004-06-03 06:07:46 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.18 2004-06-06 11:07:33 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -329,7 +329,7 @@ public:
 		last_set_okay = true;
 	}
 
-    void OnMouse(wxEvent &event)
+    void OnMouse(wxTaskBarIconEvent &event)
 	{
 
 		wxEventType src_type = event.GetEventType();

@@ -106,8 +106,7 @@ extern const wxEventType wxEVT_CONFIG_FILE_CHANGED;
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_CONFIG_FILE_CHANGED, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(wxCommandEventFunction) & func, \
+		wxStaticCastEvent( wxCommandEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 class Config

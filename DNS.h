@@ -128,8 +128,7 @@ typedef void (wxEvtHandler::*DNSEventFunction)(DNSEvent&);
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_DNS, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(DNSEventFunction) & func, \
+		wxStaticCastEvent( DNSEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif

@@ -136,8 +136,7 @@ typedef void (wxEvtHandler::*ClientTimersEventFunction)(ClientTimersEvent&);
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_CLIENT_TIMERS, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(ClientTimersEventFunction) & func, \
+		wxStaticCastEvent( ClientTimersEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif

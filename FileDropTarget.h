@@ -107,8 +107,7 @@ typedef void (wxEvtHandler::*FileDropEventFunction)(FileDropEvent&);
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_FILE_DROP, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(FileDropEventFunction) & func, \
+		wxStaticCastEvent( FileDropEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif

@@ -278,8 +278,7 @@ typedef void (wxEvtHandler::*CryptSocketEventFunction)(CryptSocketEvent&);
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_CRYPTSOCKET, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(CryptSocketEventFunction) & func, \
+		wxStaticCastEvent( CryptSocketEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif

@@ -40,7 +40,7 @@
 
 extern const wxEventType wxEVT_COMMAND_MIDDLE_CLICK;
 
-#define EVT_MIDDLE_CLICK(winid, fn) DECLARE_EVENT_TABLE_ENTRY( wxEVT_COMMAND_MIDDLE_CLICK, winid, wxID_ANY, (wxObjectEventFunction) (wxEventFunction) (wxCommandEventFunction) & fn, (wxObject *) NULL ),
+#define EVT_MIDDLE_CLICK(winid, fn) DECLARE_EVENT_TABLE_ENTRY( wxEVT_COMMAND_MIDDLE_CLICK, winid, wxID_ANY, (wxObjectEventFunction) wxStaticCastEvent( wxCommandEventFunction, &fn ), (wxObject *) NULL ),
 
 struct SwitchBarButton;
 WX_DECLARE_OBJARRAY(SwitchBarButton, SwitchBarButtonArray);

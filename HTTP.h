@@ -241,8 +241,7 @@ typedef void (wxEvtHandler::*HTTPEventFunction)(HTTPEvent&);
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_HTTP, id, -1, \
 		(wxObjectEventFunction) \
-		(wxEventFunction) \
-		(HTTPEventFunction) & func, \
+		wxStaticCastEvent( HTTPEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif

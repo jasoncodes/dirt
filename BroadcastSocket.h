@@ -117,7 +117,7 @@ typedef void (wxEvtHandler::*BroadcastSocketEventFunction)(BroadcastSocketEvent&
 		wxEVT_BROADCAST_SOCKET, id, -1, \
 		(wxObjectEventFunction) \
 		(wxEventFunction) \
-		(BroadcastSocketEventFunction) & func, \
+		wxStaticCastEvent( BroadcastSocketEventFunction, &func ), \
 		(wxObject *) NULL ),
 
 #endif
