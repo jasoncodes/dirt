@@ -20,8 +20,13 @@ ClientDefault::~ClientDefault()
 
 void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 {
-	m_event_handler->OnClientDebug(nick, 
-		wxString() << "Send \"" <<
-		message << "\" to " <<
-		(nick.Length() == 0 ? "[everyone]" : nick));
+	bool is_private = (nick.Length() > 0);
+	m_event_handler->OnClientMessageOut(nick, message);
+	m_event_handler->OnClientMessageIn(is_private?nick:"EVERYONE", 
+		"You sent me \"" + message + "\"", is_private);
+}
+
+wxString ClientDefault::GetNickname()
+{
+	return "LOCALHOST";
 }

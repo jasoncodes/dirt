@@ -11,6 +11,7 @@ public:
 	virtual ~ClientDefault();
 
 	virtual void SendMessage(const wxString &nick, const wxString &message);
+	virtual wxString GetNickname();
 
 };
 

@@ -187,3 +187,15 @@ void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxStri
 {
 	AddLine(context, "* " + text, wxColour(0,0,128));
 }
+
+void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
+{
+	AddLine(nick, "<" + m_client->GetNickname() + "> " + text);
+}
+
+void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)
+{
+	wxString context = is_private ? nick : wxEmptyString;
+	AddLine(context, "<" + nick + "> " + text);
+}
+

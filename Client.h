@@ -9,6 +9,8 @@ public:
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientInformation(const wxString &context, const wxString &text) = 0;
+	virtual void OnClientMessageOut(const wxString &nick, const wxString &text) = 0;
+	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private) = 0;
 
 };
 
@@ -23,6 +25,8 @@ public:
 	virtual void Debug(const wxString &context, const wxString &text);
 
 	virtual void SendMessage(const wxString &nick, const wxString &message) = 0;
+
+	virtual wxString GetNickname() = 0;
 
 protected:
 	ClientEventHandler *m_event_handler;
