@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.11 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.12 2003-04-12 03:35:24 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
@@ -36,7 +36,7 @@ SwitchBarChild::SwitchBarChild(
 	m_canvas = canvas;
 
 	SetIcon(canvas->GetIcon());
-	canvas->SetSize(GetClientSize());
+	//canvas->SetSize(GetClientSize());
 	canvas->Reparent(this);
 	canvas->OnAttach();
 
@@ -99,10 +99,10 @@ void SwitchBarChild::OnSize(wxSizeEvent& event)
 
 	m_parent->UpdateWindowMenu();
 
-	if (GetSize().x > 1 && GetSize().y > 1 && IsShown())
+	if (GetClientSize().x > 1 && GetClientSize().y > 1 && IsShown())
 	{
 		m_canvas->Show();
-		event.Skip();
+		m_canvas->SetSize(wxRect(GetClientAreaOrigin(), GetClientSize()));
 	}
 
 	#ifdef __WXMSW__
