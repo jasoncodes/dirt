@@ -6,14 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.13 2003-03-19 14:52:33 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.14 2003-03-19 17:23:20 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
 
 LogReader::LogReader(const wxString &filename)
 {
-	if (m_file.Open(filename))
+	if (m_file.Open(filename) && Ok())
 	{
 		m_first_pass = true;
 		Reset();
