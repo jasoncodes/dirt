@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.9 2003-03-19 12:38:45 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.10 2003-03-21 07:43:06 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -70,7 +70,9 @@ void LogWriter::SetProperty(const wxString &name, const ByteBuffer &value)
 {
 	if (GetProperty(name) != value)
 	{
-		ByteBuffer data = Uint16ToBytes(name.Length()) + ByteBuffer(name) + Uint16ToBytes(value.Length()) + value;
+		ByteBuffer name_buff(name);
+		ByteBuffer value_buff(value);
+		ByteBuffer data = Uint16ToBytes(name_buff.Length()) + name_buff + Uint16ToBytes(value_buff.Length()) + value_buff;
 		if (m_public_key.Length())
 		{
 			data = m_crypt.AESEncrypt(data);
@@ -89,7 +91,8 @@ void LogWriter::AddText(const wxString &line, const wxColour &line_colour, bool 
 	ptr[2] = line_colour.Blue();
 	ptr[3] = (convert_urls ? 1 : 0);
 	data.Unlock();
-	data = Uint16ToBytes(data.Length()) + data + Uint16ToBytes(line.Length()) + ByteBuffer(line);
+	ByteBuffer line_buff(line);
+	data = Uint16ToBytes(data.Length()) + data + Uint16ToBytes(line_buff.Length()) + line_buff;
 	if (m_public_key.Length())
 	{
 		data = m_crypt.AESEncrypt(data);
