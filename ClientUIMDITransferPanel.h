@@ -21,6 +21,8 @@ protected:
 
 protected:
 	wxStaticText *AddRow(const wxString &caption, const wxString &value = wxEmptyString);
+	void UpdateCaption();
+	bool IsSend();
 
 protected:
 	ClientUIMDICanvas *m_canvas;

@@ -5,7 +5,7 @@
 
 class SwitchBarParent;
 
-class SwitchBarChild: public wxMDIChildFrame
+class SwitchBarChild : public wxMDIChildFrame
 {
 
 public:

@@ -1,8 +1,7 @@
 #ifndef SwitchBarCanvas_H_
 #define SwitchBarCanvas_H_
 
-class SwitchBarParent;
-class SwitchBarChild;
+#include "SwitchBarParent.h"
 
 class SwitchBarCanvas : public wxPanel
 {
@@ -25,6 +24,8 @@ public:
 	virtual void OnAttach() {}
 	virtual void OnDetach() {}
 	virtual void OnActivate() {}
+
+	SwitchBar* GetSwitchBar() { return m_parent->GetSwitchBar(); }
 
 protected:
 	bool saved_state_maximized;

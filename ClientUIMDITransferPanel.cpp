@@ -23,7 +23,12 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 
 	m_canvas = canvas;
 
-	m_lblType = new wxStaticText(this, wxID_ANY, "DCC Send Session", wxPoint(8,8));
+	UpdateCaption();
+
+	m_lblType = new wxStaticText(
+		this, wxID_ANY,
+		wxString() << "DCC " << (IsSend()?"Send":"Get") << " Session",
+		wxPoint(8,8));
 
 	m_pnlLeft = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
 	m_pnlRight = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
@@ -58,7 +63,11 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 		this, -1, 100,
 		wxDefaultPosition, wxSize(256, 24),
 		wxGA_SMOOTH | wxNO_BORDER);
+
 	m_gauge->SetValue(66);
+	int button_index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
+	canvas->GetSwitchBar()->SetButtonProgress(button_index, 66);
+
 
 }
 
@@ -94,4 +103,28 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 
 	m_gauge->SetSize(8, gauge_y, size.x - 16, gauge_height);
 
+}
+
+void ClientUIMDITransferPanel::UpdateCaption()
+{
+	wxString caption;
+	caption += IsSend() ? "Send " : "Get ";
+	caption += "Jason";
+	caption += ' ';
+	caption += "Dirt.exe";
+	m_canvas->SetTitle(caption);
+}
+
+bool ClientUIMDITransferPanel::IsSend()
+{
+	switch (m_canvas->GetType())
+	{
+		case TransferSendCanvas:
+			return true;
+		case TransferReceiveCanvas:
+			return false;
+		default:
+			wxFAIL_MSG("Unrecognized Canvas Type");
+			return false;
+	}
 }

@@ -220,10 +220,8 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == "TEST2")
 	{
-		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "Send Jason Dirt.exe", TransferSendCanvas);
+		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, TransferSendCanvas);
 		NewWindow(canvas, true);
-		int button_index = m_switchbar->GetIndexFromUserData(canvas);
-		m_switchbar->SetButtonProgress(button_index, 66);
 		return true;
 	}
 	else if (cmd == "QUERY")

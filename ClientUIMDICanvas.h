@@ -32,6 +32,7 @@ public:
 
 	LogControl* GetLog() { return m_txtLog; }
 	NickListControl* GetNickList() { return m_lstNickList; }
+	ClientUIMDITransferPanel* GetTransferPanel() { return m_pnlTransfer; }
 
 	void LogControlTest();
 

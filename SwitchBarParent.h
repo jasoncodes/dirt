@@ -2,7 +2,9 @@
 #define SwitchBarParent_H_
 
 #include "SwitchBar.h"
-#include "SwitchBarChild.h"
+
+class SwitchBarChild;
+class SwitchBarCanvas;
 
 class SwitchBarParent : public wxMDIParentFrame
 {
