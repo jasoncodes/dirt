@@ -102,6 +102,9 @@ protected:
 	void ListenToInput(wxWindow *wnd);
 
 protected:
+	void SetChildrenHelper(int sash_width, const wxSize &size);
+
+protected:
 	CanvasType m_type;
 
 	LogControl *m_txtLog;

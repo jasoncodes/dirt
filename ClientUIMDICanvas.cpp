@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.68 2004-06-14 01:46:47 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.69 2004-06-14 02:47:47 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -456,42 +456,16 @@ void ClientUIMDICanvas::ResizeChildren()
 		if (m_sash)
 		{
 
-			static const int min_width_nick = 96;
-			static const int min_width_log = 64;
-			
-			m_sash->SetMinimumSizeX(min_width_nick);
-			m_sash->SetMaximumSizeX(size.x - min_width_log);
+			int sash_width = m_sash->GetSize().x;
 
-			int nick_width = m_sash->GetSize().x;
-			int log_width = size.x - nick_width;
-			
-			if (log_width < min_width_log)
-			{
-				log_width = min_width_log;
-				nick_width = size.x - log_width;
-			}
+			SetChildrenHelper(sash_width, size);
 
-			if (nick_width < min_width_nick)
-			{
-				nick_width = min_width_nick;
-				log_width = size.x - nick_width;
-			}
-
-			if (log_width < min_width_log)
-			{
-				log_width = min_width_log;
-			}
-
-			int nick_left = size.x - nick_width;
-
-			m_txtLog->SetSize(nick_left - log_width, 0, log_width, log_height);
-			m_sash->SetSize(nick_left, 0, nick_width, log_height);
-			int desired_width = nick_width - m_sash->GetDefaultBorderSize();
-			m_lstNickList->SetSize(m_sash->GetDefaultBorderSize(), 0, desired_width, log_height);
+			int desired_width = sash_width - m_sash->GetDefaultBorderSize();
 			int actual_width = m_lstNickList->GetSize().x;
 			if (actual_width != desired_width)
 			{
-				ResizeChildren();
+				sash_width += actual_width - desired_width;
+				SetChildrenHelper(sash_width, size);
 			}
 
 		}
@@ -503,6 +477,50 @@ void ClientUIMDICanvas::ResizeChildren()
 		}
 
 	}
+
+}
+
+void ClientUIMDICanvas::SetChildrenHelper(int sash_width, const wxSize &size)
+{
+
+	int log_width = size.x - sash_width;
+
+		int input_height = 
+			m_txtInput->GetBestSize().y;
+
+		int log_height =
+			size.y -
+			input_height;
+
+	static const int min_width_sash = 96;
+	static const int min_width_log = 64;
+			
+	m_sash->SetMinimumSizeX(min_width_sash);
+	m_sash->SetMaximumSizeX(size.x - min_width_log);
+
+	if (log_width < min_width_log)
+	{
+		log_width = min_width_log;
+		sash_width = size.x - log_width;
+	}
+
+	if (sash_width < min_width_sash)
+	{
+		sash_width = min_width_sash;
+		log_width = size.x - sash_width;
+	}
+
+	if (log_width < min_width_log)
+	{
+		log_width = min_width_log;
+	}
+
+	int nick_left = size.x - sash_width;
+
+	m_txtLog->SetSize(nick_left - log_width, 0, log_width, log_height);
+	m_sash->SetSize(nick_left, 0, sash_width, log_height);
+	int desired_width = sash_width - m_sash->GetDefaultBorderSize();
+	m_lstNickList->SetSize(m_sash->GetDefaultBorderSize(), 0, desired_width, log_height);
 
 }
 
