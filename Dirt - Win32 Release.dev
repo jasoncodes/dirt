@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINV
 Includes=
 Linker=-lwxmswu -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib_@@_
 Libs=crypto\Release\
-UnitCount=79
+UnitCount=81
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Release_private.rc
@@ -834,4 +834,24 @@ OriginalFilename=Dirt - Win32 Release.exe
 ProductName=Dirt
 ProductVersion=0.1
 AutoIncBuildNr=0
+
+[Unit80]
+FileName=ClientTimers.cpp
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit81]
+FileName=ClientTimers.h
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 

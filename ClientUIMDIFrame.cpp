@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.91 2003-04-03 04:48:02 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.92 2003-04-03 05:52:35 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -1037,7 +1037,7 @@ void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 			if (hMenu == (HMENU)wParam)
 			{
 				MENUITEMINFO mii;
-				mii.cbSize = sizeof MENUITEMINFO;
+				mii.cbSize = sizeof (MENUITEMINFO);
 				mii.fMask = 0;
 				if (GetMenuItemInfo(hMenu, 0x1400, FALSE, &mii))
 				{

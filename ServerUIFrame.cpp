@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.50 2003-04-03 05:06:31 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.51 2003-04-03 05:52:36 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -15,6 +15,10 @@ RCS_ID($Id: ServerUIFrame.cpp,v 1.50 2003-04-03 05:06:31 jason Exp $)
 #include "InputControl.h"
 #include "util.h"
 #include "TrayIcon.h"
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 #include "res/dirt.xpm"
 #include "res/disabled.xpm"
@@ -597,7 +601,7 @@ void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
 			if (hMenu == (HMENU)wParam)
 			{
 				MENUITEMINFO mii;
-				mii.cbSize = sizeof MENUITEMINFO;
+				mii.cbSize = sizeof (MENUITEMINFO);
 				mii.fMask = 0;
 				if (GetMenuItemInfo(hMenu, 0x1400, FALSE, &mii))
 				{
