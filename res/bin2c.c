@@ -7,6 +7,7 @@ int main(int argc, char **argv)
 	
 	FILE *f;
 	char buff[80];
+	char id[80];
 	int count = 0;
 	int c;
 	size_t i;
@@ -25,16 +26,16 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(buff, argv[1]);
-	for (i = 0; i < strlen(buff); ++i)
+	strcpy(id, argv[1]);
+	for (i = 0; i < strlen(id); ++i)
 	{
-		if (!isalnum(buff[i]))
+		if (!isalnum(id[i]))
 		{
-			buff[i] = '_';
+			id[i] = '_';
 		}
 	}
 
-	printf("const char *%s = \n", buff);
+	printf("const char *%s = \n", id);
 
 	buff[0] = 0;
 
@@ -63,9 +64,8 @@ int main(int argc, char **argv)
 
 	fclose(f);
 
-	printf("\t\"%s\"\n" ,buff);
-
-	printf("; /* %s, %d bytes */\n", argv[1], count);
+	printf("\t\"%s\";\n" ,buff);
+	printf("size_t %s_len = %d;\n", id, count);
 
 	return 0;
 
