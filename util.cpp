@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.99 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.100 2004-07-19 18:27:51 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -37,6 +37,7 @@ RCS_ID($Id: util.cpp,v 1.99 2004-07-19 09:35:35 jason Exp $)
 #include <wx/mimetype.h>
 #include <wx/confbase.h>
 #include <wx/filename.h>
+#include <stdio.h>
 
 #if defined(__WXMSW__)
 	#include <windows.h>
@@ -853,4 +854,32 @@ void DebugMsg(const wxString &msg)
 #else
 	wxFputs(line.c_str(), stderr);
 #endif
+}
+
+void ConsoleOutput(const wxString &line)
+{
+	#ifdef __WXMSW__
+		wxPuts(line);
+	#else
+		wxCharBuffer buff = line.mb_str(wxConvLibc);
+		if (!buff)
+		{
+			buff = wxCharBuffer(line.Length()+1);
+			char *ptr = buff.data();
+			for (size_t i = 0; i < line.Length(); ++i)
+			{
+				if ((unsigned int)line[i] < 256u)
+				{
+					ptr[i] = (unsigned char)line[i];
+				}
+				else
+				{
+					ptr[i] = '?';
+				}
+			}
+			ptr[line.Length()] = 0;
+		}
+		puts(buff);
+	#endif
+	fflush(stdout);
 }

@@ -93,5 +93,6 @@ bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x);
 wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value, const wxString &new_value);
 wxString GetOSDescription();
 void DebugMsg(const wxString &msg);
+void ConsoleOutput(const wxString &line);
 
 #endif

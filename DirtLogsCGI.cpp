@@ -28,10 +28,46 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.1 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.2 2004-07-19 18:27:51 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <wx/filename.h>
+#include <wx/fileconf.h>
+#include <wx/dir.h>
+
+#include "util.h"
+
+#ifdef wxPuts
+#undef wxPuts
+#endif
+#define wxPuts ConsoleOutput
+
+wxString GetConfigFilename()
+{
+	wxFileName fn(GetSelf());
+	fn.SetFullName(wxT("dirt.ini"));
+	if (fn.FileExists())
+	{
+		return fn.GetFullPath();
+	}
+	return wxFileConfig::GetLocalFileName(wxT("dirt"));
+}
+
+wxString GetLogDirectory()
+{
+
+	wxFileConfig cfg(GetConfigFilename());
+
+	// todo: check ini file for custom location
+	// ConfigFile.cpp has source
+
+	wxFileName fn(GetConfigFilename());
+	fn.SetName(wxT("dirtlogs/"));
+	return fn.GetFullPath();
+
+}
 
 int main(int argc, char **argv)
 {
@@ -44,12 +80,31 @@ int main(int argc, char **argv)
 	wxInitializer initializer;
 	if ( !initializer )
 	{
-		fprintf(stderr, "Error initializing wxWidgets");
+		fprintf(stderr, "Error initializing wxWidgets.");
 		return EXIT_FAILURE;
 	}
 
-	puts("Testing");
-	
+	wxString logdir = GetLogDirectory();
+
+	if (logdir.Length() == 0)
+	{
+		fprintf(stderr, "Logging is disabled.");
+		return EXIT_FAILURE;
+	}
+
+	wxPuts(wxString() << wxT("Log directory: ") << logdir);
+
+	wxArrayString files;
+	wxDir::GetAllFiles(logdir, &files, wxT("*.dirtlog"));
+
+	if (files.GetCount() == 0)
+	{
+		fprintf(stderr, "No log files found.");
+		return EXIT_FAILURE;
+	}
+
+	wxPuts(wxString() << files.GetCount());
+
 	return EXIT_SUCCESS;
 	
 }

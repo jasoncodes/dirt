@@ -28,10 +28,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.20 2004-06-07 17:40:52 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.21 2004-07-19 18:27:51 jason Exp $)
 
 #include "Console.h"
-#include <stdio.h>
+#include "util.h"
 #ifdef __WXMSW__
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
@@ -284,28 +284,5 @@ void Console::ExitMainLoop()
 
 void Console::Output(const wxString &line)
 {
-	#ifdef __WXMSW__
-		wxPuts(line);
-	#else
-		wxCharBuffer buff = line.mb_str(wxConvLibc);
-		if (!buff)
-		{
-			buff = wxCharBuffer(line.Length()+1);
-			char *ptr = buff.data();
-			for (size_t i = 0; i < line.Length(); ++i)
-			{
-				if ((unsigned int)line[i] < 256u)
-				{
-					ptr[i] = (unsigned char)line[i];
-				}
-				else
-				{
-					ptr[i] = '?';
-				}
-			}
-			ptr[line.Length()] = 0;
-		}
-		puts(buff);
-	#endif
-	fflush(stdout);
+	ConsoleOutput(line);
 }
