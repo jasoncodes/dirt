@@ -1,0 +1,2 @@
+main icon moveable pure "res/dirt.ico"
+#include "wx/msw/wx.rc"

@@ -1,0 +1,14 @@
+* logcontrol: flickering when resizing
+
+* inputcontrol: when colour popup shows on GTK (and possibly other
+  non-win32s) we seem to not be able to programmically give focus back to
+  main window. Presently if an error occurs focusing the main window, the
+  popup will be closed so the app is still usable but the popup will be
+  unavailable.
+
+* need a portable way open a URL
+  ShellExecute works good on Win32, but what about others?
+
+
+currently working on console client ui for win32
+(and hopefully automaticly linux w/ the help of a virtual x server)

@@ -1,0 +1,1344 @@
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
+	#include "wx/wx.h"
+#endif
+
+#include <wx/image.h>
+#include <wx/sysopt.h>
+#include <wx/html/winpars.h>
+#include <wx/tokenzr.h>
+#include <ctype.h>
+#include <wx/clipbrd.h>
+
+#include "LogControl.h"
+#include "SpanTag.h"
+#include "Modifiers.h"
+
+
+struct ModifierParserTag
+{
+	bool active;
+	const wxString name;
+
+	ModifierParserTag(const wxString &the_name, bool initially_active = false)
+		: name(the_name), active(initially_active)
+	{
+	}
+};
+
+struct ModifierParserTagEntry
+{
+	
+	ModifierParserTag &tag;
+	wxString attribs;
+
+	ModifierParserTagEntry(ModifierParserTag &the_tag, const wxString &the_attribs)
+		: tag(the_tag), attribs(the_attribs)
+	{
+	}
+};
+
+#include <wx/dynarray.h>
+#include <wx/arrimpl.cpp>
+
+WX_DECLARE_OBJARRAY(ModifierParserTagEntry, ModifierParserTagEntryArray);
+WX_DEFINE_OBJARRAY(ModifierParserTagEntryArray);
+
+class ModifierParserTagEntryStack
+{
+
+public:
+	ModifierParserTagEntryStack(size_t count = 10)
+	{
+		m_entries.Alloc(count);
+	}
+
+	void Push(ModifierParserTagEntry item)
+	{
+		m_entries.Add(item);
+	}
+
+	ModifierParserTagEntry Pop()
+	{
+		wxASSERT_MSG(!m_entries.IsEmpty(), "Stack is empty");
+		ModifierParserTagEntry item = m_entries.Last();
+		m_entries.RemoveAt(m_entries.GetCount() - 1);
+		return item;
+	}
+
+	bool IsEmpty()
+	{
+		return m_entries.IsEmpty();
+	}
+
+	void Empty()
+	{
+		m_entries.Empty();
+	}
+
+protected:
+	ModifierParserTagEntryArray m_entries;
+
+};
+
+static wxString ColourToString(const wxColour &clr)
+{
+	return wxString::Format(
+		"#%02x%02x%02x",
+		clr.Red(), clr.Green(), clr.Blue());
+}
+
+static wxString ColourToString(int colour_number)
+{
+	return ColourToString(colours[colour_number % colour_count]);
+}
+
+const bool debug_tags = false;
+
+class ModifierParser
+{
+
+public:
+	ModifierParser()
+		: tagFont("font"), tagSpan("span"), tagBold("b"), tagUnderline("u")
+	{
+		strip_mode = false;
+		ResetAllState();
+	}
+	
+public:
+	bool strip_mode;
+
+protected:
+	wxString result;
+	int colour_pos;
+	bool had_comma;
+	bool last_was_comma;
+	int colour_number[2];
+	bool colour_number_valid[2];
+
+	ModifierParserTagEntryStack tag_stack;
+
+	ModifierParserTag tagFont;
+	ModifierParserTag tagSpan;
+	ModifierParserTag tagBold;
+	ModifierParserTag tagUnderline;
+
+	ModifierParserTagEntryArray reverse_tags;
+	bool reverse_mode;
+
+protected:
+	void ResetAllState()
+	{
+		result.Empty();
+		ResetColourState();
+		tag_stack.Empty();
+		tagFont.active = false;
+		tagSpan.active = false;
+		tagBold.active = false;
+		tagUnderline.active = false;
+		reverse_tags.Empty();
+		reverse_mode = false;
+	}
+
+	void ResetColourState()
+	{
+		colour_pos = 0;
+		had_comma = false;
+		last_was_comma = false;
+		colour_number[0] = 0;
+		colour_number[1] = 0;
+		colour_number_valid[0] = false;
+		colour_number_valid[1] = false;
+	}
+
+	void end_tag_helper(ModifierParserTag &t)
+	{
+		if (!strip_mode)
+		{
+			if (debug_tags)
+			{
+				result << "&lt;/" << t.name << "&gt;";
+			}
+			else
+			{
+				result << "</" << t.name << ">";
+			}
+		}
+	}
+
+	void start_tag_helper(ModifierParserTag &t, const wxString &attribs)
+	{
+		if (!strip_mode)
+		{
+			if (debug_tags)
+			{
+				result << "&lt;" << t.name << " " << attribs << "&gt;";
+			}
+			else
+			{
+				result << "<" << t.name << " " << attribs << ">";
+			}
+		}
+	}
+
+	wxString end_tag(ModifierParserTag &t)
+	{
+		wxString last_attribs = wxEmptyString;
+		if (t.active)
+		{
+			ModifierParserTagEntryStack undo_stack;
+			while (true)
+			{
+				ModifierParserTagEntry entry = tag_stack.Pop();
+				if (entry.tag.name == t.name)
+				{
+					last_attribs = entry.attribs;
+					break;
+				}
+				undo_stack.Push(entry);
+				end_tag_helper(entry.tag);
+			}
+			end_tag_helper(t);
+			t.active = false;
+			while (!undo_stack.IsEmpty())
+			{
+				ModifierParserTagEntry entry = undo_stack.Pop();
+				tag_stack.Push(entry);
+				start_tag_helper(entry.tag, entry.attribs);
+			}
+		}
+		return last_attribs;
+	}
+
+	wxString start_tag(ModifierParserTag &t, const wxString attribs = "")
+	{
+		wxString last_attribs = end_tag(t);
+		t.active = true;
+		tag_stack.Push(ModifierParserTagEntry(t, attribs));
+		start_tag_helper(t, attribs);
+		return last_attribs;
+	}
+
+	void toggle_tag(ModifierParserTag &t)
+	{
+		if (t.active)
+		{
+			end_tag(t);
+		}
+		else
+		{
+			start_tag(t);
+		}
+	}
+
+	void CleanupStack()
+	{
+		while (!tag_stack.IsEmpty())
+		{
+			ModifierParserTagEntry entry = tag_stack.Pop();
+			entry.tag.active = false;
+			end_tag_helper(entry.tag);
+		}
+	}
+
+	void start_colour_tag(ModifierParserTag &t, wxString attribs)
+	{
+		if (reverse_mode)
+		{
+			reverse_tags.Add(ModifierParserTagEntry(t, attribs));
+		}
+		else
+		{
+			start_tag(t, attribs);
+		}
+	}
+
+	void end_colour_tag(ModifierParserTag &t)
+	{
+		if (reverse_mode)
+		{
+			reverse_tags.Add(ModifierParserTagEntry(t, ""));
+		}
+		else
+		{
+			end_tag(t);
+		}
+	}
+
+	void EndOfColourCode()
+	{
+		if (colour_pos == 1 && !colour_number_valid[0])
+		{
+			end_colour_tag(tagSpan);
+			end_colour_tag(tagFont);
+		}
+		else if (colour_number_valid[0])
+		{
+			start_colour_tag(tagFont, "color=\"" + ColourToString(colour_number[0]) + "\"");
+			if (colour_number_valid[1])
+			{
+				start_colour_tag(tagSpan, "style=\"background: " + ColourToString(colour_number[1]) + "\"");
+			}
+		}
+		colour_number_valid[0] = false;
+		colour_number_valid[1] = false;
+		colour_pos = 0;
+	}
+
+	void ReverseTag()
+	{
+		reverse_mode = !reverse_mode;
+		if (reverse_mode)
+		{
+			
+			wxString font_attribs = start_tag(tagFont, "color=white");
+			wxString span_attribs = start_tag(tagSpan, "style='background: black'");
+
+			reverse_tags.Empty();
+
+			if (font_attribs.Length() > 0)
+			{
+				reverse_tags.Add(ModifierParserTagEntry(tagFont, font_attribs));
+			}
+			if (span_attribs.Length() > 0)
+			{
+				reverse_tags.Add(ModifierParserTagEntry(tagSpan, span_attribs));
+			}
+
+		}
+		else
+		{
+			end_tag(tagSpan);
+			end_tag(tagFont);
+
+			for (size_t i = 0; i < reverse_tags.GetCount(); ++i)
+			{
+				ModifierParserTagEntry entry = reverse_tags.Item(i);
+				if (entry.attribs.Length() > 0)
+				{
+					start_tag(entry.tag, entry.attribs);
+				}
+				else
+				{
+					end_tag(entry.tag);
+				}
+			}
+		}
+	}
+
+public:
+	wxString Parse(const wxString &text)
+	{
+
+		wxCOMPILE_TIME_ASSERT(modifier_count == 5, UnexpectedNumberOfModifiers);
+
+		ResetAllState();
+		result.Alloc(text.Length() * 3);
+		reverse_tags.Alloc(10);
+
+		for (size_t i = 0; i < text.Length(); ++i)
+		{
+
+			if (colour_pos == 0)
+			{
+				ResetColourState();
+			}
+
+			char c = text[i];
+
+			if ( colour_pos > 0 && // is inside a colour code and
+				( (c == ',' && had_comma) || // is either a 2nd comma
+				  (c != ',' && !isdigit(c)) ) // or a non-valid character
+				)
+			{
+				EndOfColourCode();
+				had_comma = false;
+				if (last_was_comma)
+				{
+					result << ',';
+				}
+			}
+
+			switch(c)
+			{
+
+			case BoldModifier:
+				EndOfColourCode();
+				toggle_tag(tagBold);
+				break;
+
+			case OriginalModifier:
+				EndOfColourCode();
+				CleanupStack();
+				break;
+
+			case ReverseModifier: // not implemented yet
+				EndOfColourCode();
+				ReverseTag();
+				break;
+
+			case UnderlineModifier:
+				EndOfColourCode();
+				toggle_tag(tagUnderline);
+				break;
+
+			case ColourModifier:
+				ResetColourState();
+				colour_pos = 1;
+				break;
+
+			case '1': case '2': case '3':
+			case '4': case '5': case '6':
+			case '7': case '8': case '9':
+			case '0': // isdigit()
+				if (colour_pos > 0)
+				{
+					colour_pos++;
+					if (colour_pos > 3)
+					{
+						EndOfColourCode();
+					}
+					else
+					{
+						int x = had_comma ? 1 : 0;
+						if (!colour_number_valid[x])
+						{
+							colour_number[x] = 0;
+							colour_number_valid[x] = true;
+						}
+						colour_number[x] *= 10;
+						colour_number[x] += (c - '0');
+					}
+				}
+				if (colour_pos == 0)
+				{
+					result << c;
+				}
+				break;
+
+			case ',':
+				if (colour_pos > 0)
+				{
+					if (had_comma)
+					{
+						EndOfColourCode();
+						result << c << c;
+					}
+					else
+					{
+						colour_pos = 1;
+						had_comma = true;
+					}
+				}
+				else
+				{
+					result << c;
+				}
+				break;
+
+			default:
+				EndOfColourCode();
+				result << c;
+				break;
+
+			}
+
+			last_was_comma = (c == ',');
+
+		}
+
+		EndOfColourCode();
+
+		CleanupStack();
+
+		return result;
+
+	}
+
+};
+
+
+bool LogControl::s_bInitDone = false;
+
+LogControl::LogControl(wxWindow *parent, wxWindowID id,
+	const wxPoint& pos, const wxSize& size,
+	bool align_bottom)
+	: wxHtmlWindow(parent, id, pos, size, wxHW_SCROLLBAR_AUTO),
+	m_align_bottom(align_bottom)
+{
+
+
+	if (!s_bInitDone)
+	{
+	
+		#if wxUSE_SYSTEM_OPTIONS
+			wxSystemOptions::SetOption(wxT("no-maskblt"), 1);
+		#endif
+
+		wxInitAllImageHandlers();
+
+		s_bInitDone = true;
+
+	}
+
+	m_tmpMouseMoved = FALSE;
+	s_cur_hand = NULL;
+	s_cur_arrow = NULL;
+	m_tmpLastLink = NULL;
+	m_tmpLastCell = NULL;
+
+	last_start_cell = NULL;
+	last_end_cell = NULL;
+	last_start_end_valid = false;
+
+	m_Resizing = false;
+	m_iYOffset = 0;
+
+	Connect(GetId(), wxEVT_SIZE, (wxObjectEventFunction)(wxSizeEventFunction)&LogControl::OnSize);
+	Connect(GetId(), wxEVT_ERASE_BACKGROUND, (wxObjectEventFunction)(wxEraseEventFunction)&LogControl::OnErase);
+	
+	Connect(wxID_ANY, wxEVT_IDLE, (wxObjectEventFunction)(wxIdleEventFunction)&LogControl::OnIdle);
+
+	Connect(GetId(), wxEVT_LEFT_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_LEFT_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_MIDDLE_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_MIDDLE_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_RIGHT_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_RIGHT_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_MOTION, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_LEFT_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_MIDDLE_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_RIGHT_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_ENTER_WINDOW, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_LEAVE_WINDOW, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+	Connect(GetId(), wxEVT_MOUSEWHEEL, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
+
+	SetBorders(1);
+
+	GetParser()->AddTagHandler(new SpanTagHandler());
+	
+	Clear();
+
+}
+
+LogControl::~LogControl()
+{
+	delete s_cur_hand;
+	delete s_cur_arrow;
+}
+
+void LogControl::OnSize(wxSizeEvent& event)
+{
+
+	#ifdef __WXMSW__
+		m_Resizing = true;
+	#endif
+
+	wxHtmlWindow::OnSize(event);
+	CalculateOffset();
+
+	Refresh();
+
+	#ifndef __WXMSW__
+		Update();
+		ScrollToBottom();
+	#endif
+
+}
+
+void LogControl::CalculateOffset()
+{
+
+	if (m_align_bottom)
+	{
+
+		wxSize virtual_size = GetVirtualSize();
+		wxSize view_size = GetClientSize();
+
+		m_iYOffset = view_size.y - m_Cell->GetHeight();
+
+		if ((virtual_size.y - view_size.y) > 0)
+		{
+			m_iYOffset = view_size.y - m_iYSize;
+		}
+
+	}
+	else
+	{
+
+		m_iYOffset = false;
+
+	}
+
+}
+
+void LogControl::ClearRect(wxDC& dc, wxRect &rect)
+{
+	wxPen old_pen = dc.GetPen();
+	wxBrush old_brush = dc.GetBrush();
+	dc.SetPen(*wxWHITE_PEN);
+	dc.DrawRectangle(rect.GetLeft(),rect.GetTop(),rect.GetWidth(),rect.GetHeight());
+	dc.SetBrush(old_brush);
+	dc.SetPen(old_pen);
+}
+
+void LogControl::ClearBlankArea(wxDC &dc)
+{
+
+	wxRect rtClearArea;
+
+	int x, y;
+	wxScrolledWindow::GetViewStart(&x, &y);
+	y *= wxHTML_SCROLL_STEP;
+	y -= m_iYOffset;
+
+	int bottom_gap_size =
+		GetVirtualSize().y - m_Cell->GetHeight() - m_iYOffset;
+
+	rtClearArea.x = 0;
+	rtClearArea.width = GetClientSize().x;
+	if (y <= 0)
+	{
+
+		rtClearArea.y = 0;
+		rtClearArea.height = m_iYOffset;
+
+		ClearRect(dc, rtClearArea);
+
+	}
+
+	if (bottom_gap_size > 0)
+	{
+
+		rtClearArea.height = GetClientSize().y;
+		rtClearArea.y = GetClientSize().y - bottom_gap_size;
+
+		ClearRect(dc, rtClearArea);
+
+	}
+
+}
+
+void LogControl::OnErase(wxEraseEvent& event)
+{
+
+	wxDC *pDC = event.GetDC();
+	bool bOwnDC = (pDC == NULL);
+
+	if (bOwnDC)
+	{
+		pDC = new wxClientDC(this);
+	}
+
+	PrepareDC(*pDC);
+
+	OnDraw(*pDC);
+
+	if (bOwnDC)
+	{
+		delete pDC;
+	}
+
+}
+
+#define USE_BACKBUFFER 0
+
+void LogControl::OnDraw(wxDC& dcFront)
+{
+
+	if (m_Resizing)
+	{
+
+		m_Resizing = false;
+
+		ScrollToBottom();
+
+		Refresh();
+	
+	}
+	else
+	{
+
+		if (/*m_tmpCanDrawLocks > 0 ||*/ m_Cell == NULL) return;
+
+		GetInternalRepresentation()->SetBackgroundColour(*wxWHITE);
+
+		CalculateOffset();
+
+		wxRect client_area = GetClientRect();
+
+#if USE_BACKBUFFER
+
+		static wxBitmap bmpBack(
+			wxSystemSettings::GetMetric(wxSYS_SCREEN_X),
+			wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
+		wxMemoryDC dcBack;
+		dcBack.SelectObject(bmpBack);
+		PrepareDC(dcBack);
+
+#else
+
+		wxDC &dcBack = dcFront;
+
+#endif
+		
+		ClearBlankArea(dcBack);
+
+		int x, y;
+		wxScrolledWindow::GetViewStart(&x, &y);
+		x *= wxHTML_SCROLL_STEP;
+		y *= wxHTML_SCROLL_STEP;
+
+		wxRect rect = GetUpdateRegion().GetBox();
+
+		dcBack.SetMapMode(wxMM_TEXT);
+
+		m_Cell->Draw(
+			dcBack,
+			0, m_iYOffset,
+			rect.GetTop() + y - 32,
+			rect.GetBottom() + y + 32);
+
+		if (last_start_end_valid)
+		{
+			InitDCForHighlighting(dcBack);
+			HighlightCells(dcBack, last_start_cell, last_end_cell);
+		}
+
+#if USE_BACKBUFFER
+
+		dcFront.Blit(x, y, client_area.width, client_area.height, &dcBack, x, y);
+		dcBack.SelectObject(wxNullBitmap);
+
+#endif
+
+	}
+
+}
+
+wxPoint LogControl::GetVirtualMousePosition()
+{
+
+	int sx, sy;
+	wxScrolledWindow::GetViewStart(&sx, &sy);
+	sx *= wxHTML_SCROLL_STEP;
+	sy *= wxHTML_SCROLL_STEP;
+	sy -= m_iYOffset;
+
+	int x, y;
+	wxGetMousePosition(&x, &y);
+	ScreenToClient(&x, &y);
+	x += sx;
+	y += sy;
+
+	return wxPoint(x, y);
+
+}
+
+struct LogControlWordCell : public wxHtmlCell
+{
+	LogControlWordCell(const wxString& word, wxDC& dc);
+	virtual void Draw(wxDC& dc, int x, int y, int view_y1, int view_y2);
+	wxString m_Word;
+};
+
+wxString LogControl::GetCellText(wxHtmlCell *cell)
+{
+
+	if (cell->IsTerminalCell() && cell->GetWidth() > 0 && cell->GetHeight() > 0)
+	{
+		wxASSERT(sizeof LogControlWordCell == sizeof wxHtmlWordCell);
+		LogControlWordCell *word_cell = (LogControlWordCell*)cell;
+		return wxString(word_cell->m_Word.c_str());
+	}
+
+	return wxEmptyString;
+
+}
+
+wxRect LogControl::GetCellRect(wxHtmlCell *cell)
+{
+	
+	wxRect rt(
+		cell->GetPosX(), cell->GetPosY(),
+		cell->GetWidth(), cell->GetHeight());
+	
+	wxHtmlCell *parent = cell->GetParent();
+
+	while (parent != NULL)
+	{
+		rt.x += parent->GetPosX();
+		rt.y += parent->GetPosY();
+		parent = parent->GetParent();
+	}
+
+	rt.y += m_iYOffset;
+
+	return rt;
+
+}
+
+wxHtmlCell *LogControl::GetCellAt(const wxPoint &pos)
+{
+	return m_Cell->FindCellByPos(pos.x, pos.y);
+}
+
+wxHtmlCell *LogControl::FindCell(const wxPoint &start_pos)
+{
+	
+	wxPoint pos = start_pos;
+	wxHtmlCell *cell = GetCellAt(pos);
+	
+	if (start_pos.y < 0)
+	{
+
+		pos.y = 4;
+		cell = GetCellAt(pos);
+
+	}
+
+	while (cell == NULL && pos.y >= 0)
+	{
+
+		if (pos.x <= 0)
+		{
+			pos.x = 8;
+		}
+
+		while (cell == NULL && pos.x >= 0)
+		{
+			pos.x -= 4;
+			cell = GetCellAt(pos);
+		}
+
+		pos.x = start_pos.x;
+		pos.y -= 4;
+
+	}
+
+	return cell;
+
+}
+
+static wxHtmlCell *FindNext(wxHtmlCell *cell)
+{
+	if (!cell->IsTerminalCell())
+	{
+		wxHtmlContainerCell *container = (wxHtmlContainerCell*)cell;
+		wxHtmlCell *child = container->GetFirstCell();
+		if (child)
+		{
+			return child;
+		}
+	}
+
+	if (cell->GetNext())
+	{
+		return cell->GetNext();
+	}
+
+	wxHtmlCell *parent = cell->GetParent();
+	if (parent)
+	{
+		return parent->GetNext();
+	}
+
+	return NULL;
+
+}
+
+static void FirstCellFirst(wxHtmlCell **start_cell, wxHtmlCell **end_cell)
+{
+	wxHtmlCell *cell = *start_cell;
+	while (cell != NULL)
+	{
+		if (cell == *end_cell) break;
+		cell = FindNext(cell);
+	}
+	if (cell == NULL)
+	{
+		cell = *start_cell;
+		*start_cell = *end_cell;
+		*end_cell = cell;
+	}
+}
+
+wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell)
+{
+	wxString buffer;
+	wxHtmlCell *cell = start_cell;
+	while (cell != NULL)
+	{
+		if (cell->IsTerminalCell())
+		{
+			wxString text = GetCellText(cell);
+			if (text == "    ")
+			{
+				buffer += '\t';
+			}
+			else
+			{
+				buffer += text;
+			}
+		}
+		else
+		{
+			buffer += "\r\n";
+		}
+		if (cell == end_cell) break;
+		cell = FindNext(cell);
+	}
+	return buffer; 
+}
+
+void LogControl::HighlightCells(wxDC &dc, wxHtmlCell *start_cell, wxHtmlCell *end_cell)
+{
+	wxHtmlCell *cell = start_cell;
+	while (cell != NULL)
+	{
+		if (cell->IsTerminalCell())
+		{
+			dc.DrawRectangle(GetCellRect(cell));
+		}
+		if (cell == end_cell) break;
+		cell = FindNext(cell);
+	}
+}
+
+void LogControl::HighlightCellsDiff(wxDC &dc, wxHtmlCell *start_cell1, wxHtmlCell *end_cell1, wxHtmlCell *start_cell2, wxHtmlCell *end_cell2)
+{
+
+	if (start_cell1 == start_cell2)
+	{
+
+		if (end_cell1 != end_cell2)
+		{	
+
+			wxHtmlCell *cell = start_cell1;
+
+			while (cell != end_cell1 && cell != end_cell2)
+			{
+				cell = FindNext(cell);
+			}
+
+			wxASSERT((cell == end_cell1) ^ (cell == end_cell2));
+
+			if (cell == end_cell1)
+			{
+				HighlightCells(dc, FindNext(end_cell1), end_cell2);
+			}
+			else
+			{
+				HighlightCells(dc, FindNext(end_cell2), end_cell1);
+			}
+
+		}
+
+	}
+	else if (end_cell1 == end_cell2)
+	{
+
+		wxHtmlCell *cell;
+
+		int count1 = 0, count2 = 0;
+
+		cell = start_cell1;
+		while (cell != end_cell1)
+		{
+			count1++;
+			cell = FindNext(cell);
+		}
+
+		cell = start_cell2;
+		while (cell != end_cell2)
+		{
+			count2++;
+			cell = FindNext(cell);
+		}
+
+		wxASSERT(count1 != count2);
+
+		wxHtmlCell *cell1, *cell2;
+
+		if (count1 < count2)
+		{
+			cell1 = start_cell2;
+			cell2 = start_cell1;
+		}
+		else
+		{
+			cell1 = start_cell1;
+			cell2 = start_cell2;
+		}
+
+		cell = cell1;
+		while (FindNext(cell) != cell2)
+		{
+			cell = FindNext(cell);
+		}
+
+		HighlightCells(dc, cell1, cell);
+
+	}
+	else
+	{
+
+		HighlightCells(dc, start_cell1, end_cell1);
+		HighlightCells(dc, start_cell2, end_cell2);
+		
+	}
+
+}
+
+void LogControl::InitDCForHighlighting(wxDC &dc)
+{
+	dc.SetLogicalFunction(wxINVERT);
+	dc.SetPen(*wxTRANSPARENT_PEN);
+	dc.SetBrush(*wxWHITE_BRUSH);
+}
+
+void LogControl::OnMouseEvent(wxMouseEvent& event)
+{
+
+	m_tmpMouseMoved = TRUE;
+
+	if ( !m_Cell )
+	{
+		return;
+	}
+
+	wxPoint pos = GetVirtualMousePosition();
+
+	static wxPoint down_pos(0,0);
+	static bool down_pos_valid = false; 
+
+	static int captured = false;
+
+	if (event.ButtonDown(1) && !captured)
+	{
+		CaptureMouse();
+		captured = true;
+	}
+	else if (event.ButtonUp(1) && captured)
+	{
+		ReleaseMouse();
+		captured = false;
+	}
+
+	if (last_start_end_valid && (!event.ButtonIsDown(1) || event.ButtonDown(1) || event.ButtonDown(2) || event.ButtonDown(3)))
+	{
+
+		if (!event.ButtonDown(2) && !event.ButtonDown(3))
+		{
+			if (wxTheClipboard->Open())
+			{
+				wxString text = GetTextFromRange(last_start_cell, last_end_cell);
+				wxTheClipboard->Clear();
+				wxTheClipboard->SetData(new wxTextDataObject(text));
+				wxTheClipboard->Flush();
+				wxTheClipboard->Close();
+			}
+		}
+
+		Refresh();
+
+		last_start_end_valid = false;
+		down_pos_valid = false;
+
+	}
+
+	if (event.ButtonDown(1))
+	{
+		down_pos = pos;
+		down_pos_valid = true;
+	}
+	else if (event.ButtonUp(1) && down_pos_valid && pos == down_pos)
+	{
+
+		down_pos_valid = false;
+
+		SetFocus();
+
+		wxHtmlCell *cell = m_Cell->FindCellByPos(pos.x, pos.y);
+
+		if ( cell )
+		{
+			OnCellClicked(cell, pos.x, pos.y, event);
+		}
+
+	}
+	else if (down_pos_valid && event.Dragging() && event.ButtonIsDown(1))
+	{
+
+		if (down_pos == pos) return;
+
+		wxHtmlCell *start_cell = FindCell(down_pos);
+		wxHtmlCell *end_cell = FindCell(pos);
+
+		if (start_cell && end_cell)
+		{
+
+			wxClientDC dc(this);
+			PrepareDC(dc);
+			InitDCForHighlighting(dc);
+
+			FirstCellFirst(&start_cell, &end_cell);
+
+			if (last_start_end_valid)
+			{
+				HighlightCellsDiff(dc, start_cell, end_cell, last_start_cell, last_end_cell);
+			}
+			else
+			{
+				HighlightCells(dc, start_cell, end_cell);
+			}
+
+			last_start_cell = start_cell;
+			last_end_cell = end_cell;
+			last_start_end_valid = true;
+
+		}
+
+	}
+
+}
+
+void LogControl::OnIdle(wxIdleEvent& event)
+{
+
+	if (s_cur_hand == NULL)
+	{
+		s_cur_hand = new wxCursor(wxCURSOR_HAND);
+		s_cur_arrow = new wxCursor(wxCURSOR_ARROW);
+	}
+
+	if (m_tmpMouseMoved && (m_Cell != NULL))
+	{
+
+		wxPoint pos = GetVirtualMousePosition();
+
+		wxHtmlCell *cell = m_Cell->FindCellByPos(pos.x, pos.y);
+		if ( cell != m_tmpLastCell )
+		{
+			wxHtmlLinkInfo *lnk = cell ? cell->GetLink(pos.x, pos.y) : NULL;
+
+			if (lnk != m_tmpLastLink)
+			{
+				if (lnk == NULL || last_start_end_valid)
+				{
+					SetCursor(*s_cur_arrow);
+					if (m_RelatedStatusBar != -1)
+						m_RelatedFrame->SetStatusText(wxEmptyString, m_RelatedStatusBar);
+				}
+				else
+				{
+					SetCursor(*s_cur_hand);
+					if (m_RelatedStatusBar != -1)
+						m_RelatedFrame->SetStatusText(lnk->GetHref(), m_RelatedStatusBar);
+				}
+				m_tmpLastLink = lnk;
+			}
+
+			m_tmpLastCell = cell;
+		}
+		else // mouse moved but stayed in the same cell
+		{
+			if ( cell )
+				OnCellMouseHover(cell, pos.x, pos.y);
+		}
+
+		m_tmpMouseMoved = FALSE;
+	}
+
+}
+
+void LogControl::ScrollToBottom()
+{
+	int x, y;
+	GetVirtualSize(&x, &y);
+	Scroll(0, y);
+	CalcScrolledPosition(0, m_Cell->GetHeight(), NULL, &m_iYSize);
+}
+
+void LogControl::Clear()
+{
+	SetPage("");
+	ScrollToBottom();
+}
+
+void LogControl::AddHtmlLine(const wxString &line)
+{
+	AppendToPage("<br><code>" + line + "</code>");
+	ScrollToBottom();
+}
+
+wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_mode)
+{
+	ModifierParser parser;
+	parser.strip_mode = strip_mode;
+	return parser.Parse(text);
+}
+
+void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode)
+{
+
+	wxString html = FormatTextAsHtml(line);
+
+	switch (mode)
+	{
+
+	case tmmParse:
+		html = ConvertModifiersIntoHtml(html, false);
+		break;
+
+	case tmmStrip:
+		html = ConvertModifiersIntoHtml(html, true);
+		break;
+
+	case tmmIgnore:
+		html = html;
+		break;
+
+	default:
+		wxFAIL_MSG("Invalid TextModifierMode for AddTextLine");
+		break;
+
+	}
+
+	html = ConvertUrlsToLinks(html);
+
+	html = "<font color='" + ColourToString(line_colour) + "'>" + html + "</font>";
+
+	AddHtmlLine(html);
+
+}
+
+wxString LogControl::FormatTextAsHtml(const wxString &text)
+{
+
+	wxString html = text;
+
+	html.Replace("&","&amp;");
+	html.Replace("<","&lt;");
+	html.Replace(">","&gt;");
+
+	html.Replace("\r\n","<br>");
+	html.Replace("\r","<br>");
+	html.Replace("\n","<br>");
+
+	if (html[0] == ' ')
+	{
+		html = "&nbsp;" + html.Mid(1);
+	}
+	html.Replace("\t", "&nbsp;&nbsp;&nbsp; ");
+	html.Replace("  ", " &nbsp;");
+
+	return html;
+
+}
+
+#include <wx/tokenzr.h>
+
+bool LogControl::IsEmail(const wxString &token)
+{
+	wxString buff = token;
+	long a = buff.Find('@');
+	if (a > -1)
+	{
+		buff = token.Mid(a);
+		if (buff.Find('.') > -1)
+		{
+			if ((buff.Find(':') == -1) && (buff.Find('/') == -1))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+wxString LogControl::ConvertUrlsToLinks(const wxString &text)
+{
+	static const wxString delims = "\t\r\n '\"<>()";
+	wxStringTokenizer st(text, delims, wxTOKEN_RET_DELIMS);
+
+	wxString output;
+
+	while (st.HasMoreTokens())
+	{
+
+		wxString token = st.GetNextToken();
+
+		if (token.Length() > 0)
+		{
+
+			char last_char = token.Last();
+			bool last_is_delim = (delims.Find(last_char) > -1);
+			if (last_is_delim)
+			{
+				token = token.Left(token.Length() - 1);
+			}
+
+			wxString url;
+
+			wxString token_lower = token.Lower();
+
+			if (token_lower.Left(5) == "news:")
+			{
+				url = token;
+			}
+			else if (token.Left(2) == "\\\\" && token.Length() > 2)
+			{
+				url = token;
+			}
+			else if ((token_lower.Left(7) == "mailto:") || (token.Find("://") > -1))
+			{
+				url = token;
+			}
+			else if ((token_lower.Left(3) == "www") && (token.Find('.') > -1))
+			{
+				url = "http://" + token;
+			}
+			else if ((token_lower.Left(4) == "ftp.") && (token.Mid(4).Find('.') > 0))
+			{
+				url = "ftp://" + token;
+			}
+			else if (IsEmail(token))
+			{
+				url = "mailto:" + token;
+			}
+			else if ((token_lower.Find(".com") > -1) || (token_lower.Find(".net") > -1) || (token_lower.Find(".org") > -1))
+			{
+				url = "http://" + token;
+			}
+
+			if (url.Length() > 0)
+			{
+				token = "<a href=\"" + url + "\">" + token + "</a>";
+			}
+
+			output += token;
+			if (last_is_delim)
+			{
+				output += last_char;
+			}
+
+		}
+
+	}
+
+	return output;
+
+
+}
+
+void LogControl::OnLinkClicked(const wxHtmlLinkInfo& link)
+{
+	wxCommandEvent event(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+	event.SetString(link.GetHref());
+	ProcessEvent(event);
+}

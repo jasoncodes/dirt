@@ -1,0 +1,11 @@
+Debug
+Release
+DebugDll
+ReleaseDll
+ConsoleDebug
+*.ncb
+*.opt
+*.plg
+dirt
+*.kdevses
+*.aps
