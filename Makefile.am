@@ -15,8 +15,17 @@ ifneq ($(NOKDE),1)
 	endif
 endif
 
+BASENAME = $(shell wx-config --basename)
+ifneq (,$(findstring wx_gtk2,$(BASENAME)))
+	GTK_EXTRAS = pkg-config --cflags gtk+-2.0
+else
+	ifneq (,$(findstring wx_gtk,$(BASENAME)))
+		GTK_EXTRAS = `gtk-config --cflags`
+	endif
+endif
+
 CC = g++
-CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS))
+CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS))
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
