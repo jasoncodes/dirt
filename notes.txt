@@ -1,3 +1,5 @@
+* replace " - " with "\n" on tray icon
+
 * ctcp time
 
 * /dcc open
