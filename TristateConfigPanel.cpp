@@ -6,13 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.3 2003-05-30 10:56:55 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.4 2003-06-02 10:46:05 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
 #include "res/sound.xpm"
 #include "res/sound_disabled.xpm"
-#include "res/dirt.xpm"
 
 enum
 {

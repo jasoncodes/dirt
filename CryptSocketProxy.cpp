@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.8 2003-06-02 09:44:20 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.9 2003-06-02 10:46:05 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -347,7 +347,7 @@ bool CryptSocketProxySettings::SetEnabled(bool enabled)
 
 bool CryptSocketProxySettings::SetProtocol(CryptSocketProxyProtocol protocol)
 {
-	if (protocol >= 0 && protocol < WXSIZEOF(protocol_names))
+	if (protocol >= 0 && (size_t)protocol < WXSIZEOF(protocol_names))
 	{
 		m_protocol = protocol;
 		return true;
