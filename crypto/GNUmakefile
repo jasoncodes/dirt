@@ -36,6 +36,11 @@ endif
 include ../Makefile.wx-config
 include ../Makefile.cross-compile
 
+# the gcc that comes with OSX seems to die hard on optimizations
+ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
+	CXXFLAGS := $(subst -O1,,$(CXXFLAGS))
+endif
+
 # overwrite CXXFLAGS with debug mode stuff if wx is debug version
 ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
 	CXXFLAGS = -g -DDEBUG
