@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.6 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.7 2003-04-02 02:54:15 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -87,7 +87,7 @@ protected:
 	virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
 	{
 		
-		if (nMsg == WM_USER + 1)
+		if (nMsg == WM_USER + 1 && m_trayicon)
 		{
 			
 			wxASSERT(wParam == 1);
@@ -165,7 +165,7 @@ protected:
 			}
 			return 0;
 		}
-		else if (nMsg == TaskbarCreated)
+		else if (nMsg == TaskbarCreated && m_trayicon)
 		{
 			nid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
 			Shell_NotifyIcon(NIM_ADD, &nid);
