@@ -27,6 +27,13 @@
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
 #endif
+#ifdef __WXMAC__
+	#include <mach/mach_port.h>
+	#include <mach/mach_interface.h>
+	#include <mach/mach_init.h>
+	#include <IOKit/pwr_mgt/IOPMLib.h>
+	#include <IOKit/IOMessage.h>
+#endif
 
 #include <wx/file.h>
 
@@ -86,6 +93,10 @@ protected:
 	#ifdef __WXMSW__
 		static LRESULT CALLBACK MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 		static HHOOK s_hMsgHookProc;
+	#endif
+	#ifdef __WXMAC__
+		static void MacPowerCallback(void *x, io_service_t y, natural_t message_type, void *message_argument);
+		static io_connect_t s_root_port;
 	#endif
 
 private:

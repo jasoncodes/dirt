@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.58 2004-12-08 08:03:31 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.59 2005-01-08 02:25:48 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -306,6 +306,12 @@ bool DirtApp::OnInit()
 
 	#ifdef __WXMSW__
 		s_hMsgHookProc = SetWindowsHookEx(WH_GETMESSAGE, &DirtApp::MsgHookProc, NULL, GetCurrentThreadId());
+	#endif
+	#ifdef __WXMAC__
+		IONotificationPortRef notify;
+		io_object_t iterator;
+		s_root_port = IORegisterForSystemPower(0, &notify, DirtApp::MacPowerCallback, &iterator);
+		CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notify), kCFRunLoopCommonModes);
 	#endif
 
 	return true;
@@ -605,6 +611,35 @@ void DirtApp::RegisterDirtProtocol()
 	#endif
 
 }
+
+#ifdef __WXMAC__
+
+io_connect_t DirtApp::s_root_port;
+
+void DirtApp::MacPowerCallback(void *x, io_service_t y, natural_t message_type, void *message_argument)
+{
+	/*
+	 printf ("message_type %08lx, arg %08lx\n", (long unsigned int) message_type, (long  unsigned int) message_argument);
+	 */
+	switch (message_type)
+	{
+		case kIOMessageSystemWillSleep:
+			if (wxGetApp().m_client)
+			{
+				wxGetApp().m_client->OnPowerSuspend();
+			}
+			break;
+		case kIOMessageSystemHasPoweredOn:
+			if (wxGetApp().m_client)
+			{
+				wxGetApp().m_client->OnPowerResume();
+			}
+			break;
+	}
+	IOAllowPowerChange(s_root_port, (long)message_argument);
+}
+
+#endif
 
 int DirtApp::FilterEvent(wxEvent& event)
 {

@@ -161,8 +161,8 @@ public:
 	virtual void ProcessConsoleInput(const wxString &context, const wxString &input);
 	virtual void Debug(const wxString &context, const wxString &text);
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action) = 0;
-	virtual bool Connect(const URL &url, bool is_reconnect) = 0;
-	virtual bool Reconnect() { return Connect(GetLastURL(), true); }
+	virtual bool Connect(const URL &url, bool is_reconnect, bool restore_away_message = false) = 0;
+	virtual bool Reconnect(bool restore_away_message = false) { return Connect(GetLastURL(), true, restore_away_message); }
 	virtual void Disconnect(const wxString &msg = wxT("Disconnected")) = 0;
 	virtual bool IsConnected() const = 0;
 	virtual const URL& GetLastURL() const = 0;
@@ -201,6 +201,8 @@ public:
 	virtual ByteBuffer GetKeyLocalPrivate() const = 0;
 	virtual void NewProxySettings() = 0;
 	virtual const CryptSocketProxySettings GetProxySettings() const = 0;
+	virtual void OnPowerSuspend();
+	virtual void OnPowerResume();
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);
@@ -238,6 +240,7 @@ protected:
 	ClientConfig m_config;
 	wxArrayString m_server_ip_list;
 	wxString m_ipself;
+	bool m_connected_before_suspend;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.46 2004-05-30 09:24:31 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.47 2005-01-08 02:25:48 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -104,7 +104,7 @@ void ClientDefault::SetNickname(const wxString &context, const wxString &nicknam
 	m_sck->Send(EncodeMessage(context, wxT("NICK"), nickname));
 }
 
-bool ClientDefault::Connect(const URL &url, bool is_reconnect)
+bool ClientDefault::Connect(const URL &url, bool is_reconnect, bool restore_away_message)
 {
 	wxASSERT(!is_reconnect || url == GetLastURL());
 	m_sck->Close();
@@ -117,10 +117,11 @@ bool ClientDefault::Connect(const URL &url, bool is_reconnect)
 	{
 		return false;
 	}
-	// these two lines shouldn't be called if the 
-	// away message should be restored
-	m_is_away = false;
-	m_away_message.Empty();
+	if (!restore_away_message)
+	{
+		m_is_away = false;
+		m_away_message.Empty();
+	}
 	if (!is_reconnect)
 	{
 		m_last_auth = ByteBuffer();

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.92 2004-07-11 05:14:54 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.93 2005-01-08 02:25:48 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1187,6 +1187,24 @@ void Client::CTCPReply(const wxString &context, const wxString &nick, const wxSt
 {
 	ASSERT_CONNECTED();
 	SendToServer(EncodeMessage(context, wxT("CTCPREPLY"), Pack(nick, type.Upper(), data)));
+}
+
+void Client::OnPowerSuspend()
+{
+	m_connected_before_suspend = IsConnected();
+	if (m_connected_before_suspend)
+	{
+		Quit(wxT("Suspending"));
+		wxMilliSleep(500);
+	}
+}
+
+void Client::OnPowerResume()
+{
+	if (m_connected_before_suspend)
+	{
+		Reconnect(true);
+	}
 }
 
 void Client::OnConnect()
