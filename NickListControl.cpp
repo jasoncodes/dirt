@@ -6,15 +6,34 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.15 2003-05-14 16:10:36 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.16 2003-08-27 06:50:23 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
 
 #ifdef __WXMSW__
-	#include <windows.h>
-	#include <wx/msw/winundef.h>
+#include <windows.h>
+#include <wx/msw/winundef.h>
 #endif
+
+#ifdef __WXGTK__
+
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
+static gint gtk_nicklist_button_press_callback(GtkWidget *widget, GdkEventButton *gdk_event, NickListControl *list)
+{
+	if (gdk_event->button == 3)
+	{
+		int sel = list->GtkGetIndex(widget);
+		list->SetSelection(sel);
+	}
+	return FALSE;
+}
+
+#endif
+
+
 
 const wxString NickListControl::AwayPostfix = wxT(" (Away)");
 
@@ -43,6 +62,16 @@ void NickListControl::Add(const wxString &nick)
 	if (GetNickIndex(nick) == -1)
 	{
 		Append(nick);
+#ifdef __WXGTK__
+		int index = GetNickIndex(nick);
+		wxASSERT(index > -1);
+		GList *child = g_list_nth(m_list->children, index);
+		GtkObject *obj = GTK_OBJECT(child->data);
+		gtk_signal_connect_after(
+			obj, "button_press_event",
+			(GtkSignalFunc)gtk_nicklist_button_press_callback,
+			(gpointer)this);
+#endif
 	}
 }
 
