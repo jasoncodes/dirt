@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.9 2004-05-16 04:42:49 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.10 2004-05-22 14:09:08 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
@@ -66,15 +66,14 @@ TristateConfigPanel::TristateConfigPanel(
 		FixBorder(m_txt);
 		m_txt->Enable(false);
 		szrPanel->Add(m_txt, 1, wxEXPAND, 0);
-		wxSize size_button = wxSize(m_txt->GetBestSize().y, m_txt->GetBestSize().y);
-		m_cmdBrowse = new wxButton(pnl, ID_BROWSE, wxT("..."), wxDefaultPosition, size_button);
+		m_cmdBrowse = new SquareButton(pnl, ID_BROWSE, wxT("..."));
 		m_cmdBrowse->Enable(false);
 		szrPanel->Add(m_cmdBrowse, 0, wxEXPAND, 0);
 		wxASSERT(!m_sound_preview || (m_sound_preview == (m_filespec.Length() > 0)));
 		if (m_sound_preview)
 		{
 			wxBitmap bmpSound(sound_xpm);
-			m_cmdSoundPreview = new wxBitmapButton(pnl, ID_SOUND_PREVIEW, bmpSound, wxDefaultPosition, size_button);
+			m_cmdSoundPreview = new SquareBitmapButton(pnl, ID_SOUND_PREVIEW, bmpSound);
 			m_cmdSoundPreview->SetBitmapDisabled(wxBitmap(sound_disabled_xpm));
 			m_cmdSoundPreview->Enable(false);
 			szrPanel->Add(m_cmdSoundPreview, 0, wxEXPAND, 0);

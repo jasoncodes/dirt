@@ -28,10 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FontControl.cpp,v 1.3 2004-05-16 04:54:59 jason Exp $)
+RCS_ID($Id: FontControl.cpp,v 1.4 2004-05-22 14:09:08 jason Exp $)
 
 #include "FontControl.h"
 #include <wx/fontdlg.h>
+#include "TristateConfigPanel.h" // for SquareButton
 
 enum
 {
@@ -67,20 +68,6 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
-
-};
-
-class SquareButton : public wxButton
-{
-
-public:
-	SquareButton(wxWindow *window, int id, const wxString &text)
-		: wxButton(window, id, text)
-	{
-		wxSize size = GetSize();
-		SetSize(size.y, size.y);
-		SetBestSize(GetSize());
-	}
 
 };
 

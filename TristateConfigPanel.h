@@ -27,6 +27,34 @@
 #include "RadioBoxPanel.h"
 #include <wx/sound.h>
 
+class SquareButton : public wxButton
+{
+
+public:
+	SquareButton(wxWindow *window, int id, const wxString &text)
+		: wxButton(window, id, text)
+	{
+		wxSize size = GetSize();
+		SetSize(size.y, size.y);
+		SetBestSize(GetSize());
+	}
+
+};
+
+class SquareBitmapButton : public wxBitmapButton
+{
+
+public:
+	SquareBitmapButton(wxWindow *window, int id, const wxBitmap& bitmap)
+		: wxBitmapButton(window, id, bitmap)
+	{
+		wxSize size = GetSize();
+		SetSize(size.y, size.y);
+		SetBestSize(GetSize());
+	}
+
+};
+
 class TristateConfigPanel : public RadioBoxPanel
 {
 

@@ -1,13 +1,14 @@
+win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
+increasing padding on staticboxes in option dialog should do it
+
 * allow users to specify which browser to use in the options dialog.
 
 [16:27] *** Andrew is now known as ANDREW
 [16:27] *** Note: You have a query window open to both Andrew and ANDREW
 the query window still said Andrew not ANDREW
 
-win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
-increasing padding on staticboxes in option dialog should do it
-
-win32: primary/alternate labels on hotkeys are not centred vertically
+primary/alternate labels on hotkeys are not centred vertically
+seems to be a bug in wxFlexGridSizer
 
 win32+possibly others: Failed to retrieve file times for 'C:\...\dirt,ini' (error 32: ... used by another process)
 many of them, use wxLogNull and place in a few second loop or maybe there's an alt function to use
