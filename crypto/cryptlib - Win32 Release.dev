@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -W -DNDEBUG -DWIN32 -D_WINDOWS -DUSE_PRECOMPILED_HEAD
 Includes=
 Linker=
 Libs=
-UnitCount=227
+UnitCount=226
 Folders="Header Files",Miscellaneous,"Source Files"
 ObjFiles=
 PrivateResource=
@@ -838,7 +838,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit82]
-FileName=sapphire.cpp
+FileName=pssr.cpp
 Folder="Source Files"
 Compile=1
 CompileCpp=1
@@ -1977,16 +1977,6 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit196]
-FileName=sapphire.h
-Folder="Header Files"
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit197]
 FileName=seal.h
 Folder="Header Files"
@@ -2287,7 +2277,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit227]
+[Unit196]
 FileName=readme.txt
 Folder=Miscellaneous
 Compile=0

@@ -10,7 +10,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.14 2003-08-01 07:48:00 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.15 2004-01-24 04:32:23 jason Exp $)
 
 #include "Crypt.h"
 #include "ByteBuffer.h"
@@ -258,7 +258,7 @@ ByteBuffer Crypt::RSADecrypt(const ByteBuffer &private_key, const ByteBuffer &ci
 
 	try
 	{
-		PK_DecryptorFilter *filter = new PK_DecryptorFilter(priv, sink);
+		PK_DecryptorFilter *filter = new PK_DecryptorFilter(GetRNG(), priv, sink);
 		StringSource src(cither_text.LockRead(), cither_text.Length(), true, filter);
 		len = sink->TotalPutLength();
 		wxASSERT(len <= buff.Length());

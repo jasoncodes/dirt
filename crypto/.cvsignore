@@ -20,3 +20,6 @@ crypto50.zip
 doc
 *.layout
 Makefile.win
+crypto++.mcp
+adhoc.cpp.proto
+TestVectors
