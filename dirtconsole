@@ -38,7 +38,7 @@ then
 else
 
 	DISPLAY=:$DISPLAY
-	dirt --console "$@"
+	Dirt --console "$@"
 
 	kill $XVFB_PID
 
