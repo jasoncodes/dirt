@@ -10,7 +10,7 @@ class CryptSocketProxy;
 enum CryptSocketProxyProtocol
 {
 	ppUnknown = -1,
-//	ppSOCKS4,
+	ppSOCKS4,
 //	ppSOCKS5,
 	ppHTTP
 };
@@ -41,7 +41,8 @@ public:
 
 	static const wxString* const GetProtocolNames();
 	static size_t GetProtocolCount();
-	static bool DoesProtocolSupportAuthentication(CryptSocketProxyProtocol protocol);
+	static bool DoesProtocolSupportUsername(CryptSocketProxyProtocol protocol);
+	static bool DoesProtocolSupportPassword(CryptSocketProxyProtocol protocol);
 	static CryptSocketProxyProtocol ProtocolFromString(const wxString &protocol);
 	static wxString ProtocolToString(CryptSocketProxyProtocol protocol);
 	static bool DoesProtocolSupportConnectionType(CryptSocketProxyProtocol protocol, CryptSocketProxyConnectionTypes type);

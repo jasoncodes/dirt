@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.14 2003-06-05 14:05:51 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.15 2003-06-05 14:09:48 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -174,6 +174,16 @@ protected:
 
 //////// CryptSocketProxySOCKS5 ////////
 
+// not implemented yet
+
+//////// CryptSocketProxySOCKS4Listen ////////
+
+// not implemented yet
+
+//////// CryptSocketProxySOCKS5Listen ////////
+
+// not implemented yet
+
 //////// CryptSocketProxySettings ////////
 
 static const wxString protocol_names[] =
@@ -338,8 +348,10 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 	{
 
 		case ppSOCKS4:
-//		case ppSOCKS5:
 			return (type != pctDCCListen); //true; // DCC listens not supported yet
+
+//		case ppSOCKS5:
+//			return (type != pctDCCListen); //true; // DCC listens not supported yet
 
 		case ppHTTP:
 			return (type == pctServer);
@@ -707,17 +719,10 @@ bool CryptSocketProxySettings::SetDestPortRanges(const wxString &port_ranges)
 
 CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck, const wxString &ip, const wxUint16 port) const
 {
-	wxASSERT(ip.Length() && port > 0);
-	CryptSocketProxy *proxy = NewProxyListen(sck);
-	proxy->m_dest_ip = ip;
-	proxy->m_dest_port = port;
-	return proxy;
-}
-
-CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck) const
-{
-
+	
 	wxASSERT(sck);
+
+	CryptSocketProxy *proxy;
 
 	switch (GetProtocol())
 	{
@@ -732,7 +737,35 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 			return new CryptSocketProxyHTTP(sck);
 
 		default:
-			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxy"));
+			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyConnect"));
+			return NULL;
+
+	}
+
+	wxASSERT(ip.Length() && port > 0);
+	proxy->m_dest_ip = ip;
+	proxy->m_dest_port = port;
+
+	return proxy;
+
+}
+
+CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck) const
+{
+
+	wxASSERT(sck);
+
+	switch (GetProtocol())
+	{
+
+//		case ppSOCKS4:
+//			return new CryptSocketProxySOCKS4Listen(sck);
+
+//		case ppSOCKS5:
+//			return new CryptSocketProxySOCKS5Listen(sck);
+
+		default:
+			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyListen"));
 			return NULL;
 
 	}

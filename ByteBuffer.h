@@ -37,6 +37,8 @@ public:
 	ByteBuffer Right(int len) const;
 	ByteBuffer Mid(int pos, int len = -1) const;
 
+	byte operator[](size_t pos) const;
+
 protected:
 	ByteBuffer(ByteBufferData *data);
 	void Release();

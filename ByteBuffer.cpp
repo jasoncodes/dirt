@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.14 2003-06-05 13:00:49 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.15 2003-06-05 14:05:51 jason Exp $)
 
 #include "ByteBuffer.h"
 #include "util.h"
@@ -309,6 +309,15 @@ ByteBuffer ByteBuffer::Mid(int pos, int len) const
 	len = wxMin(wxMax(len, 0), (int)Length() - pos);
 	const byte *ptr = LockRead();
 	ByteBuffer result(ptr + pos, len);
+	Unlock();
+	return result;
+}
+
+byte ByteBuffer::operator[](size_t pos) const
+{
+	wxCHECK_MSG(pos >= 0 && pos < Length(), 0, wxT("Invalid index position"));
+	const byte *ptr = LockRead();
+	byte result = ptr[pos];
 	Unlock();
 	return result;
 }

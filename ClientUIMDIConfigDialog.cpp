@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.11 2003-06-02 12:52:05 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.12 2003-06-05 14:05:51 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -285,9 +285,6 @@ void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
 		CryptSocketProxySettings::ProtocolFromString(m_cmbProtocol->GetValue());
 	
 	wxASSERT(protocol != ppUnknown);
-	
-	bool can_auth =
-		CryptSocketProxySettings::DoesProtocolSupportAuthentication(protocol);
 
 	m_lblProtocol->Enable(enabled);
 	m_cmbProtocol->Enable(enabled);
@@ -295,10 +292,10 @@ void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
 	m_txtHostname->Enable(enabled);
 	m_lblPort->Enable(enabled);
 	m_txtPort->Enable(enabled);
-	m_lblUsername->Enable(enabled && can_auth);
-	m_txtUsername->Enable(enabled && can_auth);
-	m_lblPassword->Enable(enabled && can_auth);
-	m_txtPassword->Enable(enabled && can_auth);
+	m_lblUsername->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportUsername(protocol));
+	m_txtUsername->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportUsername(protocol));
+	m_lblPassword->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportPassword(protocol));
+	m_txtPassword->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportPassword(protocol));
 	m_fraProxyTypes->Enable(enabled);
 	m_chkTypeServer->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctServer));
 	m_chkTypeDCCConnect->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctDCCConnect));
