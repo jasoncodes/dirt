@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.42 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.43 2003-02-17 14:10:11 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -277,6 +277,11 @@ void ClientUIMDIFrame::OnClientWarning(const wxString &context, const wxString &
 	AddLine(context, wxT("* ") + text, *wxRED);
 }
 
+void ClientUIMDIFrame::OnClientError(const wxString &context, const wxString &type, const wxString &text)
+{
+	AddLine(context, wxString() << wxT("* Error ") << type << wxT(": ") << text, *wxRED);
+}
+	
 void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxString &text)
 {
 	AddLine(context, wxT("* ") + text, wxColour(0,0,128));

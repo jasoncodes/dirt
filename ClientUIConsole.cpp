@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.25 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.26 2003-02-17 14:10:11 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -31,12 +31,12 @@ void ClientUIConsole::Output(const wxString &line)
 
 void ClientUIConsole::OnInput(const wxString &line)
 {
-	m_client->ProcessInput(wxEmptyString, line);
+	m_client->ProcessConsoleInput(wxEmptyString, line);
 }
 
 void ClientUIConsole::OnEOF()
 {
-	m_client->ProcessInput(wxEmptyString, wxT("/exit"));
+	m_client->ProcessConsoleInput(wxEmptyString, wxT("/exit"));
 }
 
 bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -65,6 +65,11 @@ void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &tex
 void ClientUIConsole::OnClientWarning(const wxString &context, const wxString &text)
 {
 	Output(wxString() << wxT("* ") << text);
+}
+
+void ClientUIConsole::OnClientError(const wxString &context, const wxString &type, const wxString &text)
+{
+	Output(wxString() << wxT("* Error ") << type << wxT(": ") << text);
 }
 
 void ClientUIConsole::OnClientInformation(const wxString &context, const wxString &text)

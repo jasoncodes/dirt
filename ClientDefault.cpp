@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.14 2003-02-17 07:00:39 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.15 2003-02-17 14:10:11 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -48,17 +48,17 @@ ClientDefault::~ClientDefault()
 	delete m_sck;
 }
 
-void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
+void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message)
 {
 	ASSERT_CONNECTED();
 	ByteBuffer msg;
 	if (nick.Length() > 0)
 	{
-		msg = EncodeMessage(wxEmptyString, "PRIVMSG", Pack(nick, message));
+		msg = EncodeMessage(context, "PRIVMSG", Pack(nick, message));
 	}
 	else
 	{
-		msg = EncodeMessage(wxEmptyString, "PUBMSG", message);
+		msg = EncodeMessage(context, "PUBMSG", message);
 	}
 	m_sck->Send(msg);
 }
@@ -112,11 +112,10 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 			break;
 
 		case CRYPTSOCKET_INPUT:
-			m_event_handler->OnClientDebug(wxEmptyString, wxT("CRYPTSOCKET_INPUT: ") + event.GetData());
+			ProcessServerInput(event.GetData());
 			break;
 
 		case CRYPTSOCKET_OUTPUT:
-			m_event_handler->OnClientDebug(wxEmptyString, wxT("CRYPTSOCKET_OUTPUT"));
 			break;
 
 		default:

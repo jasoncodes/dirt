@@ -3,6 +3,7 @@
 
 #include "FileTransfer.h"
 #include "URL.h"
+#include "ByteBuffer.h"
 
 class ClientEventHandler
 {
@@ -11,6 +12,7 @@ public:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params) { return false; }
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;
+	virtual void OnClientError(const wxString &context, const wxString &type, const wxString &text) = 0;
 	virtual void OnClientInformation(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientMessageOut(const wxString &nick, const wxString &text) = 0;
 	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private) = 0;
@@ -33,16 +35,20 @@ public:
 	Client(ClientEventHandler *event_handler);
 	virtual ~Client();
 
-	virtual void ProcessInput(const wxString &context, const wxString &input);
+	virtual void ProcessConsoleInput(const wxString &context, const wxString &input);
 	virtual void Debug(const wxString &context, const wxString &text);
 
-	virtual void SendMessage(const wxString &nick, const wxString &message) = 0;
+	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message) = 0;
 	virtual bool Connect(const URL &url) = 0;
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
 
 	virtual wxString GetNickname() = 0;
 	virtual FileTransfers* GetFileTransfers() { return m_file_transfers; }
+
+protected:
+	virtual void ProcessServerInput(const ByteBuffer &msg);
+	virtual void ProcessServerInput(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	ClientEventHandler *m_event_handler;

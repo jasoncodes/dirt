@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.15 2003-02-17 07:00:39 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.16 2003-02-17 14:10:12 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -136,8 +136,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_OUTPUT:
 				{
-					m_event_handler->OnServerInformation(wxT("Ready to output"));
-					conn->Send(wxEmptyString, wxT("DEBUG"), wxString(wxT("Welcome!")));
+					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
 				}
 				break;
 

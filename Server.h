@@ -83,7 +83,7 @@ public:
 
 protected:
 	virtual void CloseAllConnections();
-	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &data);
+	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);
 	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:

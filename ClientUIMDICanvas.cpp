@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.26 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.27 2003-02-17 14:10:11 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -250,7 +250,7 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 	{
 		context = GetTitle();
 	}
-	GetClient()->ProcessInput(context, event.GetString());
+	GetClient()->ProcessConsoleInput(context, event.GetString());
 }
 
 Client *ClientUIMDICanvas::GetClient()
@@ -383,7 +383,7 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 				
 				if (msg.Length() > 0)
 				{
-					GetClient()->SendMessage(nick, msg);
+					GetClient()->SendMessage(wxEmptyString, nick, msg);
 				}
 
 			}
@@ -393,7 +393,7 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 
 		case ID_NICKLIST_QUERY:
 		{
-			GetClient()->ProcessInput(wxEmptyString, wxT("/query ") + nick);
+			GetClient()->ProcessConsoleInput(wxEmptyString, wxT("/query ") + nick);
 		}
 		break;
 

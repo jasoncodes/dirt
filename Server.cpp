@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.7 2003-02-17 07:00:39 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.8 2003-02-17 14:10:12 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -145,20 +145,20 @@ void Server::CloseAllConnections()
 	m_event_handler->OnServerConnectionChange();
 }
 
-void Server::ProcessClientInput(ServerConnection *conn, const ByteBuffer &data)
+void Server::ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg)
 {
 	
 	wxString context, cmd;
-	ByteBuffer data2;
-	bool success = DecodeMessage(data, context, cmd, data2);
+	ByteBuffer data;
+	bool success = DecodeMessage(msg, context, cmd, data);
 	if (success)
 	{
 		cmd.MakeUpper();
-		ProcessClientInput(conn, context, cmd, data2);
+		ProcessClientInput(conn, context, cmd, data);
 	}
 	else
 	{
-		m_event_handler->OnServerWarning(wxT("Error decoding message. Discarded"));
+		conn->Send(wxEmptyString, wxT("ERROR"), Pack(wxString(wxT("PROTOCOL")), wxString(wxT("Unable to decode message. Discarded"))));
 	}
 
 }
@@ -234,7 +234,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 		m_event_handler->OnServerInformation(wxT("Context: \"") + context + wxT("\""));
 		m_event_handler->OnServerInformation(wxT("Command: \"") + cmd + wxT("\""));
-		m_event_handler->OnServerInformation(wxT("Data: \"") + (data.GetHexDump() + wxT("\"")));
+		m_event_handler->OnServerInformation(wxT("Data: ") + data.GetHexDump());
 		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NOCMD")), wxT("Unrecognized command: ") + cmd));
 
 	}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.20 2003-02-17 07:00:40 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.21 2003-02-17 14:10:12 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -420,7 +420,7 @@ bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y)
 		return false;
 	}
 	x = ByteBuffer(ptr, sep - ptr);
-	y = ByteBuffer(ptr+1, data2.Length() - (sep-ptr) - 1);
+	y = ByteBuffer(sep+1, data2.Length() - (sep-ptr) - 1);
 	data2.Unlock();
 	return true;
 }

@@ -12,7 +12,7 @@ public:
 	ClientDefault(ClientEventHandler *event_handler);
 	virtual ~ClientDefault();
 
-	virtual void SendMessage(const wxString &nick, const wxString &message);
+	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message);
 	virtual wxString GetNickname();
 	virtual bool Connect(const URL &url);
 	virtual void Disconnect();

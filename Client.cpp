@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.15 2003-02-17 03:25:58 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.16 2003-02-17 14:10:11 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -32,7 +32,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 	m_event_handler->OnClientDebug(context, text);
 }
 
-void Client::ProcessInput(const wxString &context, const wxString &input)
+void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 {
 	
 	wxString cmd, params;
@@ -65,7 +65,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 
 	if (cmd == wxT("SAY"))
 	{
-		SendMessage(context, params);
+		SendMessage(context, context, params);
 	}
 	else if (cmd == wxT("MSG"))
 	{
@@ -77,7 +77,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 		}
 		else if (msg.Length() > 0)
 		{
-			SendMessage(nick, msg);
+			SendMessage(context, nick, msg);
 		}
 	}
 	else if (cmd == wxT("CONNECT") || cmd == wxT("SERVER"))
@@ -127,4 +127,53 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 		m_event_handler->OnClientWarning(context, wxT("Unrecognized command: ") + cmd);
 	}
 
+}
+
+void Client::ProcessServerInput(const ByteBuffer &msg)
+{
+	wxString context, cmd;
+	ByteBuffer data;
+	if (DecodeMessage(msg, context, cmd, data))
+	{
+		ProcessServerInput(context, cmd, data);
+	}
+	else
+	{
+		m_event_handler->OnClientWarning(context, wxT("Error decoding message from server. Ignored."));
+	}
+}
+
+void Client::ProcessServerInput(const wxString &context, const wxString &cmd, const ByteBuffer &data)
+{
+	if (cmd == wxT("PUBMSG"))
+	{
+		ByteBuffer nick, text;
+		if (!Unpack(data, nick, text))
+		{
+			nick = data;
+			text = ByteBuffer();
+		}
+		m_event_handler->OnClientMessageIn(nick, text, false);
+	}
+	else if (cmd == wxT("ERROR"))
+	{
+		ByteBuffer type, text;
+		if (!Unpack(data, type, text))
+		{
+			type = data;
+			text = ByteBuffer();
+		}
+		m_event_handler->OnClientError(context, type, text);
+	}
+	else if (cmd == wxT("INFO"))
+	{
+		m_event_handler->OnClientInformation(context, data);
+	}
+	else
+	{
+		m_event_handler->OnClientDebug(context, wxT("Unknown message recv'd:"));
+		m_event_handler->OnClientDebug(context, wxT("Context: \"") + context + wxT("\""));
+		m_event_handler->OnClientDebug(context, wxT("Command: \"") + cmd + wxT("\""));
+		m_event_handler->OnClientDebug(context, wxT("Data: ") + data.GetHexDump());
+	}
 }
