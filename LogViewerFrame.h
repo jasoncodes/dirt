@@ -23,6 +23,7 @@ protected:
 	void OnTreeSelChanged(wxTreeEvent &event);
 	void OnDirSelChange(wxTreeEvent &event);
 	void OnItemRightClick(wxTreeEvent &event);
+	void OnDelete(wxCommandEvent &event);
 
 protected:
 	virtual void ResizeChildren();

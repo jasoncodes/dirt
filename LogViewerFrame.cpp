@@ -455,6 +455,11 @@ void LogViewerFrame::OnDelete(wxCommandEvent &event)
 
 		bool success;
 
+		if (wxMessageBox(wxT("Are you sure you want to delete ") + filename, wxT("Dirt Secure Chat"), wxOK | wxCANCEL | wxICON_QUESTION, this) != wxOK)
+		{
+			return;
+		}
+
 		{
 
 			wxBusyCursor busy;

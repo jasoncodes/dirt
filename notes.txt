@@ -1,7 +1,5 @@
 * add --config=... to change the config file used by dirt
 
-* option to delete log files (to recycle bin on win32) (right click popup and delete key)
-
 * when colour popup shows on GTK cannot programmically focus back to main window
 
 * flickering when ctrl-tab
