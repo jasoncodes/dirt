@@ -22,7 +22,7 @@ public:
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
 
 protected:
-	virtual void StopThread();
+	virtual void CleanUp();
 
 protected:
 	wxEvtHandler *m_handler;

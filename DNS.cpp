@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.7 2003-03-05 13:23:16 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.8 2003-03-05 13:36:13 jason Exp $)
 
 #include "DNS.h"
 
@@ -60,41 +60,34 @@ DNS::DNS()
 {
 	m_handler = NULL;
 	m_id = wxID_ANY;
-	m_worker = new DNSWorker(this);
-	if (m_worker->Create() != wxTHREAD_NO_ERROR)
-	{
-		delete m_worker;
-		m_worker = NULL;
-	}
+	m_worker = NULL;
 }
 
 DNS::~DNS()
 {
-	if (m_worker)
-	{
-		m_worker->m_no_event = true;
-		m_section.Enter();
-		StopThread();
-		delete m_worker;
-		m_section.Leave();
-	}
+	CleanUp();
 }
 
-void DNS::StopThread()
+void DNS::CleanUp()
 {
 	if (!m_worker) return;
+	m_worker->m_no_event = true;
+	m_section.Enter();
 	if (IsBusy())
 	{
-		#ifdef __WXMSW__
-			m_worker->Kill();
-		#else
+		//#ifdef __WXMSW__
+		//	m_worker->Kill();
+		//#else
 			m_worker->Delete();
-		#endif
+		//#endif
 	}
 	else
 	{
 		m_worker->Delete();
 	}
+	delete m_worker;
+	m_worker = NULL;
+	m_section.Leave();
 }
 
 void DNS::SetEventHandler(wxEvtHandler *handler, wxEventType id)
@@ -110,86 +103,44 @@ bool DNS::IsBusy() const
 
 bool DNS::Cancel()
 {
-	bool was_busy = IsBusy();
-	bool entered = false;
-	if (m_worker && IsBusy())
-	{
-		m_worker->m_no_event = true;
-		m_section.Enter();
-		entered = true;
-		StopThread();
-		delete m_worker;
-		m_worker = NULL;
-	}
-	if (!m_worker)
-	{
-		if (!entered)
-		{
-			m_section.Enter();
-			entered = true;
-		}
-		m_worker = new DNSWorker(this);
-		if (m_worker->Create() != wxTHREAD_NO_ERROR)
-		{
-			delete m_worker;
-			m_worker = NULL;
-		}
-	}
-	if (entered)
-	{
-		m_section.Leave();
-	}
-	return was_busy && !IsBusy();
+	bool x = IsBusy();
+	CleanUp();
+	return x;
 }
 
 bool DNS::Lookup(const wxString &hostname)
 {
-	if (!m_worker) return false;
+	
 	m_section.Enter();
+	
 	if (IsBusy())
 	{
 		m_section.Leave();
 		return false;
 	}
-	else
+
+	CleanUp();
+
+	m_worker = new DNSWorker(this);
+
+	if (m_worker->Create() != wxTHREAD_NO_ERROR)
 	{
-		m_hostname = hostname;
-		bool retry = false;
-		do
-		{
-			wxThreadError err = m_worker->Run();
-			if (err == wxTHREAD_NO_ERROR)
-			{
-				return true;
-			}
-			else if (err == wxTHREAD_RUNNING)
-			{
-				if (retry)
-				{
-					m_section.Leave();
-					return false;
-				}
-				if (m_worker->Delete() != wxTHREAD_NO_ERROR)
-				{
-					m_section.Leave();
-					return false;
-				}
-				delete m_worker;
-				m_worker = new DNSWorker(this);
-				if (m_worker->Create() != wxTHREAD_NO_ERROR)
-				{
-					m_section.Leave();
-					return false;
-				}
-				retry = true;
-			}
-			else
-			{
-				m_section.Leave();
-				retry = false;
-			}
-		}
-		while (retry);
+		CleanUp();
+		m_section.Leave();
 		return false;
 	}
+
+	m_hostname = hostname;
+
+	if (m_worker->Run() == wxTHREAD_NO_ERROR)
+	{
+		return true;
+	}
+	else
+	{
+		CleanUp();
+		m_section.Leave();
+		return false;
+	}
+
 }
