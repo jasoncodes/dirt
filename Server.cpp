@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.55 2003-07-09 04:46:33 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.56 2003-07-09 04:49:10 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -847,7 +847,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		wxString msg;
 		if (data.Length())
 		{
-			msg = wxT("Quit: ") + data;
+			msg = wxT("Quit: ") + ProcessWordFilters(data);
 		}
 		else
 		{
