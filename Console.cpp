@@ -145,9 +145,9 @@ protected:
 
 };
 
-#ifdef __WXMSW__
+ConsoleReadThread *g_read_thread;
 
-	ConsoleReadThread *ctrl_handler_read_thread;
+#ifdef __WXMSW__
 
 	BOOL WINAPI CtrlHandler (DWORD dwEvent)
 	{
@@ -161,7 +161,7 @@ protected:
 			case CTRL_SHUTDOWN_EVENT:
 			case CTRL_CLOSE_EVENT:
 				// handle all known events
-				ctrl_handler_read_thread->ProcessInput(wxEmptyString);
+				g_read_thread->ProcessInput(wxEmptyString);
 				return TRUE;
 
 			default:
@@ -170,6 +170,33 @@ protected:
 
 		}
 
+	}
+
+#else
+
+	#include <signal.h>
+
+	bool g_already_done = false;
+
+	void sighandler(int signum)
+	{
+		signal(signum, sighandler);
+		printf("got signal number: %d\n", signum);
+		if (!g_already_done)
+		{
+			g_read_thread->ProcessInput(wxEmptyString);
+			g_already_done = true;
+		}
+	}
+
+	void setsignals()
+	{
+		signal(SIGHUP, sighandler); // terminal hang-up
+		signal(SIGINT, sighandler); // interrupt by user (ctrl-c)
+		signal(SIGQUIT, sighandler); // quit by user (ctrl-\)
+		signal(SIGTERM, sighandler); // termination request
+        	//signal(SIGTSTP, sighandler); // terminal stop (ctrl-z)
+		//signal(SIGWINCH, sighandler); // terminal resize
 	}
 
 #endif
@@ -185,15 +212,18 @@ Console::Console()
 	m_read_thread->Create();
 	m_read_thread->Run();
 
+	g_read_thread = m_read_thread;
 	#ifdef __WXMSW__
-		ctrl_handler_read_thread = m_read_thread;
 		SetConsoleCtrlHandler(CtrlHandler, TRUE);
+	#else
+		setsignals();
 	#endif
 
 }
 
 Console::~Console()
 {
+puts("~Console()");
 	m_read_thread->Delete();
 	delete m_read_thread;
 }
