@@ -18,6 +18,8 @@
 struct SwitchBarButton;
 WX_DECLARE_OBJARRAY(SwitchBarButton, SwitchBarButtonArray);
 
+class FileDropEvent;
+
 class SwitchBar : public wxPanel
 {
 
@@ -59,6 +61,7 @@ protected:
 	void OnPaint(wxPaintEvent &event);
 	void OnMouse(wxMouseEvent &event);
 	void OnErase(wxEraseEvent &event);
+	void OnFileDrop(FileDropEvent &event);
 
 	static wxIcon PrepareIcon(const wxIcon &icon);
 

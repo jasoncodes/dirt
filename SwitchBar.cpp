@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.9 2003-05-10 04:34:40 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.10 2003-06-17 08:31:19 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
 #include <wx/tooltip.h>
+#include "FileDropTarget.h"
 
 struct SwitchBarButton
 {
@@ -38,6 +39,7 @@ BEGIN_EVENT_TABLE(SwitchBar, wxPanel)
 	EVT_LEFT_DCLICK(SwitchBar::OnMouse)
 	EVT_RIGHT_UP(SwitchBar::OnMouse)
 	EVT_MOTION(SwitchBar::OnMouse)
+	EVT_FILE_DROP(wxID_ANY, SwitchBar::OnFileDrop)
 END_EVENT_TABLE()
 
 SwitchBar::SwitchBar(
@@ -49,11 +51,22 @@ SwitchBar::SwitchBar(
 	if (size == wxDefaultSize)
 	{
 		SetSize(100,25);
-	} 
+	}
+	SetDropTarget(new FileDropTarget(this, wxID_ANY));
 }
 
 SwitchBar::~SwitchBar()
 {
+}
+
+void SwitchBar::OnFileDrop(FileDropEvent &event)
+{
+	int index = HitTest(ScreenToClient(wxGetMousePosition()));
+	if (index > -1 && index != GetSelectedIndex())
+	{
+		SimulateClick(index);
+	}
+	event.Accept(false);
 }
 
 int SwitchBar::GetButtonWidth()
