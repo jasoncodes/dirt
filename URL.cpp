@@ -6,17 +6,19 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.2 2003-02-17 02:10:02 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.3 2003-02-17 02:18:16 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
 
 URL::URL()
 {
+	m_port = 0;
 }
 
 URL::URL(const wxString &url)
 { // not implemented
+	m_port = 0;
 }
 
 URL::~URL()
@@ -40,7 +42,10 @@ URL::operator wxString() const
 	{
 		url << wxT(':') << GetPort();
 	}
-	url << Escape(GetPath());
+	if (GetPath() != wxT("/") || GetProtocol().Length() || GetQuery().Length() || GetReference().Length())
+	{
+		url << Escape(GetPath());
+	}
 	if (GetQuery().Length())
 	{
 		url << wxT('?') << Escape(GetQuery());
@@ -178,7 +183,7 @@ wxString URL::GetReference() const
 void URL::SetProtocol(const wxString &protocol)
 {
 	wxASSERT(protocol.Find(wxT(':')) == -1 && protocol.Find(wxT('/')) == -1);
-	m_protocol = protocol;
+	m_protocol = protocol.Lower();
 }
 
 void URL::SetHostname(const wxString &hostname)
@@ -220,8 +225,14 @@ void URL::SetPassword(const wxString &password)
 
 void URL::SetPath(const wxString &path)
 {
-	wxASSERT(path.Length() == 0 || path[0] == wxT('/'));
-	m_path = path;
+	if (path.Length() > 0 && path[0] != wxT('/'))
+	{
+		m_path = wxT('/') + path;
+	}
+	else
+	{
+		m_path = path;
+	}
 }
 
 void URL::SetQuery(const wxString &query)
