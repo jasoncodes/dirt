@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.27 2003-03-11 12:48:07 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.28 2003-03-11 13:14:38 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -92,7 +92,9 @@ protected:
 enum
 {
 	ID_RESET = 1,
-	ID_TIMER
+	ID_TIMER,
+	ID_BROWSE_SOUND_CONNECTION,
+	ID_BROWSE_SOUND_JOIN
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
@@ -102,6 +104,8 @@ BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChangeText)
 	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChangeCheck)
 	EVT_TIMER(ID_TIMER, ServerUIFrameConfig::OnTimer)
+	EVT_BUTTON(ID_BROWSE_SOUND_CONNECTION, ServerUIFrameConfig::OnBrowse)
+	EVT_BUTTON(ID_BROWSE_SOUND_JOIN, ServerUIFrameConfig::OnBrowse)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -144,11 +148,11 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
-	wxButton *cmdSoundConnection = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetBestSize().y, m_txtSoundConnection->GetBestSize().y));
+	wxButton *cmdSoundConnection = new wxButton(panel, ID_BROWSE_SOUND_CONNECTION, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetBestSize().y, m_txtSoundConnection->GetBestSize().y));
 	wxStaticText *lblSoundJoin = new wxStaticText(panel, -1, wxT("&Join Sound:"));
 	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
-	wxButton *cmdSoundJoin = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
+	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
 	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
@@ -372,6 +376,18 @@ void ServerUIFrameConfig::OnTimer(wxTimerEvent &event)
 		wxLongLong_t time_left = next_tick - now;
 		if (time_left < 0) time_left = 0;
 		m_lblNextUpdate->SetLabel(SecondsToMMSS((long)(time_left/1000)));
+	}
+}
+
+void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
+{
+	wxTextCtrl *txt =
+		(event.GetId()==ID_BROWSE_SOUND_CONNECTION) ?
+		m_txtSoundConnection : m_txtSoundJoin;
+	wxFileDialog dlg(this, wxT("Select Sound File"), wxT(""), txt->GetValue(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		txt->SetValue(dlg.GetPath());
 	}
 }
 

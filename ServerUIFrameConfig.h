@@ -16,6 +16,7 @@ protected:
 	void OnChangeText(wxCommandEvent &event);
 	void OnChangeCheck(wxCommandEvent &event);
 	void OnTimer(wxTimerEvent &event);
+	void OnBrowse(wxCommandEvent &event);
 
 protected:
 	virtual void LoadSettings();
