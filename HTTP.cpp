@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.19 2004-05-16 04:42:45 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.20 2004-05-30 09:24:31 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -865,12 +865,7 @@ void HTTP::Connect(const URL &url)
 	{
 		hostname = m_url.GetHostname();
 	}
-	if (!m_dns->Lookup(hostname))
-	{
-		wxSocketEvent evt(ID_SOCKET);
-		evt.m_event = wxSOCKET_LOST;
-		AddPendingEvent(evt);
-	}
+	m_dns->Lookup(hostname);
 }
 
 void HTTP::OnDNS(DNSEvent &event)

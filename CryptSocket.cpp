@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.42 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.43 2004-05-30 09:24:31 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -673,10 +673,7 @@ void CryptSocketClient::Connect(const wxString &host, wxUint16 port)
 	m_DNS = new DNS;
 	m_DNS->SetEventHandler(this, ID_DNS);
 
-	if (!m_DNS->Lookup(host))
-	{
-		OnSocketConnectionError(wxT("Cannot start DNS"));
-	}
+	m_DNS->Lookup(host);
 
 }
 
@@ -708,7 +705,7 @@ void CryptSocketClient::OnSocketConnection()
 
 void CryptSocketClient::OnDNS(DNSEvent &event)
 {
-
+	
 	if (event.IsSuccess())
 	{
 
@@ -722,10 +719,7 @@ void CryptSocketClient::OnDNS(DNSEvent &event)
 
 				m_port = m_proxy_settings->GetPort();
 
-				if (!m_DNS->Lookup(m_proxy_settings->GetHostname()))
-				{
-					OnSocketConnectionError(wxT("Cannot start DNS (2)"));
-				}
+				m_DNS->Lookup(m_proxy_settings->GetHostname());
 
 				return;
 

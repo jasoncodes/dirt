@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.45 2004-05-16 04:42:42 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.46 2004-05-30 09:24:31 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -127,15 +127,11 @@ bool ClientDefault::Connect(const URL &url, bool is_reconnect)
 	}
 	m_server_name = wxEmptyString;
 	m_url = url;
-	wxIPV4address addr;
-	if (m_dns->Lookup(m_url.GetHostname()))
-	{
-		wxString msg;
-		msg << wxT("Looking up ") << m_url.GetHostname();
-		m_event_handler->OnClientInformation(wxEmptyString, msg);
-		return true;
-	}
-	return false;
+	wxString msg;
+	msg << wxT("Looking up ") << m_url.GetHostname();
+	m_event_handler->OnClientInformation(wxEmptyString, msg);
+	m_dns->Lookup(m_url.GetHostname());
+	return true;
 }
 
 wxString ClientDefault::GetLastURLString() const
