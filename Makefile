@@ -1,11 +1,14 @@
-ifneq ($(wildcard $(shell kde-config --prefix)/include/kde/kapplication.h),.)
-ifneq ($(wildcard $(QTDIR)/include/qapplication.h),.)
-ifneq ($(wildcard $(QTDIR)/lib/libqt-mt.so),.)
-KDE_DIR := $(shell kde-config --prefix)
-KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
-KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
-endif
-endif
+KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
+ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
+	QAPP_H := $(QTDIR)/include/qapplication.h
+	ifeq ($(wildcard $(QAPP_H)),$(QAPP_H))
+		QTLIB := $(QTDIR)/lib/libqt-mt.so
+		ifeq ($(wildcard $(QTLIB)),$(QTLIB))
+			KDE_DIR := $(shell kde-config --prefix)
+			KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
+			KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
+		endif
+	endif
 endif
 
 CC = gcc
