@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.9 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.10 2003-02-14 04:57:06 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
@@ -24,7 +24,7 @@ NickListControl::NickListControl(wxWindow *parent, int id)
 		wxLB_SINGLE | wxLB_SORT | wxLB_HSCROLL | wxLB_NEEDED_SB)
 {
 	FixBorder(this);
-    SetCursor(*wxSTANDARD_CURSOR);
+	SetCursor(*wxSTANDARD_CURSOR);
 }
 
 NickListControl::~NickListControl()

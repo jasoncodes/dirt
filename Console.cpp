@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.5 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.6 2003-02-14 04:57:06 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -196,7 +196,7 @@ ConsoleReadThread *g_read_thread;
 		signal(SIGINT, sighandler); // interrupt by user (ctrl-c)
 		signal(SIGQUIT, sighandler); // quit by user (ctrl-\)
 		signal(SIGTERM, sighandler); // termination request
-        	//signal(SIGTSTP, sighandler); // terminal stop (ctrl-z)
+		//signal(SIGTSTP, sighandler); // terminal stop (ctrl-z)
 		//signal(SIGWINCH, sighandler); // terminal resize
 	}
 

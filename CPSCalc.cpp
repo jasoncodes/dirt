@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.2 2003-02-13 13:16:49 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.3 2003-02-14 04:57:06 jason Exp $)
 
 #include "CPSCalc.h"
 
@@ -39,7 +39,7 @@ off_t CPSCalc::Update(off_t pos)
 
 	m_pos = pos;
 
-    if (pos > 0)
+	if (pos > 0)
 	{
 
 		for (int i = 1; i < num_history; ++i)

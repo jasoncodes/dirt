@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.5 2003-02-14 04:50:12 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.6 2003-02-14 04:57:07 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -32,7 +32,7 @@ ServerUIFrame::ServerUIFrame()
 		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
 		wxDefaultPosition, wxDefaultSize)
 {
-        SetIcon(wxIcon( dirt_xpm ));
+	SetIcon(wxIcon( dirt_xpm ));
 	m_txtInput = new InputControl(this, ID_INPUT);
 	m_txtLog = new wxTextCtrl(this, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
