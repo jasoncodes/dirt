@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.39 2004-06-25 12:33:26 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.40 2004-11-23 09:31:01 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -229,13 +229,13 @@ protected:
 	void DrawOutline(wxDC &dc, const wxPen &pen1, const wxPen &pen2, int depth)
 	{
 		wxSize size = GetSize();
-		if (pen1 != wxNullPen)
+		if (pen1.Ok())
 		{
 			dc.SetPen(pen1);
 			dc.DrawLine(depth, depth, size.x-depth, depth);
 			dc.DrawLine(depth, depth, depth, size.y-depth);
 		}
-		if (pen2 != wxNullPen)
+		if (pen2.Ok())
 		{
 			dc.SetPen(pen2);
 			dc.DrawLine(size.x-depth-1, depth, size.x-depth-1, size.y-depth);

@@ -54,7 +54,7 @@ CXXFLAGS = \
 	$(strip \
 		$(COMPILE_FLAGS) `$(WXCONFIG) --cxxflags` \
 		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
-	)
+	) -Werror
 LINK_FLAGS_GUI = `$(WXCONFIG) --libs`
 LINK_FLAGS_CLI = `$(WXCONFIG) --libs base`
 
