@@ -361,6 +361,14 @@ SOURCE=.\DNS.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\File.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\File.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\FileTransfer.cpp
 # End Source File
 # Begin Source File

@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINV
 Includes=
 Linker=-lwxmswu -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
 Libs=crypto\Release\
-UnitCount=91
+UnitCount=93
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Release_private.rc
@@ -947,6 +947,26 @@ BuildCmd=
 
 [Unit91]
 FileName=ClientUIMDITransferResumeDialog.h
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit92]
+FileName=File.cpp
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit93]
+FileName=File.h
 CompileCpp=1
 Folder=Dirt
 Compile=1
