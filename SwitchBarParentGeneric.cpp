@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.1 2004-04-25 17:06:02 jason Exp $)
+RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.2 2004-04-25 19:27:34 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -114,7 +114,7 @@ wxWindow* SwitchBarParent::GetActiveChildWindow() const
 	wxWindowList &list = m_client_area->GetChildren();
 	for (wxWindowListNode *node = list.GetFirst(); node; node = node->GetNext())
 	{
-		wxWindow *child = (SwitchBarChild*)node->GetData();
+		wxWindow *child = node->GetData();
 		if (child->IsShown())
 		{
 			return child;

@@ -1,7 +1,5 @@
 MinGW+NT4: Pressing Alt+T followed by space results in crash
 
-timers are totally broke
-
 GTK: startup with --host=jason.darktech.org results in it thinking
 that it didn't have focus and a red line appears at the top
 with multiple taskbar flashes
