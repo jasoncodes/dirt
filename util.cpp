@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.33 2003-03-05 01:11:04 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.35 2003-03-12 05:05:05 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -614,9 +614,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 			wxString cmd;
 			bool ok = ft->GetOpenCommand(
-				&cmd,
-				wxFileType::MessageParameters(URL,
-				wxT("")));
+				&cmd, wxFileType::MessageParameters(URL, wxT("")));
 			delete ft;
 
 			if (!ok)
@@ -643,7 +641,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 				if (show_error)
 				{
 					wxMessageBox(
-						wxT("Unable to navigate to ") + event.GetString(),
+						wxT("Unable to navigate to ") + URL,
 						wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
 				}
 				return false;
@@ -655,4 +653,39 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 	return true;
 
+}
+
+void ForceForegroundWindow(wxFrame *frm)
+{
+	#if defined(__WXMSW__)
+		HWND hWnd = (HWND)frm->GetHWND();
+		if (hWnd != GetForegroundWindow())
+		{
+			frm->Show();
+			DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
+			DWORD ThreadID2 = GetWindowThreadProcessId(hWnd, 0);
+			if (ThreadID1 != ThreadID2)
+			{
+				AttachThreadInput(ThreadID1, ThreadID2, TRUE);
+				SetForegroundWindow(hWnd);
+				AttachThreadInput(ThreadID1, ThreadID2, FALSE);
+			}
+			else
+			{
+				SetForegroundWindow(hWnd);
+			}
+			if (IsIconic(hWnd))
+			{
+				ShowWindow(hWnd, SW_RESTORE);
+			}
+			else
+			{
+				ShowWindow(hWnd, SW_SHOW);
+			}
+		}
+	#else
+		frm->Show(false);
+		frm->Show(true);
+		frm->SetFocus();
+	#endif
 }

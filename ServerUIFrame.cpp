@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.34 2003-03-11 09:55:18 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.35 2003-03-12 05:05:05 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -225,41 +225,6 @@ ServerUIFrame::~ServerUIFrame()
 	delete tray;
 	delete srv;
 
-}
-
-static void ForceForegroundWindow(wxFrame *frm)
-{
-#if defined(__WXMSW__)
-	HWND hWnd = (HWND)frm->GetHWND();
-	if (hWnd != GetForegroundWindow())
-	{
-		frm->Show();
-		DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
-		DWORD ThreadID2 = GetWindowThreadProcessId(hWnd, 0);
-		if (ThreadID1 != ThreadID2)
-		{
-			AttachThreadInput(ThreadID1, ThreadID2, TRUE);
-			SetForegroundWindow(hWnd);
-			AttachThreadInput(ThreadID1, ThreadID2, FALSE);
-		}
-		else
-		{
-			SetForegroundWindow(hWnd);
-		}
-		if (IsIconic(hWnd))
-		{
-			ShowWindow(hWnd, SW_RESTORE);
-		}
-		else
-		{
-			ShowWindow(hWnd, SW_SHOW);
-		}
-	}
-#else
-	frm->Show(false);
-	frm->Show(true);
-	frm->SetFocus();
-#endif
 }
 
 void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)

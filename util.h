@@ -54,5 +54,6 @@ const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, si
 wxLongLong_t GetMillisecondTicks();
 wxString GetPublicListURL();
 bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
+void ForceForegroundWindow(wxFrame *frm);
 
 #endif
