@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.33 2003-03-19 11:54:49 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.34 2003-03-20 02:39:15 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1279,6 +1279,10 @@ void LogControl::ScrollToBottom()
 void LogControl::Clear()
 {
 	m_red_line = NULL;
+	last_start_end_valid = false;
+	m_find_pos1 = m_Cell;
+	m_find_pos2 = m_Cell;
+	m_find_show_sel = false;
 	SetPage(wxT(""));
 	ScrollToBottom();
 }
