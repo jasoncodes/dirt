@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.31 2004-05-26 21:45:44 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.32 2004-05-27 07:38:39 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -197,7 +197,7 @@ class SplashButton : public wxControl
 
 public:
 	SplashButton(SplashPanel *parent, int id, const wxString &caption, int mnemonic_pos = -1)
-		: wxControl(parent, id, wxDefaultPosition, wxSize(67, 26), wxNO_BORDER)
+		: wxControl(parent, id, wxDefaultPosition, wxSize(68, 26), wxNO_BORDER)
 	{
 
 		SetBestSize(GetSize());
@@ -285,20 +285,20 @@ protected:
 
 		DrawOutline(
 			dc, 
-			m_focused ? ( m_depressed ? *wxBLACK_PEN : *wxBLACK_PEN ) : *wxWHITE_PEN,
-			m_focused ? ( m_depressed ? *wxBLACK_PEN : *wxBLACK_PEN ) : *wxGREY_PEN,
+			m_focused ? ( m_depressed ? *wxBLACK_PEN : *wxWHITE_PEN ) : *wxWHITE_PEN,
+			m_focused ? ( m_depressed ? *wxBLACK_PEN : *wxGREY_PEN ) : *wxGREY_PEN,
 			0);
 
 		DrawOutline(
 			dc, 
-			m_focused ? ( m_depressed ? *wxMEDIUM_GREY_PEN : *wxWHITE_PEN ) : *wxLIGHT_GREY_PEN,
-			m_focused ? ( m_depressed ? *wxMEDIUM_GREY_PEN : *wxGREY_PEN ) : *wxMEDIUM_GREY_PEN,
+			m_focused ? ( m_depressed ? *wxMEDIUM_GREY_PEN : *wxLIGHT_GREY_PEN ) : *wxLIGHT_GREY_PEN,
+			m_focused ? ( m_depressed ? *wxMEDIUM_GREY_PEN : *wxMEDIUM_GREY_PEN ) : *wxMEDIUM_GREY_PEN,
 			1);
 
 		DrawOutline(
 			dc, 
-			m_focused ? ( m_depressed ? wxNullPen : *wxLIGHT_GREY_PEN ) : wxNullPen,
-			m_focused ? ( m_depressed ? wxNullPen : *wxMEDIUM_GREY_PEN ) : wxNullPen,
+			m_focused ? ( m_depressed ? wxNullPen : wxNullPen ) : wxNullPen,
+			m_focused ? ( m_depressed ? wxNullPen : wxNullPen ) : wxNullPen,
 			2);
 
 		if (m_focused)
