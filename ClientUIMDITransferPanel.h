@@ -13,7 +13,7 @@ public:
 		ClientUIMDICanvas *canvas, wxWindowID id,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
-		long style = wxTAB_TRAVERSAL | wxNO_BORDER | wxCLIP_CHILDREN);
+		long style = wxTAB_TRAVERSAL);
 
 	virtual ~ClientUIMDITransferPanel();
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.15 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.16 2003-03-01 09:42:08 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -24,8 +24,10 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	ClientUIMDICanvas *canvas, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
 	long style)
-	: wxPanel(canvas, id, pos, size, style | wxCLIP_CHILDREN)
+	: wxPanel(canvas, id, pos, size, style | wxSTATIC_BORDER | wxCLIP_CHILDREN)
 {
+
+	FixBorder(this);
 
 	m_canvas = canvas;
 
@@ -54,8 +56,6 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_lblLeft = AddRow(wxT("Left:"));
 	m_lblCPS = AddRow(wxT("CPS:"));
 	m_lblSent = AddRow(wxT("Sent:"));
-
-	AddRow(wxT(""));
 
 	m_pnlLeft->SetAutoLayout( TRUE );
 	m_pnlLeft->SetSizer( m_szrLeft );
@@ -100,7 +100,7 @@ ClientUIMDITransferPanel::~ClientUIMDITransferPanel()
 void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 {
 	
-	wxSize size = GetSize();
+	wxSize size = GetClientSize();
 	int gauge_height = m_gauge->GetSize().y;
 	int status_height = m_lblStatus->GetSize().y;
 

@@ -40,3 +40,5 @@
 * /alias
 
 * hide /oper password when being typed or at least make sure doesn't go into history
+
+* hold ctrl to copy w/o formatting
