@@ -27,3 +27,5 @@
 
 * file transfer firewall note: maybe should try connecting both ways
   at same time, and close the alt route if main succeeds, etc
+
+* flashing text for main frame as FlashWindow() alternative
