@@ -6,13 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.27 2003-05-31 04:30:15 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.26 2003-05-31 04:25:32 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
 #include "util.h"
 #include <wx/datetime.h>
-#include "CryptSocketProxy.h"
 
 //////// CryptSocketBase ////////
 

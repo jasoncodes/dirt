@@ -4,9 +4,7 @@
 #include <wx/socket.h>
 #include "ByteBuffer.h"
 #include "Crypt.h"
-
-class CryptSocketProxy;
-class CryptSocketProxySettings;
+#include "CryptSocketProxy.h"
 
 //////// CryptSocketBase ////////
 
