@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.7 2003-03-05 07:34:28 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.8 2003-03-08 03:53:29 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -234,7 +234,7 @@ void HTTP::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 void HTTP::OnTimerTimeout(wxTimerEvent &event)
 {
 	wxLongLong_t idle_time = GetMillisecondTicks() - m_last_active;
-	if (idle_time >= m_idle_timeout_secs)
+	if (idle_time >= m_idle_timeout_secs*1000)
 	{
 		wxSocketEvent evt(ID_SOCKET);
 		evt.m_event = wxSOCKET_LOST;
@@ -423,6 +423,11 @@ void HTTP::ProcessIncoming()
 							m_buffIn.Unlock();
 							m_buffIn = rest;
 							int i = header.Find(wxT(';'));
+							if (i > -1)
+							{
+								header = header.Left(i);
+							}
+							i = header.Find(wxT(' '));
 							if (i > -1)
 							{
 								header = header.Left(i);
@@ -624,7 +629,7 @@ void HTTP::ResetAll()
 
 void HTTP::ResetURLSettings()
 {
-	SetUserAgent(wxString() << GetProductVersion() << wxT(" (") << GetRCSDate() << wxT("; ") << wxGetOsDescription() << wxT(")"));
+	SetUserAgent(wxString() << wxT("Dirt Secure Chat/") << GetProductVersion() << wxT(" (") << GetRCSDate() << wxT("; ") << wxGetOsDescription() << wxT(")"));
 	SetProxy(URL());
 	m_extra_url_headers.clear();
 }
@@ -688,7 +693,7 @@ void HTTP::SetPostData(const StringHashMap &form_data)
 void HTTP::SetReferer(const URL &referer)
 {
 	m_referer = referer;
-	if (m_referer.GetProtocol().Length() == 0)
+	if (m_referer.GetProtocol().Length() == 0 && ((wxString)m_referer).Length())
 	{
 		m_referer.SetProtocol(wxT("http"));
 	}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.36 2003-03-05 08:05:12 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.37 2003-03-08 03:53:29 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -381,7 +381,14 @@ void ServerDefault::OnHTTP(HTTPEvent &event)
 				}
 				else
 				{
-					HTTPError(wxT("Error parsing response"));
+					if (m_http_data.Length() == 0)
+					{
+						HTTPError(wxT("Empty response"));
+					}
+					else
+					{
+						HTTPError(wxT("Error parsing response"));
+					}
 				}
 			}
 			break;
