@@ -2,6 +2,8 @@
 #define ClientDefault_H_
 
 #include "Client.h"
+class CryptSocketClient;
+class CryptSocketEvent;
 
 class ClientDefault : public Client
 {
@@ -12,13 +14,15 @@ public:
 
 	virtual void SendMessage(const wxString &nick, const wxString &message);
 	virtual wxString GetNickname();
-	virtual void Connect(const wxString &url);
+	virtual bool Connect(const wxString &url);
+	virtual void Disconnect();
+	virtual bool IsConnected();
 
 protected:
-	void OnTestTimer(wxTimerEvent &event);
+	void OnSocket(CryptSocketEvent &event);
 	
 protected:
-	wxTimer *tmrTest;
+	CryptSocketClient *m_sck;
 
 private:
 	DECLARE_EVENT_TABLE()

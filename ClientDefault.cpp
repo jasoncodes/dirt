@@ -6,26 +6,29 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.10 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.11 2003-02-16 11:29:39 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
+#include "CryptSocket.h"
+
+#define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(wxEmptyString, wxT("Not connected")); return; } }
 
 enum
 {
-	ID_TIMER_TEST = 1
+	ID_SOCKET = 1,
 };
 
 BEGIN_EVENT_TABLE(ClientDefault, Client)
-	EVT_TIMER(ID_TIMER_TEST, ClientDefault::OnTestTimer)
+	EVT_CRYPTSOCKET(ID_SOCKET, ClientDefault::OnSocket)
 END_EVENT_TABLE()
 
 ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 	: Client(event_handler)
 {
 
-	tmrTest = new wxTimer(this, ID_TIMER_TEST);
-	//tmrTest->Start(5000);
+	m_sck = new CryptSocketClient;
+	m_sck->SetEventHandler(this, ID_SOCKET);
 
 	Debug(wxEmptyString, wxT("ClientDefault Ready"));
 
@@ -41,17 +44,25 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 
 ClientDefault::~ClientDefault()
 {
-	delete tmrTest;
+	delete m_sck;
 }
 
 void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 {
-	bool is_private = (nick.Length() > 0);
-	m_event_handler->OnClientMessageOut(nick, message);
-	m_event_handler->OnClientMessageIn(
-		is_private?nick:wxT("EVERYONE"), 
-		wxString() << wxT("You sent me \"") << message << (wxChar)OriginalModifier << wxT("\""),
-		is_private);
+	//m_event_handler->OnClientMessageOut(nick, message);
+	//m_event_handler->OnClientMessageIn(
+	//	is_private?nick:wxT("EVERYONE"), 
+	//	wxString() << wxT("You sent me \"") << message << (wxChar)OriginalModifier << wxT("\""),
+	//	is_private);
+	ASSERT_CONNECTED();
+	if (nick.Length() > 0)
+	{
+		m_sck->Send(wxString() << wxT("PRIVMSG \"") << nick << wxT("\" ") << message);
+	}
+	else
+	{
+		m_sck->Send(wxString() << wxT("PUBMSG ") << message);
+	}
 }
 
 wxString ClientDefault::GetNickname()
@@ -59,12 +70,53 @@ wxString ClientDefault::GetNickname()
 	return wxT("LOCALHOST");
 }
 
-void ClientDefault::OnTestTimer(wxTimerEvent &event)
+bool ClientDefault::Connect(const wxString &url)
 {
-	m_event_handler->OnClientDebug(wxEmptyString, wxT("This is a test timer"));
+	m_event_handler->OnClientDebug(wxEmptyString, wxT("Note: Connect does not support parameters yet, using localhost:11626"));
+	wxIPV4address addr;
+	addr.Hostname("127.0.0.1");
+	addr.Service(11626);
+	m_sck->Connect(addr);
+	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connecting to localhost:11626"));
+	return true;
 }
 
-void ClientDefault::Connect(const wxString &url)
+void ClientDefault::Disconnect()
 {
-	m_event_handler->OnClientDebug(wxEmptyString, wxT("Connect not implemented yet"));
+	m_sck->Close();
+	m_event_handler->OnClientInformation(wxEmptyString, wxT("Disconnected"));
+}
+
+bool ClientDefault::IsConnected()
+{
+	return m_sck->Ok();
+}
+
+void ClientDefault::OnSocket(CryptSocketEvent &event)
+{
+
+	switch (event.GetSocketEvent())
+	{
+
+		case CRYPTSOCKET_CONNECTION:
+			m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
+			break;
+
+		case CRYPTSOCKET_LOST:
+			Disconnect();
+			break;
+
+		case CRYPTSOCKET_INPUT:
+			m_event_handler->OnClientDebug(wxEmptyString, wxT("CRYPTSOCKET_INPUT: ") + event.GetData());
+			break;
+
+		case CRYPTSOCKET_OUTPUT:
+			m_event_handler->OnClientDebug(wxEmptyString, wxT("CRYPTSOCKET_OUTPUT"));
+			break;
+
+		default:
+			wxFAIL_MSG(wxT("Unexpected message in ClientDefault::OnSocket"));
+
+	}
+
 }
