@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.51 2003-06-30 04:12:35 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.52 2003-06-30 08:26:28 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -959,33 +959,6 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 
 		wxASSERT(&m_transfers[index] == t);
 
-		wxString type;
-		switch (event.GetSocketEvent())
-		{
-			case CRYPTSOCKET_INPUT:
-				type = wxT("CRYPTSOCKET_INPUT");
-				break;
-			case CRYPTSOCKET_OUTPUT:
-				type = wxT("CRYPTSOCKET_OUTPUT");
-				break;
-			case CRYPTSOCKET_CONNECTION:
-				type = wxT("CRYPTSOCKET_CONNECTION");
-				break;
-			case CRYPTSOCKET_LISTEN:
-				type = wxT("CRYPTSOCKET_LISTEN");
-				break;
-			case CRYPTSOCKET_LOST:
-				type = wxT("CRYPTSOCKET_LOST");
-				break;
-			case CRYPTSOCKET_ERROR:
-				type = wxT("CRYPTSOCKET_ERROR");
-				break;
-		}
-		wxString msg;
-		msg << t->transferid << wxT(" ") << wxString::Format(wxT("%x"),event.GetSocket()) << wxT(" ") << type;
-	//	OutputDebugString((msg+wxT("\n")).c_str());
-	//	m_client->m_event_handler->OnClientDebug(wxEmptyString, msg);
-
 		switch (event.GetSocketEvent())
 		{
 
@@ -1102,8 +1075,8 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 				{
 					if (t->m_scks.GetCount() > 1)
 					{
-						delete event.GetSocket();
 						t->m_scks.Remove(event.GetSocket());
+						delete event.GetSocket();
 						if (t->GetConnectCount() == 0)
 						{
 							t->m_cant_connect = true;

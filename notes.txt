@@ -1,5 +1,3 @@
-* URGENT: DCC Connect proxy seems highly broken
-
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
 	make sure recursive safe (int m_depth;)
@@ -62,6 +60,9 @@
 		m_mutex->Unlock();
 
 * SOCKS 4/5 BIND support for DCC Listen
+
+* lock for exclusive write any files opened by FileTransfers.cpp
+  (make sure reading is still allowed)
 
 * /dcc close complete, /dcc close all, /dcc close fail
 
