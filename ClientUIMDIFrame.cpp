@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.122 2003-06-12 10:29:42 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.123 2003-06-25 03:10:42 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -1181,16 +1181,36 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer, bool
 
 void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 {
+
 	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
-	if (bIsError)
+	
+	wxColour colour = bIsError ? *wxRED : wxColour(0,0,128);
+	
+	bool bAlert;
+	switch (transfer.state)
 	{
-		OnClientWarning(wxEmptyString, transfer.GetPrefixString() + transfer.status);
+
+		case ftsSendComplete:
+		case ftsSendFail:
+		case ftsGetPending:
+		case ftsGetComplete:
+		case ftsGetFail:
+			bAlert = true;
+			break;
+
+		default:
+			bAlert = false;
+			break;
+
 	}
-	else
-	{
-		OnClientInformation(wxEmptyString, transfer.GetPrefixString() + transfer.status);
-	}
+
+	wxString text;
+	text << wxT("*** ") << transfer.GetPrefixString() << transfer.status;
+
+	AddLine(wxEmptyString, text, colour, true, !bAlert, false);
+	
 	OnClientTransferTimer(transfer);
+
 }
 
 void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)

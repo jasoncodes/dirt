@@ -1,8 +1,3 @@
-* remove msvcp60.dll dependency
-
-* investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
-  for SwitchBar on Windows XP/2003
-
 * SOCKS 4/5 BIND support for DCC Listen
 
 * Mutex (win32 + unix)
@@ -51,6 +46,13 @@
 			ReInit();
 		}
 		m_mutex->Unlock();
+
+* /dcc close complete, /dcc close all, /dcc close fail
+
+* close all query windows, transfers, completed/failed transfers, pending transfers
+
+* investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
+  for SwitchBar on Windows XP/2003
 
 * nice about screen (wxHtmlWindow maybe?)
 
@@ -101,11 +103,13 @@
 * delete file after sent, delete file
 
 * update dirt homepage to extract details from exe and show latest ver number and
-  modified date (preferably from RCS data, but last modified date would probably be okay)
+  modified date (preferably from RCS data, but last modified date would probably
+  be okay)
 
 * dirt:// protocol registration for mozilla on X11
 
-* is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
+* is there a way to tell gethostbyname() to cancel?
+  (so we can speed up DNS::Cancel())
 
 * only scroll to bottom if scrollpos was already at or near bottom
   and no scroll in progress and no selection in progress.
@@ -137,6 +141,8 @@
 
 * confirm exit when connected option for client?
 
+* spawn other processes in seperate thread
+
 * prefix caption with number in brackets showing how many msgs are waiting?
 
 * /font (wxHtmlWindow::SetFonts() and maybe also drop <code/> usage)
@@ -144,9 +150,11 @@
 
 * use Arial Unicode MS to display CJK characters if current font doesn't support
 
+* remove msvcp60.dll dependency?
+
 * research that log control gdi thing in 9x
 
-* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
+* non-wrapping lines have row of blank pixels underneath (related to font?)
 
 * check that guards are in place where necessary to trap malformed messages
 
