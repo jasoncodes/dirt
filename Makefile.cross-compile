@@ -1,6 +1,8 @@
 ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
         CXXFLAGS := $(subst -mthreads,,$(shell echo $(CXXFLAGS)))
         LINK_FLAGS := $(subst -mthreads,,$(shell echo $(LINK_FLAGS)))
+        LINK_FLAGS_GUI := $(subst -mthreads,,$(shell echo $(LINK_FLAGS_GUI)))
+        LINK_FLAGS_CLI := $(subst -mthreads,,$(shell echo $(LINK_FLAGS_CLI)))
         HOST = i586-mingw32msvc
         BINARY_SUFFIX = .exe
 	EXTRA_DEPENDS = Dirt.res
