@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.7 2003-02-22 05:55:10 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.6 2003-02-22 05:50:56 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -60,7 +60,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLabels->Add(lblUserPass, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblAdminPass, 1, wxBOTTOM, 8);
 				}
-				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
+				szrLeftTop->Add(szrLabels, 0, wxEXPAND, 0);
 
 				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
 				{
