@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.23 2003-02-18 23:29:14 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.24 2003-02-19 00:08:15 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -341,59 +341,28 @@ void ShowAbout()
 
 ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
-
-	ByteBuffer context_buff(context);
-	ByteBuffer cmd_buff(cmd.Upper());
-
-	ByteBuffer msg(context_buff.Length() + cmd_buff.Length() + data.Length() + 2);
-	
-	byte *msgptr = msg.Lock();
-
-	memcpy(msgptr, context_buff.Lock(), context_buff.Length());
-	context_buff.Unlock();
-	msgptr += context_buff.Length() + 1;
-
-	memcpy(msgptr, cmd_buff.Lock(), cmd_buff.Length());
-	cmd_buff.Unlock();
-	msgptr += cmd_buff.Length() + 1;
-
-	ByteBuffer tmp(data);
-	memcpy(msgptr, tmp.Lock(), tmp.Length());
-	tmp.Unlock();
-
-	msg.Unlock();
-
-	return msg;
-
+	ByteBufferArray tmp;
+	tmp.Alloc(3);
+	tmp.Add(context);
+	tmp.Add(cmd);
+	tmp.Add(data);
+	return Pack(tmp);
 }
 
 bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data)
 {
-
-	ByteBuffer msg2(msg);
-	byte *dataptr = msg2.Lock();
-	size_t datalen = msg2.Length();
-	byte *sep1 = (byte*)memchr(dataptr, 0, datalen);
-	if (!sep1)
+	ByteBufferArray tmp = Unpack(msg, 3);
+	if (tmp.GetCount() == 3)
 	{
-		msg2.Unlock();
+		context = tmp.Item(0);
+		cmd = tmp.Item(1);
+		data = tmp.Item(2);
+		return true;
+	}
+	else
+	{
 		return false;
 	}
-	byte *sep2 = (byte*)memchr(sep1+1, 0, datalen - (sep1-dataptr) - 1);
-	if (!sep2)
-	{
-		msg2.Unlock();
-		return false;
-	}
-	
-	context = ByteBuffer(dataptr, sep1 - dataptr);
-	cmd = ByteBuffer(sep1+1, sep2-sep1-1);
-	data = ByteBuffer(sep2+1, datalen - (sep2-dataptr) - 1);
-
-	msg2.Unlock();
-
-	return true;
-
 }
 
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y)
