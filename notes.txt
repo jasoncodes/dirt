@@ -1,7 +1,5 @@
 * option in the dirt.ini to specify the log path and also to disable logging for server/client
 
-* use dirt.ini in current dir as default if it exists, else %home%/dirt.ini
-
 * add kde extension for /resetwindowpos
 
 * increase win32 tray icon caption length if os + psdk supports?
