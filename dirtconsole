@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if which Xvfb > /dev/null 2> /dev/null;
+then
+
+	true
+
+else
+
+	echo dirtconsole: Xvfb not found!
+	exit 1
+
+fi
+
+DISPLAY=500
+XVFB_PID=
+
+while [ $DISPLAY != 599 ]
+do
+
+	Xvfb :$DISPLAY 2> /dev/null &
+
+	if ps $! > /dev/null;
+	then
+		XVFB_PID=$!
+		break;
+	fi
+
+	DISPLAY=$(($DISPLAY+1))
+
+done
+
+if [ "$XVFB_PID" == "" ];
+then
+
+	echo dirtconsole: Error starting Xvfb
+
+else
+
+	DISPLAY=:$DISPLAY
+	dirt --console "$@"
+
+	kill $XVFB_PID
+
+fi
