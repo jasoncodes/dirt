@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.33 2003-02-27 07:21:22 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.34 2003-03-05 01:05:13 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -316,85 +316,7 @@ Client *ClientUIMDICanvas::GetClient()
 
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
-
-	wxLogNull supress_log;
-
-	#ifdef __WXMSW__
-
-		::wxBeginBusyCursor();
-		HINSTANCE hInstance = ::ShellExecute((HWND)GetHandle(), wxT("open"), event.GetString(), NULL, NULL, SW_NORMAL);
-		::wxEndBusyCursor();
-		bool success = ((int)hInstance > 32);
-		if (!success)
-		{
-			wxMessageBox(
-				wxT("Unable to navigate to ") + event.GetString(),
-				wxT("Browser Problem"), wxOK | wxICON_ERROR);
-		}
-
-	#else
-
-		const wxChar *browsers[2] = { wxT("mozilla"), wxT("netscape") };
-		const size_t num_browsers = ((sizeof browsers) / (sizeof browsers[0]));
-
-		bool success = false;
-
-		for (int i = 0; i < num_browsers && !success; ++i)
-		{
-			wxString cmdline;
-			cmdline << browsers[i] << wxT(' ') << event.GetString();
-			::wxBeginBusyCursor();
-			long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
-			::wxEndBusyCursor();
-			success = (pid != 0);
-		}
-
-		if (!success)
-		{
-
-			wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT("html"));
-			if ( !ft )
-			{
-				wxMessageBox(
-					wxT("Unable to determine the file type for HTML."),
-					wxT("Browser Problem"), wxOK | wxICON_ERROR);
-				return;
-			}
-
-			wxString cmd;
-			bool ok = ft->GetOpenCommand(
-				&cmd,
-				wxFileType::MessageParameters(event.GetString(),
-				wxT("")));
-			delete ft;
-
-			if (!ok)
-			{
-				wxMessageBox(
-					wxT("Unable to determine the command for running your HTML browser."),
-					wxT("Browser Problem"), wxOK | wxICON_ERROR);
-				return;
-			}
-
-			// GetOpenCommand can prepend file:// even if it already has http://
-			if (cmd.Find(wxT("http://")) != -1)
-			{
-				cmd.Replace(wxT("file://"), wxT(""));
-			}
-
-			ok = (wxExecute(cmd, FALSE) != 0);
-
-			if (!ok)
-			{
-				wxMessageBox(
-					wxT("Unable to navigate to ") + event.GetString(),
-					wxT("Browser Problem"), wxOK | wxICON_ERROR);
-			}
-	
-		}
-
-	#endif
-
+	OpenBrowser(this, event.GetString());
 }
 
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)

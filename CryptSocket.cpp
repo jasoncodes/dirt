@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.15 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.16 2003-03-05 01:05:14 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -567,19 +567,7 @@ wxUint32 GetIPV4Address(wxSockAddress &addr)
 
 wxString GetIPV4AddressString(wxSockAddress &addr)
 {
-	
-	wxUint32 ip = GetIPV4Address(addr);
-
-	ip = wxUINT32_SWAP_ON_LE(ip);
-		
-	wxString result = wxString()
-		<< ((ip >> 24) & 0xff) << wxT(".")
-		<< ((ip >> 16) & 0xff) << wxT(".")
-		<< ((ip >> 8)  & 0xff) << wxT(".")
-		<< ((ip >> 0)  & 0xff);
-	
-	return result;
-	
+	return GetIPV4AddressString(GetIPV4Address(addr));
 }
 
 wxString GetIPV4String(wxSockAddress &addr, bool include_port)
@@ -609,4 +597,51 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 		retval << wxT(":") << ipv4->Service();
 	}
 	return retval;
+}
+
+wxArrayString GetIPAddresses()
+{
+
+	wxArrayString IPs;
+
+	char ac[80];
+	if (gethostname(ac, sizeof(ac)) != 0)
+	{
+		return IPs;
+	}
+
+	struct hostent *phe = gethostbyname(ac);
+	if (phe == 0)
+	{
+		return IPs;
+	}
+
+	for (int i = 0; phe->h_addr_list[i] != 0; ++i)
+	{
+		struct in_addr addr;
+		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+		IPs.Add(inet_ntoa(addr));
+	}
+
+	if (IPs.GetCount() == 0)
+	{
+		IPs.Add(wxT("127.0.0.1"));
+	}
+
+	return IPs;
+}
+
+wxString GetIPV4AddressString(wxUint32 ip)
+{
+	
+	ip = wxUINT32_SWAP_ON_LE(ip);
+	
+	wxString result = wxString()
+		<< ((ip >> 24) & 0xff) << wxT(".")
+		<< ((ip >> 16) & 0xff) << wxT(".")
+		<< ((ip >> 8)  & 0xff) << wxT(".")
+		<< ((ip >> 0)  & 0xff);
+	
+	return result;
+	
 }

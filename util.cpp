@@ -6,13 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.31 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.32 2003-03-05 01:05:14 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
 #include <wx/html/htmlwin.h>
 #include <math.h>
 #include "ByteBuffer.h"
+
+const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -40,6 +42,20 @@ wxArrayString SplitString(const wxString &str, const wxString &sep)
 
 	return lines;
 
+}
+
+wxString JoinArray(const wxArrayString &array, const wxString &sep, const wxString &prefix, const wxString &postfix)
+{
+	wxString str;
+	for (size_t i = 0; i < array.GetCount(); ++i)
+	{
+		if (i > 0)
+		{
+			str += sep;
+		}
+		str += prefix + array.Item(i) + postfix;
+	}
+	return str;
 }
 
 bool LeftEq(const wxString &text, const wxString &to_match)
@@ -534,4 +550,108 @@ wxLongLong_t GetMillisecondTicks()
 	#else
 		return wxGetLocalTimeMillis().GetValue();
 	#endif
+}
+
+wxString GetPublicListURL()
+{
+	return PUBLIC_LIST_URL;
+}
+
+bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
+{
+
+	wxLogNull supress_log;
+
+	#ifdef __WXMSW__
+
+		::wxBeginBusyCursor();
+		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), URL, NULL, NULL, SW_NORMAL);
+		::wxEndBusyCursor();
+		bool success = ((int)hInstance > 32);
+		if (!success)
+		{
+			if (show_error)
+			{
+				wxMessageBox(
+					wxT("Unable to navigate to ") + URL,
+					wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
+			}
+			return false;
+		}
+
+	#else
+
+		const wxChar *browsers[2] = { wxT("mozilla"), wxT("netscape") };
+		const size_t num_browsers = ((sizeof browsers) / (sizeof browsers[0]));
+
+		bool success = false;
+
+		for (int i = 0; i < num_browsers && !success; ++i)
+		{
+			wxString cmdline;
+			cmdline << browsers[i] << wxT(' ') << URL;
+			::wxBeginBusyCursor();
+			long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
+			::wxEndBusyCursor();
+			success = (pid != 0);
+		}
+
+		if (!success)
+		{
+
+			wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT("html"));
+			if ( !ft )
+			{
+				if (show_error)
+				{
+					wxMessageBox(
+						wxT("Unable to determine the file type for HTML."),
+						wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
+				}
+				return false;
+			}
+
+			wxString cmd;
+			bool ok = ft->GetOpenCommand(
+				&cmd,
+				wxFileType::MessageParameters(URL,
+				wxT("")));
+			delete ft;
+
+			if (!ok)
+			{
+				if (show_error)
+				{
+					wxMessageBox(
+						wxT("Unable to determine the command for running your HTML browser."),
+						wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
+				}
+				return false;
+			}
+
+			// GetOpenCommand can prepend file:// even if it already has http://
+			if (cmd.Find(wxT("http://")) != -1)
+			{
+				cmd.Replace(wxT("file://"), wxT(""));
+			}
+
+			ok = (wxExecute(cmd, FALSE) != 0);
+
+			if (!ok)
+			{
+				if (show_error)
+				{
+					wxMessageBox(
+						wxT("Unable to navigate to ") + event.GetString(),
+						wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
+				}
+				return false;
+			}
+	
+		}
+
+	#endif
+
+	return true;
+
 }
