@@ -105,9 +105,18 @@ bool ClientUIMDIFrame::IsFocused()
 	#endif
 }
 
+static inline bool IsWin32()
+{
+	#ifdef __WXMSW__
+		return true;
+	#else
+		return false;
+	#endif
+}
+
 void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 {
-	if (IsFocused())
+	if (IsFocused() || !IsWin32())
 	{
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 		if (child)

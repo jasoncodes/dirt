@@ -51,7 +51,7 @@ void Client::ProcessInput(const wxString &context, const wxString &text)
 		params.Trim(false);
 	}
 
-	Debug(context, wxString() << "Command: \"" << cmd << "\", Params: \"" << params << (char)OriginalModifier << "\"");
+	//Debug(context, wxString() << "Command: \"" << cmd << "\", Params: \"" << params << (char)OriginalModifier << "\"");
 
 	if (m_event_handler->OnClientPreprocess(context, cmd, params))
 	{
