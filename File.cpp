@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: File.cpp,v 1.4 2003-05-10 06:58:50 jason Exp $)
+RCS_ID($Id: File.cpp,v 1.5 2003-05-10 07:48:26 jason Exp $)
 
 #include "File.h"
 
@@ -250,7 +250,7 @@ wxLongLong_t File::Seek(wxLongLong_t pos, wxSeekMode mode)
 		wxLongLong ll(pos);
 		LONG hi = ll.GetHi();
 		LONG lo = SetFilePointer(m_hFile, ll.GetLo(), &hi, TranslateSeekMode(mode));
-		if (lo != INVALID_SET_FILE_POINTER || GetLastError() == NO_ERROR)
+		if ((DWORD)lo != INVALID_SET_FILE_POINTER || GetLastError() == NO_ERROR)
 		{
 			return MakeLongLong(hi, lo);
 		}
