@@ -77,9 +77,6 @@ protected:
 	wxString m_host;
 	wxString m_logfile;
 	bool m_no_input;
-	bool m_control_down;
-	bool m_alt_down;
-	bool m_shift_down;
 	wxString m_config_filename;
 	wxString m_default_quit_message;
 	Client *m_client;

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.54 2004-06-08 09:10:38 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.55 2004-06-11 23:49:51 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -211,9 +211,6 @@ bool DirtApp::OnInit()
 	LogViewerFrame *l = NULL;
 	m_console = NULL;
 	m_cmdline = NULL;
-	m_control_down = false;
-	m_alt_down = false;
-	m_shift_down = false;
 
 	#ifdef __WXMSW__
 		::timeBeginPeriod(1);
@@ -606,24 +603,7 @@ int DirtApp::FilterEvent(wxEvent& event)
 
 	wxEventType type = event.GetEventType();
 
-	if (type == wxEVT_KEY_DOWN || type == wxEVT_KEY_UP)
-	{
-
-		wxKeyEvent &key_event = (wxKeyEvent&)event;
-		m_control_down = key_event.ControlDown() | (key_event.GetKeyCode() == WXK_CONTROL);
-		m_alt_down = key_event.AltDown() | (key_event.GetKeyCode() == WXK_ALT);
-		m_shift_down = key_event.ShiftDown() | (key_event.GetKeyCode() == WXK_SHIFT);
-
-	}
-	else if (type == wxEVT_ACTIVATE || type == wxEVT_ACTIVATE_APP)
-	{
-
-		m_control_down = false;
-		m_alt_down = false;
-		m_shift_down = false;
-
-	}
-	else if (type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION)
+	if (type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION)
 	{
 
 		wxCloseEvent &close_event = (wxCloseEvent&)event;
@@ -654,27 +634,15 @@ void DirtApp::OnIdle(wxIdleEvent &event)
 
 bool DirtApp::IsControlDown() const
 {
-#if defined(__WXMSW__) || defined(__WXMAC__)
 	return wxGetKeyState(WXK_CONTROL);
-#else
-	return m_control_down;
-#endif
 }
 
 bool DirtApp::IsAltDown() const
 {
-#if defined(__WXMSW__) || defined(__WXMAC__)
 	return wxGetKeyState(WXK_ALT);
-#else
-	return m_alt_down;
-#endif
 }
 
 bool DirtApp::IsShiftDown() const
 {
-#if defined(__WXMSW__) || defined(__WXMAC__)
 	return wxGetKeyState(WXK_SHIFT);
-#else
-	return m_shift_down;
-#endif
 }
