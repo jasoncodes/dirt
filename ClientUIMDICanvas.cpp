@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.48 2003-05-07 09:26:13 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.49 2003-05-07 12:23:00 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -350,12 +350,15 @@ void ClientUIMDICanvas::OnSize(wxSizeEvent& event)
 void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 {
 	wxString context = wxEmptyString;
-	if (m_parent->GetSwitchBar()->GetIndexFromUserData(this) > 0)
+	if (m_txtLog && m_parent->GetSwitchBar()->GetIndexFromUserData(this) > 0)
 	{
 		context = GetTitle();
 	}
-	m_txtLog->ResetRedLine();
-	if (LeftEq(event.GetString().Lower(), wxT("/oper ")))
+	if (m_txtLog)
+	{
+		m_txtLog->ResetRedLine();
+	}
+	if (m_txtInput && LeftEq(event.GetString().Lower(), wxT("/oper ")))
 	{
 		m_txtInput->RemoveLastHistoryEntry();
 	}

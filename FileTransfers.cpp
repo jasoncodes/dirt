@@ -6,11 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.17 2003-05-07 09:46:54 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.18 2003-05-07 12:23:00 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
+#include "CryptSocket.h"
+#include "IPInfo.h"
 
 #include <wx/filename.h>
 
@@ -67,7 +69,7 @@ int FileTransfers::GetNewId()
 	return index;
 }
 
-/*#include <sys/stat.h>
+#include <sys/stat.h>
 
 static off_t GetFileLength(const wxString &filename)
 {
@@ -77,37 +79,88 @@ static off_t GetFileLength(const wxString &filename)
 		return st.st_size;
 	}
 	return -1;
-}*/
+}
 
 int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
-	/*FileTransfer t(this);
+	ClientContact *contact = m_client->GetContact(nickname);
+	wxASSERT(contact);
+
+	FileTransfer *t = new FileTransfer(this);
 	
-	t.transferid = GetNewId();
-	t.issend = true;
-	t.state = ftsSendTransfer;
-	t.nickname = m_client->GetNickname();
-	t.filename = GetSelf();
-	t.filesize = GetFileLength(t.filename);
-	t.time = t.filesize / 3000;
-	t.timeleft = -1;
-	t.cps = -1;
-	t.filesent = t.filesize/3*2;
-	t.m_cps.Reset(t.filesent);
-	t.status = wxT("Sending...");
+	t->transferid = GetNewId();
+	t->remoteid = -1;
+	t->issend = true;
+	t->state = ftsSendListening;
+	t->nickname = contact->GetNickname();
+	wxFileName fn(filename);
+	wxASSERT(fn.FileExists());
+	t->filename = fn.GetFullPath();
+	t->filesize = GetFileLength(t->filename);
+	t->time = 0;
+	t->timeleft = -1;
+	t->cps = -1;
+	t->filesent = 0;
+	t->m_cps.Reset(t->filesent);
+	t->status = wxT("Waiting for accept...");
+
+	if (!t->file.Open(t->filename, wxFile::read))
+	{
+		delete t;
+		return -1;
+	}
+
+	CryptSocketServer *sck = new CryptSocketServer;
+	wxIPV4address addr;
+	addr.AnyAddress();
+	addr.Service(0);
+	if (!sck->Listen(addr))
+	{
+		delete t;
+		return -1;
+	}
+	sck->GetLocal(addr);
+	t->sck = sck;
 
 	m_transfers.Add(t);
+
+	ByteBufferArray data;
+	data.Add(wxString(wxT("SEND")));
+	data.Add(wxFileName(t->filename).GetFullName());
+	data.Add(wxString() << t->filesize);
+	data.Add(wxString() << t->transferid);
+	data.Add(ByteBuffer());
+	wxArrayString IPs = GetIPAddresses();
+	int i;
+	if ((i = IPs.Index(wxT("127.0.0.1"))) > -1)
+	{
+		IPs.Remove(i);
+	}
+	if (m_client->m_ipself.Length())
+	{
+		if ((i = IPs.Index(m_client->m_ipself)) > -1)
+		{
+			IPs.Remove(i);
+		}
+		IPs.Insert(m_client->m_ipself, 0);
+	}
+	for (size_t i = 0; i < IPs.GetCount(); ++i)
+	{
+		data.Add(IPs[i]);
+		data.Add(wxString() << (int)addr.Service());
+	}
+	m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
 	
-	m_client->m_event_handler->OnClientTransferNew(t);
-	m_client->m_event_handler->OnClientTransferState(t);
+	m_client->m_event_handler->OnClientTransferNew(*t);
+	m_client->m_event_handler->OnClientTransferState(*t);
 
 	if (!tmr->IsRunning())
 	{
 		tmr->Start(1000);
-	}*/
+	}
 
-	return -1;
+	return t->transferid;
 
 }
 
@@ -178,12 +231,78 @@ void FileTransfers::OnClientUserNick(const wxString &old_nick, const wxString &n
 	
 bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
+
+	if (type == wxT("DCC"))
+	{
+
+		ByteBufferArray fields = Unpack(data);
+		if (fields.GetCount() && fields[0u].Length())
+		{
+
+			wxString dcc_type = ((wxString)fields[0u]).Upper();
+			if (dcc_type == wxT("SEND") && fields.GetCount() >= 7)
+			{
+
+				wxString filename = wxFileName(fields[1u]).GetFullName();
+				wxString size_str = fields[2u];
+				wxString id_str = fields[3u];
+				size_t i = 4u;
+				while (i < fields.GetCount() && fields[i].Length())
+				{
+					++i;
+				}
+				if (i+2 >= fields.GetCount())
+				{
+					return false;
+				}
+				wxString ip = fields[i+1];
+				wxString port_str = fields[i+2];
+				unsigned long size, id, port;
+				if (!size_str.ToULong(&size) ||
+					!id_str.ToULong(&id) ||
+					!port_str.ToULong(&port))
+				{
+					return false;
+				}
+
+				FileTransfer *t = new FileTransfer(this);
+				t->transferid = GetNewId();
+				t->remoteid = id;
+				t->issend = false;
+				t->state = ftsGetPending;
+				t->nickname = nick;
+				t->filename = filename;
+				t->filesize = size;
+				t->time = 0;
+				t->timeleft = -1;
+				t->cps = -1;
+				t->filesent = 0;
+				t->status = wxT("Accept pending...");
+
+				m_transfers.Add(t);
+				m_client->m_event_handler->OnClientTransferNew(*t);
+				m_client->m_event_handler->OnClientTransferState(*t);
+
+				if (!tmr->IsRunning())
+				{
+					tmr->Start(1000);
+				}
+
+				return true;
+
+			}
+
+		}
+
+	}
+
 	return false;
+
 }
 
 bool FileTransfers::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
-	return false;
+	return (type == wxT("DCC"));
 }
 
 bool FileTransfers::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
@@ -232,7 +351,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 				int transferid = SendFile(ht.head, ht.tail);
 				if (transferid < 0)
 				{
-					Warning(context, wxT("Unable to send file"));
+					Warning(context, wxT("Error sending \"") + ht.tail + wxT("\" to ") + ht.head);
 				}
 			}
 			else
@@ -309,7 +428,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 				{
 					const FileTransfer& t = GetTransferByIndex(i);
 					wxString str;
-					str << wxT("    ") << t.transferid << wxT(". ") << t;
+					str << wxT("    ") << t;
 					Information(context, str);
 				}
 			}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.59 2003-05-07 04:23:48 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.60 2003-05-07 12:22:59 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -196,6 +196,11 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		ht = SplitQuotedHeadTail(ht.tail);
 		type = ht.head;
 		data = ht.tail;
+		if (type.Upper() == wxT("DCC"))
+		{
+			m_event_handler->OnClientWarning(context, wxT("DCC is a reserved CTCP type"));
+			return;
+		}
 		CTCP(context, nick, type, data);
 	}
 	else if (cmd == wxT("PING"))

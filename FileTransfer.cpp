@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.11 2003-05-07 09:26:14 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.12 2003-05-07 12:23:00 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -33,42 +33,18 @@ FileTransfer::~FileTransfer()
 
 bool FileTransfer::OnTimer()
 {
-	if (filesent >= filesize * 17 / 20)
+	if (state == ftsSendTransfer || state == ftsGetTransfer)
 	{
-		filesent += filesize / 50;
-	}
-	else
-	{
-		filesent += filesent / 25;
-	}
-	if (filesent >= filesize)
-	{
-		filesent = filesize;
-	}
-	cps = m_cps.Update(filesent);
-	if (filesent < filesize)
-	{
+		cps = m_cps.Update(filesent);
 		time++;
-		int bytesleft = filesize - filesent;
-		if (cps > 0)
-		{
-			timeleft = bytesleft / cps;
-		}
-		else
-		{
-			timeleft = -1;
-		}
-		return true;
 	}
-	else
-	{
-		state = ftsGetComplete;
-		status = wxT("Transfer complete");
-		m_transfers->m_client->m_event_handler->OnClientTransferState(*this);
-		m_transfers->m_client->m_event_handler->OnClientTransferTimer(*this);
-		m_transfers->DeleteTransfer(transferid, false);
-		return false;
-	}
+	return true;
+	//state = ftsGetComplete;
+	//status = wxT("Transfer complete");
+	//m_transfers->m_client->m_event_handler->OnClientTransferState(*this);
+	//m_transfers->m_client->m_event_handler->OnClientTransferTimer(*this);
+	//m_transfers->DeleteTransfer(transferid, false);
+	//return false;
 }
 
 wxString FileTransfer::GetPrefixString() const

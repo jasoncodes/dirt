@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.20 2003-05-07 09:26:13 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.21 2003-05-07 12:23:00 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -137,6 +137,17 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 	SetCPS(transfer.cps);
 	SetFileSent(transfer.filesent);
 	SetStatus(transfer.status);
+	int index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
+	if (index > -1)
+	{
+		bool b =
+			(transfer.state == ftsSendComplete) ||
+			(transfer.state == ftsSendFail) ||
+			(transfer.state == ftsGetPending) ||
+			(transfer.state == ftsGetComplete) ||
+			(transfer.state == ftsGetFail);
+		m_canvas->GetSwitchBar()->SetButtonHighlight(index, b);
+	}
 }
 
 bool ClientUIMDITransferPanel::IsSend()

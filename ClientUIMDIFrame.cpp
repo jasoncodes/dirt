@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.107 2003-05-07 09:26:13 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.108 2003-05-07 12:23:00 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -553,7 +553,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 			if (m_client->GetContact(ht.head) && ht.tail.Length() == 0)
 			{
 				wxFileDialog dlg(
-					this, wxT("Send files to ") + ht.head,
+					this, wxT("Send to ") + ht.head,
 					wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr,
 					wxOPEN | wxMULTIPLE | wxHIDE_READONLY | wxFILE_MUST_EXIST);
 				if (dlg.ShowModal() == wxID_OK)
@@ -586,7 +586,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 					{
 						wxFileDialog dlg(
 							this, wxT("Get ") + transfer.filename + wxT(" from ") + transfer.nickname,
-							wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr,
+							wxEmptyString, transfer.filename, wxFileSelectorDefaultWildcardStr,
 							wxSAVE);
 						if (dlg.ShowModal() == wxID_OK)
 						{
