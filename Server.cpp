@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.54 2003-07-09 04:05:51 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.55 2003-07-09 04:46:33 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -860,7 +860,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		if (!conn->m_isaway || conn->m_awaymessage != data)
 		{
 			conn->m_isaway = true;
-			conn->m_awaymessage = data;
+			conn->m_awaymessage = ProcessWordFilters(data);
 			conn->m_awaytime = ::wxGetUTCTime();
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data, Pack(wxString() << conn->m_awaytime, wxString() << 0)), true);
 		}
@@ -918,7 +918,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		}
 		else
 		{
-			wxString new_nick = data;
+			wxString new_nick = ProcessWordFilters(data);
 			if (!IsValidNickname(new_nick))
 			{
 				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + new_nick));
