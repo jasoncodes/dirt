@@ -37,7 +37,6 @@
 * dirt:// protocol registration on mozilla and/or KDE
 
 * tray icon support
-* tab completion
 * file transfers
 * /bind
 * /alias
