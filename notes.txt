@@ -66,6 +66,8 @@
 
 * /dcc close complete, /dcc close all, /dcc close fail
 
+* /dcc accept all
+
 * close all query windows, transfers, completed/failed transfers, pending transfers
 
 * investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
