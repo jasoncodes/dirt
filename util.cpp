@@ -73,3 +73,18 @@ wxString Timestamp()
 {
 	return wxDateTime::Now().Format("[%H:%M] ");
 }
+
+void FixBorder(wxControl *ctl)
+{
+	#ifdef __WXMSW__
+		HWND hWnd = reinterpret_cast<HWND>(ctl->GetHandle());
+		DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
+		dwStyle &= ~WS_BORDER;
+		::SetWindowLong(hWnd, GWL_STYLE, dwStyle);
+		::InvalidateRect(hWnd, NULL, FALSE);
+		::SetWindowPos(hWnd, NULL, 0,0,0,0,
+			SWP_FRAMECHANGED | SWP_NOACTIVATE |
+			SWP_NOMOVE | SWP_NOOWNERZORDER |
+			SWP_NOSIZE | SWP_NOZORDER);
+	#endif
+}

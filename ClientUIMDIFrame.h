@@ -3,7 +3,8 @@
 
 #include "SwitchBarParent.h"
 #include "Client.h"
-#include "ClientUIMDICanvas.h"
+
+class ClientUIMDICanvas;
 
 class ClientUIMDIFrame : public SwitchBarParent, public ClientEventHandler
 {

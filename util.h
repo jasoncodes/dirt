@@ -12,5 +12,6 @@ bool RightEq(const wxString &text, const wxString &to_match);
 void SplitHeadTail(const wxString &text, wxString &head, wxString &tail);
 HeadTail SplitHeadTail(const wxString &text);
 wxString Timestamp();
+void FixBorder(wxControl *ctl);
 
 #endif

@@ -13,8 +13,6 @@
 #include "util.h"
 
 #include "res/dirt.xpm"
-#include "res/channel.xpm"
-#include "res/query.xpm"
 
 enum
 {
@@ -70,9 +68,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	Show();
 
-	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", wxIcon(channel_xpm));
+	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", ChannelCanvas);
 	NewWindow(canvas, true);
-	canvas->closable = false;
 
 	tmrFocusInputControl = new wxTimer(this, ID_FOCUSINPUTCONTROLTIMER);
 	tmrFocusInputControl->Start(100);
@@ -125,7 +122,7 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	}
 	else
 	{
-		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, context, wxIcon(query_xpm));
+		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, context, QueryCanvas);
 		NewWindow(canvas, false);
 		return canvas;
 	}

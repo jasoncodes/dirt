@@ -467,7 +467,7 @@ bool LogControl::s_bInitDone = false;
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
 	bool align_bottom)
-	: wxHtmlWindow(parent, id, pos, size, wxHW_SCROLLBAR_AUTO),
+	: wxHtmlWindow(parent, id, pos, size, wxHW_SCROLLBAR_AUTO | wxSUNKEN_BORDER ),
 	m_align_bottom(align_bottom)
 {
 

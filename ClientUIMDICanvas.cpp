@@ -10,11 +10,18 @@
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
 #include "ClientUIMDIFrame.h"
+#include "util.h"
+
+#include "res/channel.xpm"
+#include "res/query.xpm"
+#include "res/send.xpm"
+#include "res/receive.xpm"
 
 enum
 {
 	ID_LOG = 1,
 	ID_INPUT,
+	ID_NICKLIST
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -25,17 +32,54 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 END_EVENT_TABLE()
 
-ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, wxIcon icon, const wxPoint& pos, const wxSize& size)
-	: SwitchBarCanvas(parent, pos, size)
+ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
+	: SwitchBarCanvas(parent, wxDefaultPosition, wxDefaultSize)
 {
 
-	m_txtLog = new LogControl(this, ID_LOG);
-	m_txtInput = new InputControl(this, ID_INPUT);
+	wxIcon icon = wxNullIcon;
+
+	switch (type)
+	{
+
+		case ChannelCanvas:
+			icon = wxIcon(channel_xpm);
+			break;
+
+		case QueryCanvas:
+			icon = wxIcon(query_xpm);
+			break;
+
+		case TransferSendCanvas:
+			icon = wxIcon(send_xpm);
+			break;
+
+		case TransferReceiveCanvas:
+			icon = wxIcon(receive_xpm);
+			break;
+
+		default:
+			wxFAIL_MSG("Invalid CanvasType");
+
+	}
+
+	if (type == ChannelCanvas || type == QueryCanvas)
+	{
+		m_txtLog = new LogControl(this, ID_LOG);
+		m_txtInput = new InputControl(this, ID_INPUT);
+	}
+
+	if (type == ChannelCanvas)
+	{
+		m_lstNickList = new wxListBox(this, ID_NICKLIST);
+		FixBorder(m_lstNickList);
+	}
+	else
+	{
+		m_lstNickList = NULL;
+	}
 
 	SetTitle(title);
 	SetIcon(icon);
-
-	closable = true;
 
 }
 
@@ -80,15 +124,21 @@ void ClientUIMDICanvas::ResizeChildren()
 		int input_height = 
 			m_txtInput->GetBestSize().GetHeight();
 
+		int nicklist_width = (m_lstNickList != NULL) ? 128 : 0;
+
 		int log_width =
-			size.GetWidth();
+			size.GetWidth() - nicklist_width;
 
 		int log_height =
 			size.GetHeight() -
 			input_height;
 
 		m_txtLog->SetSize(0, 0, log_width, log_height);
-		m_txtInput->SetSize(0, log_height, log_width, input_height);
+		m_txtInput->SetSize(0, log_height, size.GetWidth(), input_height);
+		if (m_lstNickList)
+		{
+			m_lstNickList->SetSize(log_width, 0, nicklist_width, log_height);
+		}
 
 	}
 
