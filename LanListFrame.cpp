@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.3 2003-04-30 07:08:44 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.4 2003-04-30 07:38:48 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -251,7 +251,10 @@ void LanListFrame::OnItemActivate(wxListEvent &event)
 			argv[0] = self.c_str();
 			argv[1] = param.c_str();
 			argv[2] = NULL;
-			::wxExecute((wxChar**)argv);
+			if (::wxExecute((wxChar**)argv))
+			{
+				Destroy();
+			}
 		}
 	}
 }
