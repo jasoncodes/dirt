@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.45 2003-04-01 07:56:34 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.46 2003-04-01 10:24:52 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -744,7 +744,7 @@ ByteBuffer Server::GetNickList() const
 void Server::ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
 
-	if (cmd != wxT("PING") && cmd != wxT("PONG"))
+	if (cmd != wxT("PING") && cmd != wxT("PONG") && cmd != wxT("CTCPREPLY"))
 	{
 		conn->ResetIdleTime();
 	}

@@ -43,5 +43,3 @@
 * add CTCP PING
 
 * /alias ping /ctcp $1 ping
-
-* sending a ctcp reply should not reset idle time
