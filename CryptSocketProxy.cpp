@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.19 2003-06-05 16:14:22 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.20 2003-06-06 02:53:14 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -54,7 +54,7 @@ public:
 
 		request << CRLF;
 
-		ProxySendData(request);
+		SendData(request);
 
 	}
 
@@ -123,7 +123,7 @@ public:
 		request += Uint32ToBytes(wxUINT32_SWAP_ON_LE(GetIPV4Address(m_dest_ip))); // IP
 		request += m_settings.GetUsername(); // USERID
 		request += ByteBuffer(1, 0); // NULL
-		ProxySendData(request);
+		SendData(request);
 	}
 
 	virtual void OnInput(const ByteBuffer &data)
@@ -174,7 +174,214 @@ protected:
 
 //////// CryptSocketProxySOCKS5 ////////
 
-// not implemented yet
+class CryptSocketProxySOCKS5 : public CryptSocketProxy
+{
+
+public:
+	CryptSocketProxySOCKS5(CryptSocketBase *sck)
+		: CryptSocketProxy(sck)
+	{
+		m_connected_to_remote = false;
+		m_state = stateUnknown;
+	}
+
+	virtual void OnConnect()
+	{
+		bool has_pass =
+			m_settings.GetUsername().Length() ||
+			m_settings.GetPassword(true).Length();
+		ByteBuffer request;
+		request += ByteBuffer(1, 5); // SOCKS 5
+		request += ByteBuffer(1, has_pass ? 2 : 1);
+		if (has_pass)
+		{
+			request += ByteBuffer(1, 2); // user/pass
+		}
+		request += ByteBuffer(1, 0); // no auth
+		m_state = stateAuthType;
+		SendData(request);
+	}
+
+	virtual void OnInput(const ByteBuffer &data)
+	{
+
+		m_buff += data;
+
+		switch (m_state)
+		{
+
+			case stateAuthType:
+				if (m_buff.Length() >= 2)
+				{
+
+					if (m_buff[0] == 5)
+					{
+
+						switch (m_buff[1])
+						{
+
+							case 0: // no auth
+								m_buff = m_buff.Mid(2);
+								SendConnectRequest();
+								break;
+
+							case 2: // user/pass
+								m_buff = m_buff.Mid(2);
+								SendUserPass();
+								break;
+
+							default:
+								ConnectionError(wxT("Unknown authentication requested"));
+								break;
+
+						}
+
+					}
+					else
+					{
+						ConnectionError(wxT("Unexpected method response version"));
+					}
+
+				}
+				break;
+
+			case stateUserPassResponse:
+				if (m_buff.Length() >= 2)
+				{
+					if (m_buff[0] == 1)
+					{
+						if (m_buff[1] == 0)
+						{
+							m_buff = m_buff.Mid(2);
+							SendConnectRequest();
+						}
+						else
+						{
+							ConnectionError(wxT("Invalid username/password"));
+						}
+					}
+					else
+					{
+						ConnectionError(wxT("Unexpected user/pass response version"));
+					}
+				}
+				break;
+
+			case stateConnectResponse:
+				if (m_buff.Length() >= 2)
+				{
+					if (m_buff[0] == 5)
+					{
+						switch (m_buff[1])
+						{
+							case 0:
+								if (m_buff.Length() >= 10)
+								{
+									if (m_buff[3] == 1)
+									{
+										//ByteBuffer remote_ip_bytes = m_buff.Mid(4,4);
+										//ByteBuffer remote_port_bytes = m_buff.Mid(8,2);
+										m_connected_to_remote = true;
+										ForwardInputToClient(m_buff.Mid(10));
+										m_buff = ByteBuffer();
+									}
+									else
+									{
+										ConnectionError(wxT("Unexpected address type in connect response"));
+									}
+								}
+								break;
+							case 1:
+								ConnectionError(wxT("General SOCKS server failure"));
+								break;
+							case 2:
+								ConnectionError(wxT("Connection not allowed by ruleset"));
+								break;
+							case 3:
+								ConnectionError(wxT("Network unreachable"));
+								break;
+							case 4:
+								ConnectionError(wxT("Host unreachable"));
+								break;
+							case 5:
+								ConnectionError(wxT("Connection refused"));
+								break;
+							case 6:
+								ConnectionError(wxT("TTL expired"));
+								break;
+							case 7:
+								ConnectionError(wxT("Command not supported"));
+								break;
+							case 8:
+								ConnectionError(wxT("Address type not supported"));
+								break;
+							default:
+								ConnectionError(wxT("Unknown connect response code"));
+								break;
+						}
+					}
+					else
+					{
+						ConnectionError(wxT("Unexpected connect response version"));
+					}
+				}
+				break;
+
+			default:
+				ConnectionError(wxT("Unexpected data from proxy"));
+				break;
+
+		}
+
+	}
+
+	virtual bool IsConnectedToRemote() const
+	{
+		return m_connected_to_remote;
+	}
+
+protected:
+	virtual void SendConnectRequest()
+	{
+		ByteBuffer request;
+		request += ByteBuffer(1, 5); // SOCKS 5
+		request += ByteBuffer(1, 1); // CONNECT
+		request += ByteBuffer(1, 0); // RESERVED
+		request += ByteBuffer(1, 1); // IPV4
+		request += Uint32ToBytes(wxUINT32_SWAP_ON_LE(GetIPV4Address(m_dest_ip))); // IP
+		request += Uint16ToBytes(m_dest_port); // PORT
+		m_state = stateConnectResponse;
+		SendData(request);
+	}
+
+	virtual void SendUserPass()
+	{
+		ByteBuffer request;
+		wxString username = m_settings.GetUsername();
+		wxString password = m_settings.GetPassword(true);
+		username = username.Left(255);
+		password = password.Left(255);
+		request += ByteBuffer(1, 1); // VERSION 1 of USER/PASS
+		request += ByteBuffer(1, username.Length()); // username length
+		request += username; // username
+		request += ByteBuffer(1, password.Length()); // username length
+		request += password; // password
+		m_state = stateUserPassResponse;
+		SendData(request);
+	}
+
+protected:
+	bool m_connected_to_remote;
+	ByteBuffer m_buff;
+	enum
+	{
+		stateUnknown,
+		stateAuthType,
+		stateUserPassResponse,
+		stateConnectResponse
+	} m_state;
+
+};
 
 //////// CryptSocketProxySOCKS4Listen ////////
 
@@ -187,7 +394,7 @@ protected:
 //////// CryptSocketProxySettings ////////
 
 static const wxString protocol_names[] =
-	{ wxT("SOCKS 4"), /*wxT("SOCKS 5"),*/ wxT("HTTP CONNECT") };
+	{ wxT("SOCKS 4"), wxT("SOCKS 5"), wxT("HTTP CONNECT") };
 
 static const wxString dest_modes[] =
 	{ wxT("any"), wxT("allow"), wxT("deny") };
@@ -286,8 +493,8 @@ bool CryptSocketProxySettings::DoesProtocolSupportUsername(CryptSocketProxyProto
 		case ppSOCKS4:
 			return true;
 
-//		case ppSOCKS5:
-//			return true;
+		case ppSOCKS5:
+			return true;
 
 		case ppHTTP:
 			return true;
@@ -309,8 +516,8 @@ bool CryptSocketProxySettings::DoesProtocolSupportPassword(CryptSocketProxyProto
 		case ppSOCKS4:
 			return false;
 
-//		case ppSOCKS5:
-//			return true;
+		case ppSOCKS5:
+			return true;
 
 		case ppHTTP:
 			return true;
@@ -350,8 +557,8 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 		case ppSOCKS4:
 			return (type != pctDCCListen); //true; // DCC listens not supported yet
 
-//		case ppSOCKS5:
-//			return (type != pctDCCListen); //true; // DCC listens not supported yet
+		case ppSOCKS5:
+			return (type != pctDCCListen); //true; // DCC listens not supported yet
 
 		case ppHTTP:
 			return (type == pctServer);
@@ -731,9 +938,9 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck
 			proxy = new CryptSocketProxySOCKS4(sck);
 			break;
 
-//		case ppSOCKS5:
-//			proxy = new CryptSocketProxySOCKS5(sck);
-//			break;
+		case ppSOCKS5:
+			proxy = new CryptSocketProxySOCKS5(sck);
+			break;
 
 		case ppHTTP:
 			proxy = new CryptSocketProxyHTTP(sck);
@@ -793,7 +1000,7 @@ void CryptSocketProxy::ForwardInputToClient(const ByteBuffer &data)
 	m_sck->OnProxyInput(data);
 }
 
-void CryptSocketProxy::ProxySendData(const ByteBuffer &data)
+void CryptSocketProxy::SendData(const ByteBuffer &data)
 {
 	m_sck->ProxySendData(data);
 }

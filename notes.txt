@@ -1,8 +1,4 @@
-* proxy support for client
-	SOCKS4 Connect
-	SOCKS4 Listen
-	SOCKS5 Connect
-	SOCKS5 Listen
+* SOCKS 4/5 BIND support for DCC Listen
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker

@@ -11,7 +11,7 @@ enum CryptSocketProxyProtocol
 {
 	ppUnknown = -1,
 	ppSOCKS4,
-//	ppSOCKS5,
+	ppSOCKS5,
 	ppHTTP
 };
 
@@ -194,7 +194,7 @@ public:
 
 protected:
 	virtual void ForwardInputToClient(const ByteBuffer &data);
-	virtual void ProxySendData(const ByteBuffer &data);
+	virtual void SendData(const ByteBuffer &data);
 	virtual void ConnectionError(const wxString &msg);
 
 protected:
