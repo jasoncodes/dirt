@@ -364,87 +364,87 @@ public:
 				}
 			}
 
-			switch(c)
+			switch (c)
 			{
 
-			case BoldModifier:
-				EndOfColourCode();
-				toggle_tag(tagBold);
-				break;
+				case BoldModifier:
+					EndOfColourCode();
+					toggle_tag(tagBold);
+					break;
 
-			case OriginalModifier:
-				EndOfColourCode();
-				CleanupStack();
-				break;
+				case OriginalModifier:
+					EndOfColourCode();
+					CleanupStack();
+					break;
 
-			case ReverseModifier: // not implemented yet
-				EndOfColourCode();
-				ReverseTag();
-				break;
+				case ReverseModifier: // not implemented yet
+					EndOfColourCode();
+					ReverseTag();
+					break;
 
-			case UnderlineModifier:
-				EndOfColourCode();
-				toggle_tag(tagUnderline);
-				break;
+				case UnderlineModifier:
+					EndOfColourCode();
+					toggle_tag(tagUnderline);
+					break;
 
-			case ColourModifier:
-				ResetColourState();
-				colour_pos = 1;
-				break;
+				case ColourModifier:
+					ResetColourState();
+					colour_pos = 1;
+					break;
 
-			case '1': case '2': case '3':
-			case '4': case '5': case '6':
-			case '7': case '8': case '9':
-			case '0': // isdigit()
-				if (colour_pos > 0)
-				{
-					colour_pos++;
-					if (colour_pos > 3)
+				case '1': case '2': case '3':
+				case '4': case '5': case '6':
+				case '7': case '8': case '9':
+				case '0': // isdigit()
+					if (colour_pos > 0)
 					{
-						EndOfColourCode();
-					}
-					else
-					{
-						int x = had_comma ? 1 : 0;
-						if (!colour_number_valid[x])
+						colour_pos++;
+						if (colour_pos > 3)
 						{
-							colour_number[x] = 0;
-							colour_number_valid[x] = true;
+							EndOfColourCode();
 						}
-						colour_number[x] *= 10;
-						colour_number[x] += (c - '0');
+						else
+						{
+							int x = had_comma ? 1 : 0;
+							if (!colour_number_valid[x])
+							{
+								colour_number[x] = 0;
+								colour_number_valid[x] = true;
+							}
+							colour_number[x] *= 10;
+							colour_number[x] += (c - '0');
+						}
 					}
-				}
-				if (colour_pos == 0)
-				{
-					result << c;
-				}
-				break;
-
-			case ',':
-				if (colour_pos > 0)
-				{
-					if (had_comma)
+					if (colour_pos == 0)
 					{
-						EndOfColourCode();
-						result << c << c;
+						result << c;
+					}
+					break;
+
+				case ',':
+					if (colour_pos > 0)
+					{
+						if (had_comma)
+						{
+							EndOfColourCode();
+							result << c << c;
+						}
+						else
+						{
+							colour_pos = 1;
+							had_comma = true;
+						}
 					}
 					else
 					{
-						colour_pos = 1;
-						had_comma = true;
+						result << c;
 					}
-				}
-				else
-				{
-					result << c;
-				}
-				break;
+					break;
 
-			default:
-				EndOfColourCode();
-				result << c;
-				break;
+				default:
+					EndOfColourCode();
+					result << c;
+					break;
 
 			}
 
@@ -1251,21 +1251,21 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 	switch (mode)
 	{
 
-	case tmmParse:
-		html = ConvertModifiersIntoHtml(html, false);
-		break;
+		case tmmParse:
+			html = ConvertModifiersIntoHtml(html, false);
+			break;
 
-	case tmmStrip:
-		html = ConvertModifiersIntoHtml(html, true);
-		break;
+		case tmmStrip:
+			html = ConvertModifiersIntoHtml(html, true);
+			break;
 
-	case tmmIgnore:
-		html = html;
-		break;
+		case tmmIgnore:
+			html = html;
+			break;
 
-	default:
-		wxFAIL_MSG("Invalid TextModifierMode for AddTextLine");
-		break;
+		default:
+			wxFAIL_MSG("Invalid TextModifierMode for AddTextLine");
+			break;
 
 	}
 
