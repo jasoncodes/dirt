@@ -82,7 +82,7 @@
 
 * [x] close window on fail
 
-* options dialog
+* client options dialog
 	file transfers
 		[x] auto close
 			on complete
@@ -137,4 +137,4 @@
 
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
-* check that guards are in place where nessecery to trap malformed messages
+* check that guards are in place where necessary to trap malformed messages
