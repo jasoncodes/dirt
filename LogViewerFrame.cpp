@@ -153,6 +153,10 @@ void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &event)
 	{
 		ViewLogFile(wxFileName(m_dir->GetPath(), filename).GetFullPath());
 	}
+	else
+	{
+		last_filename.Empty();
+	}
 
 }
 
