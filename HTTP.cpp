@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.13 2003-03-31 04:29:11 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.14 2003-04-27 09:53:51 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -670,7 +670,7 @@ void HTTP::SetPostData(const ByteBuffer &post_data, const wxString &post_content
 	m_post_content_type = post_content_type;
 }
 
-void HTTP::SetPostData(const StringHashMap &form_data)
+wxString HTTP::MakePostData(const StringHashMap &form_data)
 {
 	wxString post_data;
 	for (StringHashMap::const_iterator i = form_data.begin(); i != form_data.end(); ++i)
@@ -681,7 +681,12 @@ void HTTP::SetPostData(const StringHashMap &form_data)
 		}
 		post_data << URL::Escape(i->first) << wxT('=') << URL::Escape(i->second);
 	}
-	SetPostData(post_data);
+	return post_data;
+}
+
+void HTTP::SetPostData(const StringHashMap &form_data)
+{
+	SetPostData(MakePostData(form_data));
 }
 
 void HTTP::SetReferer(const URL &referer)

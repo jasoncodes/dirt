@@ -4,6 +4,7 @@
 #include "Server.h"
 #include "CryptSocket.h"
 #include "HTTP.h"
+#include "BroadcastSocket.h"
 
 class ServerDefault;
 
@@ -57,11 +58,13 @@ protected:
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
+	void OnBroadcast(BroadcastSocketEvent &event);
 	void OnTimerPing(wxTimerEvent &event);
 	void OnHTTP(HTTPEvent &event);
 
 protected:
 	CryptSocketServer *m_sckListen;
+	BroadcastSocket *m_bcast;
 	wxTimer *m_tmrPing;
 	HTTP m_http;
 	bool m_public_server;

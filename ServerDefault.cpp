@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.50 2003-04-27 07:02:43 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.51 2003-04-27 09:53:52 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -58,12 +58,14 @@ void ServerDefaultConnection::Terminate(const wxString &reason)
 enum
 {
 	ID_SOCKET = 1,
+	ID_BCAST,
 	ID_TIMER_PING,
 	ID_HTTP
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
 	EVT_CRYPTSOCKET(ID_SOCKET, ServerDefault::OnSocket)
+	EVT_BROADCAST_SOCKET(ID_BCAST, ServerDefault::OnBroadcast)
 	EVT_TIMER(ID_TIMER_PING, ServerDefault::OnTimerPing)
 	EVT_HTTP(ID_HTTP, ServerDefault::OnHTTP)
 END_EVENT_TABLE()
@@ -75,12 +77,14 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 	m_sckListen->SetEventHandler(this, ID_SOCKET);
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 	m_http.SetEventHandler(this, ID_HTTP);
+	m_bcast = NULL;
 }
 
 ServerDefault::~ServerDefault()
 {
 	delete m_sckListen;
 	delete m_tmrPing;
+	delete m_bcast;
 }
 
 void ServerDefault::Start()
@@ -103,6 +107,7 @@ void ServerDefault::Start()
 		ResetPublicListUpdate(3, true);
 		wxTimerEvent evt;
 		OnTimerPing(evt);
+		m_bcast = new BroadcastSocket(GetConfig().GetListenPort());
 	}
 	else
 	{
@@ -120,6 +125,8 @@ void ServerDefault::Stop()
 	m_tmrPing->Stop();
 	m_http.Close();
 	m_list_updating = false;
+	delete m_bcast;
+	m_bcast = NULL;
 }
 
 bool ServerDefault::IsRunning() const
@@ -255,6 +262,23 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 	}
 
+}
+
+void ServerDefault::OnBroadcast(BroadcastSocketEvent &event)
+{
+	wxString context, cmd;
+	ByteBuffer data;
+	if (DecodeMessage(event.GetData(), context, cmd, data))
+	{
+		ByteBufferArray params = Unpack(data);
+		cmd.MakeUpper();
+		if (cmd == wxT("PING"))
+		{
+			ByteBuffer reply = PackStringHashMap(GetPublicPostData(false));
+			reply = Pack(params.GetCount()?params[0u]:ByteBuffer(), reply);
+			m_bcast->Send(event.GetIP(), event.GetPort(), EncodeMessage(context, wxT("PONG"), reply));
+		}
+	}
 }
 
 void ServerDefault::OnTimerPing(wxTimerEvent &event)

@@ -62,6 +62,7 @@ public:
 
 	virtual const StringHashMap& GetExtraURLHeaders() const;
 
+	static wxString MakePostData(const StringHashMap &form_data);
 	virtual void SetPostData(const ByteBuffer &post_data, const wxString &post_content_type = wxT("application/x-www-form-urlencoded"));
 	virtual void SetPostData(const StringHashMap &form_data);
 	virtual void SetReferer(const URL &referer);
