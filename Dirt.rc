@@ -1,3 +1,3 @@
-main icon "res/dirt.ico"
+main ICON MOVEABLE PURE "res/dirt.ico"
 1 24 "res/manifest.xml"
-hand cursor "res/hand.cur"
+hand CURSOR DISCARDABLE "res/hand.cur"
