@@ -35,9 +35,13 @@ public:
 		: wxButton(window, id, text)
 	{
 		int size = wxMax(GetSize().y, min_size);
-		SetSize(size, size);
-		SetBestSize(GetSize());
+		m_best_size = wxSize(size, size);
+		SetSize(m_best_size);
+		SetBestSize(m_best_size);
 	}
+
+protected:
+	wxSize m_best_size;
 
 };
 

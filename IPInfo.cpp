@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.10 2004-05-30 10:04:48 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.11 2004-05-31 08:47:21 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -361,26 +361,16 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port, bool fail_if_dns_
 wxArrayString GetIPAddresses()
 {
 
+	IPInfoEntryArray entries = GetIPInfo();
+
 	wxArrayString IPs;
 
-	char ac[80];
-	if (gethostname(ac, sizeof(ac)) != 0)
+	for (size_t i = 0; i < entries.GetCount(); ++i)
 	{
-		return IPs;
-	}
-
-	struct hostent *phe = gethostbyname(ac);
-	if (phe == 0)
-	{
-		return IPs;
-	}
-
-	for (int i = 0; phe->h_addr_list[i] != 0; ++i)
-	{
-		struct in_addr addr;
-		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-		const char *ip = inet_ntoa(addr);
-		IPs.Add(ByteBuffer((const byte*)ip, strlen(ip)));
+		if (entries[i].IPAddressString != wxT("127.0.0.1"))
+		{
+			IPs.Add(entries[i].IPAddressString);
+		}
 	}
 
 	if (IPs.GetCount() == 0)
@@ -389,4 +379,5 @@ wxArrayString GetIPAddresses()
 	}
 
 	return IPs;
+
 }
