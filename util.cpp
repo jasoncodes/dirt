@@ -8,6 +8,7 @@
 
 #include "util.h"
 #include <wx/datetime.h>
+#include <wx/html/htmlwin.h>
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -87,4 +88,23 @@ void FixBorder(wxWindow *wnd)
 			SWP_NOMOVE | SWP_NOOWNERZORDER |
 			SWP_NOSIZE | SWP_NOZORDER);
 	#endif
+}
+
+void SetHtmlParserFonts(wxHtmlWinParser *parser)
+{
+
+	// The following is copied from wxHtmlWinParser::wxHtmlWinParser()
+	// as it is not exposed anywhere and NULL isn't allowed
+	#ifdef __WXMSW__
+			static int default_sizes[7] = {7, 8, 10, 12, 16, 22, 30};
+	#elif defined(__WXMAC__)
+			static int default_sizes[7] = {9, 12, 14, 18, 24, 30, 36};
+	#else
+			static int default_sizes[7] = {10, 12, 14, 16, 19, 24, 32};
+	#endif
+
+	#ifdef __WXMSW__
+		parser->SetFonts(wxEmptyString, "Fixedsys", default_sizes);
+	#endif
+
 }

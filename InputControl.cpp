@@ -206,6 +206,7 @@ InputControl::InputControl(
 	{
 		wxHtmlWindow *html = new wxHtmlWindow(GetParent());
 		wxHtmlWinParser *parser = html->GetParser();
+		SetHtmlParserFonts(parser);
 		wxClientDC *pDC = new wxClientDC(html);
 		parser->SetFontFixed(TRUE);
 		parser->SetDC(pDC);

@@ -521,7 +521,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	SetBorders(1);
 
 	GetParser()->AddTagHandler(new SpanTagHandler());
-	
+	SetHtmlParserFonts(GetParser());
+
 	Clear();
 
 }
@@ -773,7 +774,7 @@ wxRect LogControl::GetCellRect(wxHtmlCell *cell)
 	
 	wxRect rt(
 		cell->GetPosX(), cell->GetPosY(),
-		cell->GetWidth(), cell->GetHeight());
+		cell->GetWidth(), cell->GetHeight() + 1);
 	
 	wxHtmlCell *parent = cell->GetParent();
 
@@ -1230,6 +1231,7 @@ void LogControl::AddHtmlLine(const wxString &line)
 	p2->SetFS(m_FS);
 	p2->SetDC(dc);
 	p2->AddTagHandler(new SpanTagHandler());
+	SetHtmlParserFonts(p2);
 	wxHtmlContainerCell *c2 = (wxHtmlContainerCell*)p2->Parse(source);
 
 	m_Cell->InsertCell(c2);

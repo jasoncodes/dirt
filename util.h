@@ -1,6 +1,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+class wxHtmlWinParser;
+
 struct HeadTail
 {
 	wxString head, tail;
@@ -13,5 +15,6 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail);
 HeadTail SplitHeadTail(const wxString &text);
 wxString Timestamp();
 void FixBorder(wxWindow *wnd);
+void SetHtmlParserFonts(wxHtmlWinParser *parser);
 
 #endif
