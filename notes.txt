@@ -36,3 +36,5 @@
 * support for public listing
 * tray icon support
 * tab completion
+
+* hide /oper password when being typed or at least make sure doesn't go into history

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.59 2003-02-27 08:17:55 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.60 2003-03-01 06:56:28 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -455,13 +455,14 @@ void ClientUIMDIFrame::OnClientMessageOut(const wxString &context, const wxStrin
 void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private)
 {
 	wxString context = is_private ? nick : (const wxString)wxEmptyString;
+	bool is_self = (nick == m_client->GetNickname());
 	if (is_action)
 	{
-		AddLine(context, wxT("* ") + nick + wxT(" ") + text, colours[6]);
+		AddLine(context, wxT("* ") + nick + wxT(" ") + text, colours[6], true, is_self);
 	}
 	else
 	{
-		AddLine(context, wxT("<") + nick + wxT("> ") + text);
+		AddLine(context, wxT("<") + nick + wxT("> ") + text, *wxBLACK, true, is_self);
 	}
 }
 
