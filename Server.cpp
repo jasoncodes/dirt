@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.56 2003-07-09 04:49:10 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.57 2003-07-09 05:04:32 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -928,10 +928,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 				if (conn->m_nickname.Length() == 0)
 				{
 					ByteBuffer nicklist = GetNickList();
-					conn->Send(context, wxT("NICK"), data);
+					conn->Send(context, wxT("NICK"), new_nick);
 					conn->m_nickname = new_nick;
 					Information(conn->GetId() + wxT(" has entered the chat"));
-					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
+					SendToAll(wxEmptyString, wxT("JOIN"), Pack(new_nick, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
 					size_t m_user_count = GetUserCount();
 					m_peak_users = wxMax(m_peak_users, m_user_count);
@@ -961,7 +961,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 				}
 				else
 				{
-					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, data), true);
+					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, new_nick), true);
 					Information(conn->GetId() + wxT(" is now known as ") + new_nick);
 					conn->m_nickname = new_nick;
 				}
