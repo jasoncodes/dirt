@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.44 2003-03-31 05:19:51 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.45 2003-03-31 05:28:42 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -198,11 +198,10 @@ ServerUIFrame::ServerUIFrame()
 	m_server->Start();
 
 	m_size_set = false;
-	ResetWindowPos();
 
 	if (!m_server->IsRunning() || !m_tray->Ok())
 	{
-		Show();
+		SetPositionAndShow();
 	}
 
 	m_txtInput->SetFocus();
@@ -246,6 +245,7 @@ void ServerUIFrame::SetPositionAndShow()
 {
 	if (!m_size_set)
 	{
+		ResetWindowPos();
 		RestoreWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"), true);
 		m_size_set = true;
 	}
