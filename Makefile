@@ -1,6 +1,6 @@
 -include $(shell pwd)/Makefile.config
 
-ifneq ($(NOKDE),1)
+ifneq ($(ENABLE-KDE),0)
 	KAPP_H := $(shell kde-config --prefix 2> /dev/null)/include/kde/kapplication.h
 	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
 		QAPP_H := $(QTDIR)/include/qapplication.h
