@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.74 2004-05-30 12:46:40 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.75 2004-07-11 10:03:05 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -1141,17 +1141,44 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	{
 		if (!conn->m_isaway || conn->m_awaymessage != data)
 		{
+			bool last_state = conn->m_isaway;
+			wxString last_msg = conn->m_awaymessage;
+			long last_time = (::wxGetUTCTime()-conn->m_awaytime);
 			conn->m_isaway = true;
 			conn->m_awaymessage = ProcessWordFilters(data);
 			conn->m_awaytime = ::wxGetUTCTime();
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage, Pack(wxString() << conn->m_awaytime, wxString() << 0)), true);
+			if (m_log_public_messages)
+			{
+				wxString str;
+				str << GetLongTimestamp() << conn->GetNickname();
+				str << wxT(" is away: ") << conn->m_awaymessage;
+				if (last_state)
+				{
+					str << (wxChar)OriginalModifier;
+					str << wxT(" (was: ") << last_msg;
+					str << (wxChar)OriginalModifier;
+					str << wxT(" for ") << SecondsToMMSS(last_time) << wxT(")");
+				}
+				m_log_public_messages->AddText(str, colours[2]);
+			}
 		}
 	}
 	else if (cmd == wxT("BACK"))
 	{
 		if (conn->m_isaway)
 		{
-			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage, Pack(wxString()<<conn->m_awaytime, wxString() << (::wxGetUTCTime()-conn->m_awaytime))), true);
+			long away_time = ::wxGetUTCTime() - conn->m_awaytime;
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage, Pack(wxString()<<conn->m_awaytime, wxString() << away_time)), true);
+			if (m_log_public_messages)
+			{
+				wxString str;
+				str << GetLongTimestamp() << conn->GetNickname();
+				str << wxT(" has returned (msg: ") << conn->m_awaymessage;
+				str << (wxChar)OriginalModifier;
+				str << wxT(") (away for ") << SecondsToMMSS(away_time) << wxT(")");
+				m_log_public_messages->AddText(str, colours[2]);
+			}
 			conn->m_isaway = false;
 			conn->m_awaymessage = ByteBuffer();
 		}
