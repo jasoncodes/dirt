@@ -77,6 +77,8 @@ public:
 	virtual void SetIdleTimeout(int idle_timeout_secs);
 	virtual void SetExtraClientHeaders(const StringHashMap &extra_client_headers);
 
+	static wxString GetDefaultUserAgent();
+
 protected:
 	void OnSocket(wxSocketEvent &event);
 	void OnDNS(DNSEvent &event);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.14 2003-04-27 09:53:51 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.15 2003-06-05 11:33:29 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -627,9 +627,14 @@ void HTTP::ResetAll()
 	ResetClientSettings();
 }
 
+wxString HTTP::GetDefaultUserAgent()
+{
+	return wxString() << wxT("Dirt-Secure-Chat/") << GetProductVersion() << wxT(" (") << GetRCSDate() << wxT("; ") << wxGetOsDescription() << wxT(")");
+}
+
 void HTTP::ResetURLSettings()
 {
-	SetUserAgent(wxString() << wxT("Dirt-Secure-Chat/") << GetProductVersion() << wxT(" (") << GetRCSDate() << wxT("; ") << wxGetOsDescription() << wxT(")"));
+	SetUserAgent(GetDefaultUserAgent());
 	SetProxy(URL());
 	m_extra_url_headers.clear();
 }
