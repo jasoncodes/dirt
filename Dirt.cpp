@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.31 2003-03-18 11:29:55 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.32 2003-03-19 08:16:56 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -160,6 +160,9 @@ bool DirtApp::IsConsole()
 
 }
 
+#include "LogReader.h"
+#include "LogWriter.h"
+
 bool DirtApp::OnInit()
 {
 
@@ -169,6 +172,37 @@ bool DirtApp::OnInit()
 	m_control_down = false;
 	m_alt_down = false;
 	m_shift_down = false;
+
+wxString filename1 = LogWriter::GenerateFilename(wxT("Server"), wxDateTime::Now());
+wxString filename2 = LogWriter::GenerateFilename(wxT("prefix goes here"), wxDateTime::Now(), wxT("query name"));
+wxString prefix1, prefix2;
+wxDateTime date1((time_t)0), date2((time_t)0);
+wxString suffix1, suffix2;
+bool success1, success2;
+success1 = LogReader::ParseFilename(filename1, prefix1, date1, suffix1);
+success2 = LogReader::ParseFilename(filename2, prefix2, date2, suffix2);
+wxString output;
+output << wxT("Filename:\t") << filename1;
+if (success1)
+{
+	output << wxT("\nPrefix:\t") << prefix1 << wxT("\nDate:\t") << date1.FormatISODate() << wxT(' ') << date1.FormatISOTime() << wxT("\nSuffix:\t") << suffix1 << wxT("\n");
+}
+else
+{
+	output << wxT("\nFAILED\n");
+}
+output << wxT("\n");
+output << wxT("Filename:\t") << filename2;
+if (success1)
+{
+	output << wxT("\nPrefix:\t") << prefix2 << wxT("\nDate:\t") << date2.FormatISODate() << wxT(' ') << date2.FormatISOTime() << wxT("\nSuffix:\t") << suffix2 << wxT("\n");
+}
+else
+{
+	output << wxT("\nFAILED\n");
+}
+wxMessageBox(output);
+return false;
 
 	#ifdef __WXMSW__
 		::timeBeginPeriod(1);

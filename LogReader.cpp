@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.8 2003-03-19 07:11:06 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.9 2003-03-19 08:16:57 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -54,6 +54,62 @@ wxString LogReader::GetDefaultLogDirectory()
 	wxFileName fn(wxGetHomeDir(), wxT(""));
 	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
 	return fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+}
+
+#include <wx/dynarray.h>
+#include <wx/arrimpl.cpp>
+WX_DECLARE_OBJARRAY(bool, BoolArray);
+WX_DEFINE_OBJARRAY(BoolArray);
+WX_DECLARE_OBJARRAY(size_t, SizeTArray);
+WX_DEFINE_OBJARRAY(SizeTArray);
+
+// not implemented
+bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDateTime &date, wxString &suffix)
+{
+	wxFileName fn(filename);
+	wxString name = fn.GetName();
+	BoolArray is_digit;
+	is_digit.Alloc(name.Length());
+	is_digit.Add(false, name.Length());
+	for (size_t i = 0; i < name.Length(); ++i)
+	{
+		is_digit[i] = wxIsdigit(name[i]) != 0;
+	}
+	SizeTArray date_positions;
+	size_t date_len = 14;
+	for (size_t i = 0; i < name.Length(); ++i)
+	{
+		if (is_digit[i])
+		{
+			size_t count = 0;
+			for (size_t j = i; j < i + date_len && j < name.Length(); ++j)
+			{
+				if (is_digit[j])
+				{
+					count++;
+				}
+			}
+			if (count == date_len)
+			{
+				date_positions.Add(i);
+			}
+		}
+	}
+	if (date_positions.GetCount() == 1)
+	{
+		size_t pos = date_positions[0];
+		prefix = name.Left(pos).Trim(false).Trim(true);
+		wxString date_str = name.Mid(pos, date_len);
+		suffix = name.Mid(pos+date_len).Trim(false).Trim(true);
+		const wxChar *start = date_str.c_str();
+		const wxChar *end = date.ParseFormat(start, wxT("%Y%m%d%H%M%S"));
+		
+		return (end != NULL) && ((size_t)(end-start) == date_len);
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool LogReader::Ok() const
@@ -325,13 +381,3 @@ void LogReader::ParsePropertyEntry(const ByteBuffer &data)
 		data.Unlock();
 	}
 }
-
-
-//	wxFile m_file;
-//	Crypt m_crypt;
-//	ByteBuffer m_public_key;
-//	ByteBuffer m_private_key;
-//	ByteBufferHashMap m_properties;
-//	LogEntryType m_entry_type;
-//	ByteBuffer m_entry;
-//	bool m_first_pass;
