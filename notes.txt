@@ -1,3 +1,5 @@
+* change window name from "Frame" to "Dirt"
+
 * add a user database to Client
   Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache, WHOIS cache age
 

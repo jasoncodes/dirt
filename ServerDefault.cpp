@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.48 2003-04-01 07:37:11 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.49 2003-04-26 03:01:10 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -472,7 +472,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
 	post_data[wxT("uptime")] = wxString() << (long)((GetMillisecondTicks() - m_start_tick) / 1000);
 	post_data[wxT("idletime")] = wxString() << GetLowestIdleTime();
-	post_data[wxT("hostname")] = m_config.GetHostname() + colon_port;
+	post_data[wxT("hostname")] = m_config.GetHostname().Length() ? (m_config.GetHostname() + colon_port) : wxString();
 	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config.GetPublicListComment();
 
