@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.130 2003-08-11 02:26:28 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.131 2003-08-11 07:03:14 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -327,7 +327,15 @@ bool ClientUIMDIFrame::MinToTray()
 		if (m_tray->Ok())
 		{
 			m_tray->SetEventHandler(this, ID_TRAY);
-			m_tray->SetIcon(dirt_xpm);
+			if (m_client->GetConfig().GetSystemTrayIconMode() ==
+				ClientConfig::stimAlwaysBlank)
+			{
+				m_tray->SetIcon(blank_xpm);
+			}
+			else
+			{
+				m_tray->SetIcon(dirt_xpm);
+			}
 			m_tray->SetToolTip(ConvertTitleToToolTip(m_title));
 			Show(false);
 			return true;
@@ -530,7 +538,8 @@ void ClientUIMDIFrame::DoFlashWindow()
 			wxMouseEvent event;
 			OnTrayDblClick(event);
 		}
-		else if (!m_tmrTray->IsRunning())
+		else if (!m_tmrTray->IsRunning() &&
+			m_client->GetConfig().GetSystemTrayIconMode() == ClientConfig::stimFlash)
 		{
 			m_tmrTray->Start(500);
 		}

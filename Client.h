@@ -69,6 +69,13 @@ class ClientConfig : public Config
 {
 
 public:
+	enum SystemTrayIconMode
+	{
+		stimFlash,
+		stimAlwaysImage,
+		stimAlwaysBlank
+	};
+
 	ClientConfig();
 	virtual ~ClientConfig();
 
@@ -91,6 +98,9 @@ public:
 
 	virtual bool GetFileTransferStatus() const;
 	virtual bool SetFileTransferStatus(bool mode);
+
+	virtual SystemTrayIconMode GetSystemTrayIconMode() const;
+	virtual bool SetSystemTrayIconMode(SystemTrayIconMode mode);
 
 	virtual wxArrayString GetSavedPasswordServerNames() const;
 	virtual wxString GetSavedPassword(const wxString &server_name, bool decrypt) const;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.75 2003-08-06 21:08:56 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.76 2003-08-11 07:03:13 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -115,6 +115,46 @@ bool ClientConfig::GetFileTransferStatus() const
 bool ClientConfig::SetFileTransferStatus(bool mode)
 {
 	return m_config->Write(wxT("/Client/File Transfer Status"), mode);
+}
+
+ClientConfig::SystemTrayIconMode ClientConfig::GetSystemTrayIconMode() const
+{
+	wxString str = m_config->Read(wxT("/Client/System Tray Icon Mode"));
+	if (!str.Length() || str == wxT("Flash"))
+	{
+		return stimFlash;
+	}
+	else if (str == wxT("Always Image"))
+	{
+		return stimAlwaysImage;
+	}
+	else if (str == wxT("Always Blank"))
+	{
+		return stimAlwaysBlank;
+	}
+	wxFAIL_MSG(wxT("Unknown value for SystemTrayIconMode: ") + str);
+	return stimFlash;
+}
+
+bool ClientConfig::SetSystemTrayIconMode(SystemTrayIconMode mode)
+{
+	wxString str;
+	switch (mode)
+	{
+		case stimFlash:
+			str = wxT("Flash");
+			break;
+		case stimAlwaysImage:
+			str = wxT("Always Image");
+			break;
+		case stimAlwaysBlank:
+			str = wxT("Always Blank");
+			break;
+		default:
+			return false;
+			break;
+	}
+	return m_config->Write(wxT("/Client/System Tray Icon Mode"), str);
 }
 
 wxArrayString ClientConfig::GetSavedPasswordServerNames() const

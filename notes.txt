@@ -1,7 +1,5 @@
 * hotkey for minimize to tray
 
-* System tray icon option: flash, always phone, always blank
-
 * with common dialog open no messages are pumped
 
 * delete failed get file if 0 bytes and file length > 0
@@ -21,24 +19,6 @@
   status messages should not be as verbose as existing /reconnect and should
   only say something like "*** Connection restored" after the "*** Connection lost"
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
-
-* don't add red line if own message
-
-* option to auto /back if talk in main window or talk in any window
-
-* when new word filter is added, recheck away msg and nicks
-  (keep a copy of the nick/away msg before filtering and it for refiltering)
-
-* some way to limit number of unACK'd bytes
-
-* admin feature to change nicks
-
-* admin feature to change away messages
-
-* can't delete dir last sent from / recv to.
-
-* if other side of file transfer is on same subnet as any of local subnets then
-  set block size to 8192 KB else 2048 KB
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
@@ -104,6 +84,24 @@
 		m_mutex->Unlock();
 	* some notification system to call PopulateFilteredWords() when config
 	  file is changed remotely.
+
+* some way to limit number of unACK'd bytes
+
+* don't add red line if own message
+
+* option to auto /back if talk in main window or talk in any window
+
+* when new word filter is added, recheck away msg and nicks
+  (keep a copy of the nick/away msg before filtering and it for refiltering)
+
+* admin feature to change nicks
+
+* admin feature to change away messages
+
+* can't delete dir last sent from / recv to.
+
+* if other side of file transfer is on same subnet as any of local subnets then
+  set block size to 8192 KB else 2048 KB
 
 * UPnP IGD support for socket binds (transfers and server)
 

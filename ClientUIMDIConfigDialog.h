@@ -46,9 +46,11 @@ protected:
 	TristateConfigPanel *m_pnlLog;
 
 	wxStaticBox *m_fraNotification;
-	TristateConfigPanel *m_pnlSound;
 	wxCheckBox *m_chkTaskbarNotification;
 	wxCheckBox *m_chkFileTransferStatus;
+	wxComboBox *m_cmbSystemTrayIcon;
+
+	TristateConfigPanel *m_pnlSound;
 
 private:
 	DECLARE_EVENT_TABLE()

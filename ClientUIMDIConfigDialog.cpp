@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.18 2003-08-06 15:30:53 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.19 2003-08-11 07:03:14 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -16,6 +16,8 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.18 2003-08-06 15:30:53 jason Exp $)
 #include "CryptSocketProxy.h"
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
+static const wxString tray_icon_options[] = { wxT("Flash"), wxT("Always Image"), wxT("Always Blank") };
+static const int tray_icon_option_count = WXSIZEOF(tray_icon_options);
 
 class DestNetworkPanel : public RadioBoxPanel
 {
@@ -184,6 +186,8 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
 	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
 	m_chkFileTransferStatus = new wxCheckBox(panel, wxID_ANY, wxT("Show File Transfer Status Messages"));
+	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(panel, wxID_ANY, wxT("System Tray Icon:"));
+	m_cmbSystemTrayIcon = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
@@ -261,6 +265,13 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
 					szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
+					wxFlexGridSizer *szrSystemTrayIcon = new wxFlexGridSizer(2, 0, 4);
+					szrSystemTrayIcon->AddGrowableCol(1);
+					{
+						szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
+						szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
+					}
+					szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
 					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
 
 				}
@@ -385,13 +396,11 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	m_pnlDestPorts->SetSelection(m_proxy_settings->GetDestPortsMode());
 	m_pnlDestPorts->SetString(m_proxy_settings->GetDestPortRanges());
 
-	//m_chkProxy->Enable(false);
-	//m_chkProxy->SetValue(false);
-
 	m_txtNickname->SetValue(m_config->GetNickname());
 
 	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
 	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
+	m_cmbSystemTrayIcon->SetValue(tray_icon_options[m_config->GetSystemTrayIconMode()]);
 
 	wxCommandEvent evt;
 	OnProxy(evt);
@@ -598,6 +607,17 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		if (!m_config->SetFileTransferStatus(m_chkFileTransferStatus->GetValue()))
 		{
 			ErrMsg(wxT("Error setting File Transfer Status"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		ClientConfig::SystemTrayIconMode mode =
+			(ClientConfig::SystemTrayIconMode)m_cmbSystemTrayIcon->GetSelection();
+		if (!m_config->SetSystemTrayIconMode(mode))
+		{
+			ErrMsg(wxT("Error setting System Tray Icon Mode"));
 			success = false;
 		}
 	}
