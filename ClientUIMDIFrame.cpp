@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.118 2003-05-22 01:46:23 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.119 2003-05-22 12:04:32 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -318,7 +318,7 @@ bool ClientUIMDIFrame::MinToTray()
 		{
 			m_tray->SetEventHandler(this, ID_TRAY);
 			m_tray->SetIcon(dirt_xpm);
-			m_tray->SetToolTip(m_title);
+			m_tray->SetToolTip(ConvertTitleToToolTip(m_title));
 			Show(false);
 			return true;
 		}
@@ -746,7 +746,7 @@ void ClientUIMDIFrame::UpdateCaption()
 	m_title = title;
 	if (m_tray)
 	{
-		m_tray->SetToolTip(m_title);
+		m_tray->SetToolTip(ConvertTitleToToolTip(m_title));
 	}
 	SetTitle(title);
 	#ifdef __WXMSW__
@@ -755,6 +755,19 @@ void ClientUIMDIFrame::UpdateCaption()
 			::FlashWindow((HWND)GetHandle(), TRUE);
 		}
 	#endif
+}
+
+wxString ClientUIMDIFrame::ConvertTitleToToolTip(const wxString &title)
+{
+	int index = title.Find(wxT(" - "));
+	if (index > -1)
+	{
+		return title.Left(index) + wxT("\n") + title.Mid(index+3);
+	}
+	else
+	{
+		return title;
+	}
 }
 
 void ClientUIMDIFrame::NickPrompt(const wxString &nick)

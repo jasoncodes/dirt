@@ -44,10 +44,7 @@ protected:
 	void OnCtrlF(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
 
-	#ifdef __WXMSW__
-		virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
-	#endif
-
+protected:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual wxArrayString OnClientSupportedCommands();
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
@@ -78,6 +75,19 @@ protected:
 	virtual ResumeState OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume);
 
 protected:
+	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
+	ClientUIMDITransferPanel* GetContext(const long transferid);
+	void AddLine(const wxString &context, const wxString &line, const wxColour &line_colour = *wxBLACK, bool create_if_not_exist = true, bool suppress_alert = false, bool convert_urls = true);
+	void UpdateCaption();
+	void NickPrompt(const wxString &nick);
+
+	static wxString ConvertTitleToToolTip(const wxString &title);
+
+	#ifdef __WXMSW__
+		virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+	#endif
+
+protected:
 	wxTimer *m_tmrFocus;
 	Client *m_client;
 	bool m_focused;
@@ -95,12 +105,6 @@ protected:
 	#if wxUSE_WAVE
 		wxWave m_wave;
 	#endif
-
-	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
-	ClientUIMDITransferPanel* GetContext(const long transferid);
-	void AddLine(const wxString &context, const wxString &line, const wxColour &line_colour = *wxBLACK, bool create_if_not_exist = true, bool suppress_alert = false, bool convert_urls = true);
-	void UpdateCaption();
-	void NickPrompt(const wxString &nick);
 
 private:
 	DECLARE_EVENT_TABLE()

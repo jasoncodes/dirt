@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.66 2003-05-22 11:23:34 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.67 2003-05-22 12:04:33 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -845,8 +845,8 @@ void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized)
 
 		HWND hWnd = (HWND)frm->GetHandle();
 		WINDOWPLACEMENT wp;
-		memset(&wp, 0, sizeof(wp));
-		wp.length = sizeof(WINDOWPLACEMENT);
+		memset(&wp, 0, sizeof (wp));
+		wp.length = sizeof (WINDOWPLACEMENT);
 
 		if (GetWindowPlacement(hWnd, &wp))
 		{
@@ -883,8 +883,8 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool sh
 
 		HWND hwnd = (HWND) frm->GetHandle();
 		WINDOWPLACEMENT wp;
-		memset(&wp, 0, sizeof(wp));
-		wp.length = sizeof(WINDOWPLACEMENT);
+		memset(&wp, 0, sizeof (wp));
+		wp.length = sizeof (WINDOWPLACEMENT);
 		wp.flags = 0;
 		wp.showCmd = (show||frm->IsShown()) ? (maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL) : SW_HIDE;
 
