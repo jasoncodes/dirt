@@ -71,7 +71,7 @@ crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: all
-	strip Dirt && upx --best Dirt && make tar
+	strip Dirt && make tar
 
 tar:
 	test -f DirtGTK.tar.gz && rm DirtGTK.tar.gz || true
