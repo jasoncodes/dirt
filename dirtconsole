@@ -2,31 +2,58 @@
 
 if which Xvfb > /dev/null 2> /dev/null;
 then
-
 	true
-
 else
-
 	echo dirtconsole: Xvfb not found!
 	exit 1
-
 fi
 
-DISPLAY=500
+if which dtach > /dev/null 2> /dev/null;
+then
+	true
+else
+	echo dirtconsole: dtach not found!
+	exit 1
+fi
+
+DISPLAY=499
 XVFB_PID=
 
-while [ $DISPLAY != 599 ]
+while [ $DISPLAY != 600 -a "$XVFB_PID" == "" ]
 do
 
-	Xvfb :$DISPLAY -screen 0 32x32x24 2> /dev/null &
-
-	if ps $! > /dev/null;
-	then
-		XVFB_PID=$!
-		break;
-	fi
-
 	DISPLAY=$(($DISPLAY+1))
+	LOCK_FILE=/tmp/.X${DISPLAY}-lock
+
+	echo dirtconsole: Trying :$DISPLAY...
+
+	if [ ! -f $LOCK_FILE ]
+	then
+
+		echo dirtconsole: No Xvfb @ :$DISPLAY
+
+		if dtach -n ~/dtach_$DISPLAY_$RANDOM$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 > /dev/null
+		then
+
+			TRIES=0
+			while [ \( ! -f $LOCK_FILE \) -a \( $TRIES -lt 5 \) ]
+			do
+				echo dirtconsole: Waiting for Xvfb to start...
+				sleep 1
+				TRIES=$(($TRIES+1))
+			done
+
+			if [ $TRIES -lt 5 ]
+			then
+				echo dirtconsole: Successfully started Xvfb
+				XVFB_PID=`cat $LOCK_FILE`
+			else
+				echo dirtconsole: Xvfb failed to start in 5 seconds...
+			fi
+
+		fi
+
+	fi
 
 done
 
