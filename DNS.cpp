@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.5 2003-03-05 08:09:44 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.6 2003-03-05 13:07:06 jason Exp $)
 
 #include "DNS.h"
 
@@ -81,6 +81,7 @@ DNS::~DNS()
 
 void DNS::StopThread()
 {
+	if (!m_worker) return;
 	if (IsBusy())
 	{
 		#ifdef __WXMSW__
