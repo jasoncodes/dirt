@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.79 2004-07-14 02:00:06 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.80 2004-07-24 01:45:47 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -224,6 +224,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_remoteport = addr.Service();
 					conn->m_remoteipstring = ::GetIPV4AddressString(addr);
 					conn->m_remotehost = ::GetIPV4String(addr, false, true);
+					conn->m_last_auth_time = GetMillisecondTicks();
 					if (conn->m_remotehost.Length() == 0)
 					{
 						m_dns->Lookup(conn->m_remoteipstring, true, conn);
