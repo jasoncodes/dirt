@@ -1,0 +1,4 @@
+WX_BASENAME = $(shell wx-config --basename 2> /dev/null)
+ifeq (,$(WX_BASENAME))
+        WX_BASENAME = $(shell wx-config --libs | tr ' ' '\n' | grep wx_)
+endif

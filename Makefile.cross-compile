@@ -1,0 +1,16 @@
+ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
+        CXXFLAGS := $(subst -mthreads,,$(shell echo $(CXXFLAGS)))
+        LINK_FLAGS := $(subst -mthreads,,$(shell echo $(LINK_FLAGS)))
+        HOST = i586-mingw32msvc
+        BINARY_SUFFIX = .exe
+	EXTRA_DEPENDS = Dirt.res
+endif
+
+ifneq (,$(HOST))
+        CC := $(HOST)-$(CC)
+	CXX := $(HOST)-$(CXX)
+        AR := $(HOST)-$(AR)
+        RANLIB := $(HOST)-$(RANLIB)
+        STRIP := $(HOST)-$(STRIP)
+        WINDRES := $(HOST)-$(WINDRES)
+endif

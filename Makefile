@@ -1,6 +1,8 @@
 -include $(shell pwd)/Makefile.config
 
-ifneq ($(ENABLE-KDE),0)
+include ./Makefile.wx-config
+
+ifeq ($(ENABLE-KDE),1)
 	KAPP_H := $(shell kde-config --prefix 2> /dev/null)/include/kde/kapplication.h
 	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
 		QAPP_H := $(QTDIR)/include/qapplication.h
@@ -8,37 +10,44 @@ ifneq ($(ENABLE-KDE),0)
 			QTLIB := $(QTDIR)/lib/libqt-mt.so
 			ifeq ($(wildcard $(QTLIB)),$(QTLIB))
 				KDE_DIR := $(shell kde-config --prefix)
-				KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
+				KDE_CXXFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
 				KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
 			endif
 		endif
 	endif
 endif
 
-BASENAME = $(shell wx-config --basename 2> /dev/null)
-ifeq (,$(BASENAME))
-	BASENAME = $(shell wx-config --libs | tr ' ' '\n' | grep wx_)
-endif
-ifneq (,$(findstring wx_gtk2,$(BASENAME)))
+ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
 	GTK_EXTRAS = `pkg-config --cflags gtk+-2.0`
 else
-	ifneq (,$(findstring wx_gtk,$(BASENAME)))
+	ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 		GTK_EXTRAS = `gtk-config --cflags`
 	endif
 endif
 
 CC = g++
-CPPFLAGS = $(strip -O1 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS) -I`wx-config --prefix`/include) -DNDEBUG
+STRIP = strip
+WINDRES = windres
+OPTIMIZATIONS = -O1
+
+CXXFLAGS = \
+	$(strip \
+		$(OPTIMIZATION) `wx-config --cxxflags` $(KDE_CXXFLAGS \
+		$(GTK_EXTRAS) -I`wx-config --prefix`/include) -DNDEBUG \
+	)
+LINK_FLAGS = `wx-config --libs` $(KDE_LINK)
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
-SOURCES := $(shell /bin/ls *.cpp)
-OBJECTS = $(SOURCES:.cpp=.o)
+SOURCES := $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o) crypto/libcryptopp.a
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
 DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
 DIRTSERVER_EXE_PERMS = $(shell /bin/ls -l dirtserver | awk '{print $$1}' | tr -d "rw-")
 
-dirt : Dirt
+include ./Makefile.cross-compile
+
+dirt : Dirt$(BINARY_SUFFIX)
 ifneq ($(DIRT_EXE_PERMS),xxx)
 	chmod +x dirt
 endif
@@ -55,25 +64,32 @@ clean:
 all: clean dirt
 
 .cpp.o : 
-	$(CC) -c $(CPPFLAGS) -o $@ $<
+	$(CC) -c $(CXXFLAGS) -o $@ $<
 
 %.d: %.cpp
-	@set -e; $(CC) -MM $(CPPFLAGS) $< \
+	@set -e; $(CC) -MM $(CXXFLAGS) $< \
 		| sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
 		[ -s $@ ] || rm -f $@
 
 -include $(SOURCES:.cpp=.d)
 
-Dirt: $(OBJECTS) crypto/libcryptopp.a
-	$(CC) -o Dirt $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a $(KDE_LINK)
+Dirt$(BINARY_SUFFIX): $(OBJECTS) $(EXTRA_DEPENDS)
+	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS) $(EXTRA_DEPENDS)
+	$(STRIP) Dirt$(BINARY_SUFFIX)
+
+Dirt.res: Dirt.rc
+	$(WINDRES) \
+	$(subst -I,--include-dir=,\
+		$(subst $(OPTIMIZATIONS),,\
+			$(CXXFLAGS)\
+		) \
+	)\
+	-i Dirt.rc -J rc -o Dirt.res -O coff
 
 crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: dirt
-	strip Dirt && make tar
-
-tar:
 	test -f DirtGTK.tar.gz && rm DirtGTK.tar.gz || true
 	tar cf DirtGTK.tar Dirt dirt dirtconsole
 	cd res && tar rf ../DirtGTK.tar dirt.xpm
