@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.52 2003-06-30 08:26:28 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.53 2003-07-26 06:46:44 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -104,13 +104,13 @@ wxArrayString FileTransfers::GetMyIPs() const
 	int i;
 	if ((i = IPs.Index(wxT("127.0.0.1"))) > -1)
 	{
-		IPs.Remove(i);
+		IPs.RemoveAt(i);
 	}
 	if (m_client->m_ipself.Length())
 	{
 		if ((i = IPs.Index(m_client->m_ipself)) > -1)
 		{
-			IPs.Remove(i);
+			IPs.RemoveAt(i);
 		}
 		IPs.Insert(m_client->m_ipself, 0);
 	}

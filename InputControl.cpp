@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.17 2003-07-08 05:46:15 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.18 2003-07-26 06:48:36 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -303,7 +303,7 @@ void InputControl::RemoveLastHistoryEntry()
 	int count = m_history.GetCount();
 	if (count > 0)
 	{
-		m_history.Remove(count - 1);
+		m_history.RemoveAt(count - 1);
 	}
 }
 
