@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.66 2003-06-30 12:36:35 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.67 2003-07-09 04:05:51 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -273,6 +273,10 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					if (m_config.GetPublicListComment().Length())
 					{
 						conn->Send(wxEmptyString, wxT("INFO"), wxT("Server comment: ") + m_config.GetPublicListComment());
+					}
+					if (m_filtered_words_list.GetCount())
+					{
+						conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server has content filtering enabled.")));
 					}
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);

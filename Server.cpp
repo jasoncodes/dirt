@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.53 2003-05-30 05:55:34 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.54 2003-07-09 04:05:51 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -295,6 +295,7 @@ Server::Server(ServerEventHandler *event_handler)
 	m_connections.Alloc(10);
 	m_peak_users = 0;
 	m_last_active = ::wxGetUTCTime();
+	PopulateFilteredWords();
 }
 
 Server::~Server()
@@ -373,7 +374,7 @@ void Server::Warning(const wxString &line)
 wxArrayString Server::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("HELP KICK START STOP USERS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("HELP KICK START STOP USERS WORDFILTER"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnServerSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -463,7 +464,98 @@ void Server::ProcessConsoleInput(const wxString &input)
 			Warning(wxT("No such nickname: ") + ht.head);
 		}
 	}
-
+	else if (cmd == wxT("WORDFILTER"))
+	{
+		HeadTail ht = SplitQuotedHeadTail(params);
+		ht.head.MakeUpper();
+		if (ht.head == wxT("ADD"))
+		{
+			ht = SplitQuotedHeadTail(ht.tail);
+			wxString name = ht.head;
+			wxString value = StripQuotes(ht.tail);
+			if (name.Length() && value.Length())
+			{
+				if (m_config.GetConfig()->Write(wxT("/Server/Word Filters/")+name, value) && m_config.GetConfig()->Flush())
+				{
+					bool none_before = (m_filtered_words_list.GetCount() == 0);
+					PopulateFilteredWords();
+					Information(wxT("\"")+name+wxT("\" = \"")+value+wxT("\""));
+					if (none_before && m_filtered_words_list.GetCount() == 1)
+					{
+						SendToAll(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server now has content filtering enabled.")), false);
+					}
+				}
+				else
+				{
+					Warning(wxT("Could not set word filter for: ")+name);
+				}
+			}
+			else
+			{
+				Warning(wxT("Missing parameter"));
+			}
+		}
+		else if (ht.head == wxT("REMOVE"))
+		{
+			ht = SplitQuotedHeadTail(ht.tail);
+			wxString name = ht.head;
+			wxString value = ht.tail;
+			if (name.Length() && !value.Length())
+			{
+				if (m_config.GetConfig()->HasEntry(wxT("/Server/Word Filters/") + name))
+				{
+					if (m_config.GetConfig()->DeleteEntry(wxT("/Server/Word Filters/") + name) && m_config.GetConfig()->Flush())
+					{
+						PopulateFilteredWords();
+						Information(wxT("Filtered word deleted: ") + name);
+						if (m_filtered_words_list.GetCount() == 0)
+						{
+							SendToAll(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server now has content filtering disabled.")), false);
+						}
+					}
+					else
+					{
+						Warning(wxT("Could not delete word filter: ") + name);
+					}
+				}
+				else
+				{
+					Warning(wxT("No such word filter: ") + name);
+				}
+			}
+			else
+			{
+				Warning(wxT("Invalid parameters"));
+			}
+		}
+		else if (ht.head == wxT("LIST") || !ht.head.Length())
+		{
+			if (!m_filtered_words_list.IsEmpty())
+			{
+				wxArrayString list = m_filtered_words_list;
+				list.Sort();
+				Information(wxT("Current filtered words:"));
+				for (size_t i = 0; i < list.GetCount(); ++i)
+				{
+					wxString key = list[i];
+					wxString value = m_config.GetConfig()->Read(wxT("/Server/Word Filters/")+key);
+					Information(wxT("    \"") + key + wxT("\" = \"") + value + wxT("\""));
+				}
+			}
+			else
+			{
+				Information(wxT("No filtered words"));
+			}
+		}
+		else if (ht.head == wxT("HELP"))
+		{
+			Warning(wxT("Valid word filter commands: ADD, HELP, LIST, REMOVE"));
+		}
+		else
+		{
+			Warning(wxT("Invalid word filter command"));
+		}
+	}
 	else if (cmd == wxT("HELP"))
 	{
 		Information(wxT("Supported commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
@@ -692,7 +784,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 	if (cmd == wxT("PUBMSG") || cmd == wxT("PUBACTION"))
 	{
-		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
+		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), ProcessWordFilters(data)), true);
 	}
 	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION") || cmd == wxT("CTCP") || cmd == wxT("CTCPREPLY"))
 	{
@@ -885,4 +977,41 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NOCMD")), wxT("Unrecognized command: ") + cmd));
 	}
 
+}
+
+static int CompareStringLengths(const wxString &a, const wxString &b)
+{
+	return a.length() - b.length();
+}
+
+void Server::PopulateFilteredWords()
+{
+	m_filtered_words_list.Empty();
+	wxString old_path = m_config.GetConfig()->GetPath();
+	m_config.GetConfig()->SetPath(wxT("/Server/Word Filters"));
+	m_filtered_words_list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
+	wxString val;
+	long i;
+	if (m_config.GetConfig()->GetFirstEntry(val, i))
+	{
+		do
+		{
+			m_filtered_words_list.Add(val);
+		}
+		while (m_config.GetConfig()->GetNextEntry(val, i));
+	}
+	m_config.GetConfig()->SetPath(old_path);
+	m_filtered_words_list.Sort(&CompareStringLengths);
+}
+
+wxString Server::ProcessWordFilters(const wxString &text) const
+{
+	wxString output = text;
+	for (size_t i = 0; i < m_filtered_words_list.GetCount(); ++i)
+	{
+		wxString old_value = m_filtered_words_list[i];
+		wxString new_value = m_config.GetConfig()->Read(wxT("/Server/Word Filters/") + old_value);
+		output = CaseInsensitiveReplace(output, m_filtered_words_list[i], new_value);
+	}
+	return output;
 }

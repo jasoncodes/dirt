@@ -179,9 +179,11 @@ public:
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);
 	virtual void CloseAllConnections();
+	virtual void PopulateFilteredWords();
 	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);
 	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data) = 0;
+	virtual wxString ProcessWordFilters(const wxString &text) const;
 
 protected:
 	ServerEventHandler *m_event_handler;
@@ -196,6 +198,7 @@ protected:
 	#endif
 	LogWriter *m_log;
 	bool m_log_warning_given;
+	wxArrayString m_filtered_words_list;
 
 private:
 	DECLARE_EVENT_TABLE()
