@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.12 2003-06-05 13:00:49 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.13 2003-06-05 13:09:13 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -65,7 +65,7 @@ public:
 		int pos = m_buff.Find(separator);
 		if (pos > -1)
 		{
-			HTTPHeader header = m_buff.Left(pos + separator.Length());
+			HTTPHeader header(m_buff.Left(pos + separator.Length()));
 			if (header.IsValid())
 			{
 				if (header.GetStatusCode() == 200)
