@@ -52,11 +52,12 @@ protected:
 	virtual void OnClientTransferTimer(const FileTransfer &transfer);
 
 protected:
-	wxTimer *tmrFocus;
+	wxTimer *m_tmrFocus;
 	Client *m_client;
 	bool m_focused;
 	NickListControl *m_lstNickList;
 	bool m_alert;
+	int m_flash;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
 	ClientUIMDITransferPanel* GetContext(const long transferid);

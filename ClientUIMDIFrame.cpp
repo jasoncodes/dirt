@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.56 2003-02-27 07:21:23 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.57 2003-02-27 07:54:59 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -42,6 +42,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_focused = true;
 	m_alert = false;
+	m_flash = 0;
 	UpdateCaption();
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -68,8 +69,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
 
-	tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
-	tmrFocus->Start(100);
+	m_tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
+	m_tmrFocus->Start(100);
 
 	m_client = new ClientDefault(this);
 
@@ -77,7 +78,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
-	delete tmrFocus;
+	delete m_tmrFocus;
 	delete m_client;
 }
 
@@ -154,6 +155,11 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 		{
 			child->GetCanvas()->OnActivate();
 		}
+	}
+	if (m_alert && m_flash > 0)
+	{
+		m_flash--;
+		UpdateCaption();
 	}
 }
 
@@ -254,6 +260,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 				::FlashWindow((HWND)GetHandle(), TRUE);
 			#else
 				m_alert = true;
+				m_flash = 8;
 				UpdateCaption();
 			#endif
 		}
@@ -356,22 +363,25 @@ void ClientUIMDIFrame::UpdateCaption()
 	{
 		title << "* ";
 	}
-	title << AppTitle(wxT("Client"));
-	if (m_client && m_client->IsConnected())
+	if (!m_alert || (m_flash % 2) == 0)
 	{
-		title << wxT(" - ");
-		if (m_client->GetNickname().Length())
+		title << AppTitle(wxT("Client"));
+		if (m_client && m_client->IsConnected())
 		{
-			title << m_client->GetNickname();
-		}
-		else
-		{
-			title << "<NoNick>";
-		}
-		const URL &url = m_client->GetLastURL();
-		if (url.GetHostname().Length())
-		{
-			title << wxT(" on ") << url.GetHostname();
+			title << wxT(" - ");
+			if (m_client->GetNickname().Length())
+			{
+				title << m_client->GetNickname();
+			}
+			else
+			{
+				title << "<NoNick>";
+			}
+			const URL &url = m_client->GetLastURL();
+			if (url.GetHostname().Length())
+			{
+				title << wxT(" on ") << url.GetHostname();
+			}
 		}
 	}
 	SetTitle(title);
