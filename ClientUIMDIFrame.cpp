@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.126 2003-08-01 07:48:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.127 2003-08-05 06:08:06 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -849,6 +849,14 @@ void ClientUIMDIFrame::OnClientAuthDone(const wxString &text)
 		OnClientInformation(wxEmptyString, text);
 	}
 	wxString nick = m_client->GetLastURL().GetUsername();
+	if (!nick.Length())
+	{
+		nick = m_client->GetLastNickname();
+	}
+	if (!nick.Length())
+	{
+		nick = m_client->GetConfig().GetNickname();
+	}
 	if (nick.Length())
 	{
 		m_client->SetNickname(wxEmptyString, nick);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.56 2003-08-01 07:47:59 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.57 2003-08-05 06:08:06 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -148,14 +148,19 @@ void ClientUIConsole::OnClientAuthDone(const wxString &text)
 		OnClientInformation(wxEmptyString, text);
 	}
 	wxString nick = m_client->GetLastURL().GetUsername();
-	if (nick.Length())
+	if (!nick.Length())
 	{
-		m_client->SetNickname(wxEmptyString, nick);
+		nick = m_client->GetLastNickname();
 	}
-	else
+	if (!nick.Length())
 	{
-		m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+		nick = m_client->GetConfig().GetNickname();
 	}
+	if (!nick.Length())
+	{
+		nick = Client::GetDefaultNick();
+	}
+	m_client->SetNickname(wxEmptyString, nick);
 }
 
 void ClientUIConsole::OnClientAuthBad(const wxString &text)

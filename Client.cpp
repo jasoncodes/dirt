@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.71 2003-08-01 07:47:59 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.72 2003-08-05 06:08:05 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -16,6 +16,7 @@ RCS_ID($Id: Client.cpp,v 1.71 2003-08-01 07:47:59 jason Exp $)
 #include "ClientTimers.h"
 #include "URL.h"
 #include <wx/filename.h>
+#include "Server.h"
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -28,6 +29,18 @@ ClientConfig::ClientConfig()
 
 ClientConfig::~ClientConfig()
 {
+}
+
+wxString ClientConfig::GetNickname() const
+{
+	return m_config->Read(wxT("/Client/Nickname"));
+}
+
+bool ClientConfig::SetNickname(const wxString &nickname)
+{
+	return
+		Server::IsValidNickname(nickname) &&
+		m_config->Write(wxT("/Client/Nickname"), nickname);
 }
 
 wxString ClientConfig::GetLastSendDir() const
@@ -109,6 +122,7 @@ Client::Client(ClientEventHandler *event_handler)
 {
 	m_file_transfers = new FileTransfers(this);
 	m_nickname = wxEmptyString;
+	m_last_nickname = wxEmptyString;
 	m_server_name = wxEmptyString;
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 	m_timers = new ClientTimers(this, ID_TIMERS);
@@ -199,13 +213,18 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 			SendMessage(context, nick, msg, cmd == wxT("MSGME"));
 		}
 	}
-	else if (cmd == wxT("CONNECT") || cmd == wxT("SERVER"))
+	else if (cmd == wxT("CONNECT") || cmd == wxT("SERVER") || cmd == wxT("RECONNECT"))
 	{
+		bool is_reconnect = (cmd == wxT("RECONNECT"));
+		if (is_reconnect)
+		{
+			params = GetLastURL();
+		}
 		if (IsConnected())
 		{
 			Disconnect();
 		}
-		if (!Connect(params))
+		if (!Connect(params, is_reconnect))
 		{
 			m_event_handler->OnClientWarning(context, wxT("Error connecting to ") + params);
 		}
@@ -214,10 +233,6 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		Disconnect();
-	}
-	else if (cmd == wxT("RECONNECT"))
-	{
-		ProcessConsoleInput(context, wxT("/connect ") + GetLastURL());
 	}
 	else if (cmd == wxT("NICK"))
 	{
@@ -780,6 +795,11 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			contact->m_server_clock_diff = wxGetUTCTime() - away_time;
 			contact->m_away_message = text;
 		}
+		if (GetNickname() == nick)
+		{
+			m_is_away = bIsAway;
+			m_away_message = text;
+		}
 		if (bIsAway)
 		{
 			m_event_handler->OnClientUserAway(nick, text, away_time, away_time_diff);
@@ -804,6 +824,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		{
 			m_event_handler->OnClientStateChange();
 			m_contact_self = contact;
+			if (m_is_away)
+			{
+				Away(m_away_message);
+			}
 		}
 	}
 	else if (cmd == wxT("PART"))
@@ -840,6 +864,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			if ((wxString)nick1 == m_nickname)
 			{
 				m_nickname = nick2;
+				m_last_nickname = m_nickname;
 				m_event_handler->OnClientStateChange();
 			}
 			m_file_transfers->OnClientUserNick(nick1, nick2);
@@ -848,6 +873,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		else
 		{
 			m_nickname = data;
+			m_last_nickname = m_nickname;
 		}
 	}
 	else if (cmd == wxT("NICKLIST"))
@@ -986,12 +1012,17 @@ wxString Client::GetNickname() const
 	return m_nickname;
 }
 
+wxString Client::GetLastNickname() const
+{
+	return m_last_nickname;
+}
+
 wxString Client::GetServerName() const
 {
 	return m_server_name;
 }
 
-wxString Client::GetDefaultNick() const
+wxString Client::GetDefaultNick()
 {
 	wxString nick = ::wxGetUserId();
 	int i = nick.Index(wxT(' '));

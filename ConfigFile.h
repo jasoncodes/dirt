@@ -81,12 +81,12 @@ public:
 	virtual wxString GetLogDirPath() const;
 	virtual bool SetLogDir(TristateMode type, const wxString &dir);
 
-protected:
 	virtual wxString GetPassword(const wxString &key, bool decrypt) const;
 	virtual bool SetPassword(const wxString &key, const wxString &password);
 	virtual wxString DecodePassword(const wxString &value, bool decrypt) const;
 	virtual wxString EncodePassword(const wxString &password) const;
 
+protected:
 	virtual wxString GetLogDirKey() const;
 
 	virtual wxString GetTristateString(const wxString &key, bool is_dir) const;

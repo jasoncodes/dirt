@@ -166,7 +166,7 @@ public:
 	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data, bool with_nicks_only);
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual ByteBuffer GetNickList() const;
-	virtual wxString GetServerNickname() const { return s_server_nickname; }
+	static wxString GetServerNickname() { return s_server_nickname; }
 	virtual void ResetPublicListUpdate(int num_secs_till_next_update, bool force_show) = 0;
 	virtual wxLongLong_t GetNextPublicListUpdateTick() const = 0;
 	virtual size_t GetUserCount() const;
@@ -175,9 +175,9 @@ public:
 	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
 	virtual wxArrayString GetSupportedCommands() const;
 	virtual void InitLog();
+	static bool IsValidNickname(const wxString &nickname);
 
 protected:
-	virtual bool IsValidNickname(const wxString &nickname);
 	virtual void CloseAllConnections();
 	virtual void PopulateFilteredWords();
 	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);

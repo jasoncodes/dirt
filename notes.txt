@@ -1,15 +1,9 @@
 * wxBug: each line read with wxTextInputStream has a null char on the end
 
-* /reconnect should retry last auth and nickname and /away again if was away
-
-* no auth data should be kept in cleartext (use a random generated AES key)
-
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
   only say something like "*** Connection restored" after the "*** Connection lost"
-  or "*** Ping timeout". make sure no reconnect on /quit
-
-* option to set nickname
+  or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
 * dialog for saving server passwords
 

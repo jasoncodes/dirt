@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.49 2003-07-01 14:33:07 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.50 2003-08-05 06:08:06 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -277,7 +277,7 @@ bool DirtApp::OnInit()
 
 	if (m_client && m_host.Length())
 	{
-		m_client->Connect(m_host);
+		m_client->Connect(m_host, false);
 	}
 	if (l && m_logfile.length())
 	{

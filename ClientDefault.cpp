@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.40 2003-06-27 11:34:44 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.41 2003-08-05 06:08:06 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -82,8 +82,9 @@ void ClientDefault::SetNickname(const wxString &context, const wxString &nicknam
 	m_sck->Send(EncodeMessage(context, wxT("NICK"), nickname));
 }
 
-bool ClientDefault::Connect(const URL &url)
+bool ClientDefault::Connect(const URL &url, bool is_reconnect)
 {
+	wxASSERT(!is_reconnect || url == GetLastURL());
 	m_sck->Close();
 	m_dns->Cancel();
 	if (url.GetProtocol(wxT("dirt")) != wxT("dirt"))
@@ -93,6 +94,12 @@ bool ClientDefault::Connect(const URL &url)
 	if (url.GetHostname().Length() == 0)
 	{
 		return false;
+	}
+	if (!is_reconnect)
+	{
+		m_is_away = false;
+		m_away_message.Empty();
+		m_last_auth = ByteBuffer();
 	}
 	m_server_name = wxEmptyString;
 	m_url = url;
@@ -172,6 +179,7 @@ void ClientDefault::Authenticate(const ByteBuffer &auth)
 {
 	try
 	{
+		m_last_auth = m_config.EncodePassword(auth);
 		ByteBuffer digest = Crypt::MD5MACDigest(m_authkey, auth);
 		m_sck->Send(EncodeMessage(wxEmptyString, wxT("AUTH"), digest));
 	}
@@ -257,7 +265,15 @@ bool ClientDefault::ProcessServerInputExtra(bool preprocess, const wxString &con
 		}
 		else if (cmd == wxT("AUTH"))
 		{
-			m_event_handler->OnClientAuthNeeded(data);
+			ByteBuffer auth = m_config.DecodePassword(m_last_auth, true);
+			if (auth.Length())
+			{
+				Authenticate(auth);
+			}
+			else
+			{
+				m_event_handler->OnClientAuthNeeded(data);
+			}
 			return true;
 		}
 		else if (cmd == wxT("AUTHOK"))

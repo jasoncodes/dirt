@@ -40,6 +40,9 @@ protected:
 	DestNetworkPanel *m_pnlDestNetwork;
 	DestPortsPanel *m_pnlDestPorts;
 
+	wxStaticBox *m_fraNickname;
+	wxTextCtrl *m_txtNickname;
+
 	TristateConfigPanel *m_pnlLog;
 
 	wxStaticBox *m_fraNotification;

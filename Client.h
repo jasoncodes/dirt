@@ -69,6 +69,9 @@ public:
 	ClientConfig();
 	virtual ~ClientConfig();
 
+	virtual wxString GetNickname() const;
+	virtual bool SetNickname(const wxString &nickname);
+
 	virtual wxString GetLastSendDir() const;
 	virtual wxString GetLastGetDir() const;
 
@@ -101,7 +104,8 @@ public:
 	virtual void ProcessConsoleInput(const wxString &context, const wxString &input);
 	virtual void Debug(const wxString &context, const wxString &text);
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action) = 0;
-	virtual bool Connect(const URL &url) = 0;
+	virtual bool Connect(const URL &url, bool is_reconnect) = 0;
+	virtual bool Reconnect() { return Connect(GetLastURL(), true); }
 	virtual void Disconnect(const wxString &msg = wxT("Disconnected")) = 0;
 	virtual bool IsConnected() const = 0;
 	virtual const URL& GetLastURL() const = 0;
@@ -124,8 +128,9 @@ public:
 	virtual bool SetBinding(const wxString &name, const wxString &value);
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname() const;
+	virtual wxString GetLastNickname() const;
 	virtual wxString GetServerName() const;
-	virtual wxString GetDefaultNick() const;
+	static wxString GetDefaultNick();
 	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
 	virtual FileTransfers* GetFileTransfers() const { return m_file_transfers; }
 	virtual wxArrayString GetSupportedCommands() const;
@@ -162,7 +167,11 @@ protected:
 	ClientContact *m_contact_self;
 	FileTransfers *m_file_transfers;
 	ClientTimers *m_timers;
+	ByteBuffer m_last_auth;
 	wxString m_nickname;
+	wxString m_last_nickname;
+	bool m_is_away;
+	wxString m_away_message;
 	wxString m_server_name;
 	wxTimer *m_tmrPing;
 	wxLongLong_t m_ping_next;

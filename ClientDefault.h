@@ -18,7 +18,7 @@ public:
 
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action);
 	virtual void SetNickname(const wxString &context, const wxString &nickname);
-	virtual bool Connect(const URL &url);
+	virtual bool Connect(const URL &url, bool is_reconnect);
 	virtual void Disconnect(const wxString &msg);
 	virtual bool IsConnected() const;
 	virtual const URL& GetLastURL() const;

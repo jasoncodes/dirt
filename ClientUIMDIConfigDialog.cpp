@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.15 2003-08-01 07:47:59 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.16 2003-08-05 06:08:06 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -175,6 +175,9 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_pnlDestNetwork = new DestNetworkPanel(panel, wxID_ANY);
 	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
 
+	m_fraNickname = new wxStaticBox(panel, wxID_ANY, wxT("Default Nickname"));
+	m_txtNickname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
 
 	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
@@ -242,6 +245,12 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 			wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
 			{
+
+				wxStaticBoxSizer *szrNickname = new wxStaticBoxSizer(m_fraNickname, wxHORIZONTAL);
+				{
+					szrNickname->Add(m_txtNickname, 1, wxEXPAND, 0);
+				}
+				szrRight->Add(szrNickname, 0, wxBOTTOM | wxEXPAND, 8);
 
 				szrRight->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
 
@@ -375,6 +384,8 @@ void ClientUIMDIConfigDialog::LoadSettings()
 
 	//m_chkProxy->Enable(false);
 	//m_chkProxy->SetValue(false);
+
+	m_txtNickname->SetValue(m_config->GetNickname());
 
 	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
 
@@ -557,6 +568,15 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		else
 		{
 			((ClientUIMDIFrame*)GetParent())->GetClient()->NewProxySettings();
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetNickname(m_txtNickname->GetValue()))
+		{
+			ErrMsg(wxT("Error setting nickname"));
+			success = false;
 		}
 	}
 
