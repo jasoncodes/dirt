@@ -6,13 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.6 2003-03-19 07:07:59 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.7 2003-03-19 07:08:21 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
-
-// todo: a 2nd pass is needed during SetPrivateKey to read
-// properties that are encrypted
 
 LogReader::LogReader(const wxString &filename)
 {
