@@ -1180,12 +1180,12 @@ void LogControl::Clear()
 
 void LogControl::AddHtmlLine(const wxString &line)
 {
-	
+
 	wxString source = "<br><code>" + line + "</code>";
 
-    wxClientDC *dc = new wxClientDC(this);
-    dc->SetMapMode(wxMM_TEXT);
-    SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
+	wxClientDC *dc = new wxClientDC(this);
+	dc->SetMapMode(wxMM_TEXT);
+	SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
 
 	wxHtmlWinParser *p2 = new wxHtmlWinParser(this);
 	p2->SetFS(m_FS);
@@ -1196,10 +1196,10 @@ void LogControl::AddHtmlLine(const wxString &line)
 	m_Cell->InsertCell(c2);
 
 	delete p2;
-    
+
 	delete dc;
 
-    CreateLayout();
+	CreateLayout();
 
 	ScrollToBottom();
 
