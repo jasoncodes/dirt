@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.39 2003-03-19 17:33:16 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.40 2003-03-20 01:59:31 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -412,7 +412,7 @@ void Server::Information(const wxString &line)
 	}
 	if (m_log.Ok())
 	{
-		m_log.AddText(GetShortTimestamp() + line, *wxBLACK, false);
+		m_log.AddText(GetLongTimestamp() + line, *wxBLACK, false);
 	}
 	else if (!m_log_warning_given)
 	{
@@ -434,7 +434,7 @@ void Server::Warning(const wxString &line)
 	}
 	if (m_log.Ok())
 	{
-		m_log.AddText(GetShortTimestamp() + line, *wxRED, false);
+		m_log.AddText(GetLongTimestamp() + line, *wxRED, false);
 	}
 	else if (!m_log_warning_given)
 	{
