@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: Client.cpp,v 1.10 2003-02-13 13:16:49 jason Exp $)
 
 #include "Client.h"
 #include "util.h"

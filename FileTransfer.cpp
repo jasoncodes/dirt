@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: FileTransfer.cpp,v 1.4 2003-02-13 13:16:50 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"

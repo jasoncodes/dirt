@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.14 2003-02-13 13:16:50 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"

@@ -2,6 +2,8 @@
 	#include "wx/wx.h"
 #endif
 #include "wx/wxprec.h"
+#include "RCS.h"
+RCS_ID($Id: ByteBuffer.cpp,v 1.2 2003-02-13 13:16:49 jason Exp $)
 
 #include "ByteBuffer.h"
 

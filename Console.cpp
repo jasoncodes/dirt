@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: Console.cpp,v 1.5 2003-02-13 13:16:50 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>

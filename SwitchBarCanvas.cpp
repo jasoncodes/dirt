@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: SwitchBarCanvas.cpp,v 1.2 2003-02-13 13:16:50 jason Exp $)
 
 #include "SwitchBarCanvas.h"
 #include "SwitchBarParent.h"
