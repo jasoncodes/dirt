@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.6 2003-02-14 01:57:44 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.7 2003-02-14 02:01:41 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -28,11 +28,11 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 	EVT_BUTTON(ID_CLIENT, Splash::OnClient)
 END_EVENT_TABLE()
 
-// VC++ is broken
+// fix VC++'s broken "for" scope
 #define for if(true)for
 
 Splash::Splash()
-	: wxFrame(NULL, -1, "Dirt Secure Chat " + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU)
+	: wxFrame(NULL, -1, "Dirt Secure Chat " + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
 {
 
 	SetIcon(wxIcon( dirt_xpm ));

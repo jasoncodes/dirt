@@ -4,10 +4,11 @@
 #include "wx/wxprec.h"
 
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.6 2003-02-13 14:09:04 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.7 2003-02-14 02:05:12 jason Exp $)
 
 static wxString m_latest_rcs_date = wxEmptyString;
 static wxString m_latest_rcs_author = wxEmptyString;
+static bool m_init_done = false;
 
 #define VERSION "3.0.0 Alpha 0"
 
@@ -37,8 +38,12 @@ int add_rcs_id(const char *x, const char *y)
 	static wxString s_latest_rcs_author = wxEmptyString;
 	if (!x || !y)
 	{
-		m_latest_rcs_date = s_latest_rcs_date;
-		m_latest_rcs_author = s_latest_rcs_author;
+		if (!m_init_done)
+		{
+			m_latest_rcs_date = s_latest_rcs_date;
+			m_latest_rcs_author = s_latest_rcs_author;
+			m_init_done = true;
+		}
 		return 1;
 	}
 	else
@@ -64,7 +69,6 @@ wxString GetRCSAuthor()
 	wxCHECK(add_rcs_id(NULL, NULL), wxEmptyString);
 	return m_latest_rcs_author;
 }
-
 
 wxString GetProductVersion()
 {
