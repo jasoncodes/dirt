@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.39 2003-06-02 12:52:05 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.40 2003-06-03 05:51:01 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -15,6 +15,7 @@ RCS_ID($Id: FileTransfers.cpp,v 1.39 2003-06-02 12:52:05 jason Exp $)
 #include "IPInfo.h"
 #include "URL.h"
 #include "CryptSocket.h"
+#include "CryptSocketProxy.h"
 
 #include <wx/filename.h>
 #include "File.h"
@@ -57,20 +58,6 @@ FileTransfers::~FileTransfers()
 	#ifdef __WXMSW__
 		delete m_tmrIdleEventFaker;
 	#endif
-}
-
-void FileTransfers::NewProxySettings()
-{
-	const CryptSocketProxySettings *proxy_settings = m_client->GetProxySettings();
-	wxASSERT(proxy_settings);
-	for (int i = 0; i < GetTransferCount(); ++i)
-	{
-		FileTransfer &t = m_transfers[i];
-		for (int j = 0; t.m_scks.GetCount(); ++j)
-		{
-			t.m_scks[j]->SetProxySettings(*proxy_settings);
-		}
-	}
 }
 
 void FileTransfers::OnTimer(wxTimerEvent &event)
@@ -140,6 +127,19 @@ void FileTransfers::AppendMyIPs(ByteBufferArray &data, wxUint16 port) const
 	}
 }
 
+void FileTransfers::SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const
+{
+	const CryptSocketProxySettings *proxy_settings = m_client->GetProxySettings();
+	if (proxy_settings)
+	{
+		if ((is_connect && proxy_settings->GetConnectionType(pctDCCConnect)) ||
+			(!is_connect && proxy_settings->GetConnectionType(pctDCCListen)))
+		{
+			sck->SetProxySettings(proxy_settings);
+		}
+	}
+}
+
 int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
@@ -175,10 +175,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 
 	CryptSocketServer *sck = new CryptSocketServer;
 	sck->SetEventHandler(this, ID_SOCKET_SERVER);
-	if (m_client->GetProxySettings())
-	{
-		sck->SetProxySettings(*m_client->GetProxySettings());
-	}
+	SetProxyOnSocket(sck, false);
 	sck->SetUserData(t);
 	sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 	wxIPV4address addr;
@@ -477,10 +474,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 								CryptSocketClient *sckClient = new CryptSocketClient;
 								t.m_scks.Add(sckClient);
 								sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
-								if (m_client->GetProxySettings())
-								{
-									sckClient->SetProxySettings(*m_client->GetProxySettings());
-								}
+								SetProxyOnSocket(sckClient, true);
 								sckClient->SetUserData(&t);
 								sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 								wxIPV4address addr;
@@ -898,10 +892,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 			CryptSocketClient *sckClient = new CryptSocketClient;
 			t.m_scks.Add(sckClient);
 			sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
-			if (m_client->GetProxySettings())
-			{
-				sckClient->SetProxySettings(*m_client->GetProxySettings());
-			}
+			SetProxyOnSocket(sckClient, true);
 			sckClient->SetUserData(&t);
 			sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 			wxIPV4address addr;
@@ -920,10 +911,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 
 		CryptSocketServer *sckServer = new CryptSocketServer;
 		sckServer->SetEventHandler(this, ID_SOCKET_SERVER);
-		if (m_client->GetProxySettings())
-		{
-			sckServer->SetProxySettings(*m_client->GetProxySettings());
-		}
+		SetProxyOnSocket(sckServer, false);
 		sckServer->SetUserData(&t);
 		sckServer->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 		wxIPV4address addr;
@@ -1018,10 +1006,7 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 				{
 					CryptSocketServer *sckListen = (CryptSocketServer*)event.GetSocket();
 					sckListen->SetEventHandler(NULL, wxID_ANY);
-					if (m_client->GetProxySettings())
-					{
-						sckListen->SetProxySettings(*m_client->GetProxySettings());
-					}
+					SetProxyOnSocket(sckListen, false);
 					sckListen->SetUserData(t);
 					CryptSocketBase *sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
 					WX_CLEAR_ARRAY(t->m_scks);

@@ -37,8 +37,6 @@ public:
 
 	wxString GetLastCompletedGetFilename() const { return m_last_completed_get_filename; }
 
-	void NewProxySettings();
-
 protected:
 	void OnTimer(wxTimerEvent &event);
 	void OnSocket(CryptSocketEvent &event);
@@ -56,6 +54,7 @@ protected:
 	wxArrayString GetMyIPs() const;
 	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
 	void AppendMyIPs(ByteBufferArray &data, wxUint16 port) const;
+	void SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const;
 
 protected:
 	void OnGetConnection(FileTransfer &t);

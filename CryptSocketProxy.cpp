@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.9 2003-06-02 10:46:05 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.10 2003-06-03 05:51:01 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -20,7 +20,7 @@ static const wxString dest_modes[] =
 CryptSocketProxySettings::CryptSocketProxySettings(Config &config)
 	: m_config(config)
 {
-	LoadDefaults();
+	LoadSettings();
 }
 
 void CryptSocketProxySettings::LoadDefaults()

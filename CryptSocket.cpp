@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.28 2003-06-02 12:52:05 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.29 2003-06-03 05:51:01 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -463,10 +463,17 @@ void CryptSocketBase::OnSocketLost()
 	}
 }
 
-void CryptSocketBase::SetProxySettings(const CryptSocketProxySettings &settings)
+void CryptSocketBase::SetProxySettings(const CryptSocketProxySettings *settings)
 {
 	delete m_proxy_settings;
-	m_proxy_settings = new CryptSocketProxySettings(settings);
+	if (settings)
+	{
+		m_proxy_settings = new CryptSocketProxySettings(*settings);
+	}
+	else
+	{
+		m_proxy_settings = NULL;
+	}
 }
 
 const CryptSocketProxySettings* CryptSocketBase::GetProxySettings() const
@@ -562,10 +569,7 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	sck->InitBuffers();
 	sck->InitSocketEvents();
 	sck->SetEventHandler(handler?handler:m_handler, (id!=wxID_ANY)?id:m_id);
-	if (GetProxySettings())
-	{
-		sck->SetProxySettings(*GetProxySettings());
-	}
+	sck->SetProxySettings(GetProxySettings());
 	sck->SetUserData(userdata);
 	bool success = ((wxSocketServer*)m_sck)->AcceptWith(*sck->m_sck);
 	if (success)

@@ -4,7 +4,9 @@
 #include <wx/socket.h>
 #include "ByteBuffer.h"
 #include "Crypt.h"
-#include "CryptSocketProxy.h"
+
+class CryptSocketProxy;
+class CryptSocketProxySettings;
 
 //////// CryptSocketBase ////////
 
@@ -41,7 +43,7 @@ public:
 
 	virtual CryptSocketType GetType() const = 0;
 
-	virtual void SetProxySettings(const CryptSocketProxySettings &settings);
+	virtual void SetProxySettings(const CryptSocketProxySettings *settings);
 	virtual const CryptSocketProxySettings* GetProxySettings() const;
 
 protected:
