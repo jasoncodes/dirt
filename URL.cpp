@@ -6,11 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.13 2003-04-01 03:32:07 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.14 2003-05-27 17:02:20 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
 #include "util.h"
+extern "C"
+{
+	#include <ctype.h>
+}
 
 URL::URL()
 {

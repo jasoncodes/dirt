@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.10 2003-05-23 13:18:56 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.11 2003-05-27 17:02:20 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -489,7 +489,11 @@ void TrayIcon::SetToolTip(const wxString &tooltip)
 	if (m_priv)
 	{
 		kapp->lock();
-		QToolTip::add(m_priv, tooltip.c_str());
+		#if wxUSE_UNICODE
+			QToolTip::add(m_priv, QString((const QChar*)tooltip.c_str(), tooltip.Length()));
+		#else
+			QToolTip::add(m_priv, tooltip.c_str());
+		#endif
 		kapp->unlock();
 	}
 }

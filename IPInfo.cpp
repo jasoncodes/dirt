@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.2 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.3 2003-05-27 17:02:19 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -161,22 +161,22 @@ IPInfoEntryArray GetIPInfo()
 				}
 
 				IPInfoEntry entry;
-				entry.InterfaceName = ifr->ifr_name;
-				entry.IPAddressString = inet_ntoa(inaddrr(ifr_addr.sa_data));
-				entry.IPAddress = inet_addr(entry.IPAddressString);
+				entry.InterfaceName = wxString(ifr->ifr_name, wxConvLocal);
+				entry.IPAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
+				entry.IPAddress = inet_addr(entry.IPAddressString.mb_str());
 
 				if (0 == ioctl(sockfd, SIOCGIFNETMASK, ifr))
 				{
-					entry.SubnetMaskString = inet_ntoa(inaddrr(ifr_addr.sa_data));
-					entry.SubnetMask = inet_addr(entry.SubnetMaskString);
+					entry.SubnetMaskString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
+					entry.SubnetMask = inet_addr(entry.SubnetMaskString.mb_str());
 				}
 
 				if (ifr->ifr_flags & IFF_BROADCAST)
 				{
 					if (0 == ioctl(sockfd, SIOCGIFBRDADDR, ifr))
 					{
-						entry.BroadcastAddressString = inet_ntoa(inaddrr(ifr_addr.sa_data));
-						entry.BroadcastAddress = inet_addr(entry.BroadcastAddressString);
+						entry.BroadcastAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
+						entry.BroadcastAddress = inet_addr(entry.BroadcastAddressString.mb_str());
 					}
 				}
 

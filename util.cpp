@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.69 2003-05-23 14:11:26 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.70 2003-05-27 17:02:20 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1031,19 +1031,19 @@ wxString GetSelf()
 
 	#elif defined(__UNIX__)
 
-		wxChar buff[4096];
+		char buff[4096];
 
 		int len = readlink("/proc/self/exe", buff, WXSIZEOF(buff));
-		wxString filename(buff, wxMax(0, len));
+		wxString filename(buff, wxConvLocal, wxMax(0, len));
 		if (len > 0 && wxFileName(filename).FileExists())
 		{
 			return filename;
 		}
 		else
 		{
-			if (realpath(first_arg.c_str(), buff))
+			if (realpath(first_arg.mb_str(), buff))
 			{
-				return buff;
+				return wxString(buff, wxConvLocal);
 			}
 			else
 			{

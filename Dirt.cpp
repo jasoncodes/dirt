@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.45 2003-05-15 00:16:17 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.46 2003-05-27 17:02:19 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -505,13 +505,13 @@ void DirtApp::RegisterDirtProtocol()
 	if (kde_dirt_protocol.DirExists())
 	{
 		kde_dirt_protocol.SetFullName(wxT("dirt.protocol"));
-		wxChar self[4096];
-		if (realpath(argv[0], self))
+		char self[4096];
+		if (realpath(wxString(argv[0]).mb_str(), self))
 		{
 			wxFileOutputStream file(kde_dirt_protocol.GetFullPath());
 			wxTextOutputStream text(file);
 			text << wxT("[Protocol]\n");
-			text << wxT("exec=") << self << wxT(" --host=%u\n");
+			text << wxT("exec=") << wxString(self, wxConvLocal) << wxT(" --host=%u\n");
 			text << wxT("protocol=dirt\n");
 			text << wxT("input=none\n");
 			text << wxT("output=none\n");

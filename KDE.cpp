@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: KDE.cpp,v 1.2 2003-03-11 05:56:24 jason Exp $)
+RCS_ID($Id: KDE.cpp,v 1.3 2003-05-27 17:02:20 jason Exp $)
 
 #ifdef KDE_AVAILABLE
 
@@ -20,7 +20,7 @@ RCS_ID($Id: KDE.cpp,v 1.2 2003-03-11 05:56:24 jason Exp $)
 
 bool DoesDCOPFileExist()
 {
-	return wxFileName((const char*)DCOPClient::dcopServerFile()).FileExists();
+	return wxFileName(wxString((const char*)DCOPClient::dcopServerFile(), wxConvLocal)).FileExists();
 }
 
 KDEThread::KDEThread()
@@ -74,7 +74,7 @@ wxThread::ExitCode KDEThread::Entry()
 	char *disp_argv[2];
 	disp_argv[0] = "";
 	disp_argv[1] = NULL;
-	m_kapp = new KApplication(disp_argc, disp_argv, wxT("KDE Test"));
+	m_kapp = new KApplication(disp_argc, disp_argv, "KDE Test");
 	KCrash::setCrashHandler(CrashHandler);	
 
 	s_mutex.Lock();
