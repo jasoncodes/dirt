@@ -14,6 +14,8 @@ public:
 	LogReader(const wxString &filename);
 	virtual ~LogReader();
 
+	static wxString GetDefaultLogDirectory();
+
 	virtual bool Ok() const;
 
 	virtual ByteBuffer GetPublicKey();
