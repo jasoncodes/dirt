@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.22 2003-05-14 15:17:55 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.23 2003-05-14 16:19:21 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -15,6 +15,9 @@ RCS_ID($Id: FileTransfer.cpp,v 1.22 2003-05-14 15:17:55 jason Exp $)
 #include "CryptSocket.h"
 
 #include <wx/filename.h>
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(Uint16Array)
 
 FileTransfer::FileTransfer(FileTransfers *transfers)
 	:

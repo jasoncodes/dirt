@@ -6,7 +6,7 @@
 #include "CryptSocket.h"
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(wxUint16, Uint16Array);
+WX_DECLARE_OBJARRAY(wxUint16, Uint16Array);
 
 class FileTransfers;
 
