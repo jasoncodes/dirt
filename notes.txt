@@ -20,8 +20,6 @@
 
 	* resume/overwrite option on /dcc accept
 
-	* Win32: sends don't go during menu/scroll/drag/etc (the no idle events problem)
-
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)
 

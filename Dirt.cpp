@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.44 2003-05-14 08:13:15 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.45 2003-05-15 00:16:17 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -305,6 +305,7 @@ int DirtApp::OnExit()
 
 HHOOK DirtApp::s_hMsgHookProc;
 
+// a workaround to keep events flowing during scrolls/menus/drags/etc
 LRESULT CALLBACK DirtApp::MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	MSG *msg = (MSG*)lParam;

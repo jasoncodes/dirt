@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.32 2003-05-14 23:57:27 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.33 2003-05-15 00:16:17 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -30,12 +30,14 @@ WX_DEFINE_OBJARRAY(FileTransferArray);
 enum
 {
 	ID_TIMER = 1,
+	ID_TIMER_FAKE_IDLE,
 	ID_SOCKET_CLIENT,
 	ID_SOCKET_SERVER
 };
 
 BEGIN_EVENT_TABLE(FileTransfers, wxEvtHandler)
 	EVT_TIMER(ID_TIMER, FileTransfers::OnTimer)
+	EVT_TIMER(ID_TIMER_FAKE_IDLE, FileTransfers::OnTimer)
 	EVT_CRYPTSOCKET(ID_SOCKET_CLIENT, FileTransfers::OnSocket)
 	EVT_CRYPTSOCKET(ID_SOCKET_SERVER, FileTransfers::OnSocket)
 END_EVENT_TABLE()
@@ -44,27 +46,45 @@ FileTransfers::FileTransfers(Client *client)
 	: wxEvtHandler(), m_client(client)
 {
 	tmr = new wxTimer(this, ID_TIMER);
+	#ifdef __WXMSW__
+		tmrIdleEventFaker = new wxTimer(this, ID_TIMER_FAKE_IDLE);
+	#endif
 }
 
 FileTransfers::~FileTransfers()
 {
 	delete tmr;
+	#ifdef __WXMWSW__
+		delete tmrIdleEventFaker;
+	#endif
 }
 
 void FileTransfers::OnTimer(wxTimerEvent &event)
 {
-	wxLongLong_t now = GetMillisecondTicks();
-	for (int i = GetTransferCount() - 1; i >= 0; --i)
+	if (event.GetId() == ID_TIMER)
 	{
-		FileTransfer &transfer = m_transfers.Item(i);
-		if (transfer.transferid > -1)
+		wxLongLong_t now = GetMillisecondTicks();
+		for (int i = GetTransferCount() - 1; i >= 0; --i)
 		{
-			if (transfer.OnTimer(now))
+			FileTransfer &transfer = m_transfers.Item(i);
+			if (transfer.transferid > -1)
 			{
-				m_client->m_event_handler->OnClientTransferTimer(transfer);
+				if (transfer.OnTimer(now))
+				{
+					m_client->m_event_handler->OnClientTransferTimer(transfer);
+				}
 			}
 		}
 	}
+	#ifdef __WXMSW__
+		// workaround to keep transfers going during scrolls/menus/drags/etc
+		wxIdleEvent evt;
+		OnAppIdle(evt);
+		if (evt.MoreRequested())
+		{
+			tmrIdleEventFaker->Start(1, true);
+		}
+	#endif
 }
 
 int FileTransfers::GetNewId()

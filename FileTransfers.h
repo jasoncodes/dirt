@@ -74,6 +74,9 @@ protected:
 	Client *m_client;
 	FileTransferArray m_transfers;
 	wxTimer *tmr;
+	#ifdef __WXMSW__
+		wxTimer *tmrIdleEventFaker;
+	#endif
 
 private:
 	DECLARE_EVENT_TABLE()
