@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.145 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.146 2004-05-16 10:07:11 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -255,7 +255,12 @@ bool ClientUIMDIFrame::IsFocused()
 		HWND hWnd = (HWND)GetHandle();
 		return (::GetForegroundWindow() == hWnd);
 	#else
-		return (FindFocus() != NULL);
+		wxWindow *wnd = FindFocus();
+		while (wnd && wnd->GetParent())
+		{
+			wnd = wnd->IsTopLevel() ? NULL : wnd->GetParent();
+		}
+		return (wnd == this);
 	#endif
 }
 
@@ -274,16 +279,16 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 	bool m_last_focused = m_focused;
 	m_focused = IsFocused();
 
-/*** This shouldn't be needed ***
-	if (m_focused || !IsWin32())
+	if (m_focused)
 	{
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 		if (child)
 		{
-			child->GetCanvas()->OnActivate();
+			ClientUIMDICanvas *canvas = (ClientUIMDICanvas*)child->GetCanvas();
+			canvas->OnFocusCheck();
 		}
 	}
-***/
+
 	if (m_alert && m_flash > 0)
 	{
 		m_flash--;

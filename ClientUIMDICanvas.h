@@ -74,6 +74,8 @@ public:
 	void InitLog();
 	bool SetFont(const wxFont &font);
 
+	virtual void OnFocusCheck();
+
 protected:
 	void OnSize(wxSizeEvent &event);
 	void OnFocus(wxFocusEvent &event);
