@@ -31,5 +31,8 @@ all: clean dirt
 
 -include $(SOURCES:.cpp=.d)
 
-Dirt: $(OBJECTS)
+Dirt: $(OBJECTS) crypto/libcryptopp.a
 	$(CC) -o Dirt $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
+
+crypto/libcryptopp.a:
+	@cd crypto && make
