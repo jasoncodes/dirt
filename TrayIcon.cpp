@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.18 2004-06-06 11:07:33 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.19 2004-06-11 16:29:31 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -329,7 +329,7 @@ public:
 		last_set_okay = true;
 	}
 
-    void OnMouse(wxTaskBarIconEvent &event)
+	void OnMouse(wxTaskBarIconEvent &event)
 	{
 
 		wxEventType src_type = event.GetEventType();
@@ -382,7 +382,7 @@ public:
 
 	}
 
-    void OnMenu(wxCommandEvent &event)
+	void OnMenu(wxCommandEvent &event)
 	{
 		if (m_trayicon->m_handler)
 		{
@@ -405,7 +405,7 @@ public:
 };
 
 BEGIN_EVENT_TABLE(TrayIconPrivate, wxTaskBarIcon)
-    EVT_MENU(wxID_ANY, TrayIconPrivate::OnMenu)
+	EVT_MENU(wxID_ANY, TrayIconPrivate::OnMenu)
 	EVT_TASKBAR_LEFT_DOWN(TrayIconPrivate::OnMouse)
 	EVT_TASKBAR_LEFT_UP(TrayIconPrivate::OnMouse)
 	EVT_TASKBAR_RIGHT_DOWN(TrayIconPrivate::OnMouse)
@@ -437,7 +437,12 @@ bool TrayIcon::Ok()
 
 void TrayIcon::SetIcon(const char **xpm)
 {
-	m_priv->icon = wxIcon(xpm);
+	wxBitmap bmp(xpm);
+	wxImage img = bmp.ConvertToImage();
+	img.Rescale(24, 24);
+	wxIcon icon;
+	bmp = wxBitmap(img);
+	m_priv->icon.CopyFromBitmap(bmp);
 	m_priv->Update();
 }
 

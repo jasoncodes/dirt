@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.154 2004-06-03 05:39:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.155 2004-06-11 16:29:31 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -118,7 +118,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_alert = false;
 	m_flash = 0;
 	m_log_date_okay = false;
-	m_focused = true;
+	m_focused_timer = true;
+	m_activated = true;
 #ifdef __WXMSW__
 	m_hotkey_keycode = 0;
 	m_hotkey_mods = 0;
@@ -223,6 +224,19 @@ void ClientUIMDIFrame::OnFocusGained()
 	UpdateCaption();
 }
 
+void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
+{
+	m_activated = event.GetActive();
+	if (event.GetActive())
+	{
+		SwitchBarCanvas *canvas = GetActiveCanvas();
+		if (canvas)
+		{
+			canvas->OnActivate();
+		}
+	}
+}
+
 void ClientUIMDIFrame::OnFocusLost()
 {
 	ResetRedLines();
@@ -256,12 +270,15 @@ bool ClientUIMDIFrame::IsFocused()
 		HWND hWnd = (HWND)GetHandle();
 		return (::GetForegroundWindow() == hWnd);
 	#else
+/*
 		wxWindow *wnd = FindFocus();
 		while (wnd && wnd->GetParent())
 		{
 			wnd = wnd->IsTopLevel() ? NULL : wnd->GetParent();
 		}
 		return (wnd == this);
+*/
+		return m_activated;
 	#endif
 }
 
@@ -277,10 +294,10 @@ static inline bool IsWin32()
 void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 {
 
-	bool m_last_focused = m_focused;
-	m_focused = IsFocused();
+	bool m_last_focused = m_focused_timer;
+	m_focused_timer = IsFocused();
 
-	if (m_focused)
+	if (m_focused_timer)
 	{
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 		if (child)
@@ -296,11 +313,11 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 		UpdateCaption();
 	}
 
-	if (m_focused && !m_last_focused)
+	if (m_focused_timer && !m_last_focused)
 	{
 		OnFocusGained();
 	}
-	else if (!m_focused && m_last_focused)
+	else if (!m_focused_timer && m_last_focused)
 	{
 		OnFocusLost();
 	}

@@ -72,6 +72,7 @@ protected:
 	void OnClose(wxCloseEvent &event);
 	void OnConfigFileChanged(wxCommandEvent &event);
 	void OnWindowMinimize(wxCommandEvent& event);
+	void OnActivate(wxActivateEvent& event);
 
 protected:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
@@ -151,7 +152,8 @@ protected:
 		int m_hotkey_keycode;
 		wxUint8 m_hotkey_mods;
 	#endif
-	bool m_focused;
+	bool m_focused_timer;
+	bool m_activated;
 
 private:
 	DECLARE_EVENT_TABLE()
