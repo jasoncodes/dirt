@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.55 2003-02-27 06:26:56 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.56 2003-02-27 07:21:23 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -41,6 +41,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 {
 
 	m_focused = true;
+	m_alert = false;
+	UpdateCaption();
 
 	SetIcon(wxIcon(dirt_xpm));
 
@@ -95,7 +97,12 @@ bool ClientUIMDIFrame::ResetWindowPos()
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 {
 	m_focused = event.GetActive();
-	if (!m_focused)
+	if (m_focused)
+	{
+		m_alert = false;
+		UpdateCaption();
+	}
+	else
 	{
 		ResetRedLines();
 	}
@@ -245,6 +252,9 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 		{
 			#ifdef __WXMSW__
 				::FlashWindow((HWND)GetHandle(), TRUE);
+			#else
+				m_alert = true;
+				UpdateCaption();
 			#endif
 		}
 
@@ -336,9 +346,18 @@ void ClientUIMDIFrame::OnClientStateChange()
 		m_lstNickList->Clear();
 	}
 	GetContext(wxEmptyString)->SetPasswordMode(false);
+	UpdateCaption();
+}
+
+void ClientUIMDIFrame::UpdateCaption()
+{
 	wxString title;
+	if (m_alert)
+	{
+		title << "* ";
+	}
 	title << AppTitle(wxT("Client"));
-	if (m_client->IsConnected())
+	if (m_client && m_client->IsConnected())
 	{
 		title << wxT(" - ");
 		if (m_client->GetNickname().Length())

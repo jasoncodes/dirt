@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.32 2003-02-24 12:43:44 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.33 2003-02-27 07:21:22 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -159,7 +159,10 @@ void ClientUIMDICanvas::OnAttach()
 
 void ClientUIMDICanvas::OnActivate()
 {
-	((ClientUIMDIFrame*)m_parent)->ResetRedLines();
+	if (((ClientUIMDIFrame*)m_parent)->IsFocused())
+	{
+		((ClientUIMDIFrame*)m_parent)->ResetRedLines();
+	}
 	DoGotFocus();
 }
 

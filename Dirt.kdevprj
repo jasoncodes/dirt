@@ -182,6 +182,7 @@ lfv_open_groups=
 makefiles=./Makefile.am,Makefile.am
 project_name=Dirt
 project_type=normal_empty
+showNonProjectFiles=false
 sub_dir=
 version=
 version_control=CVS
