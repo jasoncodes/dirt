@@ -28,7 +28,7 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.6 2004-09-04 06:31:41 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.7 2004-12-15 19:32:20 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
@@ -501,34 +501,34 @@ bool IsEmail(const wxString &token)
 	return false;
 }
 
-static bool RemoveURLPrefix(wxString &url, wxString &text, const wxString &prefix)
+static bool RemoveURLPrefix(wxString &token, wxString &prefix_out, const wxString &prefix_in)
 {
-	if (LeftEq(url, prefix))
+	if (LeftEq(token, prefix_in))
 	{
-		url = url.Mid(prefix.Length());
-		text = prefix + text;
+		token = token.Mid(prefix_in.Length());
+		prefix_out += prefix_in;
 		return true;
 	}
 	return false;
 }
 
-static bool RemoveURLSuffix(wxString &url, wxString &text, const wxString &suffix)
+static bool RemoveURLSuffix(wxString &token, wxString &suffix_out, const wxString &suffix_in)
 {
-	if (RightEq(url, suffix))
+	if (RightEq(token, suffix_in))
 	{
-		url = url.Left(url.Length() - suffix.Length());
-		text += suffix;
+		token = token.Left(token.Length() - suffix_in.Length());
+		suffix_out = suffix_in + suffix_out;
 		return true;
 	}
 	return false;
 }
 
-static bool RemoveURLPrefixAndSuffix(wxString &url, wxString &text, const wxString &prefix, const wxString &suffix)
+static bool RemoveURLPrefixAndSuffix(wxString &token, wxString &prefix_out, const wxString &prefix_in, wxString &suffix_out, const wxString &suffix_in)
 {
-	if (LeftEq(url, prefix) && RightEq(url, suffix))
+	if (token.Length() > prefix_in.Length() + suffix_in.Length() && LeftEq(token, prefix_in) && RightEq(token, suffix_in))
 	{
-		RemoveURLPrefix(url, text, prefix);
-		RemoveURLSuffix(url, text, suffix);
+		RemoveURLPrefix(token, prefix_out, prefix_in);
+		RemoveURLSuffix(token, suffix_out, suffix_in);
 		return true;
 	}
 	return false;
@@ -586,6 +586,19 @@ wxString ConvertUrlsToLinks(const wxString &text)
 				token = token.Left(token.Length() - 1);
 			}
 
+			wxString prefix, suffix;
+
+			const wxString extra_chars_to_remove = wxT(".,?!");
+			while (extra_chars_to_remove.Find(token.Right(1)) > -1)
+			{
+				suffix = token.Right(1) + suffix;
+				token = token.Left(token.Length() - 1);
+			}
+
+			RemoveURLPrefixAndSuffix(token, prefix, wxT("("), suffix, wxT(")"));
+			RemoveURLPrefix(token, prefix, wxT("'"));
+			RemoveURLSuffix(token, suffix, wxT("'")) || RemoveURLSuffix(token, suffix, wxT("'s"));
+
 			wxString url;
 
 			wxString token_lower = token.Lower();
@@ -624,22 +637,13 @@ wxString ConvertUrlsToLinks(const wxString &text)
 
 			if (url.Length() > 0)
 			{
-				const wxString extra_chars_to_remove = wxT(".,?!");
-				wxString extra_chars;
-				while (extra_chars_to_remove.Find(token.Right(1)) > -1)
-				{
-					extra_chars = token.Right(1) + extra_chars;
-					token = token.Left(token.Length() - 1);
-					url = url.Left(url.Length() - 1);
-				}
-				RemoveURLPrefixAndSuffix(url, token, wxT("("), wxT(")"));
-				RemoveURLPrefix(url, token, wxT("'"));
-				RemoveURLSuffix(url, token, wxT("'")) ||
-					RemoveURLSuffix(url, token, wxT("'s"));
-				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\" target=\"_blank\">") + token + wxT("</a>") + extra_chars;
+				token = wxT("<a href=\"") + 
+					ConvertModifiersIntoHtml(url, true) +
+					wxT("\" target=\"_blank\">") + token +
+					wxT("</a>");
 			}
 
-			output += token;
+			output += prefix + token + suffix;
 			if (last_is_delim)
 			{
 				output += last_char;
