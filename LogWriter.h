@@ -4,7 +4,7 @@
 #include "Log.h"
 #include "ByteBuffer.h"
 #include "Crypt.h"
-#include "Util.h"
+#include "util.h"
 #include <wx/file.h>
 #include <wx/datetime.h>
 
