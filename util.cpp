@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.60 2003-05-11 10:33:17 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.61 2003-05-11 10:51:29 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -780,9 +780,9 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 	
 		}
 
-	#endif
+		return true;
 
-	return true;
+	#endif
 
 }
 
