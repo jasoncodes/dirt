@@ -32,8 +32,6 @@
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* gtk: cannot type into main canvas text box after using nicklist right click menu sometimes
-
 * hide /oper password when being typed
 
 * is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
