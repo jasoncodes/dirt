@@ -1,3 +1,7 @@
+Accept to \home\jason\Desktop
+
+right click pending transfer when never accepted before == seg fault
+
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
 increasing padding on staticboxes in option dialog should do it
 
