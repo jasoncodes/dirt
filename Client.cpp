@@ -59,10 +59,7 @@ void Client::ProcessInput(const wxString &context, const wxString &text)
 
 	if (cmd == "SAY")
 	{
-		if (params.Length() > 0)
-		{
-			SendMessage(context, params);
-		}
+		SendMessage(context, params);
 	}
 	else if (cmd == "MSG")
 	{
