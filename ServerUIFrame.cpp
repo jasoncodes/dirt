@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.28 2003-03-11 04:57:12 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.29 2003-03-11 06:09:48 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -90,6 +90,7 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_BUTTON(ID_CLIENT, ServerUIFrame::OnClient)
 	EVT_BUTTON(ID_CLEAR, ServerUIFrame::OnClear)
 	EVT_TIMER(ID_TIMER_UPDATECONNECTIONS, ServerUIFrame::OnTimerUpdateConnections)
+	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ServerUIFrame::OnTrayDblClick)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
@@ -213,6 +214,45 @@ ServerUIFrame::~ServerUIFrame()
 	delete tray;
 	delete srv;
 
+}
+
+static void ForceForegroundWindow(wxFrame *wnd)
+{
+#ifdef __WXMSW__
+	HWND hWnd = (HWND)wnd->GetHWND();
+	if (hWnd != GetForegroundWindow())
+	{
+		DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
+		DWORD ThreadID2 = GetWindowThreadProcessId(hWnd, 0);
+		if (ThreadID1 != ThreadID2)
+		{
+			AttachThreadInput(ThreadID1, ThreadID2, TRUE);
+			SetForegroundWindow(hWnd);
+			AttachThreadInput(ThreadID1, ThreadID2, FALSE);
+		}
+		else
+		{
+			SetForegroundWindow(hWnd);
+		}
+		if (IsIconic(hWnd))
+		{
+			ShowWindow(hWnd, SW_RESTORE);
+		}
+		else
+		{
+			ShowWindow(hWnd, SW_SHOW);
+		}
+	}
+#else
+	wnd->Show();
+	wnd->Iconize(false);
+	wnd->SetFocus();
+#endif
+}
+
+void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
+{
+	ForceForegroundWindow(this);
 }
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)

@@ -6,7 +6,6 @@
 
 class InputControl;
 class TrayIcon;
-enum XPMs;
 
 class ServerUIFrame : public wxFrame, public ServerEventHandler
 {
@@ -33,6 +32,7 @@ protected:
 	void OnClient(wxCommandEvent& event);
 	void OnClear(wxCommandEvent& event);
 	void OnTimerUpdateConnections(wxTimerEvent &event);
+	void OnTrayDblClick(wxMouseEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();

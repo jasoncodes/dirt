@@ -1,7 +1,8 @@
 ifneq ($(wildcard $(shell kde-config --prefix)/include/kde/kapplication.h),.)
 ifneq ($(wildcard $(QTDIR)/include/qapplication.h),.)
-KDE_CPPFLAGS := -I`kde-config --prefix`/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE
-KDE_LINK := `kde-config --prefix`/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
+KDE_DIR := $(shell kde-config --prefix)
+KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE
+KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
 endif
 endif
 
