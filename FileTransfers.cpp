@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.26 2003-05-11 10:33:17 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.27 2003-05-11 10:40:01 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -954,7 +954,7 @@ void FileTransfers::OnAppIdle(wxIdleEvent &event)
 		#ifdef __WXMSW__
 			event.RequestMore();
 		#else
-			wxCommandEvent evt;
+			wxIdleEvent evt;
 			wxTheApp->AddPendingEvent(evt);
 		#endif
 	}
