@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.54 2003-04-28 11:35:23 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.55 2003-04-28 12:25:24 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -15,9 +15,11 @@ RCS_ID($Id: util.cpp,v 1.54 2003-04-28 11:35:23 jason Exp $)
 #include "ByteBuffer.h"
 #include <wx/mimetype.h>
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
+#elif defined(__UNIX__)
+	#include <unistd.h>
 #endif
 
 const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
@@ -1036,13 +1038,14 @@ wxString GetSelf()
 		wxChar buff[4096];
 
 		int len = readlink("/proc/self/exe", buff, WXSIZEOF(buff));
-		if (len > 0)
+		wxString filename(buff, wxMax(0, len));
+		if (len > 0 && wxFileName(filename).FileExists())
 		{
-			return wxString(buff, len);
+			return filename;
 		}
 		else
 		{
-			if (realpath(argv[0], buff))
+			if (realpath(first_arg.c_str(), buff))
 			{
 				return buff;
 			}
