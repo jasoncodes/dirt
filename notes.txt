@@ -11,6 +11,8 @@
 
 * flickering when ctrl-tab
 
+* mdi child icon sometimes doesn't show
+
 * copy w/o formatting, find text, etc
 
 * type -->blah'<--. problem is in ConvertUrlsToLinks
