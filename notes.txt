@@ -1,3 +1,11 @@
+"[Dave TIME reply]: 2003/09/10 11:19:58 UTC-700" should show UTC-0700
+
+wordfilter: once a match is made in the line, the replacement shouldnt be matched against
+
+when auto-away after reconnect, need to send away time (ticks offset since /away)
+
+don't hyperlink "news:", "http:", etc by themselves
+
 [00:13] *** Looking up 198.142.235.68
 [00:13] *** Connecting to 198.142.235.68
 [00:13] *** Ping timeout
