@@ -1,3 +1,9 @@
+* allow users to specify which browser to use in the options dialog.
+
+[16:27] *** Andrew is now known as ANDREW
+[16:27] *** Note: You have a query window open to both Andrew and ANDREW
+the query window still said Andrew not ANDREW
+
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
 increasing padding on staticboxes in option dialog should do it
 
@@ -387,5 +393,3 @@ option to disable red and beep for a mdi child (for server console)
 * replace TrayIcon with wxTaskBarIcon and then remove all KDE calls
   (after confirming TaskbarCreated and X11 support exists in 2.4.1)
   (and also after workaround for non-supporting X11 WMs somehow is done in wx)
-
-* allow users to specify which browser to use in the options dialog.
