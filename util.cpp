@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.97 2004-06-19 12:42:38 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.98 2004-06-19 13:10:31 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -749,6 +749,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 		ICInstance icInstance;
 
 		OSType psiSignature = '????';
+		ConstStr255Param hint = 0;
 
 		OSStatus error = ICStart(&icInstance, psiSignature);
 		
@@ -758,7 +759,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 			if (show_error)
 			{
 				wxMessageBox(
-					wxString::Format(wxT("Unable to launch the web browser. Error #1/%d"), (int)result),
+					wxString::Format(wxT("Unable to launch the web browser. Error #1/%d"), (int)error),
 					wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
 			}
 
@@ -774,7 +775,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 			ICFindConfigFile(icInstance, 0, nil);
 		#endif
 
-		error = ICLaunchURL(icInstance, "\p", URL.mb_str(), length, &start, &end);
+		error = ICLaunchURL(icInstance, hint, URL.mb_str(), length, &start, &end);
 		bool success = (error == noErr);
 
 		ICStop(icInstance);
@@ -782,7 +783,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 		if (!success && show_error)
 		{
 			wxMessageBox(
-				wxString::Format(wxT("Unable to launch the web browser. Error #2/%d"), (int)result),
+				wxString::Format(wxT("Unable to launch the web browser. Error #2/%d"), (int)error),
 				wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
 		}
 
