@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.69 2003-08-01 07:48:02 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.70 2003-08-12 07:43:05 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -59,7 +59,7 @@ void ServerDefaultConnection::Terminate(const ByteBuffer &reason)
 
 enum
 {
-	ID_SOCKET = 1,
+	ID_SOCKET = 100,
 	ID_BROADCAST,
 	ID_TIMER_PING,
 	ID_HTTP

@@ -3,11 +3,16 @@
 
 #include <wx/confbase.h>
 #include <wx/fileconf.h>
+#include <wx/datetime.h>
 
 class CryptSocketProxySettings;
+class Mutex;
+class ConfigFileHelper;
 
 class ConfigFile : public wxConfigBase
 {
+
+	friend class ConfigFileHelper;
 
 public:
 	static wxString GetConfigFilename();
@@ -39,6 +44,11 @@ public:
 	virtual bool DeleteGroup(const wxString& szKey);
 	virtual bool DeleteAll();
 
+	virtual bool BeginBatch();
+	virtual void EndBatch();
+
+	virtual void SetEventHandler(wxEvtHandler *handler, int id);
+
 protected:
 	virtual bool DoReadString(const wxString& key, wxString *pStr) const;
 	virtual bool DoReadLong(const wxString& key, long *pl) const;
@@ -47,12 +57,35 @@ protected:
 	virtual bool DoWriteLong(const wxString& key, long lValue);
 
 protected:
-	virtual void InitBase();
+	virtual void ReInit();
+	virtual bool MutexLock() const;
+	virtual void MutexUnlock() const;
+	virtual bool MaybeFlush();
+	virtual wxDateTime GetLastFileModified() const;
+	virtual bool IsLatestLoaded() const;
+	virtual void EnsureLatestLoaded() const;
+	virtual void SendEvent() const;
 
 protected:
 	wxFileConfig *m_base;
+	wxString m_filename;
+	Mutex *m_mutex;
+	size_t m_batch_depth;
+	wxDateTime m_last_file_mod;
+	wxEvtHandler *m_handler;
+	int m_id;
 
 };
+
+extern const wxEventType wxEVT_CONFIG_FILE_CHANGED;
+
+#define EVT_CONFIG_FILE_CHANGED(id, func) \
+	DECLARE_EVENT_TABLE_ENTRY( \
+		wxEVT_CONFIG_FILE_CHANGED, id, -1, \
+		(wxObjectEventFunction) \
+		(wxEventFunction) \
+		(wxCommandEventFunction) & func, \
+		(wxObject *) NULL ),
 
 class Config
 {
@@ -71,7 +104,7 @@ public:
 	Config(const wxString &path);
 	virtual ~Config();
 
-	virtual wxConfigBase* GetConfig() const { return m_config; }
+	virtual ConfigFile* GetConfig() const { return m_config; }
 
 	virtual bool Flush();
 	virtual bool ResetToDefaults();
@@ -85,6 +118,14 @@ public:
 	virtual bool SetPassword(const wxString &key, const wxString &password);
 	virtual wxString DecodePassword(const wxString &value, bool decrypt) const;
 	virtual wxString EncodePassword(const wxString &password) const;
+
+	inline bool BeginBatch() const { return m_config->BeginBatch(); }
+	inline void EndBatch() const { m_config->EndBatch(); }
+	
+	inline void SetEventHandler(wxEvtHandler *handler, int id)
+	{
+		m_config->SetEventHandler(handler, id);
+	}
 
 protected:
 	virtual wxString GetLogDirKey() const;

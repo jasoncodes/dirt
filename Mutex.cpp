@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Mutex.cpp,v 1.1 2003-08-11 14:58:28 jason Exp $)
+RCS_ID($Id: Mutex.cpp,v 1.2 2003-08-12 07:43:05 jason Exp $)
 
 #include "Mutex.h"
 
@@ -186,16 +186,16 @@ Mutex::~Mutex()
 
 bool Mutex::Lock()
 {
-	bool ok = false;
+	bool ok = true;
 	m_section.Enter();
-	if (!m_depth)
+	if (m_depth == 0)
 	{
 		ok = m_priv->Lock();
 		wxASSERT_MSG(ok, wxT("Error locking mutex"));
-		if (ok)
-		{
-			m_depth++;
-		}
+	}
+	if (ok)
+	{
+		m_depth++;
 	}
 	m_section.Leave();
 	return ok;
@@ -203,17 +203,17 @@ bool Mutex::Lock()
 
 bool Mutex::Unlock()
 {
-	bool ok = false;
+	bool ok = true;
 	m_section.Enter();
 	wxASSERT_MSG(m_depth, wxT("Mutex not locked"));
-	if (m_depth)
+	if (m_depth == 1)
 	{
 		ok = m_priv->Unlock();
 		wxASSERT_MSG(ok, wxT("Error unlocking mutex"));
-		if (ok)
-		{
-			m_depth--;
-		}
+	}
+	if (ok)
+	{
+		m_depth--;
 	}
 	m_section.Leave();
 	return ok;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.64 2003-08-05 13:04:38 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.65 2003-08-12 07:43:05 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -290,12 +290,19 @@ bool ServerConfig::SetHTTPProxyPassword(const wxString &password)
 
 const wxString Server::s_server_nickname = wxT("Console@Server");
 
+enum
+{
+	ID_CONFIG = 1
+};
+
 BEGIN_EVENT_TABLE(Server, wxEvtHandler)
+	EVT_CONFIG_FILE_CHANGED(ID_CONFIG, Server::OnConfigFileChanged)
 END_EVENT_TABLE()
 
 Server::Server(ServerEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler)
 {
+	m_config.SetEventHandler(this, ID_CONFIG);
 	m_log = NULL;
 	InitLog();
 	m_connections.Alloc(10);
@@ -993,6 +1000,7 @@ static int CompareStringLengths(const wxString &a, const wxString &b)
 void Server::PopulateFilteredWords()
 {
 	m_filtered_words_list.Empty();
+	m_config.BeginBatch();
 	wxString old_path = m_config.GetConfig()->GetPath();
 	m_config.GetConfig()->SetPath(wxT("/Server/Word Filters"));
 	m_filtered_words_list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
@@ -1007,7 +1015,13 @@ void Server::PopulateFilteredWords()
 		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
 	m_config.GetConfig()->SetPath(old_path);
+	m_config.EndBatch();
 	m_filtered_words_list.Sort(&CompareStringLengths);
+}
+
+void Server::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
+{
+	PopulateFilteredWords();
 }
 
 wxString Server::ProcessWordFilters(const wxString &text) const

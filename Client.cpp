@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.76 2003-08-11 07:03:13 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.77 2003-08-12 07:43:04 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -160,6 +160,7 @@ bool ClientConfig::SetSystemTrayIconMode(SystemTrayIconMode mode)
 wxArrayString ClientConfig::GetSavedPasswordServerNames() const
 {
 	wxArrayString list;
+	m_config->BeginBatch();
 	wxString old_path = m_config->GetPath();
 	m_config->SetPath(wxT("/Client/Server Passwords"));
 	list.Alloc(m_config->GetNumberOfEntries(false));
@@ -174,6 +175,7 @@ wxArrayString ClientConfig::GetSavedPasswordServerNames() const
 		while (m_config->GetNextEntry(val, i));
 	}
 	m_config->SetPath(old_path);
+	m_config->EndBatch();
 	return list;
 }
 
@@ -1276,6 +1278,7 @@ void Client::ProcessAlias(const wxString &context, const wxString &cmds, const w
 wxArrayString Client::GetAliasList() const
 {
 	wxArrayString list;
+	m_config.BeginBatch();
 	wxString old_path = m_config.GetConfig()->GetPath();
 	m_config.GetConfig()->SetPath(wxT("/Client/Aliases"));
 	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
@@ -1290,6 +1293,7 @@ wxArrayString Client::GetAliasList() const
 		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
 	m_config.GetConfig()->SetPath(old_path);
+	m_config.EndBatch();
 	return list;
 }
 
@@ -1317,6 +1321,7 @@ bool Client::SetAlias(const wxString &name, const wxString &value)
 wxArrayString Client::GetBindingList() const
 {
 	wxArrayString list;
+	m_config.BeginBatch();
 	wxString old_path = m_config.GetConfig()->GetPath();
 	m_config.GetConfig()->SetPath(wxT("/Client/Bindings"));
 	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
@@ -1331,6 +1336,7 @@ wxArrayString Client::GetBindingList() const
 		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
 	m_config.GetConfig()->SetPath(old_path);
+	m_config.EndBatch();
 	return list;
 }
 

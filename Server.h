@@ -181,6 +181,9 @@ public:
 	static bool IsValidNickname(const wxString &nickname);
 
 protected:
+	void OnConfigFileChanged(wxCommandEvent &event);
+
+protected:
 	virtual void CloseAllConnections();
 	virtual void PopulateFilteredWords();
 	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);
