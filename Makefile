@@ -36,7 +36,7 @@ else
 		ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
 			CXXFLAGS_EXTRA = -I/Developer/Headers/FlatCarbon
 			EXTRAS_TO_COMPILE=mac_bundle
-			EXTRA_CLEAN=
+			EXTRA_CLEAN=DirtMac.tbz
 			BINARY_SUFFIX=.bin
 		endif
 	endif
@@ -139,9 +139,7 @@ ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 	bzip2 -9 DirtGTK.tar
 endif
 ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
-	test -f DirtMac.tar.bz2 && rm DirtMac.tar.bz2 || true
-	tar cf DirtMac.tar Dirt.app
-	bzip2 -9 DirtMac.tar
+	tar c Dirt.app | bzip2 -9 > DirtMac.tbz
 endif
 
 mac_bundle: \
