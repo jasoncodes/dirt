@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.58 2003-08-14 06:52:35 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.59 2004-03-15 06:49:34 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -778,15 +778,15 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 				Information(context, msg);
 				msg.Empty();
 				msg << wxT("    Time:      ")
-					<< ((t.time>-1)?SecondsToMMSS(t.time, false, true):wxT("N/A"));
+					<< ((t.time>-1)?SecondsToMMSS(t.time, false, true):wxString(wxT("N/A")));
 				Information(context, msg);
 				msg.Empty();
 				msg << wxT("    Time Left: ")
-					<< ((t.timeleft>-1)?SecondsToMMSS(t.timeleft, false, true):wxT("N/A"));
+					<< ((t.timeleft>-1)?SecondsToMMSS(t.timeleft, false, true):wxString(wxT("N/A")));
 				Information(context, msg);
 				msg.Empty();
 				msg << wxT("    Speed:     ")
-					<< ((t.cps>-1)?SizeToLongString(t.cps, wxT("/sec")):wxT("N/A"));
+					<< ((t.cps>-1)?SizeToLongString(t.cps, wxT("/sec")):wxString(wxT("N/A")));
 				Information(context, msg);
 				msg.Empty();
 			}
