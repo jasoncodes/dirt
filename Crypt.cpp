@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.3 2003-02-16 07:19:51 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.4 2003-02-16 11:18:06 jason Exp $)
 
 #include "Crypt.h"
 
@@ -136,11 +136,14 @@ ByteBuffer Crypt::RSAEncrypt(ByteBuffer &public_key, ByteBuffer &plain_text)
 	ByteBuffer buff(public_key.Length());
 
 	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
+	size_t len;
 	
 	try
 	{
 		PK_EncryptorFilter *filter = new PK_EncryptorFilter(GetRNG(), pub, sink);
 		StringSource src(plain_text.Lock(), plain_text.Length(), true, filter);
+		wxASSERT(sink->TotalPutLength() <= buff.Length());
+		len = sink->TotalPutLength();
 	}
 	catch (...)
 	{
@@ -152,9 +155,8 @@ ByteBuffer Crypt::RSAEncrypt(ByteBuffer &public_key, ByteBuffer &plain_text)
 	
 	plain_text.Unlock();
 	buff.Unlock();
-	wxASSERT(sink->TotalPutLength() <= buff.Length());
 
-	ByteBuffer result(buff.Lock(), sink->TotalPutLength());
+	ByteBuffer result(buff.Lock(), len);
 	buff.Unlock();
 
 	public_key.Unlock();
@@ -171,11 +173,14 @@ ByteBuffer Crypt::RSADecrypt(ByteBuffer &private_key, ByteBuffer &cither_text)
 
 	ByteBuffer buff(cither_text.Length());
 	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
+	size_t len;
 
 	try
 	{
 		PK_DecryptorFilter *filter = new PK_DecryptorFilter(priv, sink);
 		StringSource src(cither_text.Lock(), cither_text.Length(), true, filter);
+		len = sink->TotalPutLength();
+		wxASSERT(len <= buff.Length());
 	}
 	catch (...)
 	{
@@ -187,9 +192,8 @@ ByteBuffer Crypt::RSADecrypt(ByteBuffer &private_key, ByteBuffer &cither_text)
 
 	cither_text.Unlock();
 	buff.Unlock();
-	wxASSERT(sink->TotalPutLength() <= buff.Length());
 
-	ByteBuffer result(buff.Lock(), sink->TotalPutLength());
+	ByteBuffer result(buff.Lock(), len);
 	buff.Unlock();
 	
 	private_key.Unlock();

@@ -41,6 +41,9 @@ protected:
 
 };
 
+#include <wx/dynarray.h>
+WX_DECLARE_OBJARRAY(ByteBuffer, ByteBufferArray);
+
 inline bool operator!=(const ByteBuffer &lhs, const ByteBuffer &rhs)
 {
 	return !(lhs == rhs);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.12 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.13 2003-02-16 11:20:55 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -80,30 +80,19 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 			SendMessage(nick, msg);
 		}
 	}
-	/*else if (cmd == wxT("CONNECT"))
+	else if (cmd == wxT("CONNECT"))
 	{
-		if (!CheckNick()) return;
-		wxArrayString paramarray = SplitString(params, wxT(" "));
-		if (paramarray.Count() != 2)
+		if (IsConnected())
 		{
-			Output(wxT("*** You need to specify a destination hostname/ip and port"));
-			Output(wxString(wxT("DEBUG: ")) << wxT("You specified ") << paramarray.Count() << wxT(" params"));
-			return;
+			Disconnect();
 		}
-		wxIPV4address addr;
-		addr.Hostname(paramarray.Item(0));
-		addr.Service(paramarray.Item(1));
-		wxString output;
-		output << wxT("*** Connecting to ") << addr.Hostname() << wxT(":") << addr.Service() << wxT("...");
-		Output(output);
-		connecting = true;
-		socket->Connect(addr, false);
+		Connect(params);
 	}
 	else if (cmd == wxT("DISCONNECT"))
 	{
-		socket->Close();
+		Disconnect();
 	}
-	else if (cmd == wxT("NICK"))
+	/*else if (cmd == wxT("NICK"))
 	{
 		if (params.Length() == 0)
 		{
@@ -124,7 +113,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 	}*/
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: SAY HELP MSG"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: SAY HELP MSG CONNECT DISCONNECT"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{

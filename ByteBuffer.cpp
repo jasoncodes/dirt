@@ -3,9 +3,12 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.3 2003-02-16 05:09:01 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.4 2003-02-16 11:18:46 jason Exp $)
 
 #include "ByteBuffer.h"
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ByteBufferArray)
 
 struct ByteBufferData
 {
@@ -18,15 +21,8 @@ struct ByteBufferData
 ByteBuffer::ByteBuffer(size_t len, byte fill)
 {
 	m_data = new ByteBufferData;
-	if (len)
-	{
-		m_data->buffer = new byte[len];
-		memset(m_data->buffer, fill, len);
-	}
-	else
-	{
-		m_data->buffer = NULL;
-	}
+	m_data->buffer = new byte[len?len:1];
+	memset(m_data->buffer, fill, len);
 	m_data->length = len;
 	m_data->refcount = 1;
 	m_data->locks = 0;
@@ -48,8 +44,11 @@ ByteBuffer::ByteBuffer(ByteBufferData *data)
 
 ByteBuffer::ByteBuffer(const byte *buffer, size_t len)
 {
+	wxASSERT(len >= 0);
 	m_data = new ByteBufferData;
-	m_data->buffer = new byte[len];
+	wxASSERT(m_data);
+	m_data->buffer = new byte[len?len:1];
+	wxASSERT(m_data->buffer);
 	memcpy(m_data->buffer, buffer, len);
 	m_data->length = len;
 	m_data->refcount = 1;
