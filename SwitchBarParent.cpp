@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.23 2003-06-08 03:37:00 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.24 2003-07-06 06:09:27 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -44,6 +44,7 @@ BEGIN_EVENT_TABLE(SwitchBarParent, wxMDIParentFrame)
 	EVT_SIZE(SwitchBarParent::OnSize)
 	EVT_BUTTON(ID_SWITCHBAR, SwitchBarParent::OnSwitchBar)
 	EVT_MENU(ID_SWITCHBAR, SwitchBarParent::OnSwitchBarMenu)
+	EVT_MIDDLE_CLICK(ID_SWITCHBAR, SwitchBarParent::OnSwitchBarMiddleClick)
 	EVT_TIMER(ID_UPDATEWINDOWMENUTIMER, SwitchBarParent::OnUpdateWindowMenuTimer)
 	EVT_IDLE(SwitchBarParent::OnUpdateWindowMenuIdle)
 	EVT_MENU(ID_WINDOW_MINIMIZE, SwitchBarParent::OnWindowMinimize)
@@ -133,7 +134,7 @@ void SwitchBarParent::NextChild(bool bPrevious)
 		}
 
 		m_switchbar->SelectButton(sel);
-		m_switchbar->RaiseEvent(sel, false);
+		m_switchbar->RaiseEvent(sel, wxEVT_COMMAND_BUTTON_CLICKED);
 
 	}
 
@@ -421,17 +422,31 @@ void SwitchBarParent::OnSwitchBarMenuItem(wxCommandEvent& event)
 		}
 		else if (event.GetId() == ID_SWITCHBAR_MINIMIZE)
 		{
-			if (m_switchbar->GetSelectedIndex() != m_switchbar_popup_button_index)
+			if (m_switchbar->GetSelectedIndex() != -1 && m_switchbar_popup_canvas->IsAttached())
 			{
+				if (m_switchbar->GetSelectedIndex() != m_switchbar_popup_button_index)
+				{
+					m_switchbar->SimulateClick(m_switchbar_popup_button_index);
+				}
 				m_switchbar->SimulateClick(m_switchbar_popup_button_index);
 			}
-			m_switchbar->SimulateClick(m_switchbar_popup_button_index);
 		}
 		else if (event.GetId() == ID_SWITCHBAR_CLOSE)
 		{
 			CloseCanvas(m_switchbar_popup_canvas);
 		}
 	}
+}
+
+void SwitchBarParent::OnSwitchBarMiddleClick(wxCommandEvent& event)
+{
+	m_switchbar_popup_button_index = event.GetExtraLong();
+	m_switchbar_popup_canvas = (SwitchBarCanvas*)event.GetClientData();
+	event.SetId(
+		m_switchbar_popup_canvas->IsClosable() ?
+		ID_SWITCHBAR_CLOSE :
+		ID_SWITCHBAR_MINIMIZE);
+	OnSwitchBarMenuItem(event);
 }
 
 void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)

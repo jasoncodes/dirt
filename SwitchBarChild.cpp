@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.14 2003-05-07 09:26:14 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.15 2003-07-06 06:09:27 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
@@ -87,7 +87,7 @@ void SwitchBarChild::OnMove(wxMoveEvent& event)
 	{
 		int index = m_parent->GetSwitchBar()->GetIndexFromUserData(m_canvas);
 		m_parent->GetSwitchBar()->SelectButton(-1);
-		m_parent->GetSwitchBar()->RaiseEvent(index, false);
+		m_parent->GetSwitchBar()->RaiseEvent(index, wxEVT_COMMAND_BUTTON_CLICKED);
 		m_canvas->Show(false);
 	}
 
@@ -122,7 +122,7 @@ void SwitchBarChild::OnClose(wxCloseEvent& event)
 		event.Veto();
 		int index = m_parent->GetSwitchBar()->GetIndexFromUserData(m_canvas);
 		m_parent->GetSwitchBar()->SelectButton(-1);
-		m_parent->GetSwitchBar()->RaiseEvent(index, false);
+		m_parent->GetSwitchBar()->RaiseEvent(index, wxEVT_COMMAND_BUTTON_CLICKED);
 	}
 	else
 	{

@@ -6,12 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.12 2003-06-21 10:27:50 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.13 2003-07-06 06:09:27 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
 #include <wx/tooltip.h>
 #include "FileDropTarget.h"
+
+const wxEventType wxEVT_COMMAND_MIDDLE_CLICK = wxNewEventType();
 
 struct SwitchBarButton
 {
@@ -37,6 +39,7 @@ BEGIN_EVENT_TABLE(SwitchBar, wxPanel)
 	EVT_PAINT(SwitchBar::OnPaint)
 	EVT_LEFT_DOWN(SwitchBar::OnMouse)
 	EVT_LEFT_DCLICK(SwitchBar::OnMouse)
+	EVT_MIDDLE_UP(SwitchBar::OnMouse)
 	EVT_RIGHT_UP(SwitchBar::OnMouse)
 	EVT_MOTION(SwitchBar::OnMouse)
 	EVT_FILE_DROP(wxID_ANY, SwitchBar::OnFileDrop)
@@ -283,11 +286,11 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 
 }
 
-void SwitchBar::RaiseEvent(int triggering_button, bool is_right_click)
+void SwitchBar::RaiseEvent(int triggering_button, wxEventType type)
 {
 	wxASSERT(triggering_button > -1 && triggering_button < GetButtonCount());
 	SwitchBarButton &button = m_buttons.Item(triggering_button);
-	wxCommandEvent cmd(is_right_click?wxEVT_COMMAND_MENU_SELECTED:wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+	wxCommandEvent cmd(type, GetId());
 	cmd.SetInt(m_selected);
 	cmd.SetString(button.caption);
 	cmd.SetClientData(button.user_data);
@@ -298,7 +301,7 @@ void SwitchBar::RaiseEvent(int triggering_button, bool is_right_click)
 void SwitchBar::SimulateClick(int button_index)
 {
 	SelectButton((m_selected == button_index) ? -1 : button_index);
-	RaiseEvent(button_index, false);
+	RaiseEvent(button_index, wxEVT_COMMAND_BUTTON_CLICKED);
 }
 
 int SwitchBar::HitTest(const wxPoint& pt)
@@ -332,7 +335,7 @@ void SwitchBar::OnMouse(wxMouseEvent &event)
 		int button_index = HitTest(event.GetPosition());
 		if (button_index > -1)
 		{
-			RaiseEvent(button_index, true);
+			RaiseEvent(button_index, wxEVT_COMMAND_MENU_SELECTED);
 		}
 	}
 	else
@@ -343,6 +346,14 @@ void SwitchBar::OnMouse(wxMouseEvent &event)
 			if (button_index > -1)
 			{
 				SimulateClick(button_index);
+			}
+		}
+		if (event.ButtonUp(2))
+		{
+			int button_index = HitTest(event.GetPosition());
+			if (button_index > -1)
+			{
+				RaiseEvent(button_index, wxEVT_COMMAND_MIDDLE_CLICK);
 			}
 		}
 	}

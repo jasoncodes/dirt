@@ -3,6 +3,7 @@
  * 
  * wxEVT_COMMAND_BUTTON_CLICKED  Selection Change
  * wxEVT_COMMAND_MENU_SELECTED   Right Click On Button
+ * wxEVT_COMMAND_MIDDLE_CLICK    Middle Click On Button
  * 
  * GetInt()         Currently selected button number
  * GetExtraLong()   Triggering button number
@@ -14,6 +15,10 @@
 #define SwitchBar_H_
 
 #include <wx/dynarray.h>
+
+extern const wxEventType wxEVT_COMMAND_MIDDLE_CLICK;
+
+#define EVT_MIDDLE_CLICK(winid, fn) DECLARE_EVENT_TABLE_ENTRY( wxEVT_COMMAND_MIDDLE_CLICK, winid, wxID_ANY, (wxObjectEventFunction) (wxEventFunction) (wxCommandEventFunction) & fn, (wxObject *) NULL ),
 
 struct SwitchBarButton;
 WX_DECLARE_OBJARRAY(SwitchBarButton, SwitchBarButtonArray);
@@ -54,7 +59,7 @@ public:
 	void SetButtonProgress(int button_index, int new_value);
 	int GetButtonProgress(int button_index);
 
-	void RaiseEvent(int triggering_button, bool is_right_click);
+	void RaiseEvent(int triggering_button, wxEventType type);
 	int HitTest(const wxPoint& pt);
 
 protected:

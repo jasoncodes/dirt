@@ -27,6 +27,7 @@ protected:
 	void OnSize(wxSizeEvent& event);
 	void OnClose(wxCloseEvent& event);
 	void OnSwitchBar(wxCommandEvent& event);
+	void OnSwitchBarMiddleClick(wxCommandEvent& event);
 	void OnSwitchBarMenu(wxCommandEvent& event);
 	void OnSwitchBarMenuItem(wxCommandEvent& event);
 
