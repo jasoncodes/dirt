@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.41 2003-03-21 12:29:04 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.42 2003-03-29 05:45:43 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -70,7 +70,10 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 {
 	if (cmd == wxT("EXIT"))
 	{
-		m_client->Quit(params);
+		if (m_client->IsConnected())
+		{
+			m_client->Quit(params);
+		}
 		ExitMainLoop();
 		return true;
 	}
