@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.21 2003-02-21 12:30:57 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.22 2003-02-21 13:07:30 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -248,8 +248,7 @@ void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 
 void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 {
-	wxDialog *dlg = new ServerUIFrameConfig(this, m_server);
-	dlg->Destroy();
+	ServerUIFrameConfig dlg(this, m_server);
 }
 
 void ServerUIFrame::OnClient(wxCommandEvent& event)
