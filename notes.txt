@@ -1,4 +1,6 @@
-* backcolor not working in html on cvs head
+* /me'll ?
+
+* wx head: LogControl backcolor not drawing
 
 * turn "bool Listen(...)" into "void Listen(...)" + events
 

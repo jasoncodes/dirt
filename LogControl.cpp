@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.47 2003-06-08 03:36:59 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.48 2003-06-12 07:26:08 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -469,9 +469,10 @@ public:
 
 bool LogControl::s_bInitDone = false;
 
-BEGIN_EVENT_TABLE(LogControl, wxHtmlWindow)
+BEGIN_EVENT_TABLE(LogControl, wxScrolledWindow)
 	EVT_SIZE(LogControl::OnSize)
 	EVT_ERASE_BACKGROUND(LogControl::OnErase)
+	EVT_PAINT(LogControl::OnPaint)
 	EVT_IDLE(LogControl::OnIdle)
 	EVT_MOUSE_EVENTS(LogControl::OnMouseEvent)
 	EVT_FIND(wxID_ANY, LogControl::OnFindDialog)
@@ -485,7 +486,7 @@ END_EVENT_TABLE()
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
 	bool align_bottom)
-	: wxHtmlWindow(parent, id, pos, size, wxHW_SCROLLBAR_AUTO | wxSUNKEN_BORDER ),
+	: wxScrolledWindow(parent, id, pos, size, wxScrolledWindowStyle|wxSUNKEN_BORDER),
 	m_align_bottom(align_bottom)
 {
 
@@ -519,10 +520,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	m_iYOffset = 0;
 
 	FixBorder(this);
-	SetBorders(1);
 
-	GetParser()->AddTagHandler(new SpanTagHandler());
-	SetHtmlParserFonts(GetParser());
+	m_Cell = NULL;
 
 	Clear();
 
@@ -533,6 +532,7 @@ LogControl::~LogControl()
 	delete m_find_dlg;
 	delete m_cur_hand;
 	delete m_cur_arrow;
+	delete m_Cell;
 }
 
 void LogControl::OnSize(wxSizeEvent& event)
@@ -545,7 +545,8 @@ void LogControl::OnSize(wxSizeEvent& event)
 			m_Resizing = true;
 		#endif
 
-		wxHtmlWindow::OnSize(event);
+		wxScrolledWindow::OnSize(event);
+		CreateLayout();
 		CalculateOffset();
 
 		Refresh();
@@ -634,6 +635,11 @@ void LogControl::ClearBlankArea(wxDC &dc)
 
 }
 
+void LogControl::OnPaint(wxPaintEvent &event)
+{
+	wxScrolledWindow::OnPaint(event);
+}
+
 void LogControl::OnErase(wxEraseEvent& event)
 {
 
@@ -656,8 +662,6 @@ void LogControl::OnErase(wxEraseEvent& event)
 
 }
 
-#define USE_BACKBUFFER 1
-
 void LogControl::OnDraw(wxDC& dcFront)
 {
 
@@ -676,13 +680,11 @@ void LogControl::OnDraw(wxDC& dcFront)
 
 		if (/*m_tmpCanDrawLocks > 0 ||*/ m_Cell == NULL) return;
 
-		GetInternalRepresentation()->SetBackgroundColour(*wxWHITE);
+		m_Cell->SetBackgroundColour(*wxWHITE);
 
 		CalculateOffset();
 
 		wxRect client_area = GetClientRect();
-
-#if USE_BACKBUFFER
 
 		static wxSize BitmapSize = wxSize(
 			wxSystemSettings::GetMetric(wxSYS_SCREEN_X),
@@ -706,12 +708,6 @@ void LogControl::OnDraw(wxDC& dcFront)
 		ClearRect(dcBack, wxRect(wxPoint(0,0), ClientSize));
 		PrepareDC(dcBack);
 
-#else
-
-		wxDC &dcBack = dcFront;
-
-#endif
-		
 		ClearBlankArea(dcBack);
 
 		int x, y;
@@ -722,8 +718,9 @@ void LogControl::OnDraw(wxDC& dcFront)
 		wxRect rect = GetUpdateRegion().GetBox();
 
 		dcBack.SetMapMode(wxMM_TEXT);
+		dcBack.SetBackgroundMode(wxTRANSPARENT);
 
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 		wxHtmlRenderingInfo render_info;
 #endif
 
@@ -732,7 +729,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 			0, m_iYOffset,
 			rect.GetTop() + y - 32,
 			rect.GetBottom() + y + 32
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 			, render_info
 #endif
 			);
@@ -778,12 +775,8 @@ void LogControl::OnDraw(wxDC& dcFront)
 			HighlightCells(dcBack, m_last_start_cell, m_last_end_cell);
 		}
 
-#if USE_BACKBUFFER
-
 		dcFront.Blit(x, y, client_area.width, client_area.height, &dcBack, x, y);
 		dcBack.SelectObject(wxNullBitmap);
-
-#endif
 
 	}
 
@@ -898,7 +891,7 @@ static wxHtmlCell *FindNext(wxHtmlCell *cell)
 	if (!cell->IsTerminalCell())
 	{
 		wxHtmlContainerCell *container = (wxHtmlContainerCell*)cell;
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 		wxHtmlCell *child = container->GetFirstChild();
 #else
 		wxHtmlCell *child = container->GetFirstCell();
@@ -1214,7 +1207,14 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 		if ( cell )
 		{
-			OnCellClicked(cell, pos.x, pos.y, event);
+			wxHtmlLinkInfo *lnk = cell->GetLink(pos.x, pos.y);
+			if (lnk)
+			{
+				wxHtmlLinkInfo lnk2(*lnk);
+				lnk2.SetEvent(&event);
+				lnk2.SetHtmlCell(cell);
+				OnLinkClicked(lnk2);
+			}
 		}
 
 	}
@@ -1303,11 +1303,6 @@ void LogControl::OnIdle(wxIdleEvent& event)
 
 			m_tmpLastCell = cell;
 		}
-		else // mouse moved but stayed in the same cell
-		{
-			if ( cell )
-				OnCellMouseHover(cell, pos.x, pos.y);
-		}
 
 		m_tmpMouseMoved = FALSE;
 	}
@@ -1320,6 +1315,7 @@ void LogControl::ScrollToBottom()
 	GetVirtualSize(&x, &y);
 	Scroll(0, y);
 	CalcScrolledPosition(0, m_Cell->GetHeight(), NULL, &m_iYSize);
+	CalculateOffset();
 }
 
 void LogControl::Clear()
@@ -1331,7 +1327,14 @@ void LogControl::Clear()
 	m_find_pos2 = m_Cell;
 	m_find_show_sel = false;
 	m_first_line = true;
-	SetPage(wxT(""));
+	delete m_Cell;
+	wxHtmlWinParser parser;
+    wxClientDC *dc = new wxClientDC(this);
+    dc->SetMapMode(wxMM_TEXT);
+    SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
+    parser.SetDC(dc);
+	m_Cell = (wxHtmlContainerCell*)parser.Parse(wxT(""));
+	delete dc;
 	ScrollToBottom();
 }
 
@@ -1354,8 +1357,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 	dc->SetMapMode(wxMM_TEXT);
 	SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
 
-	wxHtmlWinParser *p2 = new wxHtmlWinParser(this);
-	p2->SetFS(m_FS);
+	wxHtmlWinParser *p2 = new wxHtmlWinParser;
 	p2->SetDC(dc);
 	p2->AddTagHandler(new SpanTagHandler());
 	SetHtmlParserFonts(p2);
@@ -1363,7 +1365,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 
 	if (split_long_words)
 	{
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 		wxHtmlCell *cell = c2->GetFirstChild();
 		cell = ((wxHtmlContainerCell*)cell->GetNext())->GetFirstChild();
 #else
@@ -1372,7 +1374,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 #endif
 		if (!cell)
 		{
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 			cell = ((wxHtmlContainerCell*)c2->GetFirstChild())->GetFirstChild();
 #else
 			cell = ((wxHtmlContainerCell*)c2->GetFirstCell())->GetFirstCell();
@@ -1381,7 +1383,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 		wxHtmlCell *last = NULL;
 		while (cell)
 		{
-#if wxCHECK_VERSION(2,5,0)
+#if wxCHECK_VERSION(2,4,1)
 			wxHtmlRenderingInfo render_info;
 			cell->DrawInvisible(*dc, 0, 0, render_info);
 #else
@@ -1436,6 +1438,31 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 	ScrollToBottom();
 
 	Refresh();
+
+}
+
+void LogControl::CreateLayout()
+{
+    int ClientWidth, ClientHeight;
+
+    if (!m_Cell) return;
+
+    GetClientSize(&ClientWidth, &ClientHeight);
+    m_Cell->Layout(ClientWidth);
+    if (ClientHeight < m_Cell->GetHeight() + GetCharHeight())
+    {
+        SetScrollbars(
+              wxHTML_SCROLL_STEP, wxHTML_SCROLL_STEP,
+              m_Cell->GetWidth() / wxHTML_SCROLL_STEP,
+              (m_Cell->GetHeight() + GetCharHeight()) / wxHTML_SCROLL_STEP
+              /*cheat: top-level frag is always container*/);
+    }
+    else /* we fit into window, no need for scrollbars */
+    {
+        SetScrollbars(wxHTML_SCROLL_STEP, 1, m_Cell->GetWidth() / wxHTML_SCROLL_STEP, 0); // disable...
+        GetClientSize(&ClientWidth, &ClientHeight);
+        m_Cell->Layout(ClientWidth); // ...and relayout
+    }
 
 }
 

@@ -18,7 +18,7 @@ enum TextModifierMode
 	tmmIgnore
 };
 
-class LogControl : public wxHtmlWindow
+class LogControl : public wxScrolledWindow
 {
 
 public:
@@ -47,6 +47,7 @@ public:
 protected:
 	void OnSize(wxSizeEvent& event);
 	void OnErase(wxEraseEvent& event);
+	void OnPaint(wxPaintEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnIdle(wxIdleEvent& event);
 	void OnFindDialog(wxFindDialogEvent &event);
@@ -57,6 +58,7 @@ protected:
 	void CalculateOffset();
 	void ClearBlankArea(wxDC& dc);
 	void EnsureVisible(wxHtmlCell *cell);
+	void CreateLayout();
 
 	wxPoint GetVirtualMousePosition();
 	wxRect GetCellRect(wxHtmlCell *cell);
@@ -72,6 +74,8 @@ protected:
 	virtual void OnDraw(wxDC& dc);
 
 protected:
+	wxHtmlContainerCell *m_Cell;
+
 	int m_iYOffset;
 	bool m_Resizing;
 	int m_iYSize;

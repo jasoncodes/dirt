@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.68 2003-06-03 05:51:00 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.69 2003-06-12 07:26:08 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -131,16 +131,19 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 {
 	
 	wxString cmd, params;
+	wxString org_cmd;
 	
 	if (input[0] == wxT('/'))
 	{
 		SplitQuotedHeadTail(input, cmd, params);
 		cmd = cmd.Mid(1);
+		org_cmd = cmd;
 		cmd.MakeUpper();
 	}
 	else
 	{
 		cmd = wxT("SAY");
+		org_cmd = cmd;
 		params = input;
 	}
 	cmd.Trim(true);
@@ -163,9 +166,13 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		ASSERT_CONNECTED();
 		SendMessage(context, context, params, cmd == wxT("ME"));
 	}
-	else if (cmd == wxT("ME'S") || cmd == wxT("MY"))
+	else if (cmd == wxT("MY"))
 	{
 		ProcessConsoleInput(context, wxT("/me 's ") + params);
+	}
+	else if (cmd.Length() > 3 && cmd.Left(3) == wxT("ME'"))
+	{
+		ProcessConsoleInput(context, wxT("/me ") + org_cmd.Mid(2) + wxT(" ") + params);
 	}
 	else if (cmd == wxT("MSG") || cmd == wxT("MSGME"))
 	{
