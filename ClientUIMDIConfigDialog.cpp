@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.12 2003-06-05 14:05:51 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.13 2003-06-12 06:00:05 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -32,8 +32,10 @@ public:
 		
 		m_lblNetwork = new wxStaticText(pnl, wxID_ANY, wxT("Network:"));
 		m_txtNetwork = new wxTextCtrl(pnl, wxID_ANY);
+		FixBorder(m_txtNetwork);
 		m_lblSubnet = new wxStaticText(pnl, wxID_ANY, wxT("Subnet:"));
 		m_txtSubnet = new wxTextCtrl(pnl, wxID_ANY);
+		FixBorder(m_txtSubnet);
 
 		wxFlexGridSizer *szr = new wxFlexGridSizer(4, 8, 8);
 		szr->AddGrowableCol(1);
@@ -88,6 +90,7 @@ public:
 		
 		m_lblPorts = new wxStaticText(pnl, wxID_ANY, wxT("Ports:"));
 		m_txtPorts = new wxTextCtrl(pnl, wxID_ANY);
+		FixBorder(m_txtPorts);
 
 		wxFlexGridSizer *szr = new wxFlexGridSizer(2, 8, 8);
 		szr->AddGrowableCol(1);
@@ -148,14 +151,18 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_cmbProtocol = new wxComboBox(panel, ID_PROXY_PROTOCOL, protocol_names[0], wxDefaultPosition, wxDefaultSize, protocol_count, protocol_names, wxCB_DROPDOWN|wxCB_READONLY);
 	m_lblHostname = new wxStaticText(panel, wxID_ANY, wxT("Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY);
+	FixBorder(m_txtHostname);
 	m_lblPort = new wxStaticText(panel, wxID_ANY, wxT("Port:"));
 	m_txtPort = new wxTextCtrl(panel, wxID_ANY);
+	FixBorder(m_txtPort);
 	m_txtPort->SetSize(48, -1);
 	m_lblUsername = new wxStaticText(panel, wxID_ANY, wxT("Username:"));
 	m_txtUsername = new wxTextCtrl(panel, wxID_ANY);
+	FixBorder(m_txtUsername);
 	m_txtUsername->SetSize(64, -1);
 	m_lblPassword = new wxStaticText(panel, wxID_ANY, wxT("Password:"));
 	m_txtPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtPassword);
 	m_txtPassword->SetSize(64, -1);
 	m_fraProxyTypes = new wxStaticBox(panel, wxID_ANY, wxT("Connection Types"));
 	m_chkTypeServer = new wxCheckBox(panel, wxID_ANY, wxT("Chat Server"));
