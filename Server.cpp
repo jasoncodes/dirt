@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.62 2003-07-15 15:00:36 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.63 2003-08-03 12:23:55 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -863,7 +863,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->m_isaway = true;
 			conn->m_awaymessage = ProcessWordFilters(data);
 			conn->m_awaytime = ::wxGetUTCTime();
-			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data, Pack(wxString() << conn->m_awaytime, wxString() << 0)), true);
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage, Pack(wxString() << conn->m_awaytime, wxString() << 0)), true);
 		}
 	}
 	else if (cmd == wxT("BACK"))

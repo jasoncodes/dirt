@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.54 2003-08-01 07:48:01 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.55 2003-08-03 12:23:54 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -459,7 +459,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxSt
 
 						wxLongLong_t ll;
 
-						if (StringToLongLong(fields[2u], &ll) && (ll < t.filesize) && t.m_file.Seek(ll) == ll)
+						if (StringToLongLong(fields[2u], &ll) && (ll < t.filesize || ll == 0) && t.m_file.Seek(ll) == ll)
 						{
 							
 							wxArrayString IPs;
@@ -1164,7 +1164,7 @@ void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteB
 		wxLongLong_t ll;
 		if (StringToLongLong(data, &ll))
 		{
-			wxASSERT(ll <= t.filesize && ll > t.filesent);
+			wxASSERT((ll <= t.filesize && ll > t.filesent) || (ll == 0 && t.filesize == 0));
 			t.m_last_tick = GetMillisecondTicks();
 			t.filesent = ll;
 		}
@@ -1229,6 +1229,7 @@ static int s_idle_stack = 0;
 
 void FileTransfers::MaybeSendData(FileTransfer &t)
 {
+	bool first_time = false;
 	wxASSERT(t.issend);
 	if (t.m_connect_ok && t.m_got_accept)
 	{
@@ -1237,28 +1238,32 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 			t.state = ftsSendTransfer;
 			t.status = wxT("Sending...");
 			m_client->m_event_handler->OnClientTransferState(t);
+			first_time = true;
 		}
 
 		wxASSERT(t.m_scks.GetCount() == 1);
 		CryptSocketBase *sck = t.m_scks[0u];
 
-		if (sck->Ok() && !sck->IsSendBufferFull() && t.m_pos < t.filesize)
+		if (sck->Ok() && !sck->IsSendBufferFull() && (t.m_pos < t.filesize || first_time))
 		{
 			const off_t max_block_size = 2048;
 			off_t block_size = wxMin(t.filesize - t.m_pos, max_block_size);
-			wxASSERT(block_size > 0);
+			wxASSERT(block_size > 0 || first_time);
 			ByteBuffer buff(block_size);
-			off_t num_read = t.m_file.Read(buff.LockReadWrite(), buff.Length());
-			buff.Unlock();
-			if (num_read < 0)
+			if (block_size)
 			{
-				t.state = ftsSendFail;
-				t.status = wxT("Error reading from file");
-				m_client->m_event_handler->OnClientTransferState(t);
-				DeleteTransfer(t.transferid, false);
-				return;
+				off_t num_read = t.m_file.Read(buff.LockReadWrite(), buff.Length());
+				buff.Unlock();
+				if (num_read < 0)
+				{
+					t.state = ftsSendFail;
+					t.status = wxT("Error reading from file");
+					m_client->m_event_handler->OnClientTransferState(t);
+					DeleteTransfer(t.transferid, false);
+					return;
+				}
+				wxASSERT(num_read <= block_size);
 			}
-			wxASSERT(num_read <= block_size);
 			sck->Send(Pack(wxString(wxT("DATA")),buff));
 			t.m_pos += buff.Length();
 		}

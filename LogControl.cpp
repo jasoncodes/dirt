@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.54 2003-08-01 07:48:02 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.55 2003-08-03 12:23:55 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -818,6 +818,9 @@ struct LogControlWordCell : public wxHtmlCell
 	LogControlWordCell(const wxString& word, wxDC& dc);
 	virtual void Draw(wxDC& dc, int x, int y, int view_y1, int view_y2);
 	wxString m_Word;
+	#if wxCHECK_VERSION(2,5,0)
+		bool m_allowLinebreak;
+	#endif
 	DECLARE_NO_COPY_CLASS(LogControlWordCell)
 };
 
@@ -1156,7 +1159,9 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 		return;
 	}
 
-	if (event.ButtonIsDown(1))
+	if (event.ButtonIsDown(1) &&
+		event.GetEventType() != wxEVT_ENTER_WINDOW &&
+		event.GetEventType() != wxEVT_LEAVE_WINDOW)
 	{
 		wxPoint pos = ScreenToClient(wxGetMousePosition());
 		wxSize size = GetSize();

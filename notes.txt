@@ -1,3 +1,9 @@
+* wxBug: each line read with wxTextInputStream has a null char on the end
+
+* /reconnect should retry last auth and nickname and /away again if was away
+
+* no auth data should be kept in cleartext. use a random generated AES key
+
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
   only say something like "*** Connection restored" after the "*** Connection lost"
@@ -8,15 +14,9 @@
 * dialog for saving server passwords
 
 * option to disable file transfer status messages
-
-* quit msg not filtered
-
-[22:18] *** Jason is away: internet
-[22:18] *** Jason has returned (msg: INTARNET) (away for 00:05)
+  (but keep the beeps and flashwindow if enabled and dirt not focused)
 
 * don't add red line if own message
-
-* can't send 0 byte file (problem in DCC ACCEPT code)
 
 * option to auto /back if talk in main window or talk in any window
 
