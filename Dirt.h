@@ -1,6 +1,11 @@
 #ifndef Dirt_H_
 #define Dirt_H_
 
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
+
 class Console;
 
 enum AppMode
@@ -44,6 +49,11 @@ protected:
 	bool m_shift_down;
 	wxString m_config_filename;
 	wxString m_default_quit_message;
+
+	#ifdef __WXMSW__
+		static LRESULT CALLBACK MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam);
+		static HHOOK s_hMsgHookProc;
+	#endif
 
 };
 

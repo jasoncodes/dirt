@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.39 2003-04-03 07:35:20 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.40 2003-04-18 08:49:48 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -259,12 +259,20 @@ bool DirtApp::OnInit()
 		l->ViewLogFile(m_logfile);
 	}
 
+	#ifdef __WXMSW__
+		s_hMsgHookProc = SetWindowsHookEx(WH_GETMESSAGE, &DirtApp::MsgHookProc, NULL, GetCurrentThreadId());
+	#endif
+
 	return true;
 
 }
 
 int DirtApp::OnExit()
 {
+
+	#ifdef __WXMSW__
+		UnhookWindowsHookEx(s_hMsgHookProc);
+	#endif
 
 	#ifdef __WXMSW__
 		::timeEndPeriod(1);
@@ -275,6 +283,25 @@ int DirtApp::OnExit()
 	return wxApp::OnExit();
 
 }
+
+#ifdef __WXMSW__
+
+HHOOK DirtApp::s_hMsgHookProc;
+
+LRESULT CALLBACK DirtApp::MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	MSG *msg = (MSG*)lParam;
+	switch (msg->message)
+	{
+		case WM_NULL:
+			wxTheApp->ProcessPendingEvents();
+			break;
+	}
+	return CallNextHookEx(s_hMsgHookProc, nCode, wParam, lParam);
+}
+
+#endif
+
 
 bool DirtApp::ProcessCommandLine()
 {
