@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.5 2004-07-21 07:59:21 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.6 2004-07-21 10:53:53 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,12 +64,17 @@ wxString GetLogDirectory()
 
 	// todo: check ini file for custom location
 	// ConfigFile.cpp has source
-	
+
 	wxFileName cfg(GetConfigFilename());
 	wxFileName fn(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), wxT(""));
 	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
 	return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
 
+}
+
+static inline wxString GetFriendlyName(const wxString &filename)
+{
+	return wxFileName(filename).GetName();
 }
 
 static int srtNewestFirst(const wxString& file1, const wxString& file2)
@@ -79,12 +84,70 @@ static int srtNewestFirst(const wxString& file1, const wxString& file2)
 	wxFileName(file2).GetTimes(NULL, &mod2, NULL);
 	if (mod1 == mod2)
 	{
-		return 0;
+		return -wxStrcmp(GetFriendlyName(file1), GetFriendlyName(file2));
 	}
 	else
 	{
 		return (mod1 > mod2) ? -1 : 1;
 	}
+}
+
+static inline wxString make_link(const wxString &url, const wxString &caption,
+                                 bool new_window = false, const wxString &css_class = wxEmptyString)
+{
+	wxString link;
+	link << wxT("<a href=\"") << url  << wxT("\"");
+	if (new_window)
+	{
+		link << wxT(" target=\"_blank\"");
+	}
+	if (css_class.Length())
+	{
+		link << wxT(" class=\"") << css_class << wxT("\"");
+	}
+	link << wxT(">") << caption << wxT("</a>");
+	return link;
+}
+
+void output_line(const wxString &text, bool convert_urls, int colour)
+{
+
+	wxString line = FormatTextAsHtml(text);
+
+	if (convert_urls)
+	{
+		line = ConvertUrlsToLinks(line);
+	}
+
+	line = ConvertModifiersIntoHtml(line, false);
+
+	wxString output;
+
+	output
+		<< wxT("<div>");
+
+	if (colour != 0)
+	{
+		output
+			<< wxT("<font color=\"")
+			<< ColourRGBToString(colour)
+			<< wxT("\">");
+	}
+
+	output
+		<< line;
+
+	if (colour != 0)
+	{
+		output
+			<< wxT("</font>");
+	}
+
+	output
+		<< wxT("</div>");
+
+	ConsoleOutputUTF8(output);
+
 }
 
 int main(int argc, char **argv)
@@ -93,7 +156,7 @@ int main(int argc, char **argv)
 	wxApp::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
 
 	wxInitializer initializer;
-	if ( !initializer )
+	if (!initializer)
 	{
 		fprintf(stderr, "Error initializing wxWidgets.");
 		puts("</body></html>");
@@ -102,7 +165,7 @@ int main(int argc, char **argv)
 
 	wxString pathinfo = wxGetenv(wxT("PATH_INFO"));
 	wxString scripturi = wxGetenv(wxT("SCRIPT_URI"));
-	
+
 	if (scripturi.Length() == 0)
 	{
 		wxFprintf(stderr, wxT("This is a CGI application for viewing Dirt log files.\n"));
@@ -118,13 +181,28 @@ int main(int argc, char **argv)
 	fprintf(stdout, "Content-Type: text/html; charset=utf-8\r\n");
 	fprintf(stdout, "\r\n");
 	puts("<html>");
-	puts("<body>");
+	puts("<body text=\"#000000\" bgcolor=\"#ffffff\">");
 	puts("<head>");
+	puts("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
+	if (pathinfo.Length() > 1)
+	{
+		wxPuts(wxString() << wxT("<title>") << GetFriendlyName(pathinfo) << wxT("</title>"));
+	}
+	else
+	{
+		puts("<title>dirtlogs</title>");
+	}
 	puts("<style type=\"text/css\">");
-	puts(".line");
+	puts("div");
 	puts("{");
 	puts("\tmargin-left: 32px;");
 	puts("\ttext-indent: -32px;");
+	puts("\tfont-family: monospace;");
+	puts("}");
+	puts("a.small_link");
+	puts("{");
+	puts("\tcolor: black;");
+	puts("\tfont-size: smaller;");
 	puts("}");
 	puts("</style>");
 	puts("</head>");
@@ -157,15 +235,18 @@ int main(int argc, char **argv)
 		for (size_t i = 0u; i < files.GetCount(); ++i)
 		{
 			wxString relpath = files[i].Mid(logdir.Length());
-			wxString friendly_name = wxFileName(files[i]).GetName();
-			wxPuts(wxString() << wxT("<tt><a href=\"") << relpath << wxT("\">") << friendly_name << wxT("</a></tt><br />"));
+			wxString friendly_name = GetFriendlyName(files[i]);
+			wxPuts(wxString()
+				<< wxT("<tt>") << make_link(relpath, friendly_name) << wxT("</tt>")
+				<< wxT(" ") << make_link(relpath + wxT("?last=100"), wxT("(last 100)"), false, wxT("small_link"))
+				<< wxT("<br />"));
 		}
 
 	}
 	else
 	{
 
-		if (pathinfo.Find(wxT("../")) > -1 || pathinfo[0u] != wxT('/'))
+		if (pathinfo.Find(wxT("../")) > -1 || pathinfo.Length() < 10 || pathinfo[0u] != wxT('/') || pathinfo.Right(8) != wxT(".dirtlog"))
 		{
 			wxPuts(wxString() << wxT("File not found: ") << pathinfo);
 			puts("</body></html>");
@@ -198,30 +279,7 @@ int main(int argc, char **argv)
 			if (type == letText)
 			{
 
-				wxString line = reader.GetText();
-
-				line = FormatTextAsHtml(line);
-
-				if (reader.GetTextConvertURLs())
-				{
-					line = ConvertUrlsToLinks(line);
-				}
-
-				line = ConvertModifiersIntoHtml(line, false);
-
-				line = wxString()
-					<< wxT("<div class=\"line\">")
-					<< wxT("<tt>")
-					<< wxT("<font color=\"")
-					<< ColourRGBToString(reader.GetTextColour())
-					<< wxT("\">")
-					<< line
-					<< wxT("</font>")
-					<< wxT("</tt>")
-					<< wxT("</div>")
-					<< wxT("<br />");
-
-				ConsoleOutputUTF8(line);
+				output_line(reader.GetText(), reader.GetTextConvertURLs(), reader.GetTextColour());
 
 			}
 

@@ -125,7 +125,7 @@ ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
 endif
 ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 	test -f DirtGTK.tar.bz2 && rm DirtGTK.tar.bz2 || true
-	tar cf DirtGTK.tar Dirt dirt dirtconsole
+	tar cf DirtGTK.tar Dirt dirt dirtconsole dirtlogs.cgi
 	cd res && tar rf ../DirtGTK.tar dirt.xpm
 	bzip2 -9 DirtGTK.tar
 endif
