@@ -31,6 +31,8 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_szrLeft = new wxBoxSizer( wxVERTICAL );
 	m_szrRight = new wxBoxSizer( wxVERTICAL );
 
+	AddRow("");
+
 	m_lblNickname = AddRow("Nickname:", "Jason");
 	m_lblFilename = AddRow("Filename:", "D:\\Archive\\Stuff\\Dirt.exe");
 	m_lblSize = AddRow("Size:", SizeToLongString(363520));
@@ -45,18 +47,16 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_pnlLeft->SetAutoLayout( TRUE );
 	m_pnlLeft->SetSizer( m_szrLeft );
 	m_szrLeft->Fit( m_pnlLeft );
-	m_pnlLeft->Move(8, 32);
 
 	m_pnlRight->SetAutoLayout( TRUE );
 	m_pnlRight->SetSizer( m_szrRight );
 	m_szrRight->Fit( m_pnlRight );
-	m_pnlRight->Move(m_pnlLeft->GetRect().GetRight() + 8, m_pnlLeft->GetRect().GetTop());
 
 	m_lblStatus = new wxStaticText(this, wxID_ANY, "Sending...");
 
 	m_gauge = new wxGauge(
 		this, -1, 100,
-		wxPoint(32,64), wxSize(256, 24),
+		wxDefaultPosition, wxSize(256, 24),
 		wxGA_SMOOTH | wxNO_BORDER);
 	m_gauge->SetValue(66);
 
@@ -79,10 +79,14 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 {
 	
 	wxSize size = GetSize();
-	
 	int gauge_height = m_gauge->GetSize().y;
-	m_gauge->SetSize(8, size.y - gauge_height - 8, size.x - 16, gauge_height);
-	m_lblStatus->Move(8, size.y - gauge_height - 16 - m_lblStatus->GetSize().y);
+
+	m_pnlLeft->Move(8, m_lblType->GetRect().GetBottom());
+	m_pnlRight->Move(m_pnlLeft->GetRect().GetRight() + 8, m_pnlLeft->GetRect().GetTop());
 	m_pnlRight->SetSize( size.x, -1 );
+	
+	m_lblStatus->Move(8, size.y - gauge_height - 16 - m_lblStatus->GetSize().y);
+
+	m_gauge->SetSize(8, size.y - gauge_height - 8, size.x - 16, gauge_height);
 
 }
