@@ -1,5 +1,5 @@
 /* XPM */
-static char *active_6_xpm[]={
+static const char *active_6_xpm[]={
 "16 16 7 1",
 ". c None",
 "b c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char *active_many_xpm[]={
+static const char *active_many_xpm[]={
 "16 16 7 1",
 ". c None",
 "e c #000000",

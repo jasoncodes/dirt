@@ -1,5 +1,5 @@
 /* XPM */
-static char *receive_xpm[]={
+static const char *receive_xpm[]={
 "16 16 19 1",
 ". c None",
 "k c #000000",

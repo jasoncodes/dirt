@@ -1,5 +1,5 @@
 /* XPM */
-static char *dirt_xpm[]={
+static const char *dirt_xpm[]={
 "32 32 6 1",
 ". c None",
 "a c #800000",
