@@ -42,7 +42,7 @@ public:
 
 	static wxString GetCellText(wxHtmlCell *cell);
 	static bool IsEmail(const wxString &token);
-	static void ClearRect(wxDC& dc, wxRect &rect);
+	static void ClearRect(wxDC& dc, const wxRect &rect);
 
 protected:
 	void OnSize(wxSizeEvent& event);

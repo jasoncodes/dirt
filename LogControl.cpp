@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.44 2003-05-19 13:27:10 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.45 2003-05-20 16:33:14 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -585,7 +585,7 @@ void LogControl::CalculateOffset()
 
 }
 
-void LogControl::ClearRect(wxDC& dc, wxRect &rect)
+void LogControl::ClearRect(wxDC& dc, const wxRect &rect)
 {
 	wxPen old_pen = dc.GetPen();
 	wxBrush old_brush = dc.GetBrush();
@@ -703,6 +703,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 		}
 		wxMemoryDC dcBack;
 		dcBack.SelectObject(bmpBack);
+		ClearRect(dcBack, wxRect(wxPoint(0,0), ClientSize));
 		PrepareDC(dcBack);
 
 #else
