@@ -28,10 +28,11 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.5 2004-08-09 07:14:33 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.6 2004-09-04 06:31:41 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
+#include "util.h"
 
 struct ModifierParserTag
 {
@@ -500,13 +501,46 @@ bool IsEmail(const wxString &token)
 	return false;
 }
 
+static bool RemoveURLPrefix(wxString &url, wxString &text, const wxString &prefix)
+{
+	if (LeftEq(url, prefix))
+	{
+		url = url.Mid(prefix.Length());
+		text = prefix + text;
+		return true;
+	}
+	return false;
+}
+
+static bool RemoveURLSuffix(wxString &url, wxString &text, const wxString &suffix)
+{
+	if (RightEq(url, suffix))
+	{
+		url = url.Left(url.Length() - suffix.Length());
+		text += suffix;
+		return true;
+	}
+	return false;
+}
+
+static bool RemoveURLPrefixAndSuffix(wxString &url, wxString &text, const wxString &prefix, const wxString &suffix)
+{
+	if (LeftEq(url, prefix) && RightEq(url, suffix))
+	{
+		RemoveURLPrefix(url, text, prefix);
+		RemoveURLSuffix(url, text, suffix);
+		return true;
+	}
+	return false;
+}
+
 wxString ConvertUrlsToLinks(const wxString &text)
 {
 
 	const wxString char1 = wxT('\x005');
 	const wxString char2 = wxT('\x006');
 
-	wxString delims = wxT("\t\r\n '\"()\x0a0");
+	wxString delims = wxT("\t\r\n \"\x0a0");
 
 	wxString tmp(text);
 
@@ -598,6 +632,10 @@ wxString ConvertUrlsToLinks(const wxString &text)
 					token = token.Left(token.Length() - 1);
 					url = url.Left(url.Length() - 1);
 				}
+				RemoveURLPrefixAndSuffix(url, token, wxT("("), wxT(")"));
+				RemoveURLPrefix(url, token, wxT("'"));
+				RemoveURLSuffix(url, token, wxT("'")) ||
+					RemoveURLSuffix(url, token, wxT("'s"));
 				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\" target=\"_blank\">") + token + wxT("</a>") + extra_chars;
 			}
 
