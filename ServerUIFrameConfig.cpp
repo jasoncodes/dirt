@@ -6,10 +6,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.35 2003-05-07 14:49:28 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.36 2003-05-20 07:08:42 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
+#include "TristateConfigPanel.h"
 #include <wx/filename.h>
 
 class StaticCheckBoxSizerEventHandler : public wxEvtHandler
@@ -95,6 +96,7 @@ enum
 {
 	ID_RESET = 1,
 	ID_TIMER,
+	ID_LOG,
 	ID_BROWSE_SOUND_CONNECTION,
 	ID_BROWSE_SOUND_JOIN
 };
@@ -116,7 +118,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	
 	m_server = server;
 
-	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
+	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
@@ -130,17 +132,17 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtListenPort);
 	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(250, m_txtListenPort->GetSize().y), wxTE_PASSWORD);
+	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, m_txtListenPort->GetSize().y), wxTE_PASSWORD);
 	FixBorder(m_txtUserPassword);
 	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
 	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtAdminPassword);
-	wxStaticText *lblMaxUsers = new wxStaticText(panel, -1, wxT("Max &Users:"));
-	m_txtMaxUsers = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtMaxUsers);
-	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
-	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtMaxUsersIP);
+	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
+	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtServerName);
+	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
+	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtHostname);
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
@@ -149,12 +151,16 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
 	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
-	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
-	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtServerName);
-	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
-	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtHostname);
+	wxStaticText *lblMaxUsers = new wxStaticText(panel, -1, wxT("Max &Users:"));
+	m_txtMaxUsers = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtMaxUsers);
+	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
+	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtMaxUsersIP);
+
+	lblListenPort->SetSize(lblSoundConnection->GetSize());
+
+	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log Directory"));
 
 	#if wxUSE_WAVE
 	#else
@@ -182,10 +188,10 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtHTTPProxyPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(48, m_txtHTTPProxyHostname->GetSize().y), 0);
 	FixBorder(m_txtHTTPProxyPort);
 	m_lblHTTPProxyUsername = new wxStaticText(panel, -1, wxT("Username:"));
-	m_txtHTTPProxyUsername = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_txtHTTPProxyUsername = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(64,-1), 0);
 	FixBorder(m_txtHTTPProxyUsername);
 	m_lblHTTPProxyPassword = new wxStaticText(panel, -1, wxT("Password:"));
-	m_txtHTTPProxyPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	m_txtHTTPProxyPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(64,-1), wxTE_PASSWORD);
 	FixBorder(m_txtHTTPProxyPassword);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
@@ -197,92 +203,144 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			wxBoxSizer *szrLeftTop = new wxBoxSizer(wxHORIZONTAL);
 			{
 
-				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
+				wxBoxSizer *szrLeftTopLabels = new wxBoxSizer(wxVERTICAL);
 				{
-					szrLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
+					szrLeftTopLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
+					szrLeftTopLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
+					szrLeftTopLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
 				}
-				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
+				szrLeftTop->Add(szrLeftTopLabels, 0, wxEXPAND | wxRIGHT, 8);
 
-				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
+				wxBoxSizer *szrLeftTopTextBoxes = new wxBoxSizer(wxVERTICAL);
 				{
-					szrTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
-					wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
-					{
-						szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
-						szrSoundConnection->Add(cmdSoundConnection, 0, 0, 0);
-					}
-					szrTextBoxes->Add(szrSoundConnection, 1, wxBOTTOM | wxEXPAND, 8);
-					wxBoxSizer *szrSoundJoin = new wxBoxSizer(wxHORIZONTAL);
-					{
-						szrSoundJoin->Add(m_txtSoundJoin, 1, wxEXPAND, 0);
-						szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
-					}
-					szrTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
+					szrLeftTopTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
+					szrLeftTopTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
+					szrLeftTopTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
 				}
-				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
+				szrLeftTop->Add(szrLeftTopTextBoxes, 1, wxEXPAND, 0);
 
 			}
 			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxString(wxT(' '), 22));
-			wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
+			wxBoxSizer *szrLeftMiddle = new wxBoxSizer(wxHORIZONTAL);
 			{
 
-				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
+				wxBoxSizer *szrLeftMiddleLeft = new wxBoxSizer(wxHORIZONTAL);
 				{
-					szrLabels->Add(m_lblPublicListAuthentication, 1, wxBOTTOM, 4);
-					szrLabels->Add(m_lblPublicListComment, 1, wxTOP, 4);
-				}
-				szrLeftPublic->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
-				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
-				{
-					szrTextBoxes->Add(m_txtPublicListAuthentication, 1, wxBOTTOM | wxEXPAND, 4);
-					szrTextBoxes->Add(m_txtPublicListComment, 1, wxTOP | wxEXPAND, 4);
+					wxBoxSizer *szrLeftMiddleLeftLabels = new wxBoxSizer(wxVERTICAL);
+					{
+						szrLeftMiddleLeftLabels->Add(lblServerName, 1, wxBOTTOM, 8);
+						szrLeftMiddleLeftLabels->Add(lblHostname, 1, wxBOTTOM, 8);
+						szrLeftMiddleLeftLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
+						szrLeftMiddleLeftLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
+					}
+					szrLeftMiddleLeft->Add(szrLeftMiddleLeftLabels, 0, wxEXPAND | wxRIGHT, 8);
+
+					wxBoxSizer *szrLeftMiddleLeftTextBoxes = new wxBoxSizer(wxVERTICAL);
+					{
+						szrLeftMiddleLeftTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftMiddleLeftTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
+						wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
+						{
+							szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
+							szrSoundConnection->Add(cmdSoundConnection, 0, 0, 0);
+						}
+						szrLeftMiddleLeftTextBoxes->Add(szrSoundConnection, 1, wxBOTTOM | wxEXPAND, 8);
+						wxBoxSizer *szrSoundJoin = new wxBoxSizer(wxHORIZONTAL);
+						{
+							szrSoundJoin->Add(m_txtSoundJoin, 1, wxEXPAND, 0);
+							szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
+						}
+						szrLeftMiddleLeftTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
+					}
+					szrLeftMiddleLeft->Add(szrLeftMiddleLeftTextBoxes, 1, wxEXPAND, 0);
+				
 				}
-				szrLeftPublic->Add(szrTextBoxes, 1, wxEXPAND, 0);
-			
+				szrLeftMiddle->Add(szrLeftMiddleLeft, 3, wxRIGHT, 8);
+
+				wxBoxSizer *szrLeftMiddleRight = new wxBoxSizer(wxVERTICAL);
+				{
+
+					wxBoxSizer *szrLeftMiddleRightTop = new wxBoxSizer(wxHORIZONTAL);
+					{
+
+						wxBoxSizer *szrLeftMiddleRightTopLabels = new wxBoxSizer(wxVERTICAL);
+						{
+							szrLeftMiddleRightTopLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
+							szrLeftMiddleRightTopLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
+						}
+						szrLeftMiddleRightTop->Add(szrLeftMiddleRightTopLabels, 0, wxEXPAND | wxRIGHT, 8);
+
+						wxBoxSizer *szrLeftMiddleRightTopTextBoxes = new wxBoxSizer(wxVERTICAL);
+						{
+							szrLeftMiddleRightTopTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
+							szrLeftMiddleRightTopTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
+						}
+						szrLeftMiddleRightTop->Add(szrLeftMiddleRightTopTextBoxes, 1, wxEXPAND, 0);
+
+					}
+					szrLeftMiddleRight->Add(szrLeftMiddleRightTop, 0, wxEXPAND, 0);
+				
+					szrLeftMiddleRight->Add(m_pnlLog, 0, wxEXPAND, 0);
+
+				}
+				szrLeftMiddle->Add(szrLeftMiddleRight, 2, 0, 0);
+
 			}
-			szrLeft->Add(szrLeftPublic, 0, wxEXPAND | wxBOTTOM, 8);
+			szrLeft->Add(szrLeftMiddle, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraLeftProxy = new wxStaticBox(panel, -1, wxString(wxT(' '), 24));
-			wxBoxSizer *szrLeftProxy = new StaticCheckBoxSizer(fraLeftProxy, m_chkHTTPProxyEnabled, wxVERTICAL);
+			wxBoxSizer *szrLeftBottom = new wxBoxSizer(wxHORIZONTAL);
 			{
 
-				wxBoxSizer *szrRow1 = new wxBoxSizer(wxHORIZONTAL);
+				wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxString(wxT(' '), 22));
+				wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
 				{
-					szrRow1->Add(m_lblHTTPProxyHostname, 0, wxRIGHT, 8);
-					szrRow1->Add(m_txtHTTPProxyHostname, 1, wxRIGHT, 8);
-					szrRow1->Add(m_lblHTTPProxyPort, 0, wxRIGHT, 8);
-					szrRow1->Add(m_txtHTTPProxyPort, 0, 0, 0);
-				}
-				szrLeftProxy->Add(szrRow1, 0, wxEXPAND | wxBOTTOM, 8);
 
-				wxBoxSizer *szrRow2 = new wxBoxSizer(wxHORIZONTAL);
-				{
-					szrRow2->Add(m_lblHTTPProxyUsername, 0, wxRIGHT, 8);
-					szrRow2->Add(m_txtHTTPProxyUsername, 1, wxRIGHT, 8);
-					szrRow2->Add(m_lblHTTPProxyPassword, 0, wxRIGHT, 8);
-					szrRow2->Add(m_txtHTTPProxyPassword, 1, 0, 0);
+					wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
+					{
+						szrLabels->Add(m_lblPublicListAuthentication, 1, wxBOTTOM, 4);
+						szrLabels->Add(m_lblPublicListComment, 1, wxTOP, 4);
+					}
+					szrLeftPublic->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
+
+					wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
+					{
+						szrTextBoxes->Add(m_txtPublicListAuthentication, 1, wxBOTTOM | wxEXPAND, 4);
+						szrTextBoxes->Add(m_txtPublicListComment, 1, wxTOP | wxEXPAND, 4);
+					}
+					szrLeftPublic->Add(szrTextBoxes, 1, wxEXPAND, 0);
+				
 				}
-				szrLeftProxy->Add(szrRow2, 0, wxEXPAND, 0);
+				szrLeftBottom->Add(szrLeftPublic, 3, wxRIGHT, 8);
+
+				wxStaticBox *fraLeftProxy = new wxStaticBox(panel, -1, wxString(wxT(' '), 24));
+				wxBoxSizer *szrLeftProxy = new StaticCheckBoxSizer(fraLeftProxy, m_chkHTTPProxyEnabled, wxVERTICAL);
+				{
+
+					wxBoxSizer *szrRow1 = new wxBoxSizer(wxHORIZONTAL);
+					{
+						szrRow1->Add(m_lblHTTPProxyHostname, 0, wxRIGHT, 8);
+						szrRow1->Add(m_txtHTTPProxyHostname, 1, wxRIGHT, 8);
+						szrRow1->Add(m_lblHTTPProxyPort, 0, wxRIGHT, 8);
+						szrRow1->Add(m_txtHTTPProxyPort, 0, 0, 0);
+					}
+					szrLeftProxy->Add(szrRow1, 0, wxEXPAND | wxBOTTOM, 8);
+
+					wxBoxSizer *szrRow2 = new wxBoxSizer(wxHORIZONTAL);
+					{
+						szrRow2->Add(m_lblHTTPProxyUsername, 0, wxRIGHT, 8);
+						szrRow2->Add(m_txtHTTPProxyUsername, 1, wxRIGHT, 8);
+						szrRow2->Add(m_lblHTTPProxyPassword, 0, wxRIGHT, 8);
+						szrRow2->Add(m_txtHTTPProxyPassword, 1, 0, 0);
+					}
+					szrLeftProxy->Add(szrRow2, 0, wxEXPAND, 0);
+
+				}
+				szrLeftBottom->Add(szrLeftProxy, 4, 0, 0);
 
 			}
-			szrLeft->Add(szrLeftProxy, 0, wxEXPAND, 0);
+			szrLeft->Add(szrLeftBottom, 0, wxEXPAND, 0);
 
 			wxBoxSizer *szrLeftFill = new wxBoxSizer(wxHORIZONTAL);
 			{
@@ -406,7 +464,9 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 
 void ServerUIFrameConfig::LoadSettings()
 {
+
 	ServerConfig &config = m_server->GetConfig();
+
 	m_txtListenPort->SetValue(wxString()<<config.GetListenPort());
 	m_txtUserPassword->SetValue(config.GetUserPassword(false));
 	m_txtAdminPassword->SetValue(config.GetAdminPassword(false));
@@ -416,30 +476,46 @@ void ServerUIFrameConfig::LoadSettings()
 	m_txtSoundJoin->SetValue(config.GetSoundJoin());
 	m_txtServerName->SetValue(config.GetServerName());
 	m_txtHostname->SetValue(config.GetHostname());
+
+	m_pnlLog->SetMode(config.GetLogDirType());
+	if (config.GetLogDirType() == Config::tsmCustom)
+	{
+		m_pnlLog->SetPath(config.GetActualLogDir());
+	}
+
 	m_chkPublicListEnabled->SetValue(config.GetPublicListEnabled());
 	m_txtPublicListAuthentication->SetValue(config.GetPublicListAuthentication(false));
 	m_txtPublicListComment->SetValue(config.GetPublicListComment());
+	
 	m_chkHTTPProxyEnabled->SetValue(config.GetHTTPProxyEnabled());
 	m_txtHTTPProxyHostname->SetValue(config.GetHTTPProxyHostname());
 	m_txtHTTPProxyPort->SetValue(wxString()<<config.GetHTTPProxyPort());
 	m_txtHTTPProxyUsername->SetValue(config.GetHTTPProxyUsername());
 	m_txtHTTPProxyPassword->SetValue(config.GetHTTPProxyPassword(false));
+	
 	wxCommandEvent evt;
 	OnChangeCheck(evt);
 	m_cmdApply->Enable(false);
+
 }
 
 void ServerUIFrameConfig::ReportError(const wxString &error_message, wxTextCtrl *txt)
 {
 	wxMessageBox(error_message, wxT("Error"), wxOK|wxICON_ERROR, this);
-	txt->SetFocus();
-	txt->SetSelection(-1, -1);
+	if (txt)
+	{
+		txt->SetFocus();
+		txt->SetSelection(-1, -1);
+	}
 }
 
 void ServerUIFrameConfig::ReportError(const wxString &error_message, wxCheckBox *chk)
 {
 	wxMessageBox(error_message, wxT("Error"), wxOK|wxICON_ERROR, this);
-	chk->SetFocus();
+	if (chk)
+	{
+		chk->SetFocus();
+	}
 }
 
 bool ServerUIFrameConfig::SaveSettings()
@@ -530,6 +606,20 @@ bool ServerUIFrameConfig::SaveSettings()
 	{
 		ReportError(wxT("Invalid HTTP proxy password"), m_txtHTTPProxyPassword);
 		return false;
+	}
+	bool bLogChanged = (config.GetLogDirType() != m_pnlLog->GetMode());
+	if (!bLogChanged && m_pnlLog->GetMode() == Config::tsmCustom)
+	{
+		bLogChanged = config.GetActualLogDir() != m_pnlLog->GetPath();
+	}
+	if (bLogChanged)
+	{
+		if (!config.SetLogDir(m_pnlLog->GetMode(), m_pnlLog->GetPath()))
+		{
+			ReportError(wxT("Invalid log directory"), (wxTextCtrl*)NULL);
+			return false;
+		}
+		m_server->InitLog();
 	}
 	config.Flush();
 	m_cmdApply->Enable(false);

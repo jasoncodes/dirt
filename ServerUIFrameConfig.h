@@ -3,6 +3,7 @@
 
 class ServerUIFrame;
 class Server;
+class TristateConfigPanel;
 
 class ServerUIFrameConfig : public wxDialog
 {
@@ -37,6 +38,8 @@ protected:
 	wxTextCtrl *m_txtHostname;
 	wxTextCtrl *m_txtSoundConnection;
 	wxTextCtrl *m_txtSoundJoin;
+
+	TristateConfigPanel *m_pnlLog;
 
 	wxCheckBox *m_chkPublicListEnabled;
 	wxStaticText *m_lblPublicListAuthentication;
