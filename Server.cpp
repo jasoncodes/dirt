@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.65 2003-08-12 07:43:05 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.66 2003-08-18 02:00:17 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -1010,7 +1010,7 @@ void Server::PopulateFilteredWords()
 	{
 		do
 		{
-			m_filtered_words_list.Add(val);
+			m_filtered_words_list.Add(LogControl::ConvertModifiersIntoHtml(val, true));
 		}
 		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}

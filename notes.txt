@@ -144,7 +144,7 @@
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* remove msvcp60.dll (and late msvcrt.dll) dependency?
+* remove msvcp60.dll (and late msvcrt.dll) dependency (maybe something in Crypto++?)
 
 * research that log control gdi thing in 9x
   seems to be caused by LOTS of wxFont instances
