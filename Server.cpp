@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.58 2003-07-10 02:19:13 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.59 2003-07-10 02:20:39 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -1020,12 +1020,5 @@ ByteBuffer Server::ProcessWordFilters(const ByteBuffer &data) const
 {
 	wxString text = data;
 	wxString text_filtered = ProcessWordFilters(text);
-	if (text != text_filtered)
-	{
-		return text_filtered;
-	}
-	else
-	{
-		return data;
-	}
+	return (text != text_filtered) ? (const ByteBuffer&)text_filtered : data;
 }
