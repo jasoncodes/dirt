@@ -20,9 +20,10 @@ public:
 	
 	void SetAESEncryptKey(const ByteBuffer &key);
 	void SetAESDecryptKey(const ByteBuffer &key);
-
 	ByteBuffer AESEncrypt(const ByteBuffer &data);
 	ByteBuffer AESDecrypt(const ByteBuffer &data);
+
+	static ByteBuffer MD5(const ByteBuffer &data);
 
 protected:
 	CryptPrivate *m_priv;

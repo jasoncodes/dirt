@@ -29,7 +29,7 @@ public:
 	size_t Length() const;
 
 	operator wxString() const;
-	wxString GetHexDump() const;
+	wxString GetHexDump(bool uppercase = true, bool space = true) const;
 
 protected:
 	ByteBuffer(ByteBufferData *data);

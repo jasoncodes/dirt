@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.4 2003-02-16 11:18:06 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.5 2003-02-20 05:27:23 jason Exp $)
 
 #include "Crypt.h"
 
@@ -25,6 +25,7 @@ RCS_ID($Id: Crypt.cpp,v 1.4 2003-02-16 11:18:06 jason Exp $)
 #include "crypto/osrng.h"
 #include "crypto/files.h"
 #include "crypto/sha.h"
+#include "crypto/md5.h"
 
 #ifdef _MSC_VER
 	#pragma warning ( pop )
@@ -300,5 +301,22 @@ ByteBuffer Crypt::AESDecrypt(const ByteBuffer &data)
 	buff.Unlock();
 
 	return buff;
+
+}
+
+ByteBuffer Crypt::MD5(const ByteBuffer &data)
+{
+
+	CryptoPP::MD5 md5;
+
+	ByteBuffer data2(data);
+	md5.Update(data2.Lock(), data2.Length());
+	data2.Unlock();
+
+	ByteBuffer output(md5.DigestSize());
+	md5.Final(output.Lock());
+	output.Unlock();
+
+	return output;
 
 }

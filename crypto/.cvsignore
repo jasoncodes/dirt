@@ -1,5 +1,7 @@
 Debug
 Release
+CTDebug
+CTRelease
 *.ncb
 *.opt
 *.plg

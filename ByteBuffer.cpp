@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.4 2003-02-16 11:18:46 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.5 2003-02-20 05:27:23 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -208,7 +208,7 @@ ByteBuffer::operator wxString() const
 
 }
 
-wxString ByteBuffer::GetHexDump() const
+wxString ByteBuffer::GetHexDump(bool uppercase, bool space) const
 {
 
 	wxASSERT(!m_data->locks);
@@ -218,11 +218,18 @@ wxString ByteBuffer::GetHexDump() const
 
 	for (size_t i = 0; i < m_data->length; ++i)
 	{
-		if (i > 0)
+		if (space && i > 0)
 		{
 			hex += wxT(' ');
 		}
-		hex += wxString::Format(wxT("%02x"), m_data->buffer[i]).Upper();
+		if (uppercase)
+		{
+			hex += wxString::Format(wxT("%02x"), m_data->buffer[i]).Upper();
+		}
+		else
+		{
+			hex += wxString::Format(wxT("%02x"), m_data->buffer[i]).Lower();
+		}
 	}
 
 	return hex;
