@@ -19,10 +19,11 @@
 
 * console client ui for win32
   (and hopefully automaticly linux w/ the help of a virtual x server)
-  problem 1 is read thread doesnt exit and doesn't get deleted
-  (it probably just needs to be "joinable" instead of "detatched")
-  problem 2 is that events dispatched from read thread aren't processed
-  until the main loop goes (maybe give it an event to cause it to pump?)
+  * events dispatched from read thread aren't processed until the main
+    loop does something (maybe give it a dummy event to cause it to pump?)
+  * we can't gracefully exit read thread if it's blocking on a read
+    (is there any way to portably send to our own stdin?)
+  * need to hook the "X" button and ctrl-c on win32 so can gracefully exit
 
 * dcc send/recv dialog
 

@@ -22,7 +22,7 @@ protected:
 
 protected:
 	Client *m_client;
-	wxThread *read_thread;
+	wxThread *m_read_thread;
 
 protected:
 	void OnTextEnter(wxCommandEvent& event);

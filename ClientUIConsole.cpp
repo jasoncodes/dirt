@@ -33,33 +33,39 @@ class ReadThread : public wxThread
 public:
 
 	ReadThread(ClientUIConsole *console, Client *client)
-		: wxThread()
+		: wxThread(wxTHREAD_JOINABLE)
 	{
 		Output(wxString()<<"ReadThread()");
 		m_console = console;
 		m_client = client;
+		in = new wxFFileInputStream(stdin);
+		cin = new wxTextInputStream(*in);
 	}
 
 	virtual ~ReadThread()
 	{
 		Output(wxString()<<"~ReadThread()");
+		delete cin;
+		delete in;
 	}
 
 	virtual ExitCode Entry()
 	{
 		Output(wxString()<<"read thread starting");
-		wxFFileInputStream in(stdin);
-		wxTextInputStream cin(in);
-		while (!in.Eof())
+		while (!in->Eof() && !TestDestroy())
 		{
-			wxString line(cin.ReadLine());
-			if (line.Length() > 0)
+			wxString line(cin->ReadLine());
+			if (line.Length() > 0 && !TestDestroy())
 			{
 				ProcessInput(line);
 			}
 		}
 		Output(wxString()<<"read thread gracefully exiting");
-		ProcessInput("/exit");
+		if (!TestDestroy())
+		{
+			Output(wxString()<<"sending /exit (for read thread exit)");
+			ProcessInput("/exit");
+		}
 		return 0;
 	}
 
@@ -74,6 +80,8 @@ protected:
 protected:
 	Client *m_client;
 	ClientUIConsole *m_console;
+	wxFFileInputStream *in;
+	wxTextInputStream *cin;
 
 };
 
@@ -85,15 +93,19 @@ ClientUIConsole::ClientUIConsole()
 {
 	Output(wxString()<<"ClientUIConsole()");
 	m_client = new ClientDefault(this);
-	read_thread = new ReadThread(this, m_client);
-	read_thread->Create();
-	read_thread->Run();
+	m_read_thread = new ReadThread(this, m_client);
+	m_read_thread->Create();
+	m_read_thread->Run();
 }
 
 ClientUIConsole::~ClientUIConsole()
 {
 	Output(wxString()<<"~ClientUIConsole()");
 	delete m_client;
+	Output(wxString()<<"shutting down read thread");
+	m_read_thread->Delete();
+	Output(wxString()<<"read thread shut down");
+	delete m_read_thread;
 }
 
 void ClientUIConsole::OnTextEnter(wxCommandEvent& event)
