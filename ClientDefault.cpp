@@ -7,6 +7,7 @@
 #endif
 
 #include "ClientDefault.h"
+#include "Modifiers.h"
 
 enum
 {
@@ -45,8 +46,10 @@ void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 {
 	bool is_private = (nick.Length() > 0);
 	m_event_handler->OnClientMessageOut(nick, message);
-	m_event_handler->OnClientMessageIn(is_private?nick:"EVERYONE", 
-		"You sent me \"" + message + "\"", is_private);
+	m_event_handler->OnClientMessageIn(
+		is_private?nick:"EVERYONE", 
+		wxString() << "You sent me \"" << message << (char)OriginalModifier << "\"",
+		is_private);
 }
 
 wxString ClientDefault::GetNickname()

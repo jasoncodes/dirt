@@ -1253,7 +1253,7 @@ wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_m
 	return parser.Parse(text);
 }
 
-void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode)
+void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode, bool convert_urls)
 {
 
 	wxString html = FormatTextAsHtml(line);
@@ -1279,7 +1279,10 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 
 	}
 
-	html = ConvertUrlsToLinks(html);
+	if (convert_urls)
+	{
+		html = ConvertUrlsToLinks(html);
+	}
 
 	html = "<font color='" + ColourToString(line_colour) + "'>" + html + "</font>";
 

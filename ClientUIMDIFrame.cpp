@@ -12,6 +12,7 @@
 #include "ClientDefault.h"
 #include "util.h"
 #include "NickListControl.h"
+#include "Modifiers.h"
 
 #include "res/dirt.xpm"
 
@@ -153,11 +154,11 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	}
 }
 
-void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert)
+void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert, bool convert_urls)
 {
 
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
-	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour);
+	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour, tmmParse, convert_urls);
 	
 	if (!suppress_alert)
 	{
@@ -277,10 +278,10 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 	msg << "* " << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << ")";
+		msg << " (" << details << (char)OriginalModifier << ")";
 	}
 	msg << " has joined the chat";
-	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Add(nick);
 
@@ -293,14 +294,14 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 	msg << "* " << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << ")";
+		msg << " (" << details << (char)OriginalModifier << ")";
 	}
 	msg << " has left the chat";
 	if (message.Length() > 0)
 	{
-		msg << " (" << message << ")";
+		msg << " (" << message << (char)OriginalModifier << ")";
 	}
-	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Remove(nick);
 

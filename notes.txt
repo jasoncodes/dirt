@@ -15,3 +15,9 @@
 * dcc send/recv dialog
 
 * only scroll to bottom if scrollpos was already at bottom?
+
+* HIGH PRIORITY: when u query a user multiple times it minimises or restores
+
+* HIGH PRIORITY: minimizing channel window on gtk breaks totally w/ splitter
+
+* research that log control gdi thing in 9x

@@ -8,6 +8,7 @@
 
 #include "Client.h"
 #include "util.h"
+#include "Modifiers.h"
 
 BEGIN_EVENT_TABLE(Client, wxEvtHandler)
 END_EVENT_TABLE()
@@ -50,7 +51,7 @@ void Client::ProcessInput(const wxString &context, const wxString &text)
 		params.Trim(false);
 	}
 
-	Debug(context, "Command: \"" + cmd + "\", Params: \"" + params + "\"");
+	Debug(context, wxString() << "Command: \"" << cmd << "\", Params: \"" << params << (char)OriginalModifier << "\"");
 
 	if (m_event_handler->OnClientPreprocess(context, cmd, params))
 	{
