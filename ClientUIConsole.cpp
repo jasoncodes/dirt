@@ -14,7 +14,7 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include "Dirt.h"
-#include "FileTransfers.h"
+#include "FileTransfer.h"
 
 DECLARE_APP(DirtApp)
 

@@ -13,6 +13,7 @@
 #include "util.h"
 #include "NickListControl.h"
 #include "Modifiers.h"
+#include "FileTransfer.h"
 #include "FileTransfers.h"
 
 #include "res/dirt.xpm"

@@ -10,6 +10,7 @@
 #include "ClientUIMDICanvas.h"
 #include "util.h"
 #include <wx/filename.h>
+#include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
 

@@ -6,6 +6,7 @@
 	#include "wx/wx.h"
 #endif
 
+#include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
 
