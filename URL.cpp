@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.3 2003-02-17 02:18:16 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.4 2003-02-17 02:23:27 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -18,7 +18,14 @@ URL::URL()
 
 URL::URL(const wxString &url)
 { // not implemented
+	m_protocol = wxEmptyString;
+	m_hostname = wxEmptyString;
 	m_port = 0;
+	m_username = wxEmptyString;
+	m_password = wxEmptyString;
+	m_path = wxEmptyString;
+	m_query = wxEmptyString;
+	m_reference = wxEmptyString;
 }
 
 URL::~URL()
