@@ -6,6 +6,7 @@
 
 class InputControl;
 class TrayIcon;
+enum XPMs;
 
 class ServerUIFrame : public wxFrame, public ServerEventHandler
 {
@@ -36,6 +37,7 @@ protected:
 protected:
 	virtual bool ResetWindowPos();
 	virtual void UpdateConnectionList();
+	virtual void UpdateTrayIcon();
 
 protected:
 	Server *m_server;
@@ -48,6 +50,8 @@ protected:
 	wxButton *m_cmdClear;
 	wxTimer *m_tmrUpdateConnections;
 	TrayIcon *m_tray;
+	XPMs m_last_xpm;
+	wxString m_last_tooltip;
 
 private:
 	DECLARE_EVENT_TABLE()
