@@ -6,16 +6,20 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.4 2003-03-18 11:57:34 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.5 2003-03-18 13:37:06 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
 #include <wx/filename.h>
 
-LogWriter::LogWriter(const wxString &filename); // not implemented yet
+LogWriter::LogWriter(const wxString &filename)
+{
+	m_file.Open(filename, wxFile::write_append);
+}
 
 LogWriter::~LogWriter()
 {
+	m_file.Close();
 }
 
 wxString LogWriter::GenerateFilename(const wxString &prefix, const wxDateTime &date, const wxString &suffix)
@@ -33,12 +37,18 @@ wxString LogWriter::GenerateFilename(const wxString &prefix, const wxDateTime &d
 	return fn.GetFullPath();
 }
 
-bool LogWriter::Ok() const; // not implemented yet
+bool LogWriter::Ok() const
+{
+	return m_file.IsOpened() && !m_file.Error();
+}
 
 void LogWriter::SetPublicKey(const ByteBuffer &public_key)
 {
 	m_public_key = public_key;
-	Write(Uint16ToBytes(letPublicKey) + public_key);
+	Write(Uint16ToBytes(letPublicKey) + m_public_key);
+	ByteBuffer block_key = Crypt::Random(32);
+	m_crypt.SetAESEncryptKey(block_key);
+	Write(Uint16ToBytes(letBlockKey) + m_crypt.RSAEncrypt(public_key, block_key));
 }
 
 ByteBufferHashMap LogWriter::GetProperties() const
@@ -56,7 +66,12 @@ void LogWriter::SetProperty(const wxString &name, const ByteBuffer &value)
 {
 	if (GetProperty(name) != value)
 	{
-		Write(Uint16ToBytes(letProperty) + Uint16ToBytes(name.Length()) + ByteBuffer(name) + value);
+		ByteBuffer data = Uint16ToBytes(name.Length()) + ByteBuffer(name) + Uint16ToBytes(value.Length()) + value;
+		if (m_public_key.Length())
+		{
+			data = m_crypt.AESEncrypt(data);
+		}
+		Write(Uint16ToBytes(letProperty) + data);
 		m_properties[name] = value;
 	}
 }
@@ -70,7 +85,12 @@ void LogWriter::AddText(const wxString &line, const wxColour &line_colour, bool 
 	ptr[2] = line_colour.Blue();
 	ptr[3] = (convert_urls ? 1 : 0);
 	data.Unlock();
-	Write(Uint16ToBytes(letText) + data + ByteBuffer(line));
+	data += Uint16ToBytes(4) + Uint16ToBytes(line.Length()) + ByteBuffer(line);
+	if (m_public_key.Length())
+	{
+		data = m_crypt.AESEncrypt(data);
+	}
+	Write(Uint16ToBytes(letText) + data);
 }
 
 void LogWriter::AddSeparator()
@@ -78,9 +98,10 @@ void LogWriter::AddSeparator()
 	Write(Uint16ToBytes(letSeparator));
 }
 
-void LogWriter::Write(const ByteBuffer &data); // not implemented yet
-
-//	wxFile m_file;
-//	Crypt m_crypt;
-//	ByteBuffer m_public_key;
-//	ByteBufferHashMap m_properties;
+void LogWriter::Write(const ByteBuffer &data)
+{
+	wxASSERT(Ok());
+	m_file.SeekEnd();
+	m_file.Write(data.LockRead(), data.Length());
+	data.Unlock();
+}

@@ -43,6 +43,7 @@ protected:
 	ByteBuffer m_public_key;
 	ByteBuffer m_private_key;
 	ByteBufferHashMap m_properties;
+	LogEntryType m_entry_type;
 	ByteBuffer m_entry;
 	bool m_first_pass;
 
