@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.3 2003-03-05 05:49:49 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.4 2003-03-05 07:50:26 jason Exp $)
 
 #include "DNS.h"
 
@@ -180,11 +180,10 @@ bool DNS::Lookup(const wxString &hostname)
 			else
 			{
 				m_section.Leave();
-				return false;
+				retry = false;
 			}
 		}
 		while (retry);
-		wxFAIL;
 		return false;
 	}
 }

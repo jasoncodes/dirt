@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.25 2003-03-05 07:07:08 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.26 2003-03-05 07:50:26 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -87,10 +87,7 @@ bool ClientDefault::Connect(const URL &url)
 		m_event_handler->OnClientInformation(wxEmptyString, msg);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 void ClientDefault::OnDNS(DNSEvent &event)
