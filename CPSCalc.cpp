@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.3 2003-02-14 04:57:06 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.4 2003-05-07 06:47:02 jason Exp $)
 
 #include "CPSCalc.h"
 
@@ -19,6 +19,7 @@ const int last_history = num_history - 1;
 
 CPSCalc::CPSCalc()
 {
+	m_resume_offset = 0;
 	m_history.Insert(0, 0, num_history);
 	Reset();
 }
@@ -27,8 +28,9 @@ CPSCalc::~CPSCalc()
 {
 }
 
-void CPSCalc::Reset()
+void CPSCalc::Reset(off_t m_resume_offset)
 {
+	m_resume_offset = 0;
 	m_cps = -1;
 	m_history_filled = 0;
 	m_pos = 0;
@@ -37,7 +39,7 @@ void CPSCalc::Reset()
 off_t CPSCalc::Update(off_t pos)
 {
 
-	m_pos = pos;
+	m_pos = pos - m_resume_offset;
 
 	if (pos > 0)
 	{

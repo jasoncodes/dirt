@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.15 2003-05-07 04:56:03 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.16 2003-05-07 06:47:02 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -95,6 +95,7 @@ void FileTransfers::Test()
 	t.timeleft = -1;
 	t.cps = -1;
 	t.filesent = t.filesize/3*2;
+	t.m_cps.Reset(t.filesent);
 	t.status = wxT("Sending...");
 
 	m_transfers.Add(t);

@@ -7,8 +7,12 @@
 * away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
 
 * file transfers
+	SEND filename size id port ips
+	CANCELGET id -- sent by recv to cancel
+	CANCELSEND id -- sent by sender to cancel
 
-* firewall traversal: try connecting both ways at same time, close alt route if main succeeds
+* firewall traversal: try connecting both ways at same time
+	sender gets to decide which to keep if both succeed
 
 * dcc send/recv dialog
 
