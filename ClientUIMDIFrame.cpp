@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.160 2004-07-19 10:12:05 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.161 2004-10-27 07:04:53 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -64,10 +64,7 @@ DECLARE_APP(DirtApp)
 
 enum
 {
-	ID_FILE_EXIT = 1,
-	ID_TOOLS_PASSWORDS,
-	ID_TOOLS_OPTIONS,
-	ID_HELP_ABOUT,
+	ID_TOOLS_PASSWORDS = 1,
 	ID_FOCUSTIMER,
 	ID_TRAY,
 	ID_TRAYTIMER,
@@ -89,10 +86,10 @@ enum
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
-	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
+	EVT_MENU(wxID_ABOUT, ClientUIMDIFrame::OnHelpAbout)
 	EVT_MENU(ID_TOOLS_PASSWORDS, ClientUIMDIFrame::OnToolsPasswords)
-	EVT_MENU(ID_TOOLS_OPTIONS, ClientUIMDIFrame::OnToolsOptions)
-	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
+	EVT_MENU(wxID_PREFERENCES, ClientUIMDIFrame::OnToolsOptions)
+	EVT_MENU(wxID_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
 	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ClientUIMDIFrame::OnTrayDblClick)
@@ -135,12 +132,12 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"));
+	mnuFile->Append(wxID_EXIT, wxT("E&xit\tAlt-F4"));
 	mnu->Append(mnuFile, wxT("&File"));
 
 	wxMenu *mnuTools = new wxMenu;
 	mnuTools->Append(ID_TOOLS_PASSWORDS, wxT("&Password Manager..."));
-	mnuTools->Append(ID_TOOLS_OPTIONS, wxT("&Options..."));
+	mnuTools->Append(wxID_PREFERENCES, wxT("&Options..."));
 	mnu->Append(mnuTools, wxT("&Tools"));
 
 	if (GetWindowMenu())
@@ -149,7 +146,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	}
 
 	wxMenu *mnuHelp = new wxMenu;
-	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About"));
+	mnuHelp->Append(wxID_ABOUT, wxT("&About"));
 	mnu->Append(mnuHelp, wxT("&Help"));
 
 	SetMenuBar(mnu);
@@ -397,7 +394,7 @@ void ClientUIMDIFrame::OnTrayRightClick(wxMouseEvent &event)
 		wxMenu mnu;
 		mnu.Append(ID_RESTORE, wxT("&Restore"));
 		mnu.AppendSeparator();
-		mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+		mnu.Append(wxID_EXIT, wxT("E&xit"));
 		SetDefaultMenuItem(mnu, ID_RESTORE);
 		m_tray->PopupMenu(&mnu, event.GetPosition());
 	}

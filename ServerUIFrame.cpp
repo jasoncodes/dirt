@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.67 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.68 2004-10-27 07:04:53 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -94,8 +94,6 @@ enum
 	ID_LOG = 1,
 	ID_INPUT,
 	ID_CONNECTIONS,
-	ID_FILE_EXIT,
-	ID_HELP_ABOUT,
 	ID_STARTSTOP,
 	ID_CONFIGURATION,
 	ID_CLIENT,
@@ -110,8 +108,8 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_SIZE(ServerUIFrame::OnSize)
 	EVT_CLOSE(ServerUIFrame::OnClose)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
-	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
-	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
+	EVT_MENU(wxID_ABOUT, ServerUIFrame::OnHelpAbout)
+	EVT_MENU(wxID_EXIT, ServerUIFrame::OnFileExit)
 	EVT_BUTTON(ID_STARTSTOP, ServerUIFrame::OnStartStop)
 	EVT_BUTTON(ID_CONFIGURATION, ServerUIFrame::OnConfiguration)
 	EVT_BUTTON(ID_CLIENT, ServerUIFrame::OnClient)
@@ -210,11 +208,11 @@ ServerUIFrame::ServerUIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"), wxT("Quit the program"));
+	mnuFile->Append(wxID_EXIT, wxT("E&xit\tAlt-F4"), wxT("Quit the program"));
 	mnu->Append(mnuFile, wxT("&File"));
 
 	wxMenu *mnuHelp = new wxMenu;
-	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About\tF1"));
+	mnuHelp->Append(wxID_ABOUT, wxT("&About\tF1"));
 	mnu->Append(mnuHelp, wxT("&Help"));
 
 	SetMenuBar(mnu);
@@ -319,7 +317,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 	mnu.Append(ID_CLIENT, wxT("Launch &Client"));
 	mnu.Enable(ID_CLIENT, m_cmdClient->IsEnabled());
 	mnu.AppendSeparator();
-	mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+	mnu.Append(wxID_EXIT, wxT("E&xit"));
 	SetDefaultMenuItem(mnu, ID_RESTORE);
 	m_tray->PopupMenu(&mnu, event.GetPosition());
 }
