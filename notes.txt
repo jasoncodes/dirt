@@ -31,8 +31,6 @@
 
 	* firewall traversal
 
-	* support for > 2 GB on Win32 (implement Win32 part of File class)
-
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)
 

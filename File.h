@@ -2,7 +2,7 @@
 #define File_H_
 
 #ifdef __WXMSW__
-	#define USE_WIN32_FILE 0
+	#define USE_WIN32_FILE 1
 #else
 	#define USE_WIN32_FILE 0
 #endif
@@ -31,13 +31,13 @@ public:
 	bool IsOpen();
 	bool IsEof();
 
-	size_t Read(const byte *ptr, const size_t len);
-	size_t Write(const byte *ptr, const size_t len);
+	off_t Read(const byte *ptr, const off_t len);
+	off_t Write(const byte *ptr, const off_t len);
 
 	bool Write(const wxString& s, wxMBConv& conv = wxConvUTF8)
 	{
 		const wxWX2MBbuf buf = s.mb_str(conv);
-		size_t size = strlen(buf);
+		off_t size = strlen(buf);
 		return Write((const byte*)(const char*)buf, size) == size;
 	}
 
@@ -51,7 +51,7 @@ public:
 
 protected:
 	#if USE_WIN32_FILE
-		HANDLE *m_hFile;
+		HANDLE m_hFile;
 	#else
 		wxFile m_file;
 	#endif
