@@ -70,7 +70,7 @@ Dirt: $(OBJECTS) crypto/libcryptopp.a
 crypto/libcryptopp.a:
 	@cd crypto && make
 
-package: dirt
+package: all
 	strip Dirt && upx --best Dirt && make tar
 
 tar:

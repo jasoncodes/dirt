@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.61 2003-08-24 14:30:06 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.62 2003-11-22 02:01:49 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -564,6 +564,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 
 	m_Cell = NULL;
 
+	m_dummy_html_wnd = new wxHtmlWindow; // just so wxHtmlWinParser stays happy
+
 	SetFont(GetDefaultFixedWidthFont());
 
 	Clear();
@@ -576,6 +578,7 @@ LogControl::~LogControl()
 	delete m_cur_hand;
 	delete m_cur_arrow;
 	delete m_Cell;
+	delete m_dummy_html_wnd;
 }
 
 void LogControl::OnSize(wxSizeEvent& event)
@@ -1402,7 +1405,7 @@ void LogControl::Clear()
 	m_find_show_sel = false;
 	m_first_line = true;
 	delete m_Cell;
-	wxHtmlWinParser parser;
+	wxHtmlWinParser parser(m_dummy_html_wnd);
     wxClientDC *dc = new wxClientDC(this);
     dc->SetMapMode(wxMM_TEXT);
     SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
@@ -1418,8 +1421,8 @@ class LogControlParser : public wxHtmlWinParser
 {
 
 public:
-	LogControlParser(const wxFont &font)
-		: m_font(font)
+	LogControlParser(wxHtmlWindow *wnd, const wxFont &font)
+		: wxHtmlWinParser(wnd), m_font(font)
 	{
 	}
 
@@ -1465,7 +1468,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 	dc->SetFont(GetFont());
 	SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
 
-	wxHtmlWinParser *p2 = new LogControlParser(GetFont());
+	wxHtmlWinParser *p2 = new LogControlParser(m_dummy_html_wnd, GetFont());
 	p2->SetDC(dc);
 	p2->AddTagHandler(new SpanTagHandler());
 	wxHtmlContainerCell *c2 = (wxHtmlContainerCell*)p2->Parse(source);

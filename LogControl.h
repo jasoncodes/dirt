@@ -15,6 +15,8 @@
 #endif
 WX_DEFINE_ARRAY_PTR(wxHtmlCell*, HtmlCellPointerArray);
 
+class wxHtmlWindow;
+
 enum TextModifierMode
 {
 	tmmParse,
@@ -112,6 +114,8 @@ protected:
 	wxHtmlCell *m_find_pos2;
 	bool m_find_show_sel;
 	bool m_first_line;
+
+	wxHtmlWindow *m_dummy_html_wnd;
 
 private:
 	DECLARE_EVENT_TABLE()
