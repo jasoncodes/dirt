@@ -195,22 +195,38 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
+
 	#ifdef __WXMSW__
+
 		HINSTANCE hInstance = ::ShellExecute((HWND)GetHandle(), "open", event.GetString(), NULL, NULL, SW_NORMAL);
 		bool success = ((int)hInstance > 32);
 		if (!success)
 		{
 			wxMessageBox("Unable to navigate to " + event.GetString(), "Dirt Secure Chat", wxICON_ERROR);
 		}
+
 	#else
-		//wxMessageBox("User clicked on link: " + event.GetString(), "Dirt Secure Chat", wxICON_INFORMATION);
-		long result = ::wxExecute("mozilla " + event.GetString());
-		bool success = (result != 0);
+
+		const char *browsers[2] = { "mozilla", "netscape" };
+		const size_t num_browsers = ((sizeof browsers) / (sizeof browsers[0]));
+
+		bool success = false;
+
+		for (int i = 0; i < num_browsers && !success; ++i)
+		{
+			wxString cmdline;
+			cmdline << browsers[i] << ' ' << event.GetString();
+			long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
+			success = (pid != 0);
+		}
+
 		if (!success)
 		{
-			wxMessageBox("Unable to navigate to " + event.GetString() + "\n\nPlease check that mozilla and/or netscape is in your path", "Dirt Secure Chat", wxICON_ERROR);
+			wxMessageBox("Unable to navigate to " + event.GetString() + "\n\nPlease check that Mozilla in your path", "Dirt Secure Chat", wxICON_ERROR);
 		}
+
 	#endif
+
 }
 
 void ClientUIMDICanvas::LogControlTest()

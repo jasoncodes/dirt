@@ -6,10 +6,6 @@
   popup will be closed so the app is still usable but the popup will be
   unavailable.
 
-* need a portable way open a URL
-  ShellExecute works good on Win32, but what about others?
-  maybe just try execing mozilla?
-
 * flickering when ctrl-tab
 
 * mdi child icon sometimes doesn't show
