@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.31 2003-03-12 14:03:40 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.32 2003-03-13 00:48:36 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -461,23 +461,128 @@ static inline wxString GetToken(wxString &tokens, const wxString &sep)
 
 void Client::ProcessAlias(const wxString &context, const wxString &cmds, const wxString &params)
 {
-	m_event_handler->OnClientWarning(context, wxT("Aliases are not implemented yet"));
 	wxString tokens(cmds);
+	wxArrayString param_list = SplitQuotedString(params);
 	while (tokens.Length())
 	{
-		wxString tmp = GetToken(tokens, wxT("|"));
+		wxString line = GetToken(tokens, wxT("|"));
 		while (tokens.Length() && tokens[0] == wxT('|'))
 		{
 			tokens = tokens.Mid(1);
-			tmp += wxT('|') + GetToken(tokens, wxT("|"));
+			line += wxT('|') + GetToken(tokens, wxT("|"));
 		}
-		// todo: replace below 4 lines with proper parser
-		// and add support for $1, $2, $2-, $2-4, etc
-		static const wxString ReplaceTemp(wxT("\x0d7\x0c1\x0cf"));
-		tmp.Replace(wxT("$$"), ReplaceTemp);
-		tmp.Replace(wxT("$*"), params);
-		tmp.Replace(ReplaceTemp, wxT("$"));
-		ProcessConsoleInput(context, tmp);
+		wxString output;
+		output.Alloc(line.Length()*2);
+		int dollar_pos = 0;
+		int num[2];
+		bool num_valid[2];
+		bool delim = false;
+		wxString tmp;
+		for (size_t i = 0; i <= line.Length(); ++i)
+		{
+			bool at_end = i == line.Length();
+			wxChar c = at_end?0:line[i];
+			if (dollar_pos)
+			{
+				if (dollar_pos == 1 && c == wxT('$')) // $$
+				{
+					dollar_pos = 0;
+					output += c;
+				}
+				else if (dollar_pos == 1 && c == wxT('*')) // $*
+				{
+					dollar_pos = 0;
+					output += params;
+				}
+				else if (wxIsdigit(c))
+				{
+					tmp += c;
+					int index = delim?1:0;
+					num_valid[index] = true;
+					num[index] *= 10;
+					num[index] += (c - wxT('0'));
+					dollar_pos++;
+				}
+				else if (c == wxT('-') && !delim && num_valid[0])
+				{
+					tmp += c;
+					delim = true;
+					dollar_pos++;
+				}
+				else
+				{
+					size_t start, end;
+					bool valid;
+					if (num_valid[0] && num_valid[1] && delim) // $x-y
+					{
+						start = num[0] - 1;
+						end = num[1] - 1;
+						valid = true;
+					}
+					else if (num_valid[0] && !num_valid[1] && !delim) // $x
+					{
+						start = num[0] - 1;
+						end = start;
+						valid = true;
+					}
+					else if (num_valid[0] && !num_valid[1] && delim) // $x-
+					{
+						start = num[0] - 1;
+						end = param_list.GetCount() - 1;
+						valid = true;
+					}
+					else
+					{
+						output += tmp;
+						start = 0;
+						end = 0;
+						valid = false;
+					}
+					if (valid && start < param_list.GetCount() && start >= 0 && start <= end)
+					{
+						if (end >= param_list.GetCount())
+						{
+							end = param_list.GetCount() - 1;
+						}
+						for (size_t i = start; i <= end; ++i)
+						{
+							if (i > start)
+							{
+								output += wxT(' ');
+							}
+							if (param_list.Item(i).Find(wxT(' ')) > -1)
+							{
+								output += wxT('"') + param_list.Item(i) + wxT('"');
+							}
+							else
+							{
+								output += param_list.Item(i);
+							}
+						}
+					}
+					dollar_pos = 0;
+					if (!at_end)
+					{
+						output += c;
+					}
+				}
+			}
+			else if (c == wxT('$'))
+			{
+				dollar_pos = 1;
+				num[0] = 0;
+				num[1] = 0;
+				num_valid[0] = false;
+				num_valid[1] = false;
+				delim = false;
+				tmp.Empty();
+			}
+			else
+			{
+				output += c;
+			}
+		}
+		ProcessConsoleInput(context, output);
 	}
 }
 
