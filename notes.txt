@@ -130,6 +130,8 @@
 
 * hotkey for minimize to tray
 
+* confirm exit when connected option for client?
+
 * prefix caption with number in brackets showing how many msgs are waiting?
 
 * /font (wxHtmlWindow::SetFonts() and maybe also drop <code/> usage)
