@@ -1,16 +1,4 @@
-* when recv gets a packet, send "ACK" with the current new file pos
-  sender uses the ack to update filesent, cps, etc
-  another variable will have to be used by sender to know how much has been sent (and unack'd)
-
 * on large LogControl, sometimes there's an off by one on the scroll and causes fake dupe line
-
-* strip spaces from a hyperlink before trying to launch, prepend http://, etc
-
-* file://host/dir/file won't launch on at least win32
-
-* remove [03:00] from initial state event text
-
-* CPS showing only whole KB/sec numbers (2.00 KB/sec, 3.00 KB/sec, 4.00 KB/sec)
 
 * options dialog
 	* auto close transfers on complete

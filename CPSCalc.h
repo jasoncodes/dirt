@@ -11,7 +11,7 @@ public:
 	CPSCalc();
 	virtual ~CPSCalc();
 
-	void Reset(wxLongLong_t resume_offset = 0);
+	void Reset();
 
 	// this func must be called every 1000 ms
 	wxLongLong_t Update(wxLongLong_t pos);
@@ -22,7 +22,6 @@ public:
 protected:
 	HistoryArray m_history;
 	int m_history_filled;
-	wxLongLong_t m_resume_offset;
 	wxLongLong_t m_cps;
 	wxLongLong_t m_pos;
 

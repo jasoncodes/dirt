@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.24 2003-05-13 06:11:43 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.25 2003-05-18 09:05:48 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -132,6 +132,13 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 
 }
 
+static bool IsCompleteOrFail(FileTransferState state)
+{
+	return
+		state == ftsGetComplete || state == ftsSendComplete ||
+		state == ftsGetFail || state == ftsSendFail;
+}
+
 void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 {
 	wxASSERT(GetTransferId() == transfer.transferid);
@@ -155,8 +162,8 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 	SetFilename(transfer.filename);
 	SetFileSize(transfer.filesize);
 	SetTime(transfer.time);
-	SetTimeleft(transfer.timeleft);
-	SetCPS(transfer.cps);
+	SetTimeleft(IsCompleteOrFail(transfer.state)?0:transfer.timeleft);
+	SetCPS(IsCompleteOrFail(transfer.state)?(-1):transfer.cps);
 	SetFileSent(transfer.filesent);
 	SetStatus(transfer.status);
 	int index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.34 2003-05-15 00:46:23 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.35 2003-05-18 09:05:48 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -148,10 +148,10 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->timeleft = -1;
 	t->cps = -1;
 	t->filesent = 0;
-	t->m_cps.Reset(t->filesent);
-	t->status = wxT("Waiting for accept...");
+	t->m_cps.Reset();
 	t->m_last_tick = GetMillisecondTicks();
 	t->OnTimer(t->m_last_tick);
+	t->status = wxT("Waiting for accept...");
 
 	if (!t->m_file.Open(t->filename, File::read))
 	{
@@ -401,11 +401,11 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				t->timeleft = -1;
 				t->cps = -1;
 				t->filesent = 0;
-				t->status = wxT("Accept pending...");
 				t->m_IPs = IPs;
 				t->m_ports = ports;
 				t->m_last_tick = GetMillisecondTicks();
 				t->OnTimer(t->m_last_tick);
+				t->status = wxT("Accept pending...");
 
 				m_transfers.Add(t);
 				m_client->m_event_handler->OnClientTransferNew(*t);
@@ -459,6 +459,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 							}
 
 							t.filesent = ll;
+							t.m_pos = ll;
 							t.m_got_accept = true;
 							MaybeSendData(t);
 							return true;
@@ -1066,10 +1067,20 @@ void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteB
 	if (cmd == wxT("THANKS"))
 	{
 		wxASSERT(t.filesent == t.filesize);
-		t.state = ftsGetComplete;
+		t.state = ftsSendComplete;
 		t.status = wxT("Transfer complete");
 		m_client->m_event_handler->OnClientTransferState(t);
 		DeleteTransfer(t.transferid, false);
+	}
+	else if (cmd == wxT("ACK"))
+	{
+		wxLongLong_t ll;
+		if (StringToLongLong(data, &ll))
+		{
+			wxASSERT(ll <= t.filesize && ll > t.filesent);
+			t.m_last_tick = GetMillisecondTicks();
+			t.filesent = ll;
+		}
 	}
 	else
 	{
@@ -1100,9 +1111,10 @@ void FileTransfers::OnGetData(FileTransfer &t, const wxString &cmd, const ByteBu
 		}
 		t.filesent += bytes_written;
 		wxASSERT (t.filesent <= t.filesize);
+		wxASSERT(t.m_scks.GetCount() == 1);
+		t.m_scks[0u]->Send(Pack(wxString(wxT("ACK")), wxLongLong(t.filesent).ToString()));
 		if (t.filesent == t.filesize)
 		{
-			wxASSERT(t.m_scks.GetCount() == 1);
 			t.m_scks[0u]->Send(wxString(wxT("THANKS")));
 		}
 	}
@@ -1143,11 +1155,10 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 		wxASSERT(t.m_scks.GetCount() == 1);
 		CryptSocketBase *sck = t.m_scks[0u];
 
-		if (sck->Ok() && !sck->IsSendBufferFull() && t.filesent < t.filesize)
+		if (sck->Ok() && !sck->IsSendBufferFull() && t.m_pos < t.filesize)
 		{
-			t.m_last_tick = GetMillisecondTicks();
 			const off_t max_block_size = 4096;
-			off_t block_size = wxMin(t.filesize - t.filesent, max_block_size);
+			off_t block_size = wxMin(t.filesize - t.m_pos, max_block_size);
 			wxASSERT(block_size > 0);
 			ByteBuffer buff(block_size);
 			off_t num_read = t.m_file.Read(buff.LockReadWrite(), buff.Length());
@@ -1162,10 +1173,10 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 			}
 			wxASSERT(num_read <= block_size);
 			sck->Send(Pack(wxString(wxT("DATA")),buff));
-			t.filesent += buff.Length();
+			t.m_pos += buff.Length();
 		}
 
-		if (sck->Ok() && !sck->IsSendBufferFull() && t.filesent < t.filesize)
+		if (sck->Ok() && !sck->IsSendBufferFull() && t.m_pos < t.filesize)
 		{
 			t.m_more_idle = true;
 			if (!s_idle_stack)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.52 2003-05-14 16:10:36 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.53 2003-05-18 09:05:48 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -281,7 +281,7 @@ void ClientUIMDICanvas::OnFileDrop(FileDropEvent &event)
 		{
 			wxPoint pt = m_lstNickList->ScreenToClient(wxGetMousePosition());
 			int i = m_lstNickList->HitTest(pt);
-			if (i > -1)
+			if (i > -1 && m_lstNickList->GetSelectedIndex() != i)
 			{
 				m_lstNickList->SetSelection(i);
 			}

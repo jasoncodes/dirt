@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.42 2003-04-28 08:18:16 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.43 2003-05-18 09:05:48 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1559,16 +1559,19 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 	const wxString char1 = wxT('\x005');
 	const wxString char2 = wxT('\x006');
-
-	wxString delims = wxT("\t\r\n '\"()");
+	
+	wxString delims = wxT("\t\r\n '\"()\x0a0");
 
 	wxString tmp(text);
+
+	tmp.Replace(wxT("&nbsp;"), wxT("\x0a0"));
 
 	bool ltgt_fix = (tmp.Find(char1) == -1) && (tmp.Find(char2) == -1);
 
 	if (ltgt_fix)
 	{
 		tmp.Replace(wxT("&lt;"), char1);
+		tmp.Replace(wxT("&gt;"), char2);
 		tmp.Replace(wxT("&gt;"), char2);
 		delims += char1 + char2;
 	}
@@ -1654,6 +1657,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 		output.Replace(char1, wxT("&lt;"));
 		output.Replace(char2, wxT("&gt;"));
 	}
+	tmp.Replace(wxT("\x0a0"), wxT("&nbsp;"));
 
 	return output;
 

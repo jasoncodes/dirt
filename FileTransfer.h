@@ -79,6 +79,7 @@ protected:
 	// send only
 	bool m_got_accept;
 	bool m_more_idle;
+	wxLongLong_t m_pos;
 
 };
 

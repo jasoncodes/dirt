@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.6 2003-05-10 07:48:57 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.7 2003-05-18 09:05:48 jason Exp $)
 
 #include "CPSCalc.h"
 
@@ -19,7 +19,6 @@ const int last_history = num_history - 1;
 
 CPSCalc::CPSCalc()
 {
-	m_resume_offset = 0;
 	m_history.Insert(0, 0, num_history);
 	Reset();
 }
@@ -28,9 +27,8 @@ CPSCalc::~CPSCalc()
 {
 }
 
-void CPSCalc::Reset(wxLongLong_t m_resume_offset)
+void CPSCalc::Reset()
 {
-	m_resume_offset = 0;
 	m_cps = -1;
 	m_history_filled = 0;
 	m_pos = 0;
@@ -39,9 +37,9 @@ void CPSCalc::Reset(wxLongLong_t m_resume_offset)
 wxLongLong_t CPSCalc::Update(wxLongLong_t pos)
 {
 
-	m_pos = pos - m_resume_offset;
+	m_pos = pos;
 
-	if (pos > 0)
+	if (m_pos > 0)
 	{
 
 		for (int i = 1; i < num_history; ++i)
@@ -49,14 +47,19 @@ wxLongLong_t CPSCalc::Update(wxLongLong_t pos)
 			m_history[i - 1] = m_history[i];
 		}
 
-		m_history[last_history] = pos;
+		m_history[last_history] = m_pos;
 
 		if (m_history_filled > 0)
 		{
+
 			int first_history = last_history - m_history_filled;
+
 			m_cps = 
-				(wxLongLong_t)((m_history[last_history] - m_history[first_history])
-				/ (double)m_history_filled);
+				(wxLongLong_t)(
+					((double)( m_history[last_history] - m_history[first_history] )) /
+					((double)( m_history_filled ))
+				);
+
 		}
 		else
 		{
