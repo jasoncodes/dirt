@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.34 2003-06-03 05:51:01 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.35 2003-06-03 06:51:31 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -107,6 +107,17 @@ bool ClientDefault::Connect(const URL &url)
 	return false;
 }
 
+wxString ClientDefault::GetLastURLString() const
+{
+	wxString str;
+	str << m_url.GetHostname();
+	if (m_url.GetPort(11626) != 11626)
+	{
+		str << wxT(':') << m_url.GetPort();
+	}
+	return str;
+}
+
 void ClientDefault::OnDNS(DNSEvent &event)
 {
 	bool ok = event.IsSuccess();
@@ -118,11 +129,7 @@ void ClientDefault::OnDNS(DNSEvent &event)
 		{
 			m_last_server_hostname = GetIPV4AddressString(event.GetIP());
 			wxString msg;
-			msg << wxT("Connecting to ") << m_url.GetHostname();
-			if (m_url.GetPort(11626) != 11626)
-			{
-				msg << wxT(':') << m_url.GetPort();
-			}
+			msg << wxT("Connecting to ") << GetLastURLString();
 			m_event_handler->OnClientInformation(wxEmptyString, msg);
 			m_sck->Connect(*addr);
 		}
@@ -204,8 +211,12 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 			OnConnect();
 			break;
 
-		case CRYPTSOCKET_LOST:
-			Disconnect();
+		case CRYPTSOCKET_CONNECTION_LOST:
+			Disconnect(wxT("Connection lost"));
+			break;
+
+		case CRYPTSOCKET_CONNECTION_ERROR:
+			Disconnect(wxT("Error connecting to ") + GetLastURLString());
 			break;
 
 		case CRYPTSOCKET_INPUT:

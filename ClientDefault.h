@@ -19,9 +19,10 @@ public:
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action);
 	virtual void SetNickname(const wxString &context, const wxString &nickname);
 	virtual bool Connect(const URL &url);
-	virtual void Disconnect(const wxString &msg = wxT("Disconnected"));
+	virtual void Disconnect(const wxString &msg);
 	virtual bool IsConnected() const;
 	virtual const URL& GetLastURL() const;
+	virtual wxString GetLastURLString() const;
 	virtual wxString GetLastHostname() const;
 	virtual void Authenticate(const ByteBuffer &auth);
 	virtual void Oper(const wxString &context, const wxString &pass);

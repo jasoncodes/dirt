@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.29 2003-06-03 05:51:01 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.30 2003-06-03 06:51:31 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -85,6 +85,7 @@ void CryptSocketBase::Close()
 	}
 	delete m_proxy;
 	m_proxy = NULL;
+	m_has_connected = false;
 	wxASSERT(!Ok());
 	InitBuffers();
 }
@@ -169,11 +170,19 @@ void CryptSocketBase::OnSocket(wxSocketEvent &event)
 			break;
 		
 		case wxSOCKET_CONNECTION:
+			m_has_connected = true;
 			OnSocketConnection();
 			break;
 		
 		case wxSOCKET_LOST:
-			OnSocketLost();
+			if (m_has_connected)
+			{
+				OnSocketConnectionLost();
+			}
+			else
+			{
+				OnSocketConnectionError();
+			}
 			break;
 		
 		default:
@@ -454,11 +463,20 @@ void CryptSocketBase::CloseWithEvent()
 	}
 }
 
-void CryptSocketBase::OnSocketLost()
+void CryptSocketBase::OnSocketConnectionLost()
 {
 	if (m_handler)
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_LOST, this);
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_LOST, this);
+		m_handler->AddPendingEvent(evt);
+	}
+}
+
+void CryptSocketBase::OnSocketConnectionError()
+{
+	if (m_handler)
+	{
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_ERROR, this);
 		m_handler->AddPendingEvent(evt);
 	}
 }

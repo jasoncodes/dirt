@@ -9,9 +9,6 @@
 			first question: who should do each DNS lookup?
 				how about both lookups done at same time
 				and dont proceed w/ connect until both success
-			add error message to CRYPTSOCKET_LOST event
-				a bool saying if was connected at all would be
-					good also
 		listen
 			no idea yet
 	ProxyNull

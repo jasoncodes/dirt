@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.40 2003-06-03 05:51:01 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.41 2003-06-03 06:51:31 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -1029,7 +1029,8 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 				}
 				break;
 
-			case CRYPTSOCKET_LOST:
+			case CRYPTSOCKET_CONNECTION_LOST:
+			case CRYPTSOCKET_CONNECTION_ERROR:
 				if (t->m_scks.GetCount() > 1)
 				{
 					delete event.GetSocket();

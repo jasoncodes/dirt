@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.59 2003-05-30 05:55:34 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.60 2003-06-03 06:51:32 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -206,7 +206,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				}
 				break;
 
-			case CRYPTSOCKET_LOST:
+			case CRYPTSOCKET_CONNECTION_LOST:
 				{
 					m_last_active = ::wxGetUTCTime();
 					wxIPV4address addr;

@@ -62,13 +62,15 @@ protected:
 	virtual void OnSocketInput();
 	virtual void OnSocketOutput();
 	virtual void OnSocketConnection() = 0;
-	virtual void OnSocketLost();
+	virtual void OnSocketConnectionLost();
+	virtual void OnSocketConnectionError();
 
 protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
 	void *m_userdata;
 	wxSocketBase *m_sck;
+	bool m_has_connected;
 	ByteBuffer m_buffIn;
 	ByteBuffer m_buffOut;
 	ByteBufferArray m_buffOutUnencrypted;
@@ -152,10 +154,11 @@ extern const wxEventType wxEVT_CRYPTSOCKET;
 
 enum CryptSocketNotify
 {
-	CRYPTSOCKET_INPUT = wxSOCKET_INPUT,
-	CRYPTSOCKET_OUTPUT = wxSOCKET_OUTPUT,
-	CRYPTSOCKET_CONNECTION = wxSOCKET_CONNECTION,
-	CRYPTSOCKET_LOST = wxSOCKET_LOST
+	CRYPTSOCKET_INPUT,
+	CRYPTSOCKET_OUTPUT,
+	CRYPTSOCKET_CONNECTION,
+	CRYPTSOCKET_CONNECTION_LOST,
+	CRYPTSOCKET_CONNECTION_ERROR
 };
 
 class CryptSocketEvent : public wxEvent
