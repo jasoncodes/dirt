@@ -14,7 +14,8 @@ endif
 .PRECIOUS: dirt
 .PHONY: clean dirt all mac_post_link
 
-WXPREFIX := `$(WXCONFIG) --prefix`
+WXPREFIX := $(shell $(WXCONFIG) --prefix)
+WXVERSION := $(shell $(WXCONFIG) --version)
 CC = g++
 WINDRES = windres
 REZ = $(shell $(WXCONFIG) --rezflags)
@@ -127,7 +128,7 @@ mac_bundle: \
 $(BUNDLE)/MacOS:
 	install -d $@
     
-$(BUNDLE)/Resources/Dirt.rsrc: $(WXPREFIX)/lib/libwx_mac-2.5.1.rsrc
+$(BUNDLE)/Resources/Dirt.rsrc: $(WXPREFIX)/lib/libwx_mac-$(WXVERSION).rsrc
 	@install -d `dirname $@`
 	cp $< $@
 
