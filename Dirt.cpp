@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.48 2003-06-30 12:36:35 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.49 2003-07-01 14:33:07 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -320,7 +320,7 @@ LRESULT CALLBACK DirtApp::MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 	switch (msg->message)
 	{
 		case WM_NULL:
-			static bInHookProc = false;
+			static bool bInHookProc = false;
 			if (!bInHookProc)
 			{
 				bInHookProc = true;
