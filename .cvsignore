@@ -9,6 +9,8 @@ Release
 *.plg
 Dirt
 Dirt.res
+Dirt.app
+Dirt.bin
 *.aps
 *.d
 *.layout

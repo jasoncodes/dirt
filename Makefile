@@ -12,7 +12,7 @@ endif
 
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
-.PHONY: clean dirt all mac_post_link
+.PHONY: clean dirt all
 
 WXPREFIX := $(shell $(WXCONFIG) --prefix)
 WXVERSION := $(shell $(WXCONFIG) --version)
@@ -30,11 +30,14 @@ else
 		CXXFLAGS_EXTRA = `gtk-config --cflags`
 		EXTRAS_TO_COMPILE=dirtlogs.cgi
 		EXTRA_CLEAN=dirtlogs.cgi
+	else
+		ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
+			CXXFLAGS_EXTRA = -I/Developer/Headers/FlatCarbon
+			EXTRAS_TO_COMPILE=mac_bundle
+			EXTRA_CLEAN=
+			BINARY_SUFFIX=.bin
+		endif
 	endif
-endif
-
-ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
-	EXTRA_POST_LINK_CMD = @make mac_bundle
 endif
 
 ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
@@ -112,7 +115,6 @@ all: clean dirt
 Dirt$(BINARY_SUFFIX): $(OBJECTS)
 	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS_GUI)
 	$(STRIP) Dirt$(BINARY_SUFFIX)
-	$(EXTRA_POST_LINK_CMD)
 
 dirtlogs.cgi: $(OBJECTS_DIRTLOGS_CGI)
 	$(CC) -o dirtlogs.cgi $(OBJECTS_DIRTLOGS_CGI) $(LINK_FLAGS_CLI)
@@ -142,19 +144,18 @@ endif
 
 mac_bundle: \
   $(BUNDLE)/MacOS \
-  $(BUNDLE)/Resources/Dirt.rsrc \
   $(BUNDLE)/Resources/wxmac.icns \
   $(BUNDLE)/PkgInfo \
-  $(BUNDLE)/Info.plist
-	$(REZ) Dirt
-	cp Dirt $(BUNDLE)/MacOS/Dirt
+  $(BUNDLE)/Info.plist \
+  $(BUNDLE)/MacOS/Dirt
+
+
+$(BUNDLE)/MacOS/Dirt:
+	$(REZ) Dirt$(BINARY_SUFFIX)
+	cp Dirt$(BINARY_SUFFIX) $(BUNDLE)/MacOS/Dirt
 
 $(BUNDLE)/MacOS:
 	install -d $@
-
-$(BUNDLE)/Resources/Dirt.rsrc: $(WXPREFIX)/lib/libwx_mac-$(WXVERSION).rsrc
-	@install -d `dirname $@`
-	cp $< $@
 
 $(BUNDLE)/Resources/wxmac.icns: res/dirt.icns
 	@install -d `dirname $@`
