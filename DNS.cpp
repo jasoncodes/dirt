@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.25 2004-06-03 05:48:23 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.26 2004-06-16 09:20:18 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -210,10 +210,10 @@ protected:
 				
 				s_DNS_section->Leave();
 				
-				bool success; // not implemented
-				wxString hostname; // not implemented
-				wxIPV4address addr; // not implemented
-				wxUint32 ip; // not implemented
+				bool success;
+				wxString hostname;
+				wxIPV4address addr;
+				wxUint32 ip;
 				if (is_reverse)
 				{
 					ip = GetIPV4Address(question);
@@ -254,10 +254,13 @@ protected:
 				if (entry->owner)
 				{
 					handler = entry->owner->m_handler;
-					event = new DNSEvent(
-						entry->owner->m_id, entry->owner,
-						success, hostname, addr, ip,
-						entry->userdata);
+					if (handler)
+					{
+						event = new DNSEvent(
+							entry->owner->m_id, entry->owner,
+							success, hostname, addr, ip,
+							entry->userdata);
+					}
 				}
 
 				DeleteQueueEntryNode(node);
@@ -531,12 +534,12 @@ void DNS::Lookup(const wxString &question, bool is_reverse, void *userdata)
 
 		DNSDebugMsg(wxT("main: first entry in queue, locking mutex"));
 
-//#ifdef __WXGTK__
-//		if (wxThread::IsMain())
-//		{
-//			wxMutexGuiLeave();
-//		}
-//#endif
+#ifdef __WXGTK__
+		if (wxThread::IsMain())
+		{
+			wxMutexGuiLeave();
+		}
+#endif
 
 		s_DNS_condition_mutex->Lock();
 		DNSDebugMsg(wxT("main: signalling"));
@@ -544,12 +547,12 @@ void DNS::Lookup(const wxString &question, bool is_reverse, void *userdata)
 		DNSDebugMsg(wxT("main: unlocking mutex"));
 		s_DNS_condition_mutex->Unlock();
 
-//#ifdef __WXGTK__
-//		if (wxThread::IsMain())
-//		{
-//			wxMutexGuiEnter();
-//		}
-//#endif
+#ifdef __WXGTK__
+		if (wxThread::IsMain())
+		{
+			wxMutexGuiEnter();
+		}
+#endif
 
 	}
 

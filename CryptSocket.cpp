@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.44 2004-05-30 10:04:48 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.45 2004-06-16 09:20:18 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -73,7 +73,8 @@ CryptSocketBase::CryptSocketBase()
 	m_sck = NULL;
 	m_proxy = NULL;
 	m_proxy_settings = NULL;
-	m_DNS = NULL;
+	m_DNS = new DNS;
+	m_DNS->SetEventHandler(this, ID_DNS);
 	m_userdata = NULL;
 	m_bOutputOkay = false;
 	m_bInitialOutputEventSent = false;
@@ -83,6 +84,7 @@ CryptSocketBase::CryptSocketBase()
 CryptSocketBase::~CryptSocketBase()
 {
 	Destroy();
+	delete m_DNS;
 	delete m_proxy_settings;
 }
 
@@ -112,8 +114,7 @@ void CryptSocketBase::Close()
 	}
 	delete m_proxy;
 	m_proxy = NULL;
-	delete m_DNS;
-	m_DNS = NULL;
+	m_DNS->Cancel();
 	m_has_connected = false;
 	wxASSERT(!Ok());
 	InitBuffers();
@@ -670,9 +671,6 @@ void CryptSocketClient::Connect(const wxString &host, wxUint16 port)
 
 	m_port = port;
 
-	m_DNS = new DNS;
-	m_DNS->SetEventHandler(this, ID_DNS);
-
 	m_DNS->Lookup(host);
 
 }
@@ -705,7 +703,6 @@ void CryptSocketClient::OnSocketConnection()
 
 void CryptSocketClient::OnDNS(DNSEvent &event)
 {
-	
 	if (event.IsSuccess())
 	{
 
@@ -718,7 +715,6 @@ void CryptSocketClient::OnDNS(DNSEvent &event)
 			{
 
 				m_port = m_proxy_settings->GetPort();
-
 				m_DNS->Lookup(m_proxy_settings->GetHostname());
 
 				return;
