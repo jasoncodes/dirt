@@ -4,6 +4,7 @@ ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
         HOST = i586-mingw32msvc
         BINARY_SUFFIX = .exe
 	EXTRA_DEPENDS = Dirt.res
+	WINDRES_FLAGS := $(subst $(COMPILE_FLAGS),,$(CXXFLAGS)) -D$(shell $(WXCONFIG) --basename)
 endif
 
 ifneq (,$(HOST))

@@ -56,6 +56,10 @@ DIRTSERVER_EXE_PERMS = $(shell /bin/ls -l dirtserver | awk '{print $$1}' | tr -d
 
 include ./Makefile.cross-compile
 
+ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
+	OBJECTS := $(OBJECTS) Dirt.res
+endif
+
 dirt : Dirt$(BINARY_SUFFIX)
 ifneq ($(DIRT_EXE_PERMS),xxx)
 	chmod +x dirt
@@ -68,7 +72,7 @@ ifneq ($(DIRTSERVER_EXE_PERMS),xxx)
 endif
 
 clean:
-	rm -f *.o Dirt DirtGTK.tar.bz2
+	rm -f *.o Dirt$(BINARY_SUFFIX) DirtGTK.tar.bz2
 	rm -rf Dirt.app
 
 all: clean dirt
@@ -89,13 +93,7 @@ Dirt$(BINARY_SUFFIX): $(OBJECTS)
 	$(EXTRA_POST_LINK_CMD)
 
 Dirt.res: Dirt.rc
-	$(WINDRES) \
-	$(subst -I,--include-dir=,\
-		$(subst $(OPTIMIZATIONS),,\
-			$(CXXFLAGS)\
-		) \
-	)\
-	-i Dirt.rc -J rc -o Dirt.res -O coff
+	$(WINDRES) $(WINDRES_FLAGS) -i Dirt.rc -J rc -o Dirt.res -O coff
 
 crypto/libcryptopp.a:
 	@cd crypto && make

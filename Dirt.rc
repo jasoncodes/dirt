@@ -32,7 +32,7 @@ hand CURSOR DISCARDABLE "res/hand.cur"
 
 #include "version.h"
 
-#ifdef EXTRA_VER_INFO
+#if defined(EXTRA_VER_INFO)
 	#ifdef _UNICODE
 		#define UNICODE_STR "Unicode"
 	#else
@@ -48,6 +48,26 @@ hand CURSOR DISCARDABLE "res/hand.cur"
 	#else
 		#define DEBUG_STR " Release"
 	#endif
+	#define SUFFIX_STR " Build\r\n\r\n"
+#elif defined(wx_msw)
+	#define UNICODE_STR "ANSI"
+	#define CONSOLE_STR " GUI"
+	#define DEBUG_STR " Release"
+	#define SUFFIX_STR " Build\r\n\r\n"
+#elif defined(wx_mswd)
+	#define UNICODE_STR "ANSI"
+	#define CONSOLE_STR " GUI"
+	#define DEBUG_STR " Debug"
+	#define SUFFIX_STR " Build\r\n\r\n"
+#elif defined(wx_mswu)
+	#define UNICODE_STR "Unicode"
+	#define CONSOLE_STR " GUI"
+	#define DEBUG_STR " Release"
+	#define SUFFIX_STR " Build\r\n\r\n"
+#elif defined(wx_mswud)
+	#define UNICODE_STR "Unicode"
+	#define CONSOLE_STR " GUI"
+	#define DEBUG_STR " Debug"
 	#define SUFFIX_STR " Build\r\n\r\n"
 #else
 	#define UNICODE_STR
