@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.17 2003-06-05 14:43:10 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.18 2003-06-05 14:44:37 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -729,12 +729,15 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck
 
 		case ppSOCKS4:
 			proxy = new CryptSocketProxySOCKS4(sck);
+			break;
 
 //		case ppSOCKS5:
 //			proxy = new CryptSocketProxySOCKS5(sck);
+//			break;
 
 		case ppHTTP:
 			proxy = new CryptSocketProxyHTTP(sck);
+			break;
 
 		default:
 			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyConnect"));
