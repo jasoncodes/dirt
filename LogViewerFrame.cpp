@@ -226,7 +226,13 @@ wxString LogViewerFrame::GetItemFilename(const wxTreeItemId& id) const
 	return data?data->GetFilename():wxString();
 }
 
-void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename, long cookie)
+void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename)
+{
+	wxTreeItemIdValue cookie;
+	EnsureItemSelected(idParent, filename, cookie, true);
+}
+
+void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename, wxTreeItemIdValue cookie, bool first_call)
 {
 
 	if (GetItemFilename(m_tree->GetSelection()) == filename)
@@ -236,7 +242,7 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 
 	wxTreeItemId id;
 
-	if (cookie == -1)
+	if (first_call)
 	{
 		id = m_tree->GetFirstChild(idParent, cookie);
 	}
@@ -258,7 +264,7 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 
 	if (m_tree->ItemHasChildren(id))
 	{
-		EnsureItemSelected(id, filename, -1);
+		EnsureItemSelected(id, filename);
 	}
 
 	if (GetItemFilename(m_tree->GetSelection()) == filename)
@@ -266,7 +272,7 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 		return;
 	}
 
-	EnsureItemSelected(idParent, filename, cookie);
+	EnsureItemSelected(idParent, filename, cookie, false);
 
 }
 

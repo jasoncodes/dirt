@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.24 2003-07-06 06:09:27 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.25 2003-07-26 07:09:48 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -21,7 +21,7 @@ RCS_ID($Id: SwitchBarParent.cpp,v 1.24 2003-07-06 06:09:27 jason Exp $)
 
 enum
 {
-	ID_SWITCHBARPARENT_FIRST = wxEVT_USER_FIRST + 1000,
+	ID_SWITCHBARPARENT_FIRST = 11000,
 	ID_WINDOW_WINDOWS = ID_SWITCHBARPARENT_FIRST,
 	ID_SWITCHBAR = ID_WINDOW_WINDOWS + 1000,
 	ID_UPDATEWINDOWMENUTIMER,

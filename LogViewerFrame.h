@@ -32,7 +32,8 @@ protected:
 	virtual void ResizeChildren();
 	virtual void PopulateTree(const wxString &dirname);
 	static wxArrayString GetLogFilenames(const wxString &dirname);
-	void EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename, long cookie = -1);
+	void EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename);
+	void EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename, wxTreeItemIdValue cookie, bool first_call);
 	wxString GetItemFilename(const wxTreeItemId& id) const;
 	static wxString GetLogDirectory();
 
