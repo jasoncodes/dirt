@@ -80,6 +80,8 @@ protected:
 	void AddLine(const wxString &context, const wxString &line, const wxColour &line_colour = *wxBLACK, bool create_if_not_exist = true, bool suppress_alert = false, bool convert_urls = true);
 	void UpdateCaption();
 	void NickPrompt(const wxString &nick);
+	void DoAlert();
+	void DoFlashWindow();
 
 	static wxString ConvertTitleToToolTip(const wxString &title);
 

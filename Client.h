@@ -86,6 +86,9 @@ public:
 	virtual bool GetTaskbarNotification() const;
 	virtual bool SetTaskbarNotification(bool mode);
 
+	virtual bool GetFileTransferStatus() const;
+	virtual bool SetFileTransferStatus(bool mode);
+
 protected:
 	virtual wxString GetSoundFileKey() const;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.127 2003-08-05 06:08:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.128 2003-08-05 06:55:00 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -446,71 +446,83 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	
 		if (bAlert)
 		{
-
-			if (!m_client->GetContactSelf() || !m_client->GetContactSelf()->IsAway())
-			{
-
-				switch (config.GetSoundType())
-				{
-
-					case Config::tsmDefault:
-						wxBell();
-						break;
-
-					case Config::tsmCustom:
-						{
-							#if wxUSE_WAVE
-								wxString filename = config.GetActualSoundFile();
-								if (wxFileName(filename).FileExists())
-								{
-									m_wave.Create(filename, false);
-									if (m_wave.IsOk() && m_wave.Play())
-									{
-										break;
-									}
-								}
-							#endif
-							wxBell();
-						}
-						break;
-
-					case Config::tsmNone:
-					default:
-						break;
-
-				}
-
-			}
-
+			DoAlert();
 		}
 		
 		if (bFlashWindow)
 		{
-			m_alert = true;
-			#ifdef __WXMSW__
-				::FlashWindow((HWND)GetHandle(), TRUE);
-			#else
-				m_flash = 8;
-				UpdateCaption();
-			#endif
-			if (m_tray && m_tray_auto_restore)
-			{
-				wxMouseEvent event;
-				OnTrayDblClick(event);
-			}
-			else if (m_tray && !m_tmrTray->IsRunning())
-			{
-				m_tmrTray->Start(500);
-			}
+			DoFlashWindow();
 		}
 
 	}
 
 }
 
+void ClientUIMDIFrame::DoAlert()
+{
+
+	ClientConfig &config = m_client->GetConfig();
+
+	if (!m_client->GetContactSelf() || !m_client->GetContactSelf()->IsAway())
+	{
+
+		switch (config.GetSoundType())
+		{
+
+			case Config::tsmDefault:
+				wxBell();
+				break;
+
+			case Config::tsmCustom:
+				{
+					#if wxUSE_WAVE
+						wxString filename = config.GetActualSoundFile();
+						if (wxFileName(filename).FileExists())
+						{
+							m_wave.Create(filename, false);
+							if (m_wave.IsOk() && m_wave.Play())
+							{
+								break;
+							}
+						}
+					#endif
+					wxBell();
+				}
+				break;
+
+			case Config::tsmNone:
+			default:
+				break;
+
+		}
+
+	}
+
+}
+
+void ClientUIMDIFrame::DoFlashWindow()
+{
+	m_alert = true;
+	#ifdef __WXMSW__
+		::FlashWindow((HWND)GetHandle(), TRUE);
+	#else
+		m_flash = 8;
+		UpdateCaption();
+	#endif
+	if (m_tray && m_tray_auto_restore)
+	{
+		wxMouseEvent event;
+		OnTrayDblClick(event);
+	}
+	else if (m_tray && !m_tmrTray->IsRunning())
+	{
+		m_tmrTray->Start(500);
+	}
+}
+
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS"), wxT(" "));
+	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS MINTOTRAY"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -553,6 +565,11 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	else if (cmd == wxT("TEST"))
 	{
 		GetContext(context)->LogControlTest();
+		return true;
+	}
+	else if (cmd == wxT("MINTOTRAY"))
+	{
+		MinToTray();
 		return true;
 	}
 	else if (cmd == wxT("QUERY"))
@@ -1190,32 +1207,47 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer, bool
 void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 {
 
-	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
-	
-	wxColour colour = bIsError ? *wxRED : wxColour(0,0,128);
-	
-	bool bAlert;
-	switch (transfer.state)
+	if (m_client->GetConfig().GetFileTransferStatus())
 	{
 
-		case ftsSendComplete:
-		case ftsSendFail:
-		case ftsGetPending:
-		case ftsGetComplete:
-		case ftsGetFail:
-			bAlert = true;
-			break;
+		bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
+		
+		wxColour colour = bIsError ? *wxRED : wxColour(0,0,128);
+		
+		bool bAlert;
+		switch (transfer.state)
+		{
 
-		default:
-			bAlert = false;
-			break;
+			case ftsSendComplete:
+			case ftsSendFail:
+			case ftsGetPending:
+			case ftsGetComplete:
+			case ftsGetFail:
+				bAlert = true;
+				break;
+
+			default:
+				bAlert = false;
+				break;
+
+		}
+
+		wxString text;
+		text << wxT("*** ") << transfer.GetPrefixString() << transfer.status;
+
+		AddLine(wxEmptyString, text, colour, true, !bAlert, false);
 
 	}
+	else
+	{
 
-	wxString text;
-	text << wxT("*** ") << transfer.GetPrefixString() << transfer.status;
+		if (!IsFocused())
+		{
+			DoAlert();
+			DoFlashWindow();
+		}
 
-	AddLine(wxEmptyString, text, colour, true, !bAlert, false);
+	}
 	
 	OnClientTransferTimer(transfer);
 

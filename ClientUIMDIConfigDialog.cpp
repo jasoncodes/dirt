@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.16 2003-08-05 06:08:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.17 2003-08-05 06:55:00 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -182,6 +182,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
 	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
+	m_chkFileTransferStatus = new wxCheckBox(panel, wxID_ANY, wxT("Show File Transfer Status Messages"));
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
@@ -258,6 +259,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 				{
 
 					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
+					szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
 					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
 
 				}
@@ -388,6 +390,7 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	m_txtNickname->SetValue(m_config->GetNickname());
 
 	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
+	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
 
 	wxCommandEvent evt;
 	OnProxy(evt);
@@ -585,6 +588,15 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		if (!m_config->SetTaskbarNotification(m_chkTaskbarNotification->GetValue()))
 		{
 			ErrMsg(wxT("Error setting Taskbar Notification"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetFileTransferStatus(m_chkFileTransferStatus->GetValue()))
+		{
+			ErrMsg(wxT("Error setting File Transfer Status"));
 			success = false;
 		}
 	}

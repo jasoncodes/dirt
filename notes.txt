@@ -1,3 +1,5 @@
+* wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
+
 * wxBug: each line read with wxTextInputStream has a null char on the end
 
 * auto-reconnect if connection lost (due to timeout or kick for example)
@@ -7,20 +9,17 @@
 
 * dialog for saving server passwords
 
-* option to disable file transfer status messages
-  (but keep the beeps and flashwindow if enabled and dirt not focused)
-
 * don't add red line if own message
 
 * option to auto /back if talk in main window or talk in any window
 
 * when new word filter is added, recheck away msg and nicks
+  (keep a copy of the nick/away msg before filtering and it for refiltering)
 
-/mintotray
-
-[15:11] *** Get xxx from User1: Cancelled by remote (Remote error: Transfer cancelled)
-[15:11] *** Get yyy from User2: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
-User2 cancelling a send caused my client to abort get from User1
+* User2 cancelling a send caused my client to abort get from User1
+  [15:11] *** Get xxx from User1: Cancelled by remote (Remote error: Transfer cancelled)
+  [15:11] *** Get yyy from User2: Cancelled by remote (Remote error: Cancelled by remote
+    (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
 
 * some way to limit number of unACK'd bytes
 
@@ -47,13 +46,15 @@ User2 cancelling a send caused my client to abort get from User1
 	* make ConfigFile extend wxConfigBase and forward to internal wx
 	* the whole of any forwarding method should have the mutex locked
 	* before forwarding anything, call EnsureLatestLoaded()
-	* if (m_mutex->GetLockDepth() == 1) call Flush() after any modification forwarding
+	* if (m_mutex->GetLockDepth() == 1) call Flush() after any modification
+	  forwarding
 	* constructor
 		m_filename = GetConfigFilename();
 		m_mutex = new Mutex(m_filename + wxT(".lock"));
 		ReInit();
 	* destructor
-		wxASSERT_MSG(!m_mutex->IsLocked(), wxT("EndBatch() not called before destroying ConfigFile"));	
+		wxASSERT_MSG(!m_mutex->IsLocked(), wxT("EndBatch() not called before
+		  destroying ConfigFile"));	
 	* Flush(bool);
 		m_mutex->Lock();
 		wxASSERT(IsLatestLoaded());
@@ -113,8 +114,6 @@ User2 cancelling a send caused my client to abort get from User1
   for SwitchBar on Windows XP/2003
 
 * nice about screen (wxHtmlWindow maybe?)
-
-* option to change block size for file transfers in client options (512 ... 8192)
 
 * /notice
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.72 2003-08-05 06:08:05 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.73 2003-08-05 06:55:00 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -104,6 +104,17 @@ bool ClientConfig::GetTaskbarNotification() const
 bool ClientConfig::SetTaskbarNotification(bool mode)
 {
 	return m_config->Write(wxT("/Client/Taskbar Notification"), mode);
+}
+
+bool ClientConfig::GetFileTransferStatus() const
+{
+	bool x;
+	return m_config->Read(wxT("/Client/File Transfer Status"), &x) ? x : false;
+}
+
+bool ClientConfig::SetFileTransferStatus(bool mode)
+{
+	return m_config->Write(wxT("/Client/File Transfer Status"), mode);
 }
 
 enum

@@ -48,6 +48,7 @@ protected:
 	wxStaticBox *m_fraNotification;
 	TristateConfigPanel *m_pnlSound;
 	wxCheckBox *m_chkTaskbarNotification;
+	wxCheckBox *m_chkFileTransferStatus;
 
 private:
 	DECLARE_EVENT_TABLE()
