@@ -46,6 +46,8 @@
 
 * disable gui elements when uncheck checkboxes in server config dialog
 
+* when user join/part we don't always want the public server list updated msg
+
 * tray icon support
 * client side ping
 * /bind
