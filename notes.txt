@@ -1,3 +1,15 @@
+* using /bind'd hotkey when no mdi child focused == death
+
+* hotkey for minimize to tray
+
+* System tray icon option: flash, always phone, always blank
+
+* something in tray tooltip that shows if msg are pending (a * would do)
+
+* with common dialog open no messages are pumped
+
+* delete failed get file if 0 bytes and file length > 0
+
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
   reproduces in unmodified controls sample
 
@@ -195,8 +207,6 @@
 * notices to users via console@server
 
 * automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
-
-* hotkey for minimize to tray
 
 * confirm exit when connected option for client?
 
