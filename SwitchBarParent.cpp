@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.18 2003-05-07 04:56:03 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.19 2003-05-07 05:15:16 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -51,9 +51,7 @@ BEGIN_EVENT_TABLE(SwitchBarParent, wxMDIParentFrame)
 	EVT_MENU(ID_WINDOW_TILE, SwitchBarParent::OnWindowTile)
 	EVT_MENU(ID_WINDOW_NEXT, SwitchBarParent::OnWindowNext)
 	EVT_MENU(ID_WINDOW_PREV, SwitchBarParent::OnWindowPrev)
-	EVT_MENU(ID_SWITCHBAR_RESTORE, SwitchBarParent::OnSwitchBarRestore)
-	EVT_MENU(ID_SWITCHBAR_MINIMIZE, SwitchBarParent::OnSwitchBarMinimize)
-	EVT_MENU(ID_SWITCHBAR_CLOSE, SwitchBarParent::OnSwitchBarClose)
+	EVT_MENU(wxID_ANY, SwitchBarParent::OnSwitchBarMenuItem)
 END_EVENT_TABLE()
 
 SwitchBarParent::SwitchBarParent(
@@ -400,14 +398,35 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 	menu.Enable(ID_SWITCHBAR_MINIMIZE, switchbar_popup_canvas->IsAttached());
 	menu.Enable(ID_SWITCHBAR_CLOSE, switchbar_popup_canvas->IsClosable());
 
-	wxPoint pos = m_switchbar->ScreenToClient(wxGetMousePosition());
-	m_switchbar->PopupMenu(&menu, pos);
+	if (switchbar_popup_canvas->OnPopupMenu(menu))
+	{
+		wxPoint pos = m_switchbar->ScreenToClient(wxGetMousePosition());
+		m_switchbar->PopupMenu(&menu, pos);
+	}
 
 }
 
-void SwitchBarParent::OnSwitchBarRestore(wxCommandEvent& event)
+void SwitchBarParent::OnSwitchBarMenuItem(wxCommandEvent& event)
 {
-	m_switchbar->SimulateClick(switchbar_popup_button_index);
+	if (switchbar_popup_canvas->OnPopupMenuItem(event))
+	{
+		if (event.GetId() == ID_SWITCHBAR_RESTORE)
+		{
+			m_switchbar->SimulateClick(switchbar_popup_button_index);
+		}
+		else if (event.GetId() == ID_SWITCHBAR_MINIMIZE)
+		{
+			if (m_switchbar->GetSelectedIndex() != switchbar_popup_button_index)
+			{
+				m_switchbar->SimulateClick(switchbar_popup_button_index);
+			}
+			m_switchbar->SimulateClick(switchbar_popup_button_index);
+		}
+		else if (event.GetId() == ID_SWITCHBAR_CLOSE)
+		{
+			CloseCanvas(switchbar_popup_canvas);
+		}
+	}
 }
 
 void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)
@@ -432,20 +451,6 @@ SwitchBarCanvas *SwitchBarParent::GetActiveCanvas()
 	}
 }
 
-void SwitchBarParent::OnSwitchBarMinimize(wxCommandEvent& event)
-{
-	if (m_switchbar->GetSelectedIndex() != switchbar_popup_button_index)
-	{
-		m_switchbar->SimulateClick(switchbar_popup_button_index);
-	}
-	m_switchbar->SimulateClick(switchbar_popup_button_index);
-}
-
-void SwitchBarParent::OnSwitchBarClose(wxCommandEvent& event)
-{
-	CloseCanvas(switchbar_popup_canvas);
-}
-
 void SwitchBarParent::CloseCanvas(SwitchBarCanvas *canvas)
 {
 	if (canvas->IsAttached())
@@ -455,6 +460,7 @@ void SwitchBarParent::CloseCanvas(SwitchBarCanvas *canvas)
 	}
 	else
 	{
+		canvas->OnClose();
 		canvas->Destroy();
 	}
 }

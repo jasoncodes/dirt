@@ -26,6 +26,8 @@ public:
 	virtual void OnDetach() {}
 	virtual void OnActivate() {}
 	virtual void OnClose() {}
+	virtual bool OnPopupMenu(wxMenu &menu) { return true; }
+	virtual bool OnPopupMenuItem(wxCommandEvent &event) { return true; }
 
 	SwitchBar* GetSwitchBar();
 

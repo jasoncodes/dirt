@@ -28,6 +28,7 @@ protected:
 	void OnClose(wxCloseEvent& event);
 	void OnSwitchBar(wxCommandEvent& event);
 	void OnSwitchBarMenu(wxCommandEvent& event);
+	void OnSwitchBarMenuItem(wxCommandEvent& event);
 
 	void OnWindowMinimize(wxCommandEvent& event);
 	void OnWindowClose(wxCommandEvent& event);
@@ -36,10 +37,6 @@ protected:
 	void OnWindowNext(wxCommandEvent& event);
 	void OnWindowPrev(wxCommandEvent& event);
 	void OnWindowWindows(wxCommandEvent& event);
-
-	void OnSwitchBarRestore(wxCommandEvent& event);
-	void OnSwitchBarMinimize(wxCommandEvent& event);
-	void OnSwitchBarClose(wxCommandEvent& event);
 
 	void OnUpdateWindowMenuTimer(wxTimerEvent &event);
 	void OnUpdateWindowMenuIdle(wxIdleEvent &event);
