@@ -1,3 +1,6 @@
+ctrl key held down detection faulty on win32
+ctrl-highlight then normal highlight, 2nd highlight thinks ctrl is held
+
 prompt when pasting multiple lines
 
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
@@ -337,3 +340,5 @@ option to disable red and beep for a mdi child (for server console)
   maybe the fix will be to use a wxFont cache in wxHTML?
 
 * check that guards are in place where necessary to trap malformed messages
+
+* ctrl-code to ask clients to use a fixed width font for a block of text?

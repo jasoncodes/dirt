@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.156 2004-06-19 02:34:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.157 2004-06-26 06:08:52 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -677,7 +677,7 @@ void ClientUIMDIFrame::DoFlashWindow()
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS MINTOTRAY"), wxT(" "));
+	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS MINTOTRAY MINTOTRAYIDLE"), wxT(" "));
 }
 
 wxString ClientUIMDIFrame::OnClientExtraVersionInfo()
@@ -727,9 +727,10 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		GetContext(context)->LogControlTest();
 		return true;
 	}
-	else if (cmd == wxT("MINTOTRAY"))
+	else if (cmd == wxT("MINTOTRAY") || cmd == wxT("MINTOTRAYIDLE"))
 	{
-		if (!MinToTray(false))
+		bool auto_restore = (cmd == wxT("MINTOTRAYIDLE"));
+		if (!MinToTray(auto_restore))
 		{
 			Iconize();
 		}
