@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.12 2003-03-20 07:25:26 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.13 2003-04-01 03:32:07 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -70,6 +70,19 @@ URL::URL(const wxString &url)
 	}
 
 	i = m_hostname.Find(wxT(':'), true);
+	
+	if (i > -1 && m_hostname[0u] == wxT('['))
+	{
+
+		int j = m_hostname.Find(wxT(']'), true);
+
+		if (i != j+1)
+		{
+			i = -1;
+		}
+
+	}
+
 	if (i > -1)
 	{
 		unsigned long ul;
@@ -234,7 +247,16 @@ URL::operator wxString() const
 	{
 		url << GetAuthentication() << wxT('@');
 	}
-	url << Escape(GetHostname());
+	bool wrap_host = (GetHostname().Find(wxT(':')) > -1);
+	if (wrap_host && GetHostname()[0u] != wxT('['))
+	{
+		url << wxT('[');
+	}
+	url << GetHostname();
+	if (wrap_host && GetHostname().Last() != wxT(']'))
+	{
+		url << wxT(']');
+	}
 	if (GetPort())
 	{
 		url << wxT(':') << GetPort();
@@ -385,8 +407,15 @@ void URL::SetProtocol(const wxString &protocol)
 
 void URL::SetHostname(const wxString &hostname)
 {
-	wxASSERT(hostname.Find(wxT(':')) == -1 && hostname.Find(wxT('@')) == -1 && hostname.Find(wxT('/')) == -1);
-	m_hostname = hostname;
+	wxASSERT(hostname.Find(wxT('@')) == -1 && hostname.Find(wxT('/')) == -1);
+	if (hostname.Length() > 1 && hostname[0u] == wxT('[') && hostname.Last() == wxT(']'))
+	{
+		m_hostname = hostname.Mid(1, hostname.Length() - 2);
+	}
+	else
+	{
+		m_hostname = hostname;
+	}
 }
 
 void URL::SetPort(int port)

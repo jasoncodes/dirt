@@ -1,37 +1,37 @@
-* when colour popup shows on GTK cannot programmically focus back to main window
+* win32: scrolling, keeping any menu open, resizing/moving window, etc
+  stops all network traffic from being processed (seems to be a win32 message pump problem)
+  this problem reproduces in the socket sample
 
-* flickering when ctrl-tab
+* file transfers
+
+* firewall traversal: try connecting both ways at same time, close alt route if main succeeds
 
 * dcc send/recv dialog
 
+* dirt:// protocol registration for mozilla on X11
+
+* is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
+
 * only scroll to bottom if scrollpos was already at bottom (and/or no sel)?
-
-* research that log control gdi thing in 9x
-
-* suppress wxBell when /away?
 
 * scripting (/exec and /eval)
 
 * banning (wxIsWild(), wxMatchWild())
 
-* automatic quit messages for end task, log off, etc (wxCloseEvent)
+* hide /oper password when being typed
 
-* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
+* automatic quit messages for end task, log off, etc (wxCloseEvent)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
-* firewall traversal: try connecting both ways at same time, close alt route if main succeeds
+* when colour popup shows on GTK cannot programmically focus back to main window
+
+* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* hide /oper password when being typed
+* suppress wxBell when /away?
 
-* is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
+* research that log control gdi thing in 9x
 
-* dirt:// protocol registration for mozilla on X11
-
-* file transfers
-
-* win32: scrolling, keeping any menu open, resizing/moving window, etc
-  stops all network traffic from being processed (seems to be a win32 message pump problem)
-  this problem reproduces in the socket sample
+* flickering when ctrl-tab
