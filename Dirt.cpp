@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.30 2003-03-18 11:15:11 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.31 2003-03-18 11:29:55 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -160,9 +160,6 @@ bool DirtApp::IsConsole()
 
 }
 
-#include "LogReader.h"
-#include "LogWriter.h"
-
 bool DirtApp::OnInit()
 {
 
@@ -172,8 +169,6 @@ bool DirtApp::OnInit()
 	m_control_down = false;
 	m_alt_down = false;
 	m_shift_down = false;
-
-wxMessageBox(LogWriter::GenerateFilename(wxT("Client"))+wxT("\n")+LogReader::GetDefaultLogDirectory()); return FALSE;
 
 	#ifdef __WXMSW__
 		::timeBeginPeriod(1);
