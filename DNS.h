@@ -54,7 +54,7 @@ public:
 		return (DNS*)GetEventObject();
 	}
 
-	virtual bool IsSucess() const
+	virtual bool IsSuccess() const
 	{
 		return m_success;
 	}
