@@ -113,7 +113,6 @@ bool DirtApp::IsConsole()
 
 	#else
 
-		// no detection for non-Win32... any ideas?
 		bIsConsole = false; // (default to GUI for non-Win32)
 
 	#endif

@@ -16,10 +16,8 @@ public:
 	Client* GetClient() { return m_client; }
 
 protected:
-	void OnHelpAbout(wxCommandEvent& event);
-	void OnFileNewWindow(wxCommandEvent& event);
-	void OnFileNewWindowNoFocus(wxCommandEvent& event);
 	void OnFileExit(wxCommandEvent& event);
+	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusInputControlTimer(wxTimerEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);

@@ -65,7 +65,7 @@ SwitchBarParent::SwitchBarParent(
 	mnuWindow->Append(ID_WINDOW_CLOSE, "Cl&ose\tCtrl-F4");
 	mnuWindow->AppendSeparator();
 	mnuWindow->Append(ID_WINDOW_CASCADE, "&Cascade");
-	mnuWindow->Append(ID_WINDOW_TILE, "Tile");
+	mnuWindow->Append(ID_WINDOW_TILE, "&Tile");
 	mnuWindow->AppendSeparator();
 	mnuWindow->Append(ID_WINDOW_NEXT, "&Next");
 	mnuWindow->Append(ID_WINDOW_PREV, "&Previous");

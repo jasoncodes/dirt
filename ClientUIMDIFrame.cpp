@@ -18,17 +18,13 @@
 
 enum
 {
-	ID_HELP_ABOUT = 1,
-	ID_FILE_NEW_WINDOW,
-	ID_FILE_NEW_WINDOW_NO_FOCUS,
-	ID_FILE_EXIT,
+	ID_FILE_EXIT = 1,
+	ID_HELP_ABOUT,
 	ID_FOCUSINPUTCONTROLTIMER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
-	EVT_MENU(ID_FILE_NEW_WINDOW, ClientUIMDIFrame::OnFileNewWindow)
-	EVT_MENU(ID_FILE_NEW_WINDOW_NO_FOCUS, ClientUIMDIFrame::OnFileNewWindowNoFocus)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSINPUTCONTROLTIMER, ClientUIMDIFrame::OnFocusInputControlTimer)
 END_EVENT_TABLE()
@@ -44,9 +40,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_NEW_WINDOW, "&New window\tCtrl-N", "Create a new child window");
-	mnuFile->Append(ID_FILE_NEW_WINDOW_NO_FOCUS, "New window (No &focus)\tCtrl-F", "Create a new child window (without focusing)");
-	mnuFile->Append(ID_FILE_EXIT, "&Exit\tAlt-X", "Quit the program");
+	mnuFile->Append(ID_FILE_EXIT, "&Exit\tAlt-F4", "Quit the program");
 	mnu->Append(mnuFile, "&File");
 
 	mnu->Append(GetWindowMenu(), "&Window");
@@ -111,16 +105,6 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	wxMessageBox("Dirt Secure Chat 3.0.0 Alpha 0");
-}
-
-void ClientUIMDIFrame::OnFileNewWindow(wxCommandEvent& event)
-{
-	NewWindow(new ClientUIMDICanvas(this, wxIcon(query_xpm)), true);
-}
-
-void ClientUIMDIFrame::OnFileNewWindowNoFocus(wxCommandEvent& event)
-{
-	NewWindow(new ClientUIMDICanvas(this, wxIcon(query_xpm)), false);
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)

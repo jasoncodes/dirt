@@ -163,6 +163,11 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 		wxGetApp().ExitMainLoop();
 		return true;
 	}
+	else if (cmd == "HELP")
+	{
+		OnClientInformation(context, "Supported commands: EXIT");
+		return false;
+	}
 	else
 	{
 		return false;
@@ -171,17 +176,17 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 
 void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "Debug: Context = \"" + context + "\", Text = \"" + text + "\"");
+	Output(wxString() << "Debug: " << text);
 }
 
 void ClientUIConsole::OnClientWarning(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "Warning: Context = \"" + context + "\", Text = \"" + text + "\"");
+	Output(wxString() << "* " << text);
 }
 
 void ClientUIConsole::OnClientInformation(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "Information: Context = \"" + context + "\", Text = \"" + text + "\"");
+	Output(wxString() << "* " << text);
 }
 
 void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &text)

@@ -113,7 +113,7 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
-	wxMessageBox("User clicked on link: " + event.GetString(), GetTitle(), wxICON_INFORMATION);
+	wxMessageBox("User clicked on link: " + event.GetString(), "Dirt Secure Chat", wxICON_INFORMATION);
 }
 
 void ClientUIMDICanvas::LogControlTest()
