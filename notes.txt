@@ -1,15 +1,19 @@
 * cvs diff -bu2 src/common/strconv.cpp > utf8fix.diff
 
 * proxy support for client
-	HTTP CONNECT w/ optional authentication (chat only)
-		Use for destination ports: ( ) None (*) HTTPS Only (*) All
-	SOCKS 4 connect (chat + file transfers)
-	SOCKS 5 connect (chat + file transfers)
-	SOCKS 4 bind (file transfers)
-	SOCKS 5 bind (file transfers)
-	SOCKS 5 modes have optional authentication
+	(*) None ( ) SOCKS 4 ( ) SOCKS 5 ( ) HTTP CONNECT
+	hostname port
+	username password (enabled for SOCKS 5 and HTTP CONNECT)
+	Use for following connections
+		[ ] chat [ ] DCC connect [ ] DCC listen (dcc modes only enabled for SOCKS)
+	Use for following destination network(s)
+		( ) Any ( ) Only the following ( ) Everything but the following
+		Network Address and Subnet Mask (dot separated IPv4 addresses)
+	Use for following destination ports
+		( ) Any (*) Matching (*) Not matching
+		list of ports and port ranges (comma separated, dash for ranges)
+
 	some way to pick when to use proxy
-	how to layout configuration dialog?
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
