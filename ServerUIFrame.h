@@ -5,6 +5,7 @@
 #include <wx/listctrl.h>
 
 class InputControl;
+class TrayIcon;
 
 class ServerUIFrame : public wxFrame, public ServerEventHandler
 {
@@ -46,6 +47,7 @@ protected:
 	wxButton *m_cmdClient;
 	wxButton *m_cmdClear;
 	wxTimer *m_tmrUpdateConnections;
+	TrayIcon *m_tray;
 
 private:
 	DECLARE_EVENT_TABLE()

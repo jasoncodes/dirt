@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.26 2003-02-27 05:29:11 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.27 2003-03-11 03:48:21 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -14,11 +14,57 @@ RCS_ID($Id: ServerUIFrame.cpp,v 1.26 2003-02-27 05:29:11 jason Exp $)
 #include "LogControl.h"
 #include "InputControl.h"
 #include "util.h"
+#include "TrayIcon.h"
 
 #include "Dirt.h"
 DECLARE_APP(DirtApp)
 
 #include "res/dirt.xpm"
+#include "res/disabled.xpm"
+#include "res/enabled.xpm"
+#include "res/active_1.xpm"
+#include "res/active_2.xpm"
+#include "res/active_3.xpm"
+#include "res/active_4.xpm"
+#include "res/active_5.xpm"
+#include "res/active_6.xpm"
+#include "res/active_7.xpm"
+#include "res/active_8.xpm"
+#include "res/active_9.xpm"
+#include "res/active_many.xpm"
+
+const char **xpms[13] = {
+	dirt_xpm,
+	active_1_xpm,
+	active_2_xpm,
+	active_3_xpm,
+	active_4_xpm,
+	active_5_xpm,
+	active_6_xpm,
+	active_7_xpm,
+	active_8_xpm,
+	active_9_xpm,
+	active_many_xpm,
+	disabled_xpm,
+	enabled_xpm
+};
+
+enum
+{
+	xpmDirt = 0,
+	xpmActive1,
+	xpmActive2,
+	xpmActive3,
+	xpmActive4,
+	xpmActive5,
+	xpmActive6,
+	xpmActive7,
+	xpmActive8,
+	xpmActive9,
+	xpmActiveMany,
+	xpmDisabled,
+	xpmEnabled
+};
 
 enum
 {
@@ -31,7 +77,8 @@ enum
 	ID_CONFIGURATION,
 	ID_CLIENT,
 	ID_CLEAR,
-	ID_TIMER_UPDATECONNECTIONS
+	ID_TIMER_UPDATECONNECTIONS,
+	ID_TRAY
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
@@ -52,6 +99,11 @@ ServerUIFrame::ServerUIFrame()
 {
 
 	SetIcon(wxIcon(dirt_xpm));
+
+	m_tray = new TrayIcon;
+	m_tray->SetEventHandler(this, ID_TRAY);
+	m_tray->SetIcon(xpms[xpmDisabled]);
+	m_tray->SetToolTip(AppTitle(wxT("Server")) + wxT("\n") + wxT("Server stopped"));
 
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
@@ -143,7 +195,12 @@ ServerUIFrame::ServerUIFrame()
 ServerUIFrame::~ServerUIFrame()
 {
 	delete m_tmrUpdateConnections;
+	m_tmrUpdateConnections = NULL;
 	delete m_server;
+	m_server = NULL;
+	m_tray->SetEventHandler(NULL);
+	delete m_tray;
+	m_tray = NULL;
 }
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)
