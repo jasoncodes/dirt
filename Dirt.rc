@@ -1,3 +1,58 @@
 main ICON MOVEABLE PURE "res/dirt.ico"
 1 24 "res/manifest.xml"
 hand CURSOR DISCARDABLE "res/hand.cur"
+
+#include "version.h"
+
+1 VERSIONINFO
+ FILEVERSION VERSION_RC
+ PRODUCTVERSION VERSION_RC
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "0c0904b0"
+        BEGIN
+            VALUE "Comments", VERSION
+                "\r\n\r\n"
+#ifdef _UNICODE
+                "Unicode"
+#else
+                "ANSI"
+#endif
+#ifdef _CONSOLE
+                " Console"
+#else
+                " GUI"
+#endif
+#ifdef _DEBUG
+                " Debug"
+#else
+                " Release"
+#endif
+                " Build" 
+                "\r\n\r\n"
+                "http://dirtchat.sourceforge.net/"
+                "\0"
+            VALUE "FileDescription", "Dirt Secure Chat\0"
+            VALUE "FileVersion", VERSION "\0"
+            VALUE "InternalName", "Dirt\0"
+            VALUE "LegalCopyright", "Released under the GPL\0"
+            VALUE "OriginalFilename", "Dirt.exe\0"
+            VALUE "ProductName", "Dirt Secure Chat\0"
+            VALUE "ProductVersion", VERSION "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0xc09, 1200
+    END
+END

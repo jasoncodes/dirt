@@ -6,13 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.10 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.11 2003-04-13 06:08:42 jason Exp $)
+
+#include "version.h"
 
 static wxString m_latest_rcs_date = wxEmptyString;
 static wxString m_latest_rcs_author = wxEmptyString;
 static bool m_init_done = false;
-
-const wxString VERSION = wxT("3.0.0 Alpha 0");
 
 static wxString extract_date(const wxChar *x, const wxChar *y)
 {
