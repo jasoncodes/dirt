@@ -5,8 +5,8 @@ CPPFLAGS = `wx-config --cxxflags`
 .PHONY: clean
 SOURCES := $(shell /bin/ls *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
-DIRT_EXE_PERMS = $(shell ls -l dirt | gawk '{print $$1}' | tr -d "rw-")
-DIRTCONSOLE_EXE_PERMS = $(shell ls -l dirtconsole | gawk '{print $$1}' | tr -d "rw-")
+DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
+DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
 
 dirt : Dirt
 ifneq ($(DIRT_EXE_PERMS),xxx)
