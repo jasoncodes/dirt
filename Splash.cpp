@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.28 2004-05-23 10:35:21 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.29 2004-05-24 18:23:33 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -50,9 +50,12 @@ class SplashPanel : public wxPanel
 {
 
 public:
-	SplashPanel(wxWindow *parent, wxBitmap *bmp)
-		: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL | wxCLIP_CHILDREN), m_bmp(bmp)
+	SplashPanel(wxWindow *parent, const wxImage &img)
+		: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL | wxCLIP_CHILDREN),
+		m_img(img), m_bmp(NULL)
 	{
+		SetBestSize(wxSize(m_img.GetWidth(), m_img.GetHeight()));
+		m_bmp = new wxBitmap(m_img);
 	}
 
 	virtual ~SplashPanel()
@@ -60,7 +63,25 @@ public:
 		delete m_bmp;
 	}
 
+	void ChangeBitmap(wxBitmap *bmp)
+	{
+		delete m_bmp;
+		m_bmp = bmp;
+	}
+
 protected:
+	virtual wxSize DoGetBestSize() const
+	{
+		wxSize size = wxPanel::DoGetBestSize();
+		FixBitmap(size);
+		if (m_bmp)
+		{
+			size.x = wxMax(size.x, m_bmp->GetWidth());
+			size.y = wxMax(size.y, m_bmp->GetHeight());
+		}
+		return size;
+	}
+
 	void OnErase(wxEraseEvent &WXUNUSED(event))
 	{
 	}
@@ -71,8 +92,40 @@ protected:
 		dc.DrawBitmap(*m_bmp, 0, 0);
 	}
 
+	void OnSize(wxSizeEvent &event)
+	{
+		FixBitmap(GetSize());
+		event.Skip();
+	}
+
+	void FixBitmap(const wxSize &size) const
+	{
+		if (m_bmp)
+		{
+			int new_width = m_bmp->GetWidth();
+			int new_height = m_bmp->GetHeight();
+			if (size.x > new_width)
+			{
+				new_height = (int)(((double)new_height * size.x / new_width)+0.5);
+				new_width = size.x;
+			}
+			if (size.y > new_height)
+			{
+				new_width = (int)(((double)new_width * size.y / new_height)+0.5);
+				new_height = size.y;
+			}
+			if (size.x < new_width || size.y < new_height)
+			{
+				delete m_bmp;
+				m_bmp = new wxBitmap(m_img.Scale(new_width, new_height));
+				wxSize new_size(new_width, new_height);
+			}
+		}
+	}
+
 protected:
-	wxBitmap *m_bmp;
+	wxImage m_img;
+	mutable wxBitmap *m_bmp;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -83,6 +136,7 @@ private:
 BEGIN_EVENT_TABLE(SplashPanel, wxPanel)
 	EVT_ERASE_BACKGROUND(SplashPanel::OnErase)
 	EVT_PAINT(SplashPanel::OnPaint)
+	EVT_SIZE(SplashPanel::OnSize)
 END_EVENT_TABLE()
 
 enum
@@ -100,21 +154,20 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 END_EVENT_TABLE()
 
 Splash::Splash()
-	: wxFrame(NULL, wxID_ANY, AppTitle(), wxDefaultPosition, wxDefaultSize, (wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL) & ~(wxRESIZE_BORDER|wxMAXIMIZE_BOX), wxT("Dirt"))
+	: wxFrame(
+		NULL, wxID_ANY, AppTitle(), wxDefaultPosition, wxDefaultSize,
+		(wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL)
+			& ~(wxRESIZE_BORDER|wxMAXIMIZE_BOX),
+		wxT("Dirt"))
 {
 
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
 	wxImage img(is, wxBITMAP_TYPE_ANY);
-	wxBitmap *bmp = new wxBitmap(img);
 
-	SplashPanel *panel = new SplashPanel(this, bmp);
+	SplashPanel *panel = new SplashPanel(this, img);
 
 	SetIcon(wxIcon(dirt_xpm));
-
-	const int pos_y = 140;
-	const int gap_x = 8;
-	const int gap_y = 16;
 
 	wxButton *btns[5];
 	const int btn_count = 5;
@@ -134,37 +187,33 @@ Splash::Splash()
 	wxAcceleratorTable accel(btn_count, entries);
 	SetAcceleratorTable(accel);
 
-	int btn_width = 0;
-	
-	for (int i = 0; i < btn_count; ++i)
+	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
 	{
-		btn_width = wxMax(btns[i]->GetSize().x, btn_width);
-	}
-	
-	int total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
 
-	if (total_width > bmp->GetWidth()-gap_x*2)
-	{
-		total_width = bmp->GetWidth()-gap_x*2;
-		btn_width = (total_width - (gap_x * (btn_count - 1))) / btn_count;
-		total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
-	}
+		wxBoxSizer *szrDummy = new wxBoxSizer(wxVERTICAL);
+		{
+		}
+		szrAll->Add(szrDummy, 1, wxEXPAND);
 
-	int start_pos = (bmp->GetWidth() - total_width) / 2;
+		wxGridSizer *szrButtons = new wxGridSizer(1, btn_count, 8, 8);
+		{
+			for (int i = 0; i < btn_count; ++i)
+			{
+				szrButtons->Add(btns[i]);
+			}
+		}
+		szrAll->Add(szrButtons, 0, wxEXPAND|wxALL, 8);
 
-	for (int i = 0; i < btn_count; ++i)
-	{
-		btns[i]->SetSize(start_pos + ((btn_width + gap_x) * i), pos_y, btn_width, -1);
 	}
 
-	SetClientSize(bmp->GetWidth(), btns[0]->GetRect().GetBottom() + gap_y);
+	panel->SetSizer(szrAll);
+
+	SetClientSize(panel->GetBestSize());
 
 	CentreOnScreen();
-
 	m_button_clicked = false;
 
 	Show();
-
 	btns[0]->SetFocus();
 
 }
