@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -47,7 +47,8 @@ public:
 
 protected:
 	void Init();
-	StringHashMap::iterator FindField(const wxString &name) const;
+	StringHashMap::const_iterator FindField(const wxString &name) const;
+	StringHashMap::iterator FindField(const wxString &name);
 
 protected:
 	bool m_valid;

@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.20 2004-05-30 09:24:31 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.21 2004-07-27 10:37:51 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -124,21 +124,33 @@ bool HTTPHeader::IsFinal() const
 
 }
 
-StringHashMap::iterator HTTPHeader::FindField(const wxString &name) const
+StringHashMap::const_iterator HTTPHeader::FindField(const wxString &name) const
 {
-	for (StringHashMap::iterator i = ((StringHashMap&)m_fields).begin(); i != ((StringHashMap&)m_fields).end(); ++i)
+	for (StringHashMap::const_iterator i = m_fields.begin(); i != m_fields.end(); ++i)
 	{
 		if (name.CmpNoCase(i->first) == 0)
 		{
 			return i;
 		}
 	}
-	return ((StringHashMap&)m_fields).end();
+	return m_fields.end();
+}
+
+StringHashMap::iterator HTTPHeader::FindField(const wxString &name)
+{
+	for (StringHashMap::iterator i = m_fields.begin(); i != m_fields.end(); ++i)
+	{
+		if (name.CmpNoCase(i->first) == 0)
+		{
+			return i;
+		}
+	}
+	return m_fields.end();
 }
 
 const wxString HTTPHeader::GetField(const wxString &name) const
 {
-	StringHashMap::iterator i = FindField(name);
+	StringHashMap::const_iterator i = FindField(name);
 	return (i != m_fields.end()) ? i->second : wxString();
 }
 
@@ -225,10 +237,10 @@ END_EVENT_TABLE()
 
 HTTP::HTTP()
 {
-	
+
 	m_handler = NULL;
 	m_id = -1;
-	
+
 	m_sck = new wxSocketClient(wxSOCKET_NOWAIT);
 	m_sck->SetEventHandler(*this, ID_SOCKET);
 	m_sck->SetNotify(
@@ -284,7 +296,7 @@ void HTTP::OnSocket(wxSocketEvent &event)
 				m_sck->Read(buff.LockReadWrite(), buff.Length());
 				buff.Unlock();
 				wxCHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
-				
+
 				if (m_sck->LastCount())
 				{
 					if (m_sck->LastCount() == buff.Length())
@@ -389,15 +401,15 @@ void HTTP::DispatchContent(const ByteBuffer &data)
 
 void HTTP::ProcessIncoming()
 {
-	
+
 	if (m_buffIn.Length() == 0) return;
-	
+
 	if (m_header.IsValid())
 	{
-		
+
 		if (m_chunked)
 		{
-			
+
 			if (!m_transfer_complete)
 			{
 
@@ -505,7 +517,7 @@ void HTTP::ProcessIncoming()
 		const byte *pos = findbytes(ptr, m_buffIn.Length(), (const byte*)"\r\n\r\n", 4);
 		if (pos)
 		{
-			
+
 			size_t header_len = pos-ptr+4;
 			size_t data_len = m_buffIn.Length() - header_len;
 			m_header = wxString(ByteBuffer(ptr, header_len));
@@ -518,7 +530,7 @@ void HTTP::ProcessIncoming()
 			{
 				m_content_length = -1;
 			}
-			
+
 			wxString transfer_enc = m_header.GetField(wxT("Transfer-Encoding"));
 			m_chunked = (transfer_enc.Lower().Find(wxT("chunked")) > -1);
 
@@ -566,7 +578,7 @@ void HTTP::ProcessIncoming()
 							dest_url = URL(m_url, location);
 						}
 						is_redirecting = true;
-						
+
 					}
 				}
 				if (m_handler)
@@ -596,7 +608,7 @@ void HTTP::MaybeSendData()
 {
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
-	
+
 	const byte *ptr = m_buffOut.LockRead();
 	size_t len = m_buffOut.Length();
 
