@@ -35,3 +35,4 @@
 * file transfers
 * support for public listing
 * tray icon support
+* tab completion
