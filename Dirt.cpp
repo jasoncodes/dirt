@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.11 2003-02-13 14:11:57 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.12 2003-02-13 16:05:11 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIMDIFrame.h"
@@ -168,8 +168,7 @@ bool DirtApp::OnInit()
 	else
 	{
 		m_console = NULL;
-		ClientUIMDIFrame *frame = new ClientUIMDIFrame();
-		SetTopWindow(frame);
+		new ClientUIMDIFrame();
 	}
 	return true;
 }
