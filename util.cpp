@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.59 2003-05-11 09:55:12 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.60 2003-05-11 10:33:17 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1161,10 +1161,10 @@ bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 		long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
 		::wxEndBusyCursor();
 		bool success = (pid != 0);
-		if (!success && show_error_)
+		if (!success && show_error)
 		{
 			wxMessageBox(
-				wxT("Unable to open ") + filename,
+				wxT("Unable to open ") + folder,
 				wxT("Error launching Konqueror"), wxOK | wxICON_ERROR, parent);
 		}
 		return success;
