@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.4 2003-02-14 04:39:57 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.5 2003-02-14 04:50:12 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -38,7 +38,7 @@ ServerUIFrame::ServerUIFrame()
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
 	m_server = new ServerDefault(this);
-	CenterOnScreen();
+	ResetWindowPos();
 	Show();
 	m_txtInput->SetFocus();
 }
@@ -124,4 +124,18 @@ bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
 	{
 		return false;
 	}
+}
+
+bool ServerUIFrame::ResetWindowPos()
+{
+	wxRect rtWorkArea = ::wxGetClientDisplayRect();
+	int width = 500;
+	int height = 350;
+	wxRect rtDefaultPos(
+		rtWorkArea.GetRight() - width + 1,
+		rtWorkArea.GetBottom() - height + 1,
+		width,
+		height);
+	SetSize(rtDefaultPos);
+	return true;
 }

@@ -24,6 +24,9 @@ protected:
 	void OnInput(wxCommandEvent &event);
 
 protected:
+	virtual bool ResetWindowPos();
+
+protected:
 	Server *m_server;
 	wxTextCtrl *m_txtLog;
 	InputControl *m_txtInput;
