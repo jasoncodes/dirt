@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.7 2003-04-02 02:54:15 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.8 2003-05-06 07:10:46 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -265,6 +265,7 @@ bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
 #elif defined(KDE_AVAILABLE)
 
 #include "KDE.h"
+#include <kapplication.h>
 #include <ksystemtray.h>
 #include <qimage.h>
 #include <qtooltip.h>
