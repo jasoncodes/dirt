@@ -16,4 +16,18 @@ else
 	exit 1
 fi
 
-exec xvfb-run `dirname $0`/Dirt --console $*
+LISTEN_PORT=500
+
+while [ $LISTEN_PORT != 600 ]
+do
+
+        LOCK_FILE=/tmp/.X${LISTEN_PORT}-lock
+
+        if [ ! -f $LOCK_FILE ]
+        then
+                exec xvfb-run -n $LISTEN_PORT `dirname $0`/Dirt --console $*
+        fi
+
+        LISTEN_PORT=$(($LISTEN_PORT+1))
+
+done
