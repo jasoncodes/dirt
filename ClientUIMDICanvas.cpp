@@ -18,6 +18,64 @@
 #include "res/send.xpm"
 #include "res/receive.xpm"
 
+class MySplitterWindow : public wxSplitterWindow
+{
+
+public:
+
+	MySplitterWindow(wxWindow *parent, int id)
+		: wxSplitterWindow(
+			parent, id,
+			wxDefaultPosition, wxDefaultSize,
+			wxSP_NOBORDER | wxSP_FULLSASH | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN)
+	{
+		SetMinimumPaneSize(96);
+	}
+
+	virtual ~MySplitterWindow()
+	{
+	}
+
+	virtual void DrawSash(wxDC& dc)
+	{
+		int w, h;
+		GetClientSize(&w, &h);
+        dc.SetBrush(wxBrush(GetBackgroundColour(), wxSOLID));
+        dc.SetPen(wxPen(GetBackgroundColour(), 1, wxSOLID));
+        dc.DrawRectangle(0, 0, w-1, h-1);
+		dc.SetPen(wxNullPen);
+		dc.SetBrush(wxNullBrush);
+	}
+
+protected:
+
+	void OnSize(wxSizeEvent &event)
+	{
+
+		int old_pos = GetSashPosition();
+		int old_size = GetWindow2()->GetSize().x;
+
+		wxSplitterWindow::OnSize(event);
+
+		if (old_pos > 0)
+		{
+			int new_size = GetWindow2()->GetSize().x;
+			int size_diff = new_size - old_size;
+			int new_pos = old_pos + size_diff;
+			SetSashPosition(new_pos);
+		}
+
+	}
+
+private:
+	DECLARE_EVENT_TABLE()
+
+};
+
+BEGIN_EVENT_TABLE(MySplitterWindow, wxSplitterWindow)
+	EVT_SIZE(MySplitterWindow::OnSize)
+END_EVENT_TABLE()
+
 enum
 {
 	ID_LOG = 1,
@@ -89,11 +147,15 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	if (type == ChannelCanvas)
 	{
-		m_lstNickList = new NickListControl(this, ID_NICKLIST);
+		m_splitter = new MySplitterWindow(this, wxID_ANY);
+		m_lstNickList = new NickListControl(m_splitter, ID_NICKLIST);
 		m_lstNickList->SetFont(m_txtInput->GetFont());
+		m_txtLog->Reparent(m_splitter);
+		m_splitter->SplitVertically(m_txtLog, m_lstNickList, -128);
 	}
 	else
 	{
+		m_splitter = NULL;
 		m_lstNickList = NULL;
 	}
 
@@ -168,11 +230,14 @@ void ClientUIMDICanvas::ResizeChildren()
 			size.GetHeight() -
 			input_height;
 
-		m_txtLog->SetSize(0, 0, log_width, log_height);
 		m_txtInput->SetSize(0, log_height, size.GetWidth(), input_height);
-		if (m_lstNickList)
+		if (m_splitter)
 		{
-			m_lstNickList->SetSize(log_width, 0, nicklist_width, log_height);
+			m_splitter->SetSize(0, 0, size.GetWidth(), log_height);
+		}
+		else
+		{
+			m_txtLog->SetSize(0, 0, log_width, log_height);
 		}
 
 	}

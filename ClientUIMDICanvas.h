@@ -5,6 +5,7 @@
 #include "LogControl.h"
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
+#include <wx/splitter.h>
 
 class NickListControl;
 class Client;
@@ -56,6 +57,7 @@ protected:
 	LogControl *m_txtLog;
 	InputControl *m_txtInput;
 
+	wxSplitterWindow *m_splitter;
 	NickListControl *m_lstNickList;
 
 	ClientUIMDITransferPanel *m_pnlTransfer;
