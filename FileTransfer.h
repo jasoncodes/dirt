@@ -2,7 +2,7 @@
 #define FileTransfer_H_
 
 #include "CPSCalc.h"
-#include <wx/file.h>
+#include "File.h"
 
 class FileTransfers;
 class CryptSocketBase;
@@ -39,11 +39,11 @@ public:
 	FileTransferState state;
 	wxString nickname;
 	wxString filename;
-	off_t filesize;
+	wxLongLong_t filesize;
 	long time;
 	long timeleft;
 	long cps;
-	off_t filesent;
+	wxLongLong_t filesent;
 	wxString status;
 
 protected:
@@ -61,16 +61,16 @@ protected:
 
 protected:
 	FileTransfers *m_transfers;
-	wxFile m_file;
+	File m_file;
 	CPSCalc m_cps;
 	CryptSocketBase *m_sck;
+	bool m_connect_ok;
 
 	//  get only
 	wxString m_ip;
 	unsigned short m_port;
 
 	// send only
-	bool m_connect_ok;
 	bool m_got_accept;
 	bool m_more_idle;
 

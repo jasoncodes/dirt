@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.1 2003-05-07 23:59:05 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.2 2003-05-10 04:34:39 jason Exp $)
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -75,7 +75,7 @@ ClientUIMDITransferResumeDialog::ClientUIMDITransferResumeDialog(wxWindow *paren
 			szrButtons->Add(cmdNo, 0, wxBOTTOM | wxLEFT, 8);
 			szrButtons->Add(cmdCancel, 0, wxBOTTOM | wxLEFT, 8);
 		}
-		szrAll->Add(szrButtons, 1, wxLEFT | wxRIGHT, 8);
+		szrAll->Add(szrButtons, 1, wxLEFT | wxRIGHT | wxALIGN_CENTER, 8);
 
 	}
 

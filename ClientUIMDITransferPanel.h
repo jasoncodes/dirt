@@ -25,22 +25,22 @@ public:
 	FileTransferState GetState();
 	wxString GetNickname();
 	wxString GetFilename();
-	off_t GetFileSize();
+	wxLongLong_t GetFileSize();
 	long GetTime();
 	long GetTimeleft();
 	long GetCPS();
-	off_t GetFileSent();
+	wxLongLong_t GetFileSent();
 	wxString GetStatus();
 
 	void SetTransferId(long id);
 	void SetState(FileTransferState state);
 	void SetNickname(const wxString &nickname);
 	void SetFilename(const wxString &filename);
-	void SetFileSize(off_t bytes);
+	void SetFileSize(wxLongLong_t bytes);
 	void SetTime(long seconds);
 	void SetTimeleft(long seconds);
 	void SetCPS(long cps);
-	void SetFileSent(off_t bytes);
+	void SetFileSent(wxLongLong_t bytes);
 	void SetStatus(const wxString &status);
 
 	wxString GetShortFilename();
@@ -78,11 +78,11 @@ protected:
 	FileTransferState m_state;
 	wxString m_nickname;
 	wxString m_filename;
-	off_t m_filesize;
+	wxLongLong_t m_filesize;
 	long m_time;
 	long m_timeleft;
 	long m_cps;
-	off_t m_filesent;
+	wxLongLong_t m_filesent;
 	wxString m_status;
 
 private:

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.4 2003-05-07 06:47:02 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.5 2003-05-10 04:34:39 jason Exp $)
 
 #include "CPSCalc.h"
 
@@ -28,7 +28,7 @@ CPSCalc::~CPSCalc()
 {
 }
 
-void CPSCalc::Reset(off_t m_resume_offset)
+void CPSCalc::Reset(wxLongLong_t m_resume_offset)
 {
 	m_resume_offset = 0;
 	m_cps = -1;
@@ -36,7 +36,7 @@ void CPSCalc::Reset(off_t m_resume_offset)
 	m_pos = 0;
 }
 
-off_t CPSCalc::Update(off_t pos)
+wxLongLong_t CPSCalc::Update(wxLongLong_t pos)
 {
 
 	m_pos = pos - m_resume_offset;

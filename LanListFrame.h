@@ -24,7 +24,7 @@ protected:
 
 protected:
 	virtual void DoPing();
-	virtual void ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t last_update_tick, off_t latency, const StringHashMap &server_info);
+	virtual void ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t last_update_tick, wxLongLong_t latency, const StringHashMap &server_info);
 	virtual long GetEntry(const wxString &ip, wxUint16 port, bool create_if_not_exist);
 	virtual void Sort();
 	virtual void Cleanup();

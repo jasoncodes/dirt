@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.22 2003-05-09 13:44:49 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.23 2003-05-10 04:34:39 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -17,6 +17,7 @@ RCS_ID($Id: FileTransfers.cpp,v 1.22 2003-05-09 13:44:49 jason Exp $)
 #include "CryptSocket.h"
 
 #include <wx/filename.h>
+#include "File.h"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(FileTransferArray);
@@ -75,18 +76,6 @@ int FileTransfers::GetNewId()
 	return index;
 }
 
-#include <sys/stat.h>
-
-static off_t GetFileLength(const wxString &filename)
-{
-	wxStructStat st;
-	if (wxStat(filename, &st) == 0)
-	{
-		return st.st_size;
-	}
-	return -1;
-}
-
 int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
@@ -103,7 +92,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	wxFileName fn(filename);
 	wxASSERT(fn.FileExists());
 	t->filename = fn.GetFullPath();
-	t->filesize = GetFileLength(t->filename);
+	t->filesize = File::Length(t->filename);
 	t->time = 0;
 	t->timeleft = -1;
 	t->cps = -1;
@@ -111,7 +100,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->m_cps.Reset(t->filesent);
 	t->status = wxT("Waiting for accept...");
 
-	if (!t->m_file.Open(t->filename, wxFile::read))
+	if (!t->m_file.Open(t->filename, File::read))
 	{
 		delete t;
 		return -1;
@@ -137,8 +126,8 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	ByteBufferArray data;
 	data.Add(wxString(wxT("SEND")));
 	data.Add(wxFileName(t->filename).GetFullName());
-	data.Add(wxString() << t->filesize);
-	data.Add(wxString() << t->transferid);
+	data.Add(wxLongLong(t->filesize).ToString());
+	data.Add(wxLongLong(t->transferid).ToString());
 	data.Add(ByteBuffer());
 	wxArrayString IPs = GetIPAddresses();
 	int i;
@@ -362,7 +351,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 
 						wxLongLong_t ll;
 
-						if (StringToLongLong(fields[2u], &ll) && (ll < t.filesize))
+						if (StringToLongLong(fields[2u], &ll) && (ll < t.filesize) && t.m_file.Seek(ll) == ll)
 						{
 							t.filesent = ll;
 							t.m_got_accept = true;
@@ -498,7 +487,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 			ResumeState resume = rsOverwrite;
 			if (wxFileName(ht.tail).FileExists())
 			{
-				off_t size = GetFileLength(ht.tail);
+				off_t size = File::Length(ht.tail);
 				resume = m_client->m_event_handler->OnClientTransferResumePrompt(t, ht.tail, size < t.filesize);
 			}
 			if ((resume != rsCancel) && !AcceptTransfer(x, ht.tail, resume == rsResume))
@@ -637,7 +626,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		bool open_ok;
 		if (resume)
 		{
-			open_ok = t.m_file.Open(filename, wxFile::write_append);
+			open_ok = t.m_file.Open(filename, File::write_append);
 		}
 		else
 		{
@@ -650,7 +639,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 
 		t.filename = fn.GetFullPath();
 		t.state = ftsGetConnecting;
-		t.filesent = resume ? GetFileLength(t.filename) : 0;
+		t.filesent = resume ? File::Length(t.filename) : 0;
 		t.status = wxT("Connecting...");
 		
 		CryptSocketClient *sck = new CryptSocketClient;
@@ -668,7 +657,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		ByteBufferArray data;
 		data.Add(wxString(wxT("ACCEPT")));
 		data.Add(wxString() << t.remoteid);
-		data.Add(wxString() << t.filesent);
+		data.Add(wxLongLong(t.filesent).ToString());
 		data.Add(ByteBuffer());
 		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
 
@@ -697,9 +686,13 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 
 	FileTransfer *t = (FileTransfer*)event.GetUserData();
 	wxASSERT(t);
+
+	int index = FindTransferBySocket(event.GetSocket());
 	
-	if (t->issend)
+	if (index > -1)
 	{
+
+		wxASSERT(&m_transfers[index] == t);
 
 		switch (event.GetSocketEvent())
 		{
@@ -712,83 +705,53 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 						cmd = event.GetData();
 						data = ByteBuffer();
 					}
-					OnSendData(*t, ((wxString)cmd).Upper(), data);
+					if (t->issend)
+					{
+						OnSendData(*t, ((wxString)cmd).Upper(), data);
+					}
+					else
+					{
+						OnGetData(*t, ((wxString)cmd).Upper(), data);
+					}
 				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
-				MaybeSendData(*t);
-				break;
-
-			case CRYPTSOCKET_CONNECTION:
-				if (event.GetId() == ID_SOCKET_SERVER)
+				if (t->issend)
 				{
-					CryptSocketServer *sckListen = (CryptSocketServer*)t->m_sck;
-					sckListen->SetEventHandler(NULL, wxID_ANY);
-					t->m_sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
-					delete sckListen;
-				}
-				else
-				{
-					t->m_connect_ok = true;
 					MaybeSendData(*t);
 				}
 				break;
 
-			case CRYPTSOCKET_LOST:
-				{
-					int index = FindTransferBySocket(event.GetSocket());
-					if (index > -1 && &(m_transfers[index]) == t)
-					{
-						wxFAIL_MSG(wxT("Unexpected CRYPTSOCKET_LOST in FileTransfers::OnSocket/Send"));
-					}
-				}
-				break;
-
-			default:
-				wxFAIL_MSG(wxT("Unknown event type in FileTransfers::OnSocket/Send"));
-				break;
-
-		}
-
-	}
-	else
-	{
-
-		switch (event.GetSocketEvent())
-		{
-
-			case CRYPTSOCKET_INPUT:
-				{
-					ByteBuffer cmd, data;
-					if (!Unpack(event.GetData(), cmd, data))
-					{
-						cmd = event.GetData();
-						data = ByteBuffer();
-					}
-					OnGetData(*t, ((wxString)cmd).Upper(), data);
-				}
-				break;
-
-			case CRYPTSOCKET_OUTPUT:
-				break;
-
 			case CRYPTSOCKET_CONNECTION:
-				OnGetConnection(*t);
-				break;
-
-			case CRYPTSOCKET_LOST:
+				if (t->issend)
 				{
-					int index = FindTransferBySocket(event.GetSocket());
-					if (index > -1 && &(m_transfers[index]) == t)
+					if (event.GetId() == ID_SOCKET_SERVER)
 					{
-						wxFAIL_MSG(wxT("Unexpected CRYPTSOCKET_LOST in FileTransfers::OnSocket/Get"));
+						CryptSocketServer *sckListen = (CryptSocketServer*)t->m_sck;
+						sckListen->SetEventHandler(NULL, wxID_ANY);
+						t->m_sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
+						delete sckListen;
 					}
+					else
+					{
+						t->m_connect_ok = true;
+						MaybeSendData(*t);
+					}
+				}
+				else
+				{
+					t->m_connect_ok = true;
+					OnGetConnection(*t);
 				}
 				break;
 
+			case CRYPTSOCKET_LOST:
+				OnClose(*t);
+				break;
+
 			default:
-				wxFAIL_MSG(wxT("Unknown event type in FileTransfers::OnSocket/Get"));
+				wxFAIL_MSG(wxT("Unknown event type in FileTransfers::OnSocket"));
 				break;
 
 		}
@@ -812,9 +775,41 @@ void FileTransfers::OnRemoteCancel(FileTransfer &t)
 	DeleteTransfer(t.transferid, false);
 }
 
+void FileTransfers::OnClose(FileTransfer &t)
+{
+	if (t.issend)
+	{
+		t.state = ftsSendFail;
+		t.status = t.m_connect_ok?wxT("Connection lost"):wxT("Error connecting to remote");
+	}
+	else
+	{
+		if (t.filesent == t.filesize)
+		{
+			t.state = ftsGetComplete;
+			t.status = wxT("Transfer complete");
+		}
+		else
+		{
+			t.state = ftsGetFail;
+			t.status = t.m_connect_ok?wxT("Connection lost"):wxT("Error connecting to remote");
+		}
+	}
+	m_client->m_event_handler->OnClientTransferState(t);
+	DeleteTransfer(t.transferid, false);
+}
+
 void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data)
 {
-	if (cmd == wxT("CANCEL"))
+	if (cmd == wxT("THANKS"))
+	{
+		wxASSERT(t.filesent == t.filesize);
+		t.state = ftsGetComplete;
+		t.status = wxT("Transfer complete");
+		m_client->m_event_handler->OnClientTransferState(t);
+		DeleteTransfer(t.transferid, false);
+	}
+	else if (cmd == wxT("CANCEL"))
 	{
 		OnRemoteCancel(t);
 	}
@@ -840,6 +835,11 @@ void FileTransfers::OnGetData(FileTransfer &t, const wxString &cmd, const ByteBu
 			return;
 		}
 		t.filesent += bytes_written;
+		wxASSERT (t.filesent <= t.filesize);
+		if (t.filesent == t.filesize)
+		{
+			t.m_sck->Send(wxString(wxT("THANKS")));
+		}
 	}
 	else if (cmd == wxT("CANCEL"))
 	{

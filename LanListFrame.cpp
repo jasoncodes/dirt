@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.4 2003-04-30 07:38:48 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.5 2003-05-10 04:34:40 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -127,7 +127,7 @@ void LanListFrame::OnBroadcast(BroadcastSocketEvent &event)
 				StringHashMap server_info = UnpackStringHashMap(hashmap_data);
 				if (sep_byte == 0 && latency >= 0 && server_info.size() > 0)
 				{
-					ProcessPong(event.GetIP(), event.GetPort(), now, (off_t)latency, server_info);
+					ProcessPong(event.GetIP(), event.GetPort(), now, (wxLongLong_t)latency, server_info);
 				}
 			}
 		}
@@ -176,7 +176,7 @@ static long ToLong(const wxString &text, long default_value = 0)
 	return text.ToLong(&x) ? x : default_value;
 }
 
-void LanListFrame::ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t last_update_tick, off_t latency, const StringHashMap &server_info)
+void LanListFrame::ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t last_update_tick, wxLongLong_t latency, const StringHashMap &server_info)
 {
 	long index = GetEntry(ip, port, true);
 	wxASSERT(index > -1);
@@ -194,7 +194,7 @@ void LanListFrame::ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t l
 		<< GetAndKill(info, wxT("peakusers")) << wxT(" peak, ")
 		<< GetAndKill(info, wxT("maxusers")) << wxT(" max)");
 	m_lstServers->SetItem(index, 3, users);
-	m_lstServers->SetItem(index, 4, AddCommas((off_t)ToLong(GetAndKill(info, wxT("avgping")))) + wxT(" ms"));
+	m_lstServers->SetItem(index, 4, AddCommas((wxLongLong_t)ToLong(GetAndKill(info, wxT("avgping")))) + wxT(" ms"));
 	m_lstServers->SetItem(index, 5, GetAndKill(info, wxT("version")));
 	m_lstServers->SetItem(index, 6, SecondsToMMSS(ToLong(GetAndKill(info, wxT("idletime")))));
 	m_lstServers->SetItem(index, 7, SecondsToMMSS(ToLong(GetAndKill(info, wxT("uptime")))));

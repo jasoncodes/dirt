@@ -2,7 +2,7 @@
 #define CPSCalc_H_
 
 #include <wx/dynarray.h>
-WX_DECLARE_OBJARRAY(off_t, HistoryArray);
+WX_DECLARE_OBJARRAY(wxLongLong_t, HistoryArray);
 
 class CPSCalc
 {
@@ -11,20 +11,20 @@ public:
 	CPSCalc();
 	virtual ~CPSCalc();
 
-	void Reset(off_t resume_offset = 0);
+	void Reset(wxLongLong_t resume_offset = 0);
 
 	// this func must be called every 1000 ms
-	off_t Update(off_t pos);
+	wxLongLong_t Update(wxLongLong_t pos);
 
-	off_t GetCPS() { return m_cps; }
+	wxLongLong_t GetCPS() { return m_cps; }
 	bool IsCPSValid() { return m_history_filled > 1; }
 
 protected:
 	HistoryArray m_history;
 	int m_history_filled;
-	off_t m_resume_offset;
-	off_t m_cps;
-	off_t m_pos;
+	wxLongLong_t m_resume_offset;
+	wxLongLong_t m_cps;
+	wxLongLong_t m_pos;
 
 };
 

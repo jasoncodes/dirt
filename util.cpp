@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.57 2003-05-08 13:56:17 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.58 2003-05-10 04:34:40 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -216,7 +216,7 @@ void SetHtmlParserFonts(wxHtmlWinParser *parser)
 
 }
 
-wxString AddCommas(off_t size)
+wxString AddCommas(wxLongLong_t size)
 {
 	wxASSERT(size >= 0);
 	wxString buff;
@@ -232,7 +232,7 @@ wxString AddCommas(off_t size)
 wxString AddCommas(double size)
 {
 
-	off_t size2 = (off_t)size;
+	wxLongLong_t size2 = (wxLongLong_t)size;
 	
 	wxString remainder = wxString::Format(wxT("%04.2lf"), fmod(size, 1));
 	wxASSERT(remainder.Left(2) == wxT("0.") || remainder.Left(2) == wxT("1."));
@@ -242,13 +242,13 @@ wxString AddCommas(double size)
 	}
 	remainder = remainder.Mid(1);
 
-	wxString quotient = AddCommas((off_t)size2);
+	wxString quotient = AddCommas((wxLongLong_t)size2);
 
 	return wxString() << quotient << remainder;
 
 }
 
-wxString SizeToString(off_t size)
+wxString SizeToString(wxLongLong_t size)
 {
 	wxASSERT(size >= 0);
 	wxLongLong_t size2 = size;
@@ -274,7 +274,7 @@ wxString SizeToString(off_t size)
 	}
 }
 
-wxString SizeToLongString(off_t size, wxString suffix)
+wxString SizeToLongString(wxLongLong_t size, wxString suffix)
 {
 	wxString result;
 	result << SizeToString(size) << suffix;

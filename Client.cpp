@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.60 2003-05-07 12:22:59 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.61 2003-05-10 04:34:39 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -304,11 +304,11 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					msg << wxT("    Interval:    ");
 					if (tmr->GetInterval() % 1000)
 					{
-						msg << AddCommas((off_t)(tmr->GetInterval())) << wxT(" msec(s)");
+						msg << AddCommas((wxLongLong_t)(tmr->GetInterval())) << wxT(" msec(s)");
 					}
 					else
 					{
-						msg << AddCommas((off_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
+						msg << AddCommas((wxLongLong_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
 					}
 					m_event_handler->OnClientInformation(context, msg);
 
@@ -316,7 +316,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					msg << wxT("    Next Update: ");
 					if (tmr->GetNextTick())
 					{
-						msg << AddCommas((off_t)((tmr->GetNextTick() - GetMillisecondTicks())/1000)) << wxT(" sec(s)");
+						msg << AddCommas((wxLongLong_t)((tmr->GetNextTick() - GetMillisecondTicks())/1000)) << wxT(" sec(s)");
 					}
 					else
 					{
@@ -474,11 +474,11 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					}
 					if (tmr->GetInterval() % 1000)
 					{
-						msg << AddCommas((off_t)tmr->GetInterval()) << wxT(" msec(s)");
+						msg << AddCommas((wxLongLong_t)tmr->GetInterval()) << wxT(" msec(s)");
 					}
 					else
 					{
-						msg << AddCommas((off_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
+						msg << AddCommas((wxLongLong_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
 					}
 					if (tmr->GetTimesRemaining() >= 0)
 					{
@@ -486,7 +486,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					}
 					if (tmr->GetNextTick())
 					{
-						msg << wxT(", next in ") << AddCommas((off_t)(tmr->GetNextTick() - GetMillisecondTicks())) << wxT(" sec(s)");
+						msg << wxT(", next in ") << AddCommas((wxLongLong_t)(tmr->GetNextTick() - GetMillisecondTicks())) << wxT(" sec(s)");
 					}
 					msg << wxT(": ") << tmr->GetCommands();
 					m_event_handler->OnClientInformation(context, msg);

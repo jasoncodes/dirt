@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.21 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.22 2003-05-10 04:34:39 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -239,7 +239,7 @@ wxString ClientUIMDITransferPanel::GetFilename()
 	return m_filename;
 }
 
-off_t ClientUIMDITransferPanel::GetFileSize()
+wxLongLong_t ClientUIMDITransferPanel::GetFileSize()
 {
 	return m_filesize;
 }
@@ -259,7 +259,7 @@ long ClientUIMDITransferPanel::GetCPS()
 	return m_cps;
 }
 
-off_t ClientUIMDITransferPanel::GetFileSent()
+wxLongLong_t ClientUIMDITransferPanel::GetFileSent()
 {
 	return m_filesent;
 }
@@ -293,7 +293,7 @@ void ClientUIMDITransferPanel::SetFilename(const wxString &filename)
 	UpdateCaption();
 }
 
-void ClientUIMDITransferPanel::SetFileSize(off_t bytes)
+void ClientUIMDITransferPanel::SetFileSize(wxLongLong_t bytes)
 {
 	m_filesize = bytes;
 	m_lblSize->SetLabel(SizeToLongString(bytes));
@@ -332,7 +332,7 @@ void ClientUIMDITransferPanel::SetCPS(long cps)
 	}
 }
 
-void ClientUIMDITransferPanel::SetFileSent(off_t bytes)
+void ClientUIMDITransferPanel::SetFileSent(wxLongLong_t bytes)
 {
 	m_filesent = bytes;
 	m_lblSent->SetLabel(SizeToLongString(bytes));

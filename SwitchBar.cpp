@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.8 2003-05-09 13:43:56 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.9 2003-05-10 04:34:40 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -225,10 +225,11 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			tmp += wxT("...");
 		}
 
-		if (!button.highlight)
+		if (button.highlight)
 		{
-			dc.DrawText(tmp, rct.x, rct.y);
+			dc.SetTextForeground(*wxRED);
 		}
+		dc.DrawText(tmp, rct.x, rct.y);
 
 		if (button.progress > 0)
 		{
@@ -242,12 +243,6 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			dc.SetLogicalFunction(wxINVERT);
 			dc.DrawRectangle(progress_rect);
 			dc.SetLogicalFunction(wxCOPY);
-		}
-
-		if (button.highlight)
-		{
-			dc.SetTextForeground(*wxRED);
-			dc.DrawText(tmp, rct.x, rct.y);
 		}
 
 		if (button.icon.Ok())

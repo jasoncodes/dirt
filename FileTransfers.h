@@ -6,6 +6,7 @@
 class Client;
 class FileTransfer;
 class ByteBuffer;
+class CryptSocketBase;
 class CryptSocketEvent;
 class DirtApp;
 
@@ -52,6 +53,7 @@ protected:
 	void OnRemoteCancel(FileTransfer &t);
 	void OnGetData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
 	void OnSendData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
+	void OnClose(FileTransfer &t);
 
 protected:
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);

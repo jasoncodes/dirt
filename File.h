@@ -19,11 +19,13 @@ class File
 {
 
 public:
+	enum OpenMode { read, write, read_write, write_append, write_excl };
+
 	File();
 	~File();
 
-	//bool Open(const wxString &filename, 
-	//bool Create(const wxString &filename, 
+	bool Create(const wxString &filename, bool overwrite = false);
+	bool Open(const wxString &filename, OpenMode mode = read);
 	bool Close();
 
 	bool IsOpen();
@@ -49,9 +51,9 @@ public:
 
 protected:
 	#if USE_WIN32_FILE
-		HANDLE *hFile;
+		HANDLE *m_hFile;
 	#else
-		wxFile file;
+		wxFile m_file;
 	#endif
 
 private:
