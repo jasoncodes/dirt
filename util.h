@@ -11,8 +11,8 @@ struct HeadTail
 wxArrayString SplitString(const wxString &text, const wxString &sep);
 bool LeftEq(const wxString &text, const wxString &to_match);
 bool RightEq(const wxString &text, const wxString &to_match);
-void SplitHeadTail(const wxString &text, wxString &head, wxString &tail);
-HeadTail SplitHeadTail(const wxString &text);
+void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = " ");
+HeadTail SplitHeadTail(const wxString &text, const wxString &sep = " ");
 wxString Timestamp();
 void FixBorder(wxWindow *wnd);
 void SetHtmlParserFonts(wxHtmlWinParser *parser);

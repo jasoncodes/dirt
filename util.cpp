@@ -49,13 +49,13 @@ bool RightEq(const wxString &text, const wxString &to_match)
 	return (text.Right(to_match.Length()) == to_match);
 }
 
-void SplitHeadTail(const wxString &text, wxString &head, wxString &tail)
+void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep)
 {
-	int i = text.Find(" ");
+	int i = text.Find(sep);
 	if (i > -1)
 	{
 		head = text.Mid(0, i);
-		tail = text.Mid(i + 1);
+		tail = text.Mid(i + sep.Length());
 	}
 	else
 	{
@@ -64,10 +64,10 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail)
 	}
 }
 
-HeadTail SplitHeadTail(const wxString &text)
+HeadTail SplitHeadTail(const wxString &text, const wxString &sep)
 {
 	HeadTail result;
-	SplitHeadTail(text, result.head, result.tail);
+	SplitHeadTail(text, result.head, result.tail, sep);
 	return result;
 }
 
