@@ -1,8 +1,4 @@
-* inputcontrol: when colour popup shows on GTK (and possibly other
-  non-win32s) we seem to not be able to programmically give focus back to
-  main window. Presently if an error occurs focusing the main window, the
-  popup will be closed so the app is still usable but the popup will be
-  unavailable.
+* when colour popup shows on GTK cannot programmically focus back to main window
 
 * flickering when ctrl-tab
 
@@ -16,19 +12,21 @@
 
 * research that log control gdi thing in 9x
 
+* logging
+
+* scripting (/exec and /eval) via http://wxjs.sourceforge.net/
+
 * banning
 
 * kicking
 
 * quit messages
 
-* single lines (ones that don't wrap) have a line of blank pixels
-  underneath the line (visible when highlighting and using background colour)
+* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
-* file transfer firewall note: maybe should try connecting both ways
-  at same time, and close the alt route if main succeeds, etc
+* firewall traversal: try connecting both ways at same time, close alt route if main succeeds
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
