@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.16 2003-03-20 04:28:38 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.17 2003-03-26 23:46:49 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -20,6 +20,44 @@ RCS_ID($Id: Splash.cpp,v 1.16 2003-03-20 04:28:38 jason Exp $)
 #include "res/dirt.xpm"
 #include "res/splash.h"
 
+class SplashPanel : public wxPanel
+{
+
+public:
+	SplashPanel(wxWindow *parent, wxBitmap *bmp)
+		: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL | wxCLIP_CHILDREN), m_bmp(bmp)
+	{
+	}
+
+	virtual ~SplashPanel()
+	{
+		delete m_bmp;
+	}
+
+protected:
+	void OnErase(wxEraseEvent &event)
+	{
+	}
+
+	void OnPaint(wxPaintEvent &event)
+	{
+		wxPaintDC dc(this);
+		dc.DrawBitmap(*m_bmp, 0, 0);
+	}
+
+protected:
+	wxBitmap *m_bmp;
+
+private:
+	DECLARE_EVENT_TABLE()
+
+};
+
+BEGIN_EVENT_TABLE(SplashPanel, wxPanel)
+	EVT_ERASE_BACKGROUND(SplashPanel::OnErase)
+	EVT_PAINT(SplashPanel::OnPaint)
+END_EVENT_TABLE()
+
 enum
 {
 	ID_CLIENT = 1,
@@ -29,8 +67,6 @@ enum
 };
 
 BEGIN_EVENT_TABLE(Splash, wxFrame)
-	EVT_ERASE_BACKGROUND(Splash::OnErase)
-	EVT_PAINT(Splash::OnPaint)
 	EVT_BUTTON(ID_CLIENT, Splash::OnButton)
 	EVT_BUTTON(ID_SERVER, Splash::OnButton)
 	EVT_BUTTON(ID_INTERNET, Splash::OnButton)
@@ -38,8 +74,15 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 END_EVENT_TABLE()
 
 Splash::Splash()
-	: wxFrame(NULL, -1, AppTitle(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
+	: wxFrame(NULL, wxID_ANY, AppTitle(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
 {
+
+	wxImage::AddHandler(new wxJPEGHandler);
+	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
+	wxImage img(is, wxBITMAP_TYPE_ANY);
+	wxBitmap *bmp = new wxBitmap(img);
+
+	SplashPanel *panel = new SplashPanel(this, bmp);
 
 	SetIcon(wxIcon(dirt_xpm));
 
@@ -50,15 +93,10 @@ Splash::Splash()
 	wxButton *btns[4];
 	const int btn_count = 4;
 
-	btns[0] = new wxButton(this, ID_CLIENT, wxT("&Client"));
-	btns[1] = new wxButton(this, ID_SERVER, wxT("&Server"));
-	btns[2] = new wxButton(this, ID_INTERNET, wxT("&Internet"));
-	btns[3] = new wxButton(this, ID_LOGS, wxT("&Logs"));
-
-	wxImage::AddHandler(new wxJPEGHandler);
-	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
-	wxImage img(is, wxBITMAP_TYPE_ANY);
-	m_bmp = new wxBitmap(img);
+	btns[0] = new wxButton(panel, ID_CLIENT, wxT("&Client"));
+	btns[1] = new wxButton(panel, ID_SERVER, wxT("&Server"));
+	btns[2] = new wxButton(panel, ID_INTERNET, wxT("&Internet"));
+	btns[3] = new wxButton(panel, ID_LOGS, wxT("&Logs"));
 
 	int btn_width = 0;
 	
@@ -69,21 +107,21 @@ Splash::Splash()
 	
 	int total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
 
-	if (total_width > m_bmp->GetWidth()-gap_x*2)
+	if (total_width > bmp->GetWidth()-gap_x*2)
 	{
-		total_width = m_bmp->GetWidth()-gap_x*2;
+		total_width = bmp->GetWidth()-gap_x*2;
 		btn_width = (total_width - (gap_x * (btn_count - 1))) / btn_count;
 		total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
 	}
 
-	int start_pos = (m_bmp->GetWidth() - total_width) / 2;
+	int start_pos = (bmp->GetWidth() - total_width) / 2;
 
 	for (int i = 0; i < btn_count; ++i)
 	{
 		btns[i]->SetSize(start_pos + ((btn_width + gap_x) * i), pos_y, btn_width, -1);
 	}
 
-	SetClientSize(m_bmp->GetWidth(), btns[0]->GetRect().GetBottom() + gap_y);
+	SetClientSize(bmp->GetWidth(), btns[0]->GetRect().GetBottom() + gap_y);
 
 	CentreOnScreen();
 
@@ -91,21 +129,12 @@ Splash::Splash()
 
 	Show();
 
+	btns[0]->SetFocus();
+
 }
 
 Splash::~Splash()
 {
-	delete m_bmp;
-}
-
-void Splash::OnErase(wxEraseEvent &event)
-{
-}
-
-void Splash::OnPaint(wxPaintEvent &event)
-{
-	wxPaintDC dc(this);
-	dc.DrawBitmap(*m_bmp, 0, 0);
 }
 
 void Splash::OnButton(wxCommandEvent &event)
