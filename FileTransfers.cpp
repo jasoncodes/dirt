@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.11 2003-05-06 05:14:19 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.12 2003-05-06 05:36:36 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -187,18 +187,76 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 	}
 	else if (cmd == wxT("STATUS") || cmd == wxT(""))
 	{
-		if (GetTransferCount())
+		if (params.Length() && cmd.Length())
 		{
-			Information(context, wxString() << wxT("There are ") << GetTransferCount() << wxT(" active transfers:"));
-			for (int i = 0; i < GetTransferCount(); ++i)
+			long x;
+			int i;
+			if (params.ToLong(&x) && (i = FindTransfer(x)) > -1)
 			{
 				const FileTransfer& t = GetTransferByIndex(i);
-				Information(context, wxT("    ") + t);
+				wxString msg;
+				msg << wxT("Information on transfer number ") << t.transferid << wxT(":");
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Nickname:  ")
+					<< t.nickname;
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Filename:  ")
+					<< t.filename;
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Type:      ")
+					<< (t.issend?wxT("Send"):wxT("Get"));
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Status:    ")
+					<< t.status;
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    File Size: ")
+					<< SizeToLongString(t.filesize);
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    File Sent: ")
+					<< SizeToLongString(t.filesent);
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Time:      ")
+					<< ((t.time>-1)?SecondsToMMSS(t.time, false, true):wxT("N/A"));
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Time Left: ")
+					<< ((t.timeleft>-1)?SecondsToMMSS(t.timeleft, false, true):wxT("N/A"));
+				Information(context, msg);
+				msg.Empty();
+				msg << wxT("    Speed:     ")
+					<< ((t.cps>-1)?SizeToLongString(t.cps, wxT("/sec")):wxT("N/A"));
+				Information(context, msg);
+				msg.Empty();
+			}
+			else
+			{
+				Warning(context, wxT("No such transfer: ") + params);
 			}
 		}
 		else
 		{
-			Information(context, wxT("No active transfers"));
+			if (GetTransferCount())
+			{
+				Information(context, wxString() << wxT("There are ") << GetTransferCount() << wxT(" active transfers:"));
+				for (int i = 0; i < GetTransferCount(); ++i)
+				{
+					const FileTransfer& t = GetTransferByIndex(i);
+					wxString str;
+					str << wxT("    ") << t.transferid << wxT(". ") << t;
+					Information(context, str);
+				}
+			}
+			else
+			{
+				Information(context, wxT("No active transfers"));
+			}
 		}
 	}
 	else
