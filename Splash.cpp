@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.33 2004-05-27 21:42:24 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.34 2004-05-29 00:56:56 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -402,10 +402,49 @@ protected:
 				}
 				break;
 
+			default:
+				HandleAcceleratorTable(event);
+
 		}
 		event.Skip();
 
 	}
+
+	void HandleAcceleratorTable(wxKeyEvent &event)
+	{
+		
+		Splash *splash = (Splash*)( GetParent()->GetParent() );
+		wxAcceleratorEntry *accels = splash->GetAccelerators();
+		size_t accel_count = splash->GetAcceleratorCount();
+
+		for (size_t i = 0; i < accel_count; ++i)
+		{
+
+			const wxAcceleratorEntry &accel = accels[i];
+
+			if (event.GetKeyCode() == accel.GetKeyCode())
+			{
+
+				int flags = 0;
+				flags |= event.ControlDown() ? wxACCEL_CTRL : 0;
+				flags |= event.AltDown() ? wxACCEL_ALT : 0;
+				flags |= event.ShiftDown() ? wxACCEL_SHIFT : 0;
+				
+				if (flags == accel.GetFlags())
+				{
+					
+					wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, accel.GetCommand());
+					splash->AddPendingEvent(evt);
+
+				}
+
+			}
+
+		}
+
+	}
+
+	
 
 	void OnKeyUp(wxKeyEvent &event)
 	{
@@ -491,19 +530,18 @@ Splash::Splash()
 	btns[3] = new SplashButton(panel, ID_LANLIST, wxT("LAN"), 2);
 	btns[4] = new SplashButton(panel, ID_LOGS, wxT("Logs"), 0);
 
-	wxAcceleratorEntry entries[btn_count*2];
-	entries[0].Set(wxACCEL_ALT,    'C', ID_CLIENT);
-	entries[1].Set(wxACCEL_NORMAL, 'C', ID_CLIENT);
-	entries[2].Set(wxACCEL_ALT,    'S', ID_SERVER);
-	entries[3].Set(wxACCEL_NORMAL, 'S', ID_SERVER);
-	entries[4].Set(wxACCEL_ALT,    'I', ID_INTERNET);
-	entries[5].Set(wxACCEL_NORMAL, 'I', ID_INTERNET);
-	entries[6].Set(wxACCEL_ALT,    'N', ID_LANLIST);
-	entries[7].Set(wxACCEL_NORMAL, 'N', ID_LANLIST);
-	entries[8].Set(wxACCEL_ALT,    'L', ID_LOGS);
-	entries[9].Set(wxACCEL_NORMAL, 'L', ID_LOGS);
-	wxAcceleratorTable accel(btn_count*2, entries);
-	SetAcceleratorTable(accel);
+	m_accel_count = btn_count * 2;
+	m_accels = new wxAcceleratorEntry[m_accel_count];
+	m_accels[0].Set(wxACCEL_ALT,    'C', ID_CLIENT);
+	m_accels[1].Set(wxACCEL_NORMAL, 'C', ID_CLIENT);
+	m_accels[2].Set(wxACCEL_ALT,    'S', ID_SERVER);
+	m_accels[3].Set(wxACCEL_NORMAL, 'S', ID_SERVER);
+	m_accels[4].Set(wxACCEL_ALT,    'I', ID_INTERNET);
+	m_accels[5].Set(wxACCEL_NORMAL, 'I', ID_INTERNET);
+	m_accels[6].Set(wxACCEL_ALT,    'N', ID_LANLIST);
+	m_accels[7].Set(wxACCEL_NORMAL, 'N', ID_LANLIST);
+	m_accels[8].Set(wxACCEL_ALT,    'L', ID_LOGS);
+	m_accels[9].Set(wxACCEL_NORMAL, 'L', ID_LOGS);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
 	{
@@ -537,6 +575,7 @@ Splash::Splash()
 
 Splash::~Splash()
 {
+	delete[] m_accels;
 }
 
 void Splash::OnButton(wxCommandEvent &event)

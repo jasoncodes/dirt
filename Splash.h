@@ -30,11 +30,23 @@ public:
 	Splash();
 	virtual ~Splash();
 
+	wxAcceleratorEntry *GetAccelerators() const
+	{
+		return m_accels;
+	}
+
+	size_t GetAcceleratorCount() const
+	{
+		return m_accel_count;
+	}
+
 protected:
 	void OnButton(wxCommandEvent &event);
 
 protected:
 	bool m_button_clicked;
+	wxAcceleratorEntry *m_accels;
+	size_t m_accel_count;
 
 private:
 	DECLARE_EVENT_TABLE()
