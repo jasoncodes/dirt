@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.9 2003-03-08 05:04:13 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.10 2003-03-08 05:22:37 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -642,12 +642,6 @@ void HTTP::ResetClientSettings()
 	m_max_depth = 5;
 	m_idle_timeout_secs = 60;
 	m_extra_client_headers.clear();
-	m_content_length = -1;
-	m_content_received = 0;
-	m_chunked = false;
-	m_chunk_remaining = 0;
-	m_chunk_crlf_left = false;
-	m_transfer_complete = false;
 }
 
 void HTTP::SetUserAgent(const wxString &user_agent)
@@ -805,6 +799,12 @@ void HTTP::ClearState()
 void HTTP::Connect(const URL &url)
 {
 	Close();
+	m_content_length = -1;
+	m_content_received = 0;
+	m_chunked = false;
+	m_chunk_remaining = 0;
+	m_chunk_crlf_left = false;
+	m_transfer_complete = false;
 	m_url = url;
 	m_depth = 1;
 	if (m_url.GetProtocol().Length() == 0)
