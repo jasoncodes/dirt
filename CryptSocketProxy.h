@@ -46,9 +46,9 @@ public:
 	static wxString ProtocolToString(CryptSocketProxyProtocol protocol);
 	static bool DoesProtocolSupportConnectionType(CryptSocketProxyProtocol protocol, CryptSocketProxyConnectionTypes type);
 
+	bool IsEnabledForConnectionType(CryptSocketProxyConnectionTypes type) const;
 	bool DoesDestDestIPMatch(const wxString &dest_ip) const;
 	bool DoesDestPortMatch(wxUint16 port) const;
-	bool DoesConnectionTypeMatch(CryptSocketProxyConnectionTypes type) const;
 
 	CryptSocketProxy* NewProxyConnect(CryptSocketBase *sck, const wxString &ip, const wxUint16 port) const;
 	CryptSocketProxy* NewProxyListen(CryptSocketBase *sck) const;
@@ -187,14 +187,20 @@ public:
 	CryptSocketProxy(CryptSocketBase *sck);
 	virtual ~CryptSocketProxy();
 
-////	virtual void OnConnect() = 0;
-////	virtual void OnInput(const ByteBuffer &data) = 0;
-////	virtual bool IsConnectedToRemote() const = 0;
+	virtual void OnConnect() = 0;
+	virtual void OnInput(const ByteBuffer &data) = 0;
+	virtual bool IsConnectedToRemote() const = 0;
 
 protected:
+	virtual void ForwardInputToClient(const ByteBuffer &data);
+	virtual void ProxySendData(const ByteBuffer &data);
+	virtual void ConnectionError(const wxString &msg);
+
+protected:
+	CryptSocketBase *m_sck;
+	const CryptSocketProxySettings &m_settings;
 	wxString m_dest_ip;
 	wxUint16 m_dest_port;
-	CryptSocketBase *m_sck;
 
 };
 

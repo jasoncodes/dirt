@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.37 2003-06-04 10:27:11 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.38 2003-06-05 13:00:49 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -46,7 +46,7 @@ ClientDefault::~ClientDefault()
 void ClientDefault::NewProxySettings()
 {
 	CryptSocketProxySettings proxy_settings(m_config);
-	if (proxy_settings.DoesConnectionTypeMatch(pctServer))
+	if (proxy_settings.IsEnabledForConnectionType(pctServer))
 	{
 		m_sck->SetProxySettings(&proxy_settings);
 	}

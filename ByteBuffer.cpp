@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.13 2003-06-05 12:02:06 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.14 2003-06-05 13:00:49 jason Exp $)
 
 #include "ByteBuffer.h"
 #include "util.h"
@@ -305,7 +305,7 @@ ByteBuffer ByteBuffer::Mid(int pos, int len) const
 	{
 		len = Length();
 	}
-	pos = wxMin(wxMax(pos, 0), (int)Length() - 1);
+	pos = wxMin(wxMax(pos, 0), (int)Length());
 	len = wxMin(wxMax(len, 0), (int)Length() - pos);
 	const byte *ptr = LockRead();
 	ByteBuffer result(ptr + pos, len);

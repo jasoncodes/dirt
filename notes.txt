@@ -1,24 +1,8 @@
 * proxy support for client
-	ProxySettings
-		CryptSocket holds an instance of this class which is
-		used to create a Proxy instance
-	Proxy
-		abstract base class for which handles proxy negotiation
-		contains functionality common to all proxy clients
-		connect
-			first question: who should do each DNS lookup?
-				how about both lookups done at same time
-				and dont proceed w/ connect until both success
-		listen
-			no idea yet
-	ProxyNull
-		null proxy client
-	ProxyHTTP
-		http connect proxy client (supports connect, auth)
-	ProxySOCKS4
-		socks 4 proxy client (supports connect, bind)
-	ProxySOCKS5
-		socks 5 proxy client (supports connect, bind, auth)
+	SOCKS4 Connect
+	SOCKS4 Listen
+	SOCKS5 Connect
+	SOCKS5 Listen
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.15 2003-06-05 11:33:29 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.16 2003-06-05 13:00:49 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -102,16 +102,22 @@ bool HTTPHeader::IsFinal() const
 
 }
 
-const wxString HTTPHeader::GetField(const wxString &name) const
+StringHashMap::iterator HTTPHeader::FindField(const wxString &name) const
 {
-	for (StringHashMap::const_iterator i = m_fields.begin(); i != m_fields.end(); ++i)
+	for (StringHashMap::iterator i = ((StringHashMap&)m_fields).begin(); i != ((StringHashMap&)m_fields).end(); ++i)
 	{
 		if (name.CmpNoCase(i->first) == 0)
 		{
-			return i->second;
+			return i;
 		}
 	}
-	return wxEmptyString;
+	return ((StringHashMap&)m_fields).end();
+}
+
+const wxString HTTPHeader::GetField(const wxString &name) const
+{
+	StringHashMap::iterator i = FindField(name);
+	return (i != m_fields.end()) ? i->second : wxString();
 }
 
 void HTTPHeader::Init()
@@ -164,14 +170,14 @@ void HTTPHeader::Init()
 			ht.head.Trim(true);
 			ht.tail.Trim(false);
 			ht.tail.Trim(true);
-			StringHashMap::iterator it = m_fields.find(ht.head);
+			StringHashMap::iterator it = FindField(ht.head);
 			if (it == m_fields.end())
 			{
 				m_fields[ht.head] = ht.tail;
 			}
 			else
 			{
-				m_fields[ht.head] += wxT(' ') + ht.tail;
+				it->second += wxT(' ') + ht.tail;
 			}
 			pos++;
 		}

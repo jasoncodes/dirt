@@ -6,12 +6,17 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.11 2003-06-04 05:56:25 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.12 2003-06-05 13:00:49 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
+#include "CryptSocket.h"
+#include "Crypt.h"
+#include "HTTP.h"
 
 //////// CryptSocketProxyHTTP ////////
+
+static const wxString CRLF = wxT("\r\n");
 
 class CryptSocketProxyHTTP : public CryptSocketProxy
 {
@@ -20,11 +25,80 @@ public:
 	CryptSocketProxyHTTP(CryptSocketBase *sck)
 		: CryptSocketProxy(sck)
 	{
+		m_connected_to_remote = false;
 	}
 
-////	virtual void OnConnect();
-////	virtual void OnInput(const ByteBuffer &data);
-////	virtual bool IsConnectedToRemote() const;
+	virtual void OnConnect()
+	{
+		
+		wxString request;
+		
+		request
+			<< wxT("CONNECT ")
+			<< m_dest_ip << wxT(':') << (int)m_dest_port
+			<< wxT(" HTTP/1.0") << CRLF;
+
+		request << wxT("User-Agent: ") << HTTP::GetDefaultUserAgent() << CRLF;
+
+		wxString username = m_settings.GetUsername();
+		wxString password = m_settings.GetPassword(true);
+		if (username.Length() || password.Length())
+		{
+			wxString auth;
+			auth << username << wxT(':') << password;
+			request
+				<< wxT("Proxy-Authorization: Basic ")
+				<< Crypt::Base64Encode(auth, false)
+				<< CRLF;
+		}
+
+		request << CRLF;
+
+		ProxySendData(request);
+
+	}
+
+	virtual void OnInput(const ByteBuffer &data)
+	{
+		m_buff += data;
+		wxString separator = CRLF+CRLF;
+		int pos = m_buff.Find(separator);
+		if (pos > -1)
+		{
+			HTTPHeader header = m_buff.Left(pos + separator.Length());
+			if (header.IsValid())
+			{
+				if (header.GetStatusCode() == 200)
+				{
+					m_connected_to_remote = true;
+					m_buff = m_buff.Mid(pos + separator.Length());
+					ForwardInputToClient(m_buff);
+					m_buff = ByteBuffer();
+				}
+				else
+				{
+					ConnectionError(header.GetStatusLine());
+				}
+			}
+			else
+			{
+				ConnectionError(wxT("Invalid HTTP response"));
+			}
+		}
+		else if (m_buff.Length() > 4096)
+		{
+			ConnectionError(wxT("No HTTP response in first 4 KB"));
+		}
+	}
+
+	virtual bool IsConnectedToRemote() const
+	{
+		return m_connected_to_remote;
+	}
+
+protected:
+	bool m_connected_to_remote;
+	ByteBuffer m_buff;
 
 };
 
@@ -276,9 +350,12 @@ bool CryptSocketProxySettings::DoesDestPortMatch(wxUint16 port) const
 
 }
 
-bool CryptSocketProxySettings::DoesConnectionTypeMatch(CryptSocketProxyConnectionTypes type) const
+bool CryptSocketProxySettings::IsEnabledForConnectionType(CryptSocketProxyConnectionTypes type) const
 {
-	return GetConnectionType(type) && DoesProtocolSupportConnectionType(GetProtocol(), type);
+	return
+		GetEnabled() &&
+		GetConnectionType(type) &&
+		DoesProtocolSupportConnectionType(GetProtocol(), type);
 }
 
 bool CryptSocketProxySettings::GetEnabled() const
@@ -570,7 +647,7 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 //////// CryptSocketProxy ////////
 
 CryptSocketProxy::CryptSocketProxy(CryptSocketBase *sck)
-	: m_sck(sck)
+	: m_sck(sck), m_settings(*sck->GetProxySettings())
 {
 	m_dest_ip = wxEmptyString;
 	m_dest_port = 0u;
@@ -578,4 +655,19 @@ CryptSocketProxy::CryptSocketProxy(CryptSocketBase *sck)
 
 CryptSocketProxy::~CryptSocketProxy()
 {
+}
+
+void CryptSocketProxy::ForwardInputToClient(const ByteBuffer &data)
+{
+	m_sck->OnProxyInput(data);
+}
+
+void CryptSocketProxy::ProxySendData(const ByteBuffer &data)
+{
+	m_sck->ProxySendData(data);
+}
+
+void CryptSocketProxy::ConnectionError(const wxString &msg)
+{
+	m_sck->OnSocketConnectionError(msg);
 }

@@ -25,6 +25,7 @@ public:
 
 protected:
 	void Init();
+	StringHashMap::iterator FindField(const wxString &name) const;
 
 protected:
 	bool m_valid;

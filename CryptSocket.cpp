@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.33 2003-06-04 12:05:18 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.34 2003-06-05 13:00:49 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -14,6 +14,7 @@ RCS_ID($Id: CryptSocket.cpp,v 1.33 2003-06-04 12:05:18 jason Exp $)
 #include <wx/datetime.h>
 #include "CryptSocketProxy.h"
 #include "DNS.h"
+#include "IPInfo.h"
 
 //////// CryptSocketBase ////////
 
@@ -99,7 +100,8 @@ void CryptSocketBase::InitBuffers()
 {
 	m_buffIn = ByteBuffer();
 	m_buffOut = ByteBuffer();
-	m_buffOutUnencrypted.Empty();
+	m_buffOutProxy = ByteBuffer();
+	m_buffOutUnencrypted.Clear();
 	m_bOutputOkay = false;
 	m_bInitialOutputEventSent = false;
 	m_keyLocal = ByteBuffer();
@@ -211,18 +213,33 @@ void CryptSocketBase::OnSocketInput()
 	}
 	else if (m_sck->LastCount())
 	{
+		ByteBuffer data;
 		if (m_sck->LastCount() == buff.Length())
 		{
-			m_buffIn += buff;
+			data = buff;
 		}
 		else
 		{
-			m_buffIn += ByteBuffer(buff.LockRead(), m_sck->LastCount());
+			data = ByteBuffer(buff.LockRead(), m_sck->LastCount());
 			buff.Unlock();
 		}
-		DispatchIncoming();
+		if (m_proxy && !m_proxy->IsConnectedToRemote())
+		{
+			m_proxy->OnInput(data);
+		}
+		else
+		{
+			m_buffIn += data;
+			DispatchIncoming();
+		}
 	}
 
+}
+
+void CryptSocketBase::OnProxyInput(const ByteBuffer &data)
+{
+	m_buffIn += data;
+	DispatchIncoming();
 }
 
 void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
@@ -377,8 +394,21 @@ void CryptSocketBase::MaybeSendData()
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
-	const byte *ptr = m_buffOut.LockRead();
-	size_t len = m_buffOut.Length();
+	bool proxy_mode = (m_proxy && !m_proxy->IsConnectedToRemote());
+
+	ByteBuffer &buff =
+		proxy_mode ?
+		m_buffOutProxy :
+		m_buffOut;
+
+	if (!proxy_mode && m_buffOutProxy.Length())
+	{
+		m_buffOut = m_buffOutProxy + m_buffOut;
+		m_buffOutProxy = ByteBuffer();
+	}
+
+	const byte *ptr = buff.LockRead();
+	size_t len = buff.Length();
 
 	while (len > 0)
 	{
@@ -403,15 +433,15 @@ void CryptSocketBase::MaybeSendData()
 
 	}
 
-	if (len != m_buffOut.Length())
+	if (len != buff.Length())
 	{
 		ByteBuffer new_buff(ptr, len);
-		m_buffOut.Unlock();
-		m_buffOut = new_buff;
+		buff.Unlock();
+		buff = new_buff;
 	}
 	else
 	{
-		m_buffOut.Unlock();
+		buff.Unlock();
 	}
 
 }
@@ -454,6 +484,13 @@ void CryptSocketBase::AddToSendQueue(const ByteBuffer &data)
 	MaybeSendData();
 }
 
+void CryptSocketBase::ProxySendData(const ByteBuffer &data)
+{
+	wxASSERT(m_proxy && !m_proxy->IsConnectedToRemote());
+	m_buffOutProxy += data;
+	MaybeSendData();
+}
+
 void CryptSocketBase::CloseWithEvent()
 {
 	if (m_sck->IsConnected())
@@ -470,6 +507,10 @@ void CryptSocketBase::CloseWithEvent()
 
 void CryptSocketBase::OnSocketConnectionLost(const wxString &msg)
 {
+	if (m_sck)
+	{
+		m_sck->Close();
+	}
 	if (m_handler)
 	{
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_LOST, this, msg);
@@ -479,6 +520,10 @@ void CryptSocketBase::OnSocketConnectionLost(const wxString &msg)
 
 void CryptSocketBase::OnSocketConnectionError(const wxString &msg)
 {
+	if (m_sck)
+	{
+		m_sck->Close();
+	}
 	if (m_handler)
 	{
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_ERROR, this, msg);
@@ -504,7 +549,7 @@ const CryptSocketProxySettings* CryptSocketBase::GetProxySettings() const
 	return m_proxy_settings;
 }
 
-void CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
+bool CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
 {
 	wxASSERT(GetType() == cstClient);
 	delete m_proxy;
@@ -514,10 +559,12 @@ void CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
 		m_proxy_settings->DoesDestPortMatch(dest_port))
 	{
 		m_proxy = m_proxy_settings->NewProxyConnect(this, dest_ip, dest_port);
+		return true;
 	}
+	return false;
 }
 
-void CryptSocketBase::InitProxyListen()
+bool CryptSocketBase::InitProxyListen()
 {
 	wxASSERT(GetType() == cstServer);
 	delete m_proxy;
@@ -525,14 +572,16 @@ void CryptSocketBase::InitProxyListen()
 	if (m_proxy_settings)
 	{
 		m_proxy = m_proxy_settings->NewProxyListen(this);
+		return true;
 	}
+	return false;
 }
 
 void CryptSocketBase::RaiseSocketEvent(wxSocketNotify type)
 {
 	wxSocketEvent event;
 	event.SetEventObject(m_sck);
-	event.SetEventType(wxSOCKET_LOST);
+	event.SetEventType(type);
 	OnSocket(event);
 }
 
@@ -559,14 +608,14 @@ void CryptSocketClient::Connect(const wxString &host, wxUint16 port)
 	InitBuffers();
 	InitSocketEvents();
 
-	m_host = host;
 	m_port = port;
 
 	m_DNS = new DNS;
 	m_DNS->SetEventHandler(this, ID_DNS);
-	if (!m_DNS->Lookup(m_host))
+
+	if (!m_DNS->Lookup(host))
 	{
-		RaiseSocketEvent(wxSOCKET_LOST);
+		OnSocketConnectionError(wxT("Cannot start DNS"));
 	}
 
 }
@@ -585,6 +634,11 @@ void CryptSocketClient::OnSocketConnection()
 		SetKey(m_keyLocalPublic, m_keyLocalPrivate);
 	}
 
+	if (m_proxy)
+	{
+		m_proxy->OnConnect();
+	}
+
 	if (m_handler)
 	{
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION, this);
@@ -599,24 +653,40 @@ void CryptSocketClient::OnDNS(DNSEvent &event)
 	if (event.IsSuccess())
 	{
 
-		wxSockAddress *addr = event.GetAddress().Clone();
-		wxASSERT(addr->Type() == wxSockAddress::IPV4);
-		((wxIPV4address*)addr)->Service(m_port);
+		wxString ip = GetIPV4AddressString(event.GetIP());
 
-		//InitProxyConnect();
+		if (!m_proxy)
+		{
 
-		if (((wxSocketClient*)m_sck)->Connect(*addr, false))
+			if (InitProxyConnect(ip, m_port))
+			{
+
+				m_port = m_proxy_settings->GetPort();
+
+				if (!m_DNS->Lookup(m_proxy_settings->GetHostname()))
+				{
+					OnSocketConnectionError(wxT("Cannot start DNS"));
+				}
+
+				return;
+
+			}
+		}
+
+		wxIPV4address addr;
+		addr.Hostname(ip);
+		addr.Service(m_port);
+
+		if (((wxSocketClient*)m_sck)->Connect(addr, false))
 		{
 			RaiseSocketEvent(wxSOCKET_CONNECTION);
 		}
-
-		delete addr;
 
 	}
 	else
 	{
 
-		RaiseSocketEvent(wxSOCKET_LOST);
+		OnSocketConnectionError(wxT("Error resolving ") + event.GetHostname());
 
 	}
 
