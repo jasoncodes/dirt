@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.74 2003-08-05 11:34:57 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.75 2003-08-06 21:08:56 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1208,7 +1208,7 @@ void Client::ProcessAlias(const wxString &context, const wxString &cmds, const w
 						}
 					}
 					dollar_pos = 0;
-					if (!at_end)
+					if (!at_end && c)
 					{
 						output += c;
 					}
@@ -1224,7 +1224,7 @@ void Client::ProcessAlias(const wxString &context, const wxString &cmds, const w
 				delim = false;
 				tmp.Empty();
 			}
-			else
+			else if (c)
 			{
 				output += c;
 			}
