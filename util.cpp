@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.42 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.43 2003-03-29 07:05:51 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -211,7 +211,7 @@ wxString AddCommas(off_t size)
 	wxString buff;
 	while (size >= 1000)
 	{
-		buff = wxString::Format(wxT("%03d"), size % 1000) + buff;
+		buff = wxString::Format(wxT("%03d"), (int)(size % 1000)) + buff;
 		buff = wxT(',') + buff;
 		size /= 1000;
 	}

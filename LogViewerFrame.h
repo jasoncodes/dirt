@@ -24,6 +24,7 @@ protected:
 	void OnDirSelChange(wxTreeEvent &event);
 	void OnItemRightClick(wxTreeEvent &event);
 	void OnDelete(wxCommandEvent &event);
+	void OnLinkClicked(wxCommandEvent &event);
 
 protected:
 	virtual void ResizeChildren();

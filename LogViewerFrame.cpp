@@ -43,6 +43,7 @@ enum
 	ID_SASH1 = 1,
 	ID_SASH2,
 	ID_TREECTRL,
+	ID_LOG,
 	ID_CTRL_F,
 	ID_DELETE
 };
@@ -55,6 +56,7 @@ BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
 	EVT_TREE_ITEM_RIGHT_CLICK(ID_TREECTRL, LogViewerFrame::OnItemRightClick)
 	EVT_MENU(ID_CTRL_F, LogViewerFrame::OnCtrlF)
 	EVT_MENU(ID_DELETE, LogViewerFrame::OnDelete)
+	EVT_BUTTON(ID_LOG, LogViewerFrame::OnLinkClicked)
 END_EVENT_TABLE()
 
 LogViewerFrame::LogViewerFrame()
@@ -70,7 +72,7 @@ LogViewerFrame::LogViewerFrame()
 	m_sash1->SetSashVisible(wxSASH_RIGHT, true);
 	m_sash2->SetSashVisible(wxSASH_BOTTOM, true);
 	
-	m_log = new LogControl(panel, wxID_ANY);
+	m_log = new LogControl(panel, ID_LOG);
 	
 	m_tree = new wxTreeCtrl(m_sash1, ID_TREECTRL, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT);
 	m_tree->AddRoot(wxEmptyString);
@@ -104,6 +106,11 @@ void LogViewerFrame::OnSize(wxSizeEvent &event)
 {
 	ResizeChildren();
 	event.Skip();
+}
+
+void LogViewerFrame::OnLinkClicked(wxCommandEvent& event)
+{
+	OpenBrowser(this, event.GetString());
 }
 
 void LogViewerFrame::OnSashDragged(wxSashEvent &event)
