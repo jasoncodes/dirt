@@ -1,20 +1,21 @@
-PROGRAM = Dirt
-
 CC = gcc
 .SUFFIXES:      .o .cpp
+.SILENT: dirt
+.PRECIOUS: dirt
+.PHONY: clean
 SOURCES := $(shell /bin/ls *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 .cpp.o :
 	$(CC) -c `wx-config --cxxflags` -o $@ $<
 
-$(PROGRAM): $(OBJECTS)
-	$(CC) -o $(PROGRAM) $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
+dirt : Dirt
 	chmod +x dirt dirtconsole
 
-clean:
-	rm -f *.o $(PROGRAM)
+Dirt: $(OBJECTS)
+	$(CC) -o Dirt $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
 
-all:
-	make clean
-	make
+clean:
+	rm -f *.o Dirt
+
+all: clean dirt
