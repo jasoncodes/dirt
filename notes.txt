@@ -28,6 +28,10 @@
 
 * tooltips for switchbar (maybe nick list)
 
-* win32: single lines (ones that don't wrap) have a line of blank pixels
+* single lines (ones that don't wrap) have a line of blank pixels
   after the line (when highlighting and using background colour)
   inducing wrapping (making window not as wide eliminates the problem)
+
+* highlighting has bugs on gtk (when updates happen while highlighting)
+
+* try using a sash instead of a splitter for nick list (should be better)
