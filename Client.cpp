@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.91 2004-05-31 10:51:27 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.92 2004-07-11 05:14:54 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -305,12 +305,11 @@ bool ClientConfig::SetHotKey(int index, bool mod, int value)
 wxFont ClientConfig::GetFont() const
 {
 	wxString str = m_config->Read(wxT("Client/Font"));
-	wxFont font = LogControl::GetDefaultFixedWidthFont();
 	if (str.Length())
 	{
-		font.wxFontBase::SetNativeFontInfo(str);
+		return wxFont(str);
 	}
-	return font;
+	return LogControl::GetDefaultFixedWidthFont();
 }
 
 bool ClientConfig::SetFont(const wxFont &font)
