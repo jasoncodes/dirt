@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.22 2003-05-24 12:01:06 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.23 2003-06-08 03:37:00 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -65,7 +65,7 @@ SwitchBarParent::SwitchBarParent(
 	const wxString& name)
 	: wxMDIParentFrame(
 		parent, id, title, pos, size,
-		style | wxNO_FULL_REPAINT_ON_RESIZE | wxVSCROLL | wxHSCROLL | wxFRAME_NO_WINDOW_MENU, name)
+		style | wxNO_FULL_REPAINT_ON_RESIZE | wxFRAME_NO_WINDOW_MENU, name)
 {
 
 	m_switchbar = new SwitchBar(this, ID_SWITCHBAR, wxDefaultPosition, wxDefaultSize);
