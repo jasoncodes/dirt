@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.8 2004-07-27 18:28:35 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.9 2004-08-16 18:22:39 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -257,17 +257,24 @@ int main(int argc, char **argv)
 
 	wxString pathinfo = wxGetenv(wxT("PATH_INFO"));
 	wxString scripturi = wxGetenv(wxT("SCRIPT_URI"));
+	wxString scripturl = wxGetenv(wxT("SCRIPT_URL"));
 	wxString baseuri = scripturi.Left(scripturi.Length() - pathinfo.Length());
 
-	if (scripturi.Length() == 0)
+	wxString redirect_base_url;
+	redirect_base_url =
+		scripturi.Left(scripturi.Length()-scripturl.Length()) +
+		URL::Escape(scripturl);
+	redirect_base_url.Replace(wxT("%7e"), wxT("~"));
+
+	if (scripturi.Length() == 0 || scripturl.Length() == 0)
 	{
-		wxFprintf(stderr, wxT("This is a CGI application for viewing Dirt log files.\n"));
+		wxFputs(wxT("This is a CGI application for viewing Dirt log files.\n"), stderr);
 		return EXIT_SUCCESS;
 	}
 
 	if (pathinfo.Length() == 0)
 	{
-		wxFprintf(stdout, wxString() << wxT("Location: ") << scripturi << wxT("/\r\n\r\n"));
+		wxFputs(wxString() << wxT("Location: ") << redirect_base_url << wxT("/\r\n\r\n"), stdout);
 		return EXIT_SUCCESS;
 	}
 
@@ -367,11 +374,11 @@ int main(int argc, char **argv)
 			}
 			long count = wxMin(last, total);
 			long start = total - count;
-			wxFprintf(stdout, wxString()
-				<< wxT("Location: ") << scripturi
+			wxFputs(wxString()
+				<< wxT("Location: ") << redirect_base_url
 				<< wxT("?start=") << start
 				<< wxT("&count=") << count
-				<< wxT("\r\n\r\n"));
+				<< wxT("\r\n\r\n"), stdout);
 			return EXIT_SUCCESS;
 		}
 
@@ -393,7 +400,7 @@ int main(int argc, char **argv)
 			long before = pos-x;
 			wxPuts(wxString()
 				<< make_link(
-					wxString() << scripturi << wxT("?start=") << x << wxT("&count=") << count,
+					wxString() << redirect_base_url << wxT("?start=") << x << wxT("&count=") << count,
 					wxString() << wxT("Previous ") << AddCommas((wxLongLong_t)before))
 				<< wxT(" (") << AddCommas((wxLongLong_t)pos) << wxT(" more)"));
 		}
@@ -425,7 +432,7 @@ int main(int argc, char **argv)
 			long next = wxMin(count, left);
 			wxPuts(wxString()
 				<< make_link(
-					wxString() << scripturi << wxT("?start=") << start+count << wxT("&count=") << count,
+					wxString() << redirect_base_url << wxT("?start=") << start+count << wxT("&count=") << count,
 					wxString() << wxT("Next ") << AddCommas((wxLongLong_t)next))
 				<< wxT(" (") << AddCommas((wxLongLong_t)left) << wxT(" more)"));
 		}
