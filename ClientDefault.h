@@ -1,5 +1,5 @@
-#ifndef _CLIENTDEFAULT_H
-#define _CLIENTDEFAULT_H
+#ifndef _ClientDefault_H
+#define _ClientDefault_H
 
 #include "Client.h"
 
