@@ -27,6 +27,7 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const w
 HeadTail SplitHeadTail(const wxString &text, const wxString &sep = wxT(" "));
 void SplitQuotedHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = wxT(" "));
 HeadTail SplitQuotedHeadTail(const wxString &text, const wxString &sep = wxT(" "));
+wxString StripQuotes(const wxString &text);
 wxString GetLongTimestamp();
 wxString GetShortTimestamp();
 wxString FormatISODateTime(const wxDateTime &datetime);

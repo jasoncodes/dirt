@@ -6,11 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.16 2003-05-07 06:47:02 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.17 2003-05-07 09:46:54 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
+
+#include <wx/filename.h>
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(FileTransferArray);
@@ -65,7 +67,7 @@ int FileTransfers::GetNewId()
 	return index;
 }
 
-#include <sys/stat.h>
+/*#include <sys/stat.h>
 
 static off_t GetFileLength(const wxString &filename)
 {
@@ -75,15 +77,12 @@ static off_t GetFileLength(const wxString &filename)
 		return st.st_size;
 	}
 	return -1;
-}
+}*/
 
-void FileTransfers::Test()
+int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
-	wxString context;
-	ASSERT_CONNECTED();
-
-	FileTransfer t(this);
+	/*FileTransfer t(this);
 	
 	t.transferid = GetNewId();
 	t.issend = true;
@@ -106,7 +105,9 @@ void FileTransfers::Test()
 	if (!tmr->IsRunning())
 	{
 		tmr->Start(1000);
-	}
+	}*/
+
+	return -1;
 
 }
 
@@ -197,7 +198,7 @@ bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString
 
 wxArrayString FileTransfers::GetSupportedCommands()
 {
-	return SplitString(wxT("CANCEL HELP TEST"), wxT(" "));
+	return SplitString(wxT("CANCEL HELP SEND"), wxT(" "));
 }
 
 void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
@@ -219,10 +220,30 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 			Warning(context, wxT("No such transfer: ") + params);
 		}
 	}
-	else if (cmd == wxT("TEST"))
+	else if (cmd == wxT("SEND"))
 	{
 		ASSERT_CONNECTED();
-		Test();
+		HeadTail ht = SplitQuotedHeadTail(params);
+		if (m_client->GetContact(ht.head))
+		{
+			ht.tail = StripQuotes(ht.tail);
+			if (wxFileName(ht.tail).FileExists())
+			{
+				int transferid = SendFile(ht.head, ht.tail);
+				if (transferid < 0)
+				{
+					Warning(context, wxT("Unable to send file"));
+				}
+			}
+			else
+			{
+				Warning(context, wxT("No such file: ") + ht.tail);
+			}
+		}
+		else
+		{
+			Warning(context, wxT("No such nick: ") + ht.head);
+		}
 	}
 	else if (cmd == wxT("STATUS") || cmd == wxT(""))
 	{

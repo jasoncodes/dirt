@@ -9,6 +9,7 @@ class ClientTimersEvent;
 #include "util.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
+#define ASSERT_CONNECTED2(retval) { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return retval; } }
 
 class ClientContact;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.55 2003-04-28 12:25:24 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.56 2003-05-07 09:46:55 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -64,6 +64,15 @@ wxArrayString SplitQuotedString(const wxString &text, const wxString &sep)
 		buff = ht.tail;
 	}
 	return array;
+}
+
+wxString StripQuotes(const wxString &text)
+{
+	if (text.Length() > 1 && text[0u] == wxT('"') && text.Last() == wxT('"'))
+	{
+		return text.Mid(1, text.Length() - 2);
+	}
+	return text;
 }
 
 wxString JoinArray(const wxArrayString &array, const wxString &sep, const wxString &prefix, const wxString &postfix)
