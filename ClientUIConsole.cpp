@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.40 2003-03-20 07:25:24 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.41 2003-03-21 12:29:04 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -286,9 +286,9 @@ void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg
 	OnClientInformation(wxEmptyString, nick + wxT(" has returned (msg: ") + msg + (wxChar)OriginalModifier + wxT(")"));
 }
 
-void ClientUIConsole::OnClientWhoIs(const wxString &context, const StringHashMap &details)
+void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details)
 {
-	StringHashMap details2(details);
+	ByteBufferHashMap details2(details);
 	wxString nickname = details2[wxT("NICK")];
 	Output(nickname + wxT(" is ") + details2[wxT("DETAILS")]);
 	Output(nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")]);
@@ -315,7 +315,7 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const StringHashMap
 	details2.erase(wxT("LATENCYSTRING"));
 	details2.erase(wxT("JOINTIME"));
 	details2.erase(wxT("JOINTIMESTRING"));
-	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	for (ByteBufferHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
 		Output(nickname + wxT(" ") + i->first + wxT(" = ") + i->second);
 	}

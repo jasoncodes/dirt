@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.41 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.42 2003-03-21 12:29:05 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -22,7 +22,7 @@ ServerConnection::ServerConnection()
 	m_remotehostandport = wxEmptyString;
 	m_userdetails = wxEmptyString;
 	m_isaway = false;
-	m_awaymessage = wxEmptyString;
+	m_awaymessage = ByteBuffer();
 	m_latency = -1;
 	m_useragent = wxEmptyString;
 	m_authenticated = false;
@@ -849,10 +849,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 	else if (cmd == wxT("AWAY"))
 	{
-		if (!conn->m_isaway || conn->m_awaymessage != (wxString)data)
+		if (!conn->m_isaway || conn->m_awaymessage != data)
 		{
 			conn->m_isaway = true;
-			conn->m_awaymessage = (wxString)data;
+			conn->m_awaymessage = data;
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
 		}
 	}
@@ -862,7 +862,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		{
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
 			conn->m_isaway = false;
-			conn->m_awaymessage = wxEmptyString;
+			conn->m_awaymessage = ByteBuffer();
 		}
 	}
 	else if (cmd == wxT("WHOIS"))
@@ -870,13 +870,13 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		const ServerConnection *user = GetConnection(data);
 		if (user)
 		{
-			StringHashMap map;
+			ByteBufferHashMap map;
 			map[wxT("NICK")] = user->GetNickname();
 			map[wxT("HOSTNAME")] = user->GetRemoteHost();
 			map[wxT("DETAILS")] = user->GetUserDetails();
 			if (user->IsAdmin())
 			{
-				map[wxT("ISADMIN")] = wxT("");
+				map[wxT("ISADMIN")] = ByteBuffer();
 			}
 			if (user->IsAway())
 			{
@@ -889,7 +889,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			map[wxT("AGENT")] = user->GetUserAgent();
 			map[wxT("JOINTIME")] = wxString() << user->GetJoinTime().ToGMT().GetTicks();
 			map[wxT("JOINTIMESTRING")] = user->GetJoinTimeString();
-			conn->Send(context, cmd, PackHashMap(map));
+			conn->Send(context, cmd, PackByteBufferHashMap(map));
 		}
 		else
 		{

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.36 2003-03-16 12:24:20 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.37 2003-03-21 12:29:04 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -302,7 +302,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	}
 	else if (cmd == wxT("WHOIS"))
 	{
-		m_event_handler->OnClientWhoIs(context, UnpackHashMap(data));
+		m_event_handler->OnClientWhoIs(context, UnpackByteBufferHashMap(data));
 	}
 	else if (cmd == wxT("AWAY") || cmd == wxT("BACK"))
 	{

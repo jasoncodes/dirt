@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.39 2003-03-16 11:11:55 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.40 2003-03-21 12:29:05 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -508,8 +508,8 @@ void ServerUIFrame::UpdateConnectionList()
 			SetItemText(m_lstConnections, i, 0, conn->GetNickname());
 			SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
 			SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
-			SetItemText(m_lstConnections, i, 3, conn->IsAuthenticated()?(conn->IsAdmin()?wxT("Admin"):wxT("User")):wxT("N/A"));
-			SetItemText(m_lstConnections, i, 4, conn->IsAway()?(conn->GetAwayMessage().Length()?conn->GetAwayMessage():wxT("N/A")):(const wxString)wxEmptyString);
+			SetItemText(m_lstConnections, i, 3, ByteBuffer(conn->IsAuthenticated()?(conn->IsAdmin()?wxT("Admin"):wxT("User")):wxT("N/A")));
+			SetItemText(m_lstConnections, i, 4, conn->IsAway()?(conn->GetAwayMessage().Length()?conn->GetAwayMessage():ByteBuffer(wxT("N/A"))):ByteBuffer());
 			SetItemText(m_lstConnections, i, 5, conn->GetIdleTimeString());
 			SetItemText(m_lstConnections, i, 6, conn->GetLatencyString());
 			SetItemText(m_lstConnections, i, 7, conn->GetUserAgent());

@@ -35,7 +35,7 @@ protected:
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);
 	virtual void OnClientUserAway(const wxString &nick, const wxString &msg);
 	virtual void OnClientUserBack(const wxString &nick, const wxString &msg);
-	virtual void OnClientWhoIs(const wxString &context, const StringHashMap &details);
+	virtual void OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details);
 	virtual void OnClientTransferNew(const FileTransfer &transfer);
 	virtual void OnClientTransferDelete(const FileTransfer &transfer);
 	virtual void OnClientTransferState(const FileTransfer &transfer);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.39 2003-03-21 11:29:49 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.40 2003-03-21 12:29:05 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -502,7 +502,7 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 
 }
 
-ByteBuffer PackHashMap(const StringHashMap &hashmap)
+ByteBuffer PackStringHashMap(const StringHashMap &hashmap)
 {
 	ByteBufferArray list;
 	for (StringHashMap::const_iterator i = hashmap.begin(); i != hashmap.end(); ++i)
@@ -514,9 +514,34 @@ ByteBuffer PackHashMap(const StringHashMap &hashmap)
 	return Pack(list);
 }
 
-StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap)
+StringHashMap UnpackStringHashMap(const ByteBuffer &packed_hashmap)
 {
 	StringHashMap hashmap;
+	ByteBufferArray list(Unpack(packed_hashmap));
+	wxASSERT(list.GetCount() % 2 == 0);
+	for (size_t i = 0; i < list.GetCount(); i += 2)
+	{
+		hashmap[list.Item(i)] = list.Item(i+1);
+	}
+	wxASSERT(list.GetCount() == hashmap.size() * 2);
+	return hashmap;
+}
+
+ByteBuffer PackByteBufferHashMap(const ByteBufferHashMap &hashmap)
+{
+	ByteBufferArray list;
+	for (ByteBufferHashMap::const_iterator i = hashmap.begin(); i != hashmap.end(); ++i)
+	{
+		list.Add(i->first);
+		list.Add(i->second);
+	}
+	wxASSERT(list.GetCount() == hashmap.size() * 2);
+	return Pack(list);
+}
+
+ByteBufferHashMap UnpackByteBufferHashMap(const ByteBuffer &packed_hashmap)
+{
+	ByteBufferHashMap hashmap;
 	ByteBufferArray list(Unpack(packed_hashmap));
 	wxASSERT(list.GetCount() % 2 == 0);
 	for (size_t i = 0; i < list.GetCount(); i += 2)

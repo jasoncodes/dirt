@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.79 2003-03-20 07:25:24 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.80 2003-03-21 12:29:05 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -806,9 +806,9 @@ void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &ms
 	m_lstNickList->SetAway(nick, false);
 }
 
-void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const StringHashMap &details)
+void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details)
 {
-	StringHashMap details2(details);
+	ByteBufferHashMap details2(details);
 	wxString nickname = details2[wxT("NICK")];
 	AddLine(context, nickname + wxT(" is ") + details2[wxT("DETAILS")]);
 	AddLine(context, nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")]);
@@ -835,7 +835,7 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const StringHashMa
 	details2.erase(wxT("LATENCYSTRING"));
 	details2.erase(wxT("JOINTIME"));
 	details2.erase(wxT("JOINTIMESTRING"));
-	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	for (ByteBufferHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
 		AddLine(context, nickname + wxT(" ") + i->first + wxT(" = ") + i->second);
 	}
