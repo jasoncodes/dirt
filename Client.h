@@ -61,6 +61,7 @@ public:
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname();
+	virtual wxString GetServerName();
 	virtual wxString GetDefaultNick();
 	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
 	virtual FileTransfers* GetFileTransfers() { return m_file_transfers; }
@@ -76,6 +77,7 @@ protected:
 	ClientEventHandler *m_event_handler;
 	FileTransfers *m_file_transfers;
 	wxString m_nickname;
+	wxString m_server_name;
 
 private:
 	DECLARE_EVENT_TABLE()

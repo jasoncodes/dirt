@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.28 2003-02-27 05:20:43 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.29 2003-03-05 02:02:13 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -21,6 +21,7 @@ Client::Client(ClientEventHandler *event_handler)
 {
 	m_file_transfers = new FileTransfers(this);
 	m_nickname = wxEmptyString;
+	m_server_name = wxEmptyString;
 }
 
 Client::~Client()
@@ -295,6 +296,11 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		}
 		m_event_handler->OnClientUserList(nicks);
 	}
+	else if (cmd == wxT("SERVERNAME"))
+	{
+		m_server_name = data;
+		m_event_handler->OnClientStateChange();
+	}
 	else
 	{
 		if (!ProcessServerInputExtra(false, context, cmd, data))
@@ -336,6 +342,11 @@ void Client::OnConnect()
 wxString Client::GetNickname()
 {
 	return m_nickname;
+}
+
+wxString Client::GetServerName()
+{
+	return m_server_name;
 }
 
 wxString Client::GetDefaultNick()

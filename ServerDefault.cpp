@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.34 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.35 2003-03-05 02:02:13 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -86,6 +86,7 @@ void ServerDefault::Start()
 		m_ip_list.Empty();
 		m_tmrPing->Start(ping_timer_interval);
 		m_last_failed = false;
+		m_last_server_name = m_config->GetServerName();
 		ResetPublicListUpdate(3, true);
 		wxTimerEvent evt;
 		OnTimerPing(evt);
@@ -159,6 +160,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 						conn->m_quitmsg = wxT("Too many connections from this IP");
 						conn->m_sck->CloseWithEvent();
 					}
+					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName());
 				}
 				break;
 
@@ -198,6 +200,10 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 			case CRYPTSOCKET_OUTPUT:
 				{
 					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
+					if (m_config->GetPublicListComment().Length())
+					{
+						conn->Send(wxEmptyString, wxT("INFO"), wxT("Server comment: ") + m_config->GetPublicListComment());
+					}
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);
 					conn->m_authenticated = (m_config->GetUserPassword(true).Length() == 0);
@@ -253,6 +259,11 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 				conn->Terminate(wxT("Failed to authenticate in 1 minute"));
 			}
 		}
+	}
+	if (m_last_server_name != m_config->GetServerName())
+	{
+		m_last_server_name = m_config->GetServerName();
+		SendToAll(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName(), false);
 	}
 	wxArrayString ip_list = GetIPAddresses();
 	if (m_ip_list != ip_list)

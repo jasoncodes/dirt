@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.23 2003-03-05 01:34:38 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.24 2003-03-05 02:02:13 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -69,6 +69,7 @@ bool ClientDefault::Connect(const URL &url)
 	{
 		return false;
 	}
+	m_server_name = wxEmptyString;
 	m_url = url;
 	wxIPV4address addr;
 	bool ok = addr.Hostname(url.GetHostname());
@@ -76,7 +77,13 @@ bool ClientDefault::Connect(const URL &url)
 	if (ok)
 	{
 		m_sck->Connect(addr);
-		m_event_handler->OnClientInformation(wxEmptyString, wxString() << wxT("Connecting to ") << url.GetHostname() << wxT(':') << url.GetPort(11626));
+		wxString msg;
+		msg << wxT("Connecting to ") << url.GetHostname();
+		if (url.GetPort(11626) != 11626)
+		{
+			msg << wxT(':') << url.GetPort();
+		}
+		m_event_handler->OnClientInformation(wxEmptyString, msg);
 	}
 	return ok;
 }

@@ -73,6 +73,7 @@ protected:
 	bool m_last_failed;
 	bool m_show_http_result;
 	wxArrayString m_ip_list;
+	wxString m_last_server_name;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.61 2003-03-01 07:33:36 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.62 2003-03-05 02:02:13 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -391,9 +391,25 @@ void ClientUIMDIFrame::UpdateCaption()
 				title << "<NoNick>";
 			}
 			const URL &url = m_client->GetLastURL();
-			if (url.GetHostname().Length())
+			wxString hostname = url.GetHostname();
+			if (hostname.Length())
 			{
-				title << wxT(" on ") << url.GetHostname();
+				wxString server_name = m_client->GetServerName();
+				if (server_name.Length())
+				{
+					if (server_name.CmpNoCase(hostname) == 0 || hostname == wxT("localhost"))
+					{
+						title << wxT(" on ") << server_name;
+					}
+					else
+					{
+						title << wxT(" on ") << server_name << wxT(" (") << hostname << wxT(")");
+					}
+				}
+				else
+				{
+					title << wxT(" on ") << hostname;
+				}
 			}
 		}
 	}
