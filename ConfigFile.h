@@ -6,12 +6,51 @@
 
 class CryptSocketProxySettings;
 
-class ConfigFile : public wxFileConfig
+class ConfigFile : public wxConfigBase
 {
+
+public:
+	static wxString GetConfigFilename();
 
 public:
 	ConfigFile();
 	virtual ~ConfigFile();
+
+	virtual void SetPath(const wxString& strPath);
+	virtual const wxString& GetPath() const;
+
+	virtual bool GetFirstGroup(wxString& str, long& lIndex) const;
+	virtual bool GetNextGroup (wxString& str, long& lIndex) const;
+	virtual bool GetFirstEntry(wxString& str, long& lIndex) const;
+	virtual bool GetNextEntry (wxString& str, long& lIndex) const;
+
+	virtual size_t GetNumberOfEntries(bool bRecursive = FALSE) const;
+	virtual size_t GetNumberOfGroups(bool bRecursive = FALSE) const;
+
+	virtual bool HasGroup(const wxString& strName) const;
+	virtual bool HasEntry(const wxString& strName) const;
+
+	virtual bool Flush(bool bCurrentOnly = FALSE);
+
+	virtual bool RenameEntry(const wxString& oldName, const wxString& newName);
+	virtual bool RenameGroup(const wxString& oldName, const wxString& newName);
+
+	virtual bool DeleteEntry(const wxString& key, bool bGroupIfEmptyAlso = TRUE);
+	virtual bool DeleteGroup(const wxString& szKey);
+	virtual bool DeleteAll();
+
+protected:
+	virtual bool DoReadString(const wxString& key, wxString *pStr) const;
+	virtual bool DoReadLong(const wxString& key, long *pl) const;
+
+	virtual bool DoWriteString(const wxString& key, const wxString& szValue);
+	virtual bool DoWriteLong(const wxString& key, long lValue);
+
+protected:
+	virtual void InitBase();
+
+protected:
+	wxFileConfig *m_base;
 
 };
 

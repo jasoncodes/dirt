@@ -6,17 +6,20 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.6 2003-05-31 04:25:31 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.7 2003-06-26 06:13:19 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
 #include "util.h"
 #include <wx/filename.h>
 #include "Crypt.h"
+#include <locale.h>
 
 DECLARE_APP(DirtApp)
 
-static wxString GetConfigFilename()
+//////// ConfigFile ////////
+
+wxString ConfigFile::GetConfigFilename()
 {
 	wxString filename = wxGetApp().GetConfigFilename();
 	if (filename.Length() == 0)
@@ -32,14 +35,129 @@ static wxString GetConfigFilename()
 }
 
 ConfigFile::ConfigFile()
-	: wxFileConfig(wxT("dirt"), wxT(""), GetConfigFilename())
+	: m_base(NULL)
 {
-	SetUmask(0077);
+	InitBase();
 }
 
 ConfigFile::~ConfigFile()
 {
+	delete m_base;
 }
+
+void ConfigFile::InitBase()
+{
+	char *old_locale = setlocale(LC_ALL, "C");
+	delete m_base;
+	m_base = new wxFileConfig(wxT("dirt"), wxT(""), GetConfigFilename());
+	m_base->SetUmask(0077);
+	setlocale(LC_ALL, old_locale);
+}
+
+void ConfigFile::SetPath(const wxString& strPath)
+{
+	m_base->SetPath(strPath);
+}
+
+const wxString& ConfigFile::GetPath() const
+{
+	return m_base->GetPath();
+}
+
+bool ConfigFile::GetFirstGroup(wxString& str, long& lIndex) const
+{
+	return m_base->GetFirstGroup(str, lIndex);
+}
+
+bool ConfigFile::GetNextGroup(wxString& str, long& lIndex) const
+{
+	return m_base->GetNextGroup(str, lIndex);
+}
+
+bool ConfigFile::GetFirstEntry(wxString& str, long& lIndex) const
+{
+	return m_base->GetFirstEntry(str, lIndex);
+}
+
+bool ConfigFile::GetNextEntry(wxString& str, long& lIndex) const
+{
+	return m_base->GetNextEntry(str, lIndex);
+}
+
+size_t ConfigFile::GetNumberOfEntries(bool bRecursive) const
+{
+	return m_base->GetNumberOfEntries(bRecursive);
+}
+
+size_t ConfigFile::GetNumberOfGroups(bool bRecursive) const
+{
+	return m_base->GetNumberOfGroups(bRecursive);
+}
+
+bool ConfigFile::HasGroup(const wxString& strName) const
+{
+	return m_base->HasGroup(strName);
+}
+
+bool ConfigFile::HasEntry(const wxString& strName) const
+{
+	return m_base->HasEntry(strName);
+}
+
+bool ConfigFile::Flush(bool bCurrentOnly)
+{
+	char *old_locale = setlocale(LC_ALL, "C");
+	bool success = m_base->Flush(bCurrentOnly);
+	setlocale(LC_ALL, old_locale);
+	return success;
+}
+
+bool ConfigFile::RenameEntry(const wxString& oldName, const wxString& newName)
+{
+	return m_base->RenameEntry(oldName, newName);
+}
+
+bool ConfigFile::RenameGroup(const wxString& oldName, const wxString& newName)
+{
+	return m_base->RenameGroup(oldName, newName);
+}
+
+bool ConfigFile::DeleteEntry(const wxString& key, bool bGroupIfEmptyAlso)
+{
+	return m_base->DeleteEntry(key, bGroupIfEmptyAlso);
+}
+
+bool ConfigFile::DeleteGroup(const wxString& szKey)
+{
+	return m_base->DeleteGroup(szKey);
+}
+
+bool ConfigFile::DeleteAll()
+{
+	return m_base->DeleteAll();
+}
+
+bool ConfigFile::DoReadString(const wxString& key, wxString *pStr) const
+{
+	return m_base->Read(key, pStr);
+}
+
+bool ConfigFile::DoReadLong(const wxString& key, long *pl) const
+{
+	return m_base->Read(key, pl);
+}
+
+bool ConfigFile::DoWriteString(const wxString& key, const wxString& szValue)
+{
+	return m_base->Write(key, szValue);
+}
+
+bool ConfigFile::DoWriteLong(const wxString& key, long lValue)
+{
+	return m_base->Write(key, lValue);
+}
+
+//////// Config ////////
 
 Config::Config(const wxString &path)
 	: m_config(new ConfigFile), m_path(path)
@@ -193,7 +311,7 @@ wxString Config::GetTristateString(const wxString &key, bool is_dir) const
 				{
 					fn = wxFileName(GetTristate(key));
 				}
-				wxFileName cfg(GetConfigFilename());
+				wxFileName cfg(ConfigFile::GetConfigFilename());
 				fn.Normalize(wxPATH_NORM_DOTS|wxPATH_NORM_ABSOLUTE|wxPATH_NORM_TILDE,
 					cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 				return fn.GetFullPath();
@@ -263,7 +381,7 @@ bool Config::SetTristate(const wxString &key, TristateMode type, const wxString 
 				{
 					fn = wxFileName(path);
 				}
-				wxFileName cfg(GetConfigFilename());
+				wxFileName cfg(ConfigFile::GetConfigFilename());
 				fn.MakeRelativeTo(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 				return m_config->Write(key, fn.GetFullPath());
 			}
@@ -286,7 +404,7 @@ wxString Config::GetActualLogDir() const
 {
 	if (GetLogDirType() == tsmDefault)
 	{
-		wxFileName cfg(GetConfigFilename());
+		wxFileName cfg(ConfigFile::GetConfigFilename());
 		wxFileName fn(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), wxT(""));
 		fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
 		return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
