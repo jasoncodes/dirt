@@ -1,6 +1,12 @@
 main ICON MOVEABLE PURE "res/dirt.ico"
-1 24 "res/manifest.xml"
 hand CURSOR DISCARDABLE "res/hand.cur"
+
+#include "wx/msw/wx.rc"
+#include "wx/version.h"
+
+#if !wxCHECK_VERSION(2,4,1)
+1 24 "res/manifest.xml"
+#endif
 
 #include "version.h"
 
