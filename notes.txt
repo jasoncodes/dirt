@@ -16,12 +16,6 @@
 
 * copy w/o formatting, find text, etc
 
-* console client ui for win32
-  (and hopefully automaticly linux w/ the help of a virtual x server)
-  * we can't gracefully exit read thread if it's blocking on a read
-    (is there any way to portably send to our own stdin or somehow
-    cancel a blocking read on stdin?)
-
 * dcc send/recv dialog
 
 * only scroll to bottom if scrollpos was already at bottom?
