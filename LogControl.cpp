@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.22 2003-02-25 09:29:03 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.23 2003-02-28 14:50:14 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1247,13 +1247,16 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 			if (text.Length() > 32 && last)
 			{
 				wxASSERT(last->GetNext() == cell);
+				wxHtmlLinkInfo *link = cell->GetLink();
 				wxHtmlCell *first = new wxHtmlWordCell(text.Left(8), *dc);
 				first->SetParent(cell->GetParent());
+				first->SetLink(*link);
 				wxHtmlCell *last_new = first;
 				for (size_t i = 8; i < text.Length(); i += 8)
 				{
 					wxHtmlCell *next_new = new wxHtmlWordCell(text.Mid(i, 8), *dc);
 					next_new->SetParent(cell->GetParent());
+					next_new->SetLink(*link);
 					last_new->SetNext(next_new);
 					last_new = next_new;
 				}
