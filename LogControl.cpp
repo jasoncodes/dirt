@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.75 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.76 2004-07-19 10:12:05 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1262,7 +1262,7 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 
 	}
 
-	html = wxT("<font color='") + ColourToString(line_colour) + wxT("'>") + html + wxT("</font>");
+	html = wxT("<font color='") + ColourRGBToString(line_colour) + wxT("'>") + html + wxT("</font>");
 
 	AddHtmlLine(html, split_long_words, red_line);
 

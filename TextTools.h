@@ -27,12 +27,12 @@ wxString FormatTextAsHtml(const wxString &text);
 wxString ConvertUrlsToLinks(const wxString &text);
 wxString ConvertModifiersIntoHtml(const wxString &text, bool strip_mode);
 bool IsEmail(const wxString &token);
-wxString ColourToString(int red, int green, int blue);
-wxString ColourToString(int colour_number);
+wxString ColourRGBToString(int red, int green, int blue);
+wxString ColourIndexToString(int colour_number);
 
-inline wxString ColourToString(const wxColour &clr)
+inline wxString ColourRGBToString(const wxColour &clr)
 {
-	return ColourToString(clr.Red(), clr.Green(), clr.Blue());
+	return ColourRGBToString(clr.Red(), clr.Green(), clr.Blue());
 }
 
 #endif

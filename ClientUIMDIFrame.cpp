@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.159 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.160 2004-07-19 10:12:05 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -234,6 +234,9 @@ void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 		{
 			canvas->OnActivate();
 		}
+		#ifdef __WXMAC__
+			event.Skip();
+		#endif
 	}
 }
 

@@ -28,7 +28,7 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.2 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.3 2004-07-19 10:12:05 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
@@ -102,16 +102,17 @@ protected:
 
 };
 
-wxString ColourToString(int red, int green, int blue)
+wxString ColourRGBToString(int red, int green, int blue)
 {
 	return wxString::Format(
 		wxT("#%02x%02x%02x"),
 		red, green, blue);
 }
 
-wxString ColourToString(int colour_number)
+wxString ColourIndexToString(int colour_number)
 {
-	return ColourToString(colours[colour_number % colour_count]);
+	long clr = colours[colour_number % colour_count];
+	return ColourRGBToString(CLR_RED(clr), CLR_GREEN(clr), CLR_BLUE(clr));
 }
 
 const bool debug_tags = false;
@@ -296,10 +297,10 @@ protected:
 		}
 		else if (m_colour_number_valid[0])
 		{
-			start_colour_tag(m_tagFont, wxT("color=\"") + ColourToString(m_colour_number[0]) + wxT("\""));
+			start_colour_tag(m_tagFont, wxT("color=\"") + ColourIndexToString(m_colour_number[0]) + wxT("\""));
 			if (m_colour_number_valid[1])
 			{
-				start_colour_tag(m_tagSpan, wxT("style=\"background: ") + ColourToString(m_colour_number[1]) + wxT("\""));
+				start_colour_tag(m_tagSpan, wxT("style=\"background: ") + ColourIndexToString(m_colour_number[1]) + wxT("\""));
 			}
 		}
 		m_colour_number_valid[0] = false;

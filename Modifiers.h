@@ -54,6 +54,9 @@ const ModifierMapping modifier_mappings[] =
 };
 
 #define CLR_LONG(red, green, blue) (red + (green<<8) + (blue<<16))
+#define CLR_RED(clr) (unsigned char)(clr)
+#define CLR_GREEN(clr) ((unsigned char)(clr >> 8))
+#define CLR_BLUE(clr) ((unsigned char)(clr >> 16))
 
 const size_t modifier_count = ((sizeof modifier_mappings) / (sizeof modifier_mappings[0]));
 
