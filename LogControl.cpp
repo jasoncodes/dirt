@@ -471,7 +471,6 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	m_align_bottom(align_bottom)
 {
 
-
 	if (!s_bInitDone)
 	{
 	
@@ -871,23 +870,32 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 {
 	wxString buffer;
 	wxHtmlCell *cell = start_cell;
+	bool last_was_new_line = false;
 	while (cell != NULL)
 	{
 		if (cell->IsTerminalCell())
 		{
 			wxString text = GetCellText(cell);
-			if (text == "    ")
+			if (text.Length() > 0)
 			{
-				buffer += '\t';
-			}
-			else
-			{
-				buffer += text;
+				if (text == "    ")
+				{
+					buffer += '\t';
+				}
+				else
+				{
+					buffer += text;
+				}
+				last_was_new_line = false;
 			}
 		}
 		else
 		{
-			buffer += "\r\n";
+			if (!last_was_new_line)
+			{
+				buffer += "\r\n";
+				last_was_new_line = true;
+			}
 		}
 		if (cell == end_cell) break;
 		cell = FindNext(cell);
@@ -1172,8 +1180,31 @@ void LogControl::Clear()
 
 void LogControl::AddHtmlLine(const wxString &line)
 {
-	AppendToPage("<br><code>" + line + "</code>");
+	
+	wxString source = "<br><code>" + line + "</code>";
+
+    wxClientDC *dc = new wxClientDC(this);
+    dc->SetMapMode(wxMM_TEXT);
+    SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
+
+	wxHtmlWinParser *p2 = new wxHtmlWinParser(this);
+	p2->SetFS(m_FS);
+	p2->SetDC(dc);
+	p2->AddTagHandler(new SpanTagHandler());
+	wxHtmlContainerCell *c2 = (wxHtmlContainerCell*)p2->Parse(source);
+
+	m_Cell->InsertCell(c2);
+
+	delete p2;
+    
+	delete dc;
+
+    CreateLayout();
+
 	ScrollToBottom();
+
+	Refresh();
+
 }
 
 wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_mode)
