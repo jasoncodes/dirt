@@ -11,6 +11,7 @@
 
 BEGIN_EVENT_TABLE(NickListControl, wxListBox)
 	EVT_RIGHT_UP(NickListControl::OnRightUp)
+	EVT_MOTION(NickListControl::OnMotion)
 END_EVENT_TABLE()
 
 NickListControl::NickListControl(wxWindow *parent, int id)
@@ -73,8 +74,63 @@ int NickListControl::GetCount()
 	return wxListBox::GetCount();
 }
 
+int NickListControl::HitTest(const wxPoint &pt)
+{
+	#ifdef __WXMSW__
+
+		HWND hWnd = (HWND)GetHandle();
+		LPARAM lParam = MAKELPARAM(pt.x, pt.y);
+		LRESULT lResult = ::SendMessage(hWnd, LB_ITEMFROMPOINT, 0, lParam);
+		int index = LOWORD(lResult);
+		bool inside = (HIWORD(lResult) == 0);
+		if (inside)
+		{
+			return index;
+		}
+		else
+		{
+			return -1;
+		}
+
+	#else
+
+		return -2; // Not available on this platform
+		
+	#endif
+
+}
+
+void NickListControl::OnMotion(wxMouseEvent &event)
+{
+
+	if (event.LeftIsDown() || event.RightIsDown())
+	{
+
+		int index = HitTest(event.GetPosition());
+		
+		if (index > -1)
+		{
+			SetSelection(index);
+		}
+
+	}
+
+}
+
 void NickListControl::OnRightUp(wxMouseEvent &event)
 {
+
+	int index = HitTest(event.GetPosition());
+
+	if (index > -1)
+	{
+		SetSelection(index);
+	}
+	else if (index != -2) // -2 is a special return val for "not implemented"
+	{
+		return; // if not right clicking over anything, return
+	}
+
 	if (GetSelectedIndex() > -1)
 	{
 		wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
@@ -83,4 +139,5 @@ void NickListControl::OnRightUp(wxMouseEvent &event)
 		evt.SetString(GetNick(GetSelectedIndex()));
 		ProcessEvent(evt);
 	}
+
 }

@@ -26,6 +26,10 @@ public:
 
 protected:
 	void OnRightUp(wxMouseEvent &event);
+	void OnMotion(wxMouseEvent &event);
+
+protected:
+	int HitTest(const wxPoint &pt);
 
 private:
 	DECLARE_EVENT_TABLE()
