@@ -62,12 +62,17 @@ protected:
 	void OnMouse(wxMouseEvent &event);
 	void OnErase(wxEraseEvent &event);
 	void OnFileDrop(FileDropEvent &event);
+	void OnSysColourChanged(wxSysColourChangedEvent &event);
 
+protected:
 	static wxIcon PrepareIcon(const wxIcon &icon);
+	void LoadSystemColours();
 
 protected:
 	SwitchBarButtonArray m_buttons;
 	int m_selected;
+	wxColour m_colour_highlight, m_colour_shadow;
+	wxPen m_pen_highlight, m_pen_shadow;
 
 private:
 	DECLARE_EVENT_TABLE()

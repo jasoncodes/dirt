@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.11 2003-06-21 02:12:40 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.12 2003-06-21 10:27:50 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -40,6 +40,7 @@ BEGIN_EVENT_TABLE(SwitchBar, wxPanel)
 	EVT_RIGHT_UP(SwitchBar::OnMouse)
 	EVT_MOTION(SwitchBar::OnMouse)
 	EVT_FILE_DROP(wxID_ANY, SwitchBar::OnFileDrop)
+	EVT_SYS_COLOUR_CHANGED(SwitchBar::OnSysColourChanged)
 END_EVENT_TABLE()
 
 SwitchBar::SwitchBar(
@@ -53,6 +54,7 @@ SwitchBar::SwitchBar(
 		SetSize(100,25);
 	}
 	SetDropTarget(new FileDropTarget(this, wxID_ANY));
+	LoadSystemColours();
 }
 
 SwitchBar::~SwitchBar()
@@ -147,6 +149,20 @@ void SwitchBar::OnErase(wxEraseEvent &event)
 
 }
 
+void SwitchBar::OnSysColourChanged(wxSysColourChangedEvent &event)
+{
+	LoadSystemColours();
+	Refresh();
+}
+
+void SwitchBar::LoadSystemColours()
+{
+	m_colour_highlight = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNHIGHLIGHT);
+	m_colour_shadow = wxSystemSettings::GetColour(wxSYS_COLOUR_3DDKSHADOW);
+	m_pen_highlight = wxPen(m_colour_highlight, 1, wxSOLID);
+	m_pen_shadow = wxPen(m_colour_shadow, 1, wxSOLID);
+}
+
 void SwitchBar::OnPaint(wxPaintEvent &event)
 {
 	
@@ -164,15 +180,12 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 
 		bool bSelected = (m_selected == i);
 
-		static wxColour highlight_colour = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNHIGHLIGHT);
-		static wxColour shadow_colour = wxSystemSettings::GetColour(wxSYS_COLOUR_3DDKSHADOW);
-
 		if (bSelected)
 		{
 			dc.SetPen(*wxTRANSPARENT_PEN);
 			wxBitmap stipple("\x0aa\x055\x0aa\x055\x0aa\x055\x0aa\x055", 8, 8, 1);
 			dc.SetTextBackground(GetBackgroundColour());
-			dc.SetTextForeground(highlight_colour);
+			dc.SetTextForeground(m_colour_highlight);
 			stipple.SetMask(new wxMask(stipple));
 			dc.SetBrush(wxBrush(stipple));
 		}
@@ -192,14 +205,11 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			dc.SetBrush(wxBrush(un_stipple));
 		}
 
-		static wxPen highlight_pen(highlight_colour, 1, wxSOLID);
-		static wxPen shadow_pen(shadow_colour, 1, wxSOLID);
-
-		dc.SetPen(bSelected ? shadow_pen : highlight_pen);
+		dc.SetPen(bSelected ? m_pen_shadow : m_pen_highlight);
 		dc.DrawLine( rct.GetLeft(), rct.GetTop(), rct.GetRight() + 1, rct.GetTop() );
 		dc.DrawLine( rct.GetLeft(), rct.GetTop(), rct.GetLeft(), rct.GetBottom() );
 
-		dc.SetPen(bSelected ? highlight_pen : shadow_pen);
+		dc.SetPen(bSelected ? m_pen_highlight : m_pen_shadow);
 		dc.DrawLine( rct.GetLeft() + 1, rct.GetBottom() - 1, rct.GetRight() + 1, rct.GetBottom() - 1 );
 		dc.DrawLine( rct.GetRight(), rct.GetTop() + 1, rct.GetRight(), rct.GetBottom() );
 
