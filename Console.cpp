@@ -181,7 +181,6 @@ ConsoleReadThread *g_read_thread;
 	void sighandler(int signum)
 	{
 		signal(signum, sighandler);
-		printf("got signal number: %d\n", signum);
 		if (!g_already_done)
 		{
 			g_read_thread->ProcessInput(wxEmptyString);
@@ -223,7 +222,6 @@ Console::Console()
 
 Console::~Console()
 {
-puts("~Console()");
 	m_read_thread->Delete();
 	delete m_read_thread;
 }
