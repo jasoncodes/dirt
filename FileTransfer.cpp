@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.17 2003-05-10 07:11:21 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.18 2003-05-10 07:18:05 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -21,8 +21,8 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 		transferid(-1), remoteid(-1), issend(false), state(ftsUnknown),
 		nickname(wxEmptyString), filename(wxEmptyString),
 		filesize(0), time(0), timeleft(-1), cps(-1),
-		m_sck(NULL), filesent(0), m_connect_ok(false), 
-		status(wxEmptyString), m_transfers(transfers),
+		filesent(0), status(wxEmptyString), m_transfers(transfers),
+		m_sck(NULL), m_connect_ok(false),
 		m_ip(wxEmptyString), m_port(0),
 		m_got_accept(false), m_more_idle(false)
 {
