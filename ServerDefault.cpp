@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.37 2003-03-08 03:53:29 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.38 2003-03-08 05:36:33 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -548,7 +548,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 					else
 					{
 						Warning(conn->GetId() + wxT(" failed to become a server administrator"));
-						conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Invalid server administarator password"))));
+						conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Invalid server administrator password"))));
 					}
 				}
 			}
