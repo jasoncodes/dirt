@@ -52,6 +52,9 @@ protected:
 	ByteBuffer m_entry;
 	bool m_first_pass;
 
+private:
+	DECLARE_NO_COPY_CLASS(LogReader)
+
 };
 
 #endif

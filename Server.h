@@ -77,6 +77,9 @@ protected:
 	const wxDateTime m_jointime;
 	bool m_authenticated;
 	bool m_admin;
+	
+private:
+	DECLARE_NO_COPY_CLASS(ServerConnection)
 
 };
 
@@ -204,6 +207,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(Server)
 
 };
 

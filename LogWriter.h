@@ -38,6 +38,9 @@ protected:
 	ByteBuffer m_public_key;
 	ByteBufferHashMap m_properties;
 
+private:
+	DECLARE_NO_COPY_CLASS(LogWriter)
+
 };
 
 #endif

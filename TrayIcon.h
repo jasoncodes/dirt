@@ -26,6 +26,9 @@ protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
 
+private:
+	DECLARE_NO_COPY_CLASS(TrayIcon)
+
 };
 
 #define EVT_TRAYICON_LEFT_DOWN(id, func) DECLARE_EVENT_TABLE_ENTRY( wxEVT_LEFT_DOWN, id, wxID_ANY, (wxObjectEventFunction) (wxEventFunction) (wxMouseEventFunction) & func, (wxObject *) NULL ),

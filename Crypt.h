@@ -39,6 +39,9 @@ public:
 protected:
 	CryptPrivate *m_priv;
 
+private:
+	DECLARE_NO_COPY_CLASS(Crypt)
+
 };
 
 #endif

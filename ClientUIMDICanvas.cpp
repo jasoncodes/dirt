@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.44 2003-04-03 04:48:02 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.45 2003-05-02 02:13:13 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -161,7 +161,7 @@ void ClientUIMDICanvas::DoGotFocus()
 	}
 	SwitchBar *switchbar = m_parent->GetSwitchBar();
 	int button_index = switchbar->GetIndexFromUserData(this);
-	if (button_index > -1)
+	if (button_index > -1 && !m_pnlTransfer)
 	{
 		switchbar->SetButtonHighlight(button_index, false);
 	}
