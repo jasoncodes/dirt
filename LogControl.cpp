@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.21 2003-02-24 12:43:44 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.22 2003-02-25 09:29:03 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -702,12 +702,6 @@ void LogControl::OnDraw(wxDC& dcFront)
 			rect.GetTop() + y - 32,
 			rect.GetBottom() + y + 32);
 
-		if (last_start_end_valid)
-		{
-			InitDCForHighlighting(dcBack);
-			HighlightCells(dcBack, last_start_cell, last_end_cell);
-		}
-
 		if (m_red_line)
 		{
 			wxPen old_pen = dcBack.GetPen();
@@ -715,6 +709,12 @@ void LogControl::OnDraw(wxDC& dcFront)
 			wxRect red_rect = GetCellRect(m_red_line);
 			dcBack.DrawLine(0, red_rect.y, red_rect.width, red_rect.y);
 			dcBack.SetPen(old_pen);
+		}
+
+		if (last_start_end_valid)
+		{
+			InitDCForHighlighting(dcBack);
+			HighlightCells(dcBack, last_start_cell, last_end_cell);
 		}
 
 #if USE_BACKBUFFER
