@@ -205,4 +205,4 @@ typedef void (wxEvtHandler::*CryptSocketEventFunction)(CryptSocketEvent&);
 
 wxUint32 GetIPV4Address(wxSockAddress &addr);
 wxString GetIPV4AddressString(wxSockAddress &addr);
-wxString GetIPV4String(wxSockAddress &addr);
+wxString GetIPV4String(wxSockAddress &addr, bool include_port);

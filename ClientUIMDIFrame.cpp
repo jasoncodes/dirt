@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.44 2003-02-17 14:59:51 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.45 2003-02-18 13:30:59 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -138,7 +138,7 @@ void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 	ShowAbout();
 }
 
-ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)
+ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist, bool on_not_exist_return_null)
 {
 	wxASSERT(m_switchbar->GetButtonCount() >= 1);
 	if (context.Length() > 0)
@@ -153,7 +153,14 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	}
 	if (context.Length() == 0 || !create_if_not_exist)
 	{
-		return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(0);
+		if (on_not_exist_return_null && context.Length() != 0)
+		{
+			return NULL;
+		}
+		else
+		{
+			return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(0);
+		}
 	}
 	else
 	{
@@ -287,6 +294,14 @@ void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxStri
 	AddLine(context, wxT("* ") + text, wxColour(0,0,128));
 }
 
+void ClientUIMDIFrame::OnClientStateChange()
+{
+	if (!m_client->IsConnected())
+	{
+		m_lstNickList->Clear();
+	}
+}
+
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
 	if (nick.Length() == 0 || GetContext(nick, false) != GetContext(wxEmptyString))
@@ -318,12 +333,19 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 {
 
 	wxString msg;
-	msg << wxT("* ") << nick;
-	if (details.Length() > 0)
+	if (nick == m_client->GetNickname())
 	{
-		msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
+		msg << wxT("* Now chatting as ") << nick;
 	}
-	msg << wxT(" has joined the chat");
+	else
+	{
+		msg << wxT("* ") << nick;
+		if (details.Length() > 0)
+		{
+			msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
+		}
+		msg << wxT(" has joined the chat");
+	}
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Add(nick);
@@ -347,6 +369,50 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Remove(nick);
+
+}
+
+void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString &new_nick)
+{
+
+	wxString msg;
+	
+	if (old_nick == new_nick)
+	{
+		msg << wxT("* You nickname is ") << new_nick;
+	}
+	else if (new_nick == m_client->GetNickname())
+	{
+		msg << wxT("* You are now known as ") << new_nick;
+	}
+	else
+	{
+		msg << wxT("* ") << old_nick;
+		msg << wxT(" is now known as ");
+		msg << new_nick;
+	}
+
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
+
+	if (old_nick == new_nick) return;
+
+	m_lstNickList->Remove(old_nick);
+	m_lstNickList->Add(new_nick);
+
+	ClientUIMDICanvas *old_canvas = GetContext(old_nick, false, true);
+	ClientUIMDICanvas *new_canvas = GetContext(new_nick, false, true);
+
+	if (old_canvas && new_canvas)
+	{
+		wxString msg;
+		msg << wxT("Note: You have a query window open to both ");
+		msg << old_nick << wxT(" and ") << new_nick;
+		OnClientWarning(wxEmptyString, msg);
+	}
+	else if (old_canvas)
+	{
+		old_canvas->SetTitle(new_nick);
+	}
 
 }
 

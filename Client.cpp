@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.18 2003-02-17 14:59:51 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.19 2003-02-18 13:30:58 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -66,10 +66,12 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 
 	if (cmd == wxT("SAY"))
 	{
+		ASSERT_CONNECTED();
 		SendMessage(context, context, params);
 	}
 	else if (cmd == wxT("MSG"))
 	{
+		ASSERT_CONNECTED();
 		wxString nick, msg;
 		SplitQuotedHeadTail(params, nick, msg);
 		if (nick.Length() == 0)
@@ -94,6 +96,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	}
 	else if (cmd == wxT("DISCONNECT"))
 	{
+		ASSERT_CONNECTED();
 		Disconnect();
 	}
 	/*else if (cmd == wxT("NICK"))
@@ -115,9 +118,21 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 			nickname = params;
 		}
 	}*/
+	else if (cmd == wxT("NICK"))
+	{
+		ASSERT_CONNECTED();
+		if (params.Length())
+		{
+			SetNickname(context, params);
+		}
+		else
+		{
+			m_event_handler->OnClientUserNick(m_nickname, m_nickname);
+		}
+	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG SAY SERVER"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG NICK SAY SERVER"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
@@ -141,6 +156,7 @@ void Client::ProcessServerInput(const ByteBuffer &msg)
 	else
 	{
 		m_event_handler->OnClientWarning(context, wxT("Error decoding message from server. Ignored."));
+		m_event_handler->OnClientDebug(context, msg.GetHexDump());
 	}
 }
 
@@ -190,17 +206,57 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	{
 		m_event_handler->OnClientInformation(context, data);
 	}
+	else if (cmd == wxT("JOIN"))
+	{
+		ByteBuffer nick, details;
+		if (!Unpack(data, nick, details))
+		{
+			nick = data;
+			details = ByteBuffer();
+		}
+		m_event_handler->OnClientUserJoin(nick, details);
+	}
+	else if (cmd == wxT("PART"))
+	{
+		ByteBuffer nick, details, msg;
+		if (!Unpack(data, nick, details, msg))
+		{
+			nick = data;
+			details = ByteBuffer();
+			msg = ByteBuffer();
+		}
+		m_event_handler->OnClientUserPart(nick, details, msg);
+	}
 	else if (cmd == wxT("NICK"))
 	{
 		ByteBuffer nick1, nick2;
 		if (Unpack(data, nick1, nick2))
 		{
-			// not implemented
+			if ((wxString)nick1 == m_nickname)
+			{
+				m_nickname = nick2;
+			}
+			m_event_handler->OnClientUserNick(nick1, nick2);
+			// add handling for file transfers here
 		}
 		else
 		{
 			m_nickname = data;
 		}
+	}
+	else if (cmd == wxT("NICKLIST"))
+	{
+		wxArrayString nicks;
+		m_event_handler->OnClientDebug(wxEmptyString, wxT("Got NICKLIST. Lets see how our Unpack() function is doing :)"));
+		m_event_handler->OnClientDebug(wxEmptyString, data.GetHexDump());
+		ByteBufferArray nickbuff = Unpack(data);
+		for (size_t i = 0; i < nickbuff.GetCount(); ++i)
+		{
+			m_event_handler->OnClientDebug(wxEmptyString, nickbuff.Item(i).GetHexDump());
+			nicks.Add(nickbuff.Item(i));
+		}
+		m_event_handler->OnClientDebug(wxEmptyString, wxT("END"));
+		m_event_handler->OnClientUserList(nicks);
 	}
 	else
 	{
@@ -214,11 +270,23 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 void Client::OnConnect()
 {
 	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
-	SetNickname(wxEmptyString, wxGetUserId());
+	m_event_handler->OnClientStateChange();
+	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
+	wxString userdetails;
+	userdetails << ::wxGetUserId() << wxT('@') << ::wxGetHostName();
+	userdetails << wxT(" (\"") << ::wxGetUserName() << wxT("\")");
+	userdetails << wxT(" on ") << ::wxGetOsDescription();
+	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
+	wxString nick = ::wxGetUserId();
+	int i = nick.Index(wxT(' '));
+	if (i > -1)
+	{
+		nick = nick.Left(i);
+	}
+	SetNickname(wxEmptyString, nick);
 }
 
 wxString Client::GetNickname()
 {
 	return m_nickname;
 }
-

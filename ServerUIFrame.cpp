@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.18 2003-02-17 07:00:40 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.19 2003-02-18 13:30:59 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -283,7 +283,7 @@ void ServerUIFrame::OnServerConnectionChange()
 	}
 	for (size_t i = 0; i < m_server->GetConnectionCount(); ++i)
 	{
-		m_lstConnections->SetItemData(i, (long)(const void*)&m_server->GetConnection(i));
+		m_lstConnections->SetItemData(i, (long)(const void*)m_server->GetConnection(i));
 	}
 	UpdateConnectionList();
 }

@@ -42,6 +42,7 @@ public:
 	virtual wxDateTime GetJoinTime() const { return m_jointime; }
 	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
 	virtual operator wxString() const;
+	virtual wxString GetInlineDetails() const { return GetRemoteHost(); }
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
@@ -76,12 +77,14 @@ public:
 	virtual bool IsRunning() = 0;
 	virtual int GetListenPort() = 0;
 	virtual size_t GetConnectionCount() { return m_connections.GetCount(); }
-	virtual ServerConnection& GetConnection(size_t index) { return *m_connections.Item(index); }
+	virtual ServerConnection* GetConnection(size_t index) { return m_connections.Item(index); }
 	virtual ServerConnection* GetConnection(const wxString &nickname);
-	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data, bool with_nicks_only);
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual ByteBuffer GetNickList();
 
 protected:
+	virtual bool IsValidNickname(const wxString &nickname);
 	virtual void CloseAllConnections();
 	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);
 	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);

@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.26 2003-02-17 14:10:11 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.27 2003-02-18 13:30:59 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
 #include "ClientDefault.h"
 #include "util.h"
 #include "FileTransfer.h"
+#include "Modifiers.h"
 
 ClientUIConsole::ClientUIConsole()
 {
@@ -77,6 +78,10 @@ void ClientUIConsole::OnClientInformation(const wxString &context, const wxStrin
 	Output(wxString() << wxT("* ") << text);
 }
 
+void ClientUIConsole::OnClientStateChange()
+{
+}
+
 void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
 	bool is_private = (nick.Length() > 0);
@@ -126,12 +131,19 @@ void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)
 void ClientUIConsole::OnClientUserJoin(const wxString &nick, const wxString &details)
 {
 	wxString msg;
-	msg << wxT("* ") << nick;
-	if (details.Length() > 0)
+	if (nick == m_client->GetNickname())
 	{
-		msg << wxT(" (") << details << wxT(")");
+		msg << wxT("* Now chatting as ") << nick;
 	}
-	msg << wxT(" has joined the chat");
+	else
+	{
+		msg << wxT("* ") << nick;
+		if (details.Length() > 0)
+		{
+			msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
+		}
+		msg << wxT(" has joined the chat");
+	}
 	Output(msg);
 }
 
@@ -149,6 +161,30 @@ void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &det
 		msg << wxT(" (" << message << ")");
 	}
 	Output(msg);
+}
+
+void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString &new_nick)
+{
+
+	wxString msg;
+	
+	if (old_nick == new_nick)
+	{
+		msg << wxT("* You nickname is ") << new_nick;
+	}
+	else if (new_nick == m_client->GetNickname())
+	{
+		msg << wxT("* You are now known as ") << new_nick;
+	}
+	else
+	{
+		msg << wxT("* ") << old_nick;
+		msg << wxT(" is now known as ");
+		msg << new_nick;
+	}
+
+	Output(msg);
+
 }
 
 void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)

@@ -19,6 +19,9 @@ public:
 	virtual bool IsConnected();
 
 protected:
+	virtual void SendToServer(const ByteBuffer &msg);
+
+protected:
 	void OnSocket(CryptSocketEvent &event);
 	
 protected:

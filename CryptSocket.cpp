@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.11 2003-02-16 11:11:17 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.12 2003-02-18 13:30:59 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -584,7 +584,7 @@ wxString GetIPV4AddressString(wxSockAddress &addr)
 	
 }
 
-wxString GetIPV4String(wxSockAddress &addr)
+wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 {
 	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, wxEmptyString, wxT("Not an IPV4 address"));
 	wxIPV4address *ipv4 = static_cast<wxIPV4address*>(&addr);
@@ -606,6 +606,9 @@ wxString GetIPV4String(wxSockAddress &addr)
 	{
 		retval << ipv4->Hostname();
 	}
-	retval << wxT(":") << ipv4->Service();
+	if (include_port)
+	{
+		retval << wxT(":") << ipv4->Service();
+	}
 	return retval;
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.17 2003-02-17 15:01:40 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.18 2003-02-18 13:30:59 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -54,12 +54,12 @@ void ServerDefault::Start()
 	if (m_sckListen->Listen(addr))
 	{
 		m_sckListen->GetLocal(addr);
-		m_event_handler->OnServerInformation(wxT("Server started on ") + GetIPV4String(addr));
+		m_event_handler->OnServerInformation(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
 	}
 	else
 	{
-		m_event_handler->OnServerWarning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr));
+		m_event_handler->OnServerWarning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr, true));
 	}
 }
 
@@ -109,7 +109,8 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				{
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
-					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + ::GetIPV4String(addr));
+					conn->m_remotehost = ::GetIPV4String(addr, false);
+					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + conn->GetRemoteHost());
 				}
 				break;
 
@@ -118,8 +119,9 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_connections.Remove(conn);
+					m_event_handler->OnServerInformation(wxT("Connection to ") + conn->GetRemoteHost() + wxT(" lost"));
+					SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), wxString(wxT("Connection lost"))), true);
 					delete conn;
-					m_event_handler->OnServerInformation(wxT("Connection to ") + ::GetIPV4String(addr) + wxT(" lost"));
 					m_event_handler->OnServerConnectionChange();
 				}
 				break;

@@ -36,4 +36,4 @@
 
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
 
-* todo before sourceforge: nicklist, password
+* todo before sourceforge: password

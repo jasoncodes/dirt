@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.10 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.11 2003-02-18 13:30:59 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
 #include "ServerUIFrame.h"
 #include "wx/image.h"
 #include "wx/mstream.h"
+#include "util.h"
 
 #include "res/dirt.xpm"
 #include "res/splash.h"
@@ -29,9 +30,6 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 	EVT_BUTTON(ID_CLIENT, Splash::OnClient)
 	EVT_BUTTON(ID_SERVER, Splash::OnServer)
 END_EVENT_TABLE()
-
-// fix VC++'s broken "for" scope
-#define for if(true)for
 
 Splash::Splash()
 	: wxFrame(NULL, -1, AppTitle(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.21 2003-02-17 14:10:12 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.22 2003-02-18 13:31:00 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -379,7 +379,7 @@ bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, Byte
 		msg2.Unlock();
 		return false;
 	}
-	byte *sep2 = (byte*)memchr(sep1+1, 0, datalen - (sep1-dataptr) - 2);
+	byte *sep2 = (byte*)memchr(sep1+1, 0, datalen - (sep1-dataptr) - 1);
 	if (!sep2)
 	{
 		msg2.Unlock();
@@ -423,4 +423,84 @@ bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y)
 	y = ByteBuffer(sep+1, data2.Length() - (sep-ptr) - 1);
 	data2.Unlock();
 	return true;
+}
+
+// faster implementation of this should be written
+// use a mod of EncodeMessage then change DecodeMessage to use new func
+ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y, const ByteBuffer &z)
+{
+	return Pack(Pack(x, y), z);
+}
+
+// faster implementation of this should be written
+// use a mod of DecodeMessage then change DecodeMessage to use new func
+bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y, ByteBuffer &z)
+{
+	ByteBuffer tmp;
+	return Unpack(data, x, tmp) && Unpack(tmp, y, z);
+}
+
+ByteBuffer Pack(const ByteBufferArray &array)
+{
+	size_t total_len = 0;
+	for (size_t i = 0; i < array.GetCount(); ++i)
+	{
+		if (i > 0)
+		{
+			total_len++;
+		}
+		total_len += array.Item(i).Length();
+	}
+	ByteBuffer buff(total_len);
+	byte *ptr = buff.Lock();
+	for (size_t i = 0; i < array.GetCount(); ++i)
+	{
+		ByteBuffer tmp(array.Item(i));
+		byte *tmpptr = tmp.Lock();
+		memcpy(ptr, tmpptr, tmp.Length());
+		ptr += tmp.Length() + 1;
+		tmp.Unlock();
+	}
+	buff.Unlock();
+	return buff;
+}
+
+ByteBufferArray Unpack(const ByteBuffer &packed_array)
+{
+
+	if (packed_array.Length() == 0)
+	{
+		return ByteBufferArray();
+	}
+	else
+	{
+	
+		ByteBufferArray array;
+		ByteBuffer src(packed_array);
+		byte *ptr = src.Lock();
+		size_t len = src.Length();
+
+		byte *sep = (byte*)memchr(ptr, 0, len);
+		while (sep)
+		{
+			size_t seglen = sep-ptr;
+			ByteBuffer b(ptr, seglen);
+			array.Add(b);
+			ptr += (seglen + 1);
+			len -= (seglen + 1);
+			if (len<=0) break;
+			sep = (byte*)memchr(ptr, 0, len);
+		}
+
+		if (len)
+		{
+			ByteBuffer b(ptr, len);
+			array.Add(b);
+		}
+		
+		src.Unlock();
+		return array;
+
+	}
+
 }

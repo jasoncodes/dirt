@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.10 2003-02-17 14:59:51 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.11 2003-02-18 13:30:59 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -30,7 +30,7 @@ ServerConnection::operator wxString() const
 	wxString retval;
 	retval << (GetNickname().Length()?GetNickname():wxT("N/A"));
 	retval << wxT("@") << (GetRemoteHost().Length()?GetRemoteHost():wxT("N/A"));
-	retval << wxT("(") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
+	retval << wxT(" (") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
 	retval << wxT(") (");
 	if (GetAwayMessage().Length())
 	{
@@ -116,7 +116,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 			m_event_handler->OnServerInformation(wxString() << wxT("There are currently ") << GetConnectionCount() << wxT(" connections"));
 			for (size_t i = 0; i < GetConnectionCount(); ++i)
 			{
-				m_event_handler->OnServerInformation(wxT("    ") + GetConnection(i));
+				m_event_handler->OnServerInformation(wxT("    ") + *GetConnection(i));
 			}
 		}
 		else
@@ -175,12 +175,16 @@ ServerConnection* Server::GetConnection(const wxString &nickname)
 	return NULL;
 }
 
-void Server::SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data)
+void Server::SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data, bool with_nicks_only)
 {
 	ByteBuffer msg = EncodeMessage(context, cmd, data);
 	for (size_t i = 0; i < GetConnectionCount(); ++i)
 	{
-		GetConnection(i).SendData(msg);
+		ServerConnection *conn = GetConnection(i);
+		if (!with_nicks_only || conn->GetNickname().Length())
+		{
+			conn->SendData(msg);
+		}
 	}
 }
 
@@ -199,14 +203,74 @@ ServerConnection* Server::SendToNick(const wxString &nickname, const wxString &c
 	}
 }
 
+bool Server::IsValidNickname(const wxString &nickname)
+{
+	return true;
+    /*if (nickname.Length() < 1 || nickname.Length() > 9)
+	{
+		return false;
+	}
+	for (size_t i = 0; i < nickname.Length(); ++i)
+	{
+		wxChar c = nickname[i];
+		if (!wxIsalnum(c))
+		{
+			switch (c)
+			{
+				case wxT('_'):
+				case wxT('^'):
+				case wxT('|'):
+				case wxT('\\'):
+				case wxT('-'):
+				case wxT('['):
+				case wxT(']'):
+				case wxT('{'):
+				case wxT('}'):
+					break;
+				default:
+					return false;
+			}
+		}
+	}
+	return true;*/
+}
+
+ByteBuffer Server::GetNickList()
+{
+	ByteBufferArray nicks;
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		ServerConnection *conn = GetConnection(i);
+		if (conn->GetNickname().Length())
+		{
+			nicks.Add(conn->GetNickname());
+		}
+	}
+	return Pack(nicks);
+}
+
 void Server::ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
 
 	conn->ResetIdleTime();
 
+	if (conn->GetNickname().Length() == 0 && cmd != wxT("NICK") && cmd != wxT("USERDETAILS") && cmd != wxT("USERAGENT"))
+	{
+		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxString(wxT("You need to set a nickname first"))));
+		return;
+	}
+
 	if (cmd == wxT("PUBMSG"))
 	{
-		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data));
+		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
+	}
+	else if (cmd == wxT("USERDETAILS"))
+	{
+		conn->m_userdetails = data;
+	}
+	else if (cmd == wxT("USERAGENT"))
+	{
+		conn->m_useragent = data;
 	}
 	else if (cmd == wxT("PRIVMSG"))
 	{
@@ -232,14 +296,33 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	else if (cmd == wxT("NICK"))
 	{
 		ServerConnection *tmp = GetConnection(data);
-		if (tmp)
+		if (tmp && tmp != conn)
 		{
-			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxString(wxT("Nickname in use"))));
+			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Nickname in use: ") + tmp->GetNickname()));
 		}
 		else
 		{
-			conn->m_nickname = data;
-			conn->Send(context, wxT("NICK"), data);
+			wxString new_nick = data;
+			if (!IsValidNickname(new_nick))
+			{
+				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxString(wxT("Invalid nickname"))));
+			}
+			else if (conn->m_nickname != new_nick)
+			{
+				if (conn->m_nickname.Length() == 0)
+				{
+					
+					conn->Send(context, wxT("NICKLIST"), GetNickList());
+					conn->Send(context, wxT("NICK"), data);
+					conn->m_nickname = new_nick;
+					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
+				}
+				else
+				{
+					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, data), true);
+					conn->m_nickname = new_nick;
+				}
+			}
 		}
 	}
 	else
@@ -254,3 +337,4 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 
 }
+

@@ -1,6 +1,9 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
+// fix VC++'s broken "for" scope
+#define for if(true)for
+
 #include "ByteBuffer.h"
 class wxHtmlWinParser;
 class wxDateTime;
@@ -37,5 +40,9 @@ ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const Byt
 bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data);
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y);
 bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y);
+ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y, const ByteBuffer &z);
+bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y, ByteBuffer &z);
+ByteBuffer Pack(const ByteBufferArray &array);
+ByteBufferArray Unpack(const ByteBuffer &packed_array);
 
 #endif
