@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.87 2003-04-01 08:26:13 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.88 2003-04-01 10:11:00 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -664,7 +664,8 @@ void ClientUIMDIFrame::OnClientMessageOut(const wxString &context, const wxStrin
 	{
 		if (is_action)
 		{
-			AddLine(nick, wxT("* ") + m_client->GetNickname() + wxT(" ") + text, colours[6], true, true);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			AddLine(nick, wxT("* ") + m_client->GetNickname() + sep + text, colours[6], true, true);
 		}
 		else
 		{
@@ -675,7 +676,8 @@ void ClientUIMDIFrame::OnClientMessageOut(const wxString &context, const wxStrin
 	{
 		if (is_action)
 		{
-			AddLine(context, wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + wxT(" ") + text, colours[6], true, true);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			AddLine(context, wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + sep + text, colours[6], true, true);
 		}
 		else
 		{
@@ -690,7 +692,8 @@ void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &t
 	bool is_self = (nick == m_client->GetNickname());
 	if (is_action)
 	{
-		AddLine(context, wxT("* ") + nick + wxT(" ") + text, colours[6], true, is_self);
+		wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+		AddLine(context, wxT("* ") + nick + sep + text, colours[6], true, is_self);
 	}
 	else
 	{
@@ -704,7 +707,7 @@ void ClientUIMDIFrame::OnClientCTCPIn(const wxString &context, const wxString &n
 	msg << wxT('[') << nick;
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	msg << wxT(']');
 	if (data.Length())
@@ -720,7 +723,7 @@ void ClientUIMDIFrame::OnClientCTCPOut(const wxString &context, const wxString &
 	msg << wxT("-> [") << nick << wxT(']');
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	if (data.Length())
 	{
@@ -735,7 +738,7 @@ void ClientUIMDIFrame::OnClientCTCPReplyIn(const wxString &context, const wxStri
 	msg << wxT('[') << nick;
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	msg << wxT(" reply]");
 	if (data.Length())

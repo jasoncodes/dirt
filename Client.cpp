@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.42 2003-04-01 08:26:39 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.43 2003-04-01 10:11:00 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -64,7 +64,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME MSG MSGME NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME ME'S MSG MSGME MY NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -105,6 +105,10 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		SendMessage(context, context, params, cmd == wxT("ME"));
+	}
+	else if (cmd == wxT("ME'S") || cmd == wxT("MY"))
+	{
+		ProcessConsoleInput(context, wxT("/me 's ") + params);
 	}
 	else if (cmd == wxT("MSG") || cmd == wxT("MSGME"))
 	{

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.43 2003-04-01 08:26:13 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.44 2003-04-01 10:11:00 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -153,7 +153,8 @@ void ClientUIConsole::OnClientMessageOut(const wxString &context, const wxString
 	{
 		if (is_action)
 		{
-			Output(wxString() << wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + wxT(" ") + text);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			Output(wxString() << wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + sep + text);
 		}
 		else
 		{
@@ -164,7 +165,8 @@ void ClientUIConsole::OnClientMessageOut(const wxString &context, const wxString
 	{
 		if (is_action)
 		{
-			Output(wxString() << wxT("* ") + m_client->GetNickname() + wxT(" ") + text);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			Output(wxString() << wxT("* ") + m_client->GetNickname() + sep + text);
 		}
 		else
 		{
@@ -179,7 +181,8 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 	{
 		if (is_action)
 		{
-			Output(wxString() << wxT("* *") + nick + wxT("* ") + text);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			Output(wxString() << wxT("* *") + nick + wxT("*") + sep + text);
 		}
 		else
 		{
@@ -190,7 +193,8 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 	{
 		if (is_action)
 		{
-			Output(wxString() << wxT("* ") + nick + wxT(" ") + text);
+			wxString sep = (text.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+			Output(wxString() << wxT("* ") + nick + sep + text);
 		}
 		else
 		{
@@ -205,7 +209,7 @@ void ClientUIConsole::OnClientCTCPIn(const wxString &context, const wxString &ni
 	msg << wxT('[') << nick;
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	msg << wxT(']');
 	if (data.Length())
@@ -221,7 +225,7 @@ void ClientUIConsole::OnClientCTCPOut(const wxString &context, const wxString &n
 	msg << wxT("-> [") << nick << wxT(']');
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	if (data.Length())
 	{
@@ -236,7 +240,7 @@ void ClientUIConsole::OnClientCTCPReplyIn(const wxString &context, const wxStrin
 	msg << wxT('[') << nick;
 	if (type.Length())
 	{
-		msg << wxT(' ') << type;
+		msg << wxT(' ') << type << (wxChar)OriginalModifier;
 	}
 	msg << wxT(" reply]");
 	if (data.Length())

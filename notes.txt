@@ -35,3 +35,13 @@
 * research that log control gdi thing in 9x
 
 * flickering when ctrl-tab
+
+
+
+* finish ctcp
+
+* add CTCP PING
+
+* /alias ping /ctcp $1 ping
+
+* sending a ctcp reply should not reset idle time
