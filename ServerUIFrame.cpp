@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.29 2003-03-11 06:09:48 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.30 2003-03-11 07:26:46 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -216,10 +216,10 @@ ServerUIFrame::~ServerUIFrame()
 
 }
 
-static void ForceForegroundWindow(wxFrame *wnd)
+static void ForceForegroundWindow(wxFrame *frm)
 {
-#ifdef __WXMSW__
-	HWND hWnd = (HWND)wnd->GetHWND();
+#if defined(__WXMSW__)
+	HWND hWnd = (HWND)frm->GetHWND();
 	if (hWnd != GetForegroundWindow())
 	{
 		DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
@@ -244,9 +244,9 @@ static void ForceForegroundWindow(wxFrame *wnd)
 		}
 	}
 #else
-	wnd->Show();
-	wnd->Iconize(false);
-	wnd->SetFocus();
+	frm->Show(false);
+	frm->Show(true);
+	frm->SetFocus();
 #endif
 }
 
