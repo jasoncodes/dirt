@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.17 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.18 2003-02-20 07:28:29 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -31,14 +31,6 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 
 	Debug(wxEmptyString, AppTitle());
 
-/*	wxArrayString users(true);
-	users.Add(wxT("First"));
-	users.Add(wxT("Third"));
-	users.Add(wxT("Second"));
-	m_event_handler->OnClientUserList(users);
-	m_event_handler->OnClientUserJoin(wxT("Fourth"), wxT("fourth@dev.null"));
-	m_event_handler->OnClientUserPart(wxT("Fourth"), wxT("fourth@dev.null"), wxT("Quit message goes here"));
-*/
 }
 
 ClientDefault::~ClientDefault()
