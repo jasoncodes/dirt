@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$DISPLAY" == "" ];
+then
+	dirtconsole "$@"
+else
+	Dirt "$@"
+fi

@@ -1,4 +1,4 @@
-PROGRAM = dirt
+PROGRAM = Dirt
 
 CC = gcc
 .SUFFIXES:      .o .cpp
