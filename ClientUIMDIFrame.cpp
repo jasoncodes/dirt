@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.89 2003-04-02 03:03:43 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.90 2003-04-02 04:06:31 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -223,7 +223,6 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 		{
 			child->GetCanvas()->OnActivate();
 		}
-		m_focused = true;
 	}
 	if (m_alert && m_flash > 0)
 	{

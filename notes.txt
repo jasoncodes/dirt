@@ -54,10 +54,6 @@
 
 
 
-* gtk build doesnt know when it's MDI parent is focused or not
-  (flashing taskbar, flashing tray, auto restore, etc, not working)
-
-
 
 
 
