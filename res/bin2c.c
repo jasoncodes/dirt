@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	printf("byte *%s = {\n", buff);
+	printf("const char *%s = \n", buff);
 
 	buff[0] = 0;
 
@@ -44,11 +44,11 @@ int main(int argc, char **argv)
 		count++;
 		if (strlen(buff) == 0)
 		{
-			sprintf(tmp, "%d", c);
+			sprintf(tmp, "\\x%03x", c);
 		}
 		else
 		{
-			sprintf(tmp, ", %d", c);
+			sprintf(tmp, "\\x%03x", c);
 		}
 		if (strlen(tmp) + strlen(buff) < 70)
 		{
@@ -56,17 +56,16 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			printf("\t%s", buff);
-			sprintf(buff, "%d", c);
-			printf(",\n");
+			printf("\t\"%s\"\n", buff);
+			sprintf(buff, "\\x%03x", c);
 		}
 	}
 
 	fclose(f);
 
-	printf("\t%s\n" ,buff);
+	printf("\t\"%s\"\n" ,buff);
 
-	printf("}; /* %s, %d bytes */\n", argv[1], count);
+	printf("; /* %s, %d bytes */\n", argv[1], count);
 
 	return 0;
 

@@ -6,11 +6,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.12 2003-02-13 16:05:11 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.13 2003-02-13 16:20:43 jason Exp $)
 
 #include "Dirt.h"
-#include "ClientUIMDIFrame.h"
 #include "ClientUIConsole.h"
+#include "Splash.h"
 #include <stdio.h>
 #include <wx/cmdline.h>
 
@@ -163,12 +163,12 @@ bool DirtApp::OnInit()
 {
 	if (IsConsole())
 	{
-		m_console = new ClientUIConsole();
+		m_console = new ClientUIConsole;
 	}
 	else
 	{
 		m_console = NULL;
-		new ClientUIMDIFrame();
+		new Splash;
 	}
 	return true;
 }
