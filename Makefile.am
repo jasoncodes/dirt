@@ -53,3 +53,7 @@ Dirt: $(OBJECTS) crypto/libcryptopp.a
 
 crypto/libcryptopp.a:
 	@cd crypto && make
+
+package: dirt
+	strip Dirt && upx --best Dirt && tar zcvf DirtGTK.tar.gz Dirt dirt dirtconsole
+
