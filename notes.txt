@@ -1,3 +1,9 @@
+* file transfers send from cable -> dialup go to 100% almost instantly on sender side
+
+* on large LogControl, sometimes there's an off by one on the scroll and causes fake dupe line
+
+* strip spaces from a hyperlink before trying to launch, prepend http://, etc
+
 * file://host/dir/file won't launch on at least win32
 
 * remove [03:00] from initial state event text
@@ -10,6 +16,7 @@
 	* auto close transfers on fail
 	* client log file options (none, default, custom)
 	* auto accept to <dir> (w/ checkbox for append nickname)
+	* sound to play on msg recv when not focused (none, default, custom)
 
 * server log file options in config dialog
 
