@@ -31,11 +31,11 @@ class SquareButton : public wxButton
 {
 
 public:
-	SquareButton(wxWindow *window, int id, const wxString &text)
+	SquareButton(wxWindow *window, int id, const wxString &text, int min_size)
 		: wxButton(window, id, text)
 	{
-		wxSize size = GetSize();
-		SetSize(size.y, size.y);
+		int size = wxMax(GetSize().y, min_size);
+		SetSize(size, size);
 		SetBestSize(GetSize());
 	}
 
@@ -45,13 +45,22 @@ class SquareBitmapButton : public wxBitmapButton
 {
 
 public:
-	SquareBitmapButton(wxWindow *window, int id, const wxBitmap& bitmap)
+	SquareBitmapButton(wxWindow *window, int id, const wxBitmap& bitmap, int min_size)
 		: wxBitmapButton(window, id, bitmap)
 	{
-		wxSize size = GetSize();
-		SetSize(size.y, size.y);
+		int size = wxMax(GetSize().y, min_size);
+		SetSize(size, size);
 		SetBestSize(GetSize());
 	}
+
+#ifdef __WXMSW__
+    virtual void DrawButtonDisable(WXHDC dc, int left, int top, int right, int bottom, bool with_marg)
+	{
+		HGDIOBJ hObj = ::SelectObject((HDC)dc, (HGDIOBJ)wxGREY_BRUSH->GetResourceHandle());
+		wxBitmapButton::DrawButtonDisable(dc, left, top, right, bottom, with_marg);
+		::SelectObject((HDC)dc, hObj);
+	}
+#endif
 
 };
 

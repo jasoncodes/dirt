@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FontControl.cpp,v 1.4 2004-05-22 14:09:08 jason Exp $)
+RCS_ID($Id: FontControl.cpp,v 1.5 2004-05-23 06:01:09 jason Exp $)
 
 #include "FontControl.h"
 #include <wx/fontdlg.h>
@@ -84,7 +84,7 @@ FontControl::FontControl(wxWindow *parent, int id, wxPoint pos, wxSize size)
 {
 
 	m_pnlPreview = new FontControlPreviewPanel(this, wxID_ANY, m_data);
-	wxButton *cmdBrowse = new SquareButton(this, ID_BROWSE, wxT("..."));
+	wxButton *cmdBrowse = new SquareButton(this, ID_BROWSE, wxT("..."), 20);
 
 	wxBoxSizer *szr = new wxBoxSizer(wxHORIZONTAL);
 	{

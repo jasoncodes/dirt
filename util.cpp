@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.87 2004-05-22 17:08:50 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.88 2004-05-23 06:01:10 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1092,8 +1092,39 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 
 	#ifdef __WXMSW__
 
+		wxString file, params;
+
+		wxFileName fn(filename);
+
+		if (fn.FileExists() || fn.DirExists())
+		{
+			file = filename;
+			params = wxEmptyString;
+		}
+		else if (filename.Left(1) == wxT('"') && filename.Mid(1).Find(wxT('"')) > 0)
+		{
+			int i = filename.Mid(1).Find(wxT('"'));
+			file = filename.Mid(1, i);
+			params = filename.Mid(i+2).Strip(wxString::both);
+		}
+		else
+		{
+			int i = filename.Find(wxT(' '));
+			if (i > -1)
+			{
+				file = filename.Left(i);
+				params = filename.Mid(i+1);
+			}
+			else
+			{
+				file = filename;
+				params = wxEmptyString;
+			}
+		}
+		wxMessageBox(wxString() << wxT('x') << file << wxT('x') << params << wxT('x'));
+
 		::wxBeginBusyCursor();
-		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), filename, NULL, NULL, SW_NORMAL);
+		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxEmptyString, file, params, NULL, SW_NORMAL);
 		::wxEndBusyCursor();
 		bool success = ((int)hInstance > 32);
 		if (!success)

@@ -35,8 +35,8 @@ class ServerEventHandler
 {
 
 public:
-	virtual bool OnServerPreprocess(wxString &WXUNUSED(cmd), wxString &WXUNUSED(params)) { return false; }
-	virtual wxArrayString OnServerSupportedCommands() { return wxArrayString(); }
+	virtual bool OnServerConsoleInputPreprocess(wxString &cmd, wxString &params, const wxString &nick) = 0;
+	virtual wxArrayString OnServerSupportedCommands() = 0;
 	virtual void OnServerStateChange() = 0;
 	virtual void OnServerConnectionChange() = 0;
 	virtual void OnServerInformation(const wxString &line) = 0;
@@ -179,7 +179,7 @@ public:
 
 	virtual void Information(const wxString &line);
 	virtual void Warning(const wxString &line);
-	virtual void ProcessConsoleInput(const wxString &input);
+	virtual void ProcessConsoleInput(const wxString &input, const wxString &nick = wxEmptyString);
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
 	virtual bool IsRunning() const = 0;
@@ -202,6 +202,8 @@ public:
 	virtual void InitLog();
 	static bool IsValidNickname(const wxString &nickname);
 	static ByteBuffer MakeNicknameValid(const ByteBuffer &src);
+	void LogConsoleInput(const wxString &cmd, const wxString &params, const wxString &nick);
+	void LogConsoleInput(const wxString &input, const wxString &nick);
 
 protected:
 	void OnConfigFileChanged(wxCommandEvent &event);

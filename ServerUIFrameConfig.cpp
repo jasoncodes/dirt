@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.49 2004-05-21 11:46:57 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.50 2004-05-23 06:01:10 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -100,20 +100,19 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	
 	wxBitmap bmpSound(sound_xpm);
 	wxBitmap bmpSoundDisabled (sound_disabled_xpm);
-	wxSize size_button = wxSize(m_txtAdminPassword->GetBestSize().y, m_txtAdminPassword->GetBestSize().y);
 
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, ID_SOUND_CONNECTION, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
-	wxButton *cmdSoundConnection = new wxButton(panel, ID_BROWSE_SOUND_CONNECTION, wxT("..."), wxDefaultPosition, size_button);
-	m_cmdSoundConnectionPreview = new wxBitmapButton(panel, ID_PREVIEW_SOUND_CONNECTION, bmpSound, wxDefaultPosition, size_button);
+	wxButton *cmdSoundConnection = new SquareButton(panel, ID_BROWSE_SOUND_CONNECTION, wxT("..."), m_txtAdminPassword->GetBestSize().y);
+	m_cmdSoundConnectionPreview = new SquareBitmapButton(panel, ID_PREVIEW_SOUND_CONNECTION, bmpSound, m_txtAdminPassword->GetBestSize().y);
 	m_cmdSoundConnectionPreview->SetBitmapDisabled(sound_disabled_xpm);
 	
 	wxStaticText *lblSoundJoin = new wxStaticText(panel, -1, wxT("&Join Sound:"));
 	m_txtSoundJoin = new wxTextCtrl(panel, ID_SOUND_JOIN, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
-	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, size_button);
-	m_cmdSoundJoinPreview = new wxBitmapButton(panel, ID_PREVIEW_SOUND_JOIN, bmpSound, wxDefaultPosition, size_button);
+	wxButton *cmdSoundJoin = new SquareButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), m_txtAdminPassword->GetBestSize().y);
+	m_cmdSoundJoinPreview = new SquareBitmapButton(panel, ID_PREVIEW_SOUND_JOIN, bmpSound, m_txtAdminPassword->GetBestSize().y);
 	m_cmdSoundJoinPreview->SetBitmapDisabled(sound_disabled_xpm);
 
 	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));

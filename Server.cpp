@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.71 2004-05-16 04:42:47 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.72 2004-05-23 06:01:09 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -415,15 +415,35 @@ wxArrayString Server::GetSupportedCommands() const
 	return cmds;
 }
 
-void Server::ProcessConsoleInput(const wxString &input)
+void Server::LogConsoleInput(const wxString &cmd, const wxString &params, const wxString &nick)
+{
+	wxString input = cmd;
+	if (params.Length())
+	{
+		input << wxT(" ") << params;
+	}
+	LogConsoleInput(input, nick);
+}
+
+void Server::LogConsoleInput(const wxString &input, const wxString &nick)
+{
+	if (nick.Length())
+	{
+		Information(nick + wxT(" issued command: ") + input);
+	}
+}
+
+void Server::ProcessConsoleInput(const wxString &input, const wxString &nick)
 {
 
 	wxString cmd, params;
+	bool is_cmd = false;
 	
 	SplitQuotedHeadTail(input, cmd, params);
 	if (input[0] == wxT('/'))
 	{
 		cmd = cmd.Mid(1);
+		is_cmd = true;
 	}
 	cmd.MakeUpper();
 	cmd.Trim(true);
@@ -431,13 +451,14 @@ void Server::ProcessConsoleInput(const wxString &input)
 	params.Trim(true);
 	params.Trim(false);
 
-	if (m_event_handler->OnServerPreprocess(cmd, params))
+	if (m_event_handler->OnServerConsoleInputPreprocess(cmd, params, nick))
 	{
 		return;
 	}
 
 	if (cmd == wxT("START"))
 	{
+		LogConsoleInput(input, nick);
 		if (IsRunning())
 		{
 			Warning(wxT("Server is already running"));
@@ -449,6 +470,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 	}
 	else if (cmd == wxT("STOP"))
 	{
+		LogConsoleInput(input, nick);
 		if (IsRunning())
 		{
 			Stop();
@@ -460,6 +482,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 	}
 	else if (cmd == wxT("USERS"))
 	{
+		LogConsoleInput(input, nick);
 		if (IsRunning())
 		{
 			Information(wxString() << wxT("There are currently ") << GetConnectionCount() << wxT(" connections"));
@@ -475,6 +498,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 	}
 	else if (cmd == wxT("KICK"))
 	{
+		LogConsoleInput(input, nick);
 		HeadTail ht = SplitQuotedHeadTail(params);
 		if (!ht.head.Length())
 		{
@@ -501,6 +525,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 	}
 	else if (cmd == wxT("WORDFILTER"))
 	{
+		LogConsoleInput(input, nick);
 		HeadTail ht = SplitQuotedHeadTail(params);
 		ht.head.MakeUpper();
 		if (ht.head == wxT("ADD"))
@@ -593,11 +618,64 @@ void Server::ProcessConsoleInput(const wxString &input)
 	}
 	else if (cmd == wxT("HELP"))
 	{
+		LogConsoleInput(input, nick);
 		Information(wxT("Supported commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
 	}
 	else
 	{
-		Warning(wxT("Unrecognized command: ") + cmd);
+		if (is_cmd && cmd != wxT("SAY") && cmd != wxT("ME"))
+		{
+			LogConsoleInput(input, nick);
+			Warning(wxT("Unrecognized command: ") + cmd);
+			return;
+		}
+		wxString msg;
+		bool is_action = false;
+		if (cmd.Left(1) == wxT('.'))
+		{
+			msg = input.Mid(1);
+		}
+		else if (cmd == wxT("SAY"))
+		{
+			msg = params;
+		}
+		else if (cmd == wxT("ME"))
+		{
+			msg = params;
+			is_action = true;
+		}
+		else
+		{
+			msg = input;
+		}
+		if (msg.Length())
+		{
+			wxString src;
+			if (nick.Length() > 0)
+			{
+				int i = nick.Find(wxT('@'));
+				if (i > -1)
+				{
+					src = nick.Left(i);
+				}
+				else
+				{
+					src = nick;
+				}
+			}
+			else
+			{
+				src = GetServerNickname();
+			}
+			if (is_action)
+			{
+				Information(wxString() << wxT("* ") << src << wxT(" ") << msg);
+			}
+			else
+			{
+				Information(wxString() << wxT("<") << src << wxT("> ") << msg);
+			}
+		}
 	}
 
 }
@@ -898,8 +976,18 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 				if (conn->IsAdmin())
 				{
 					conn->Send(context, cmd + wxT("OK"), Pack(GetServerNickname(), msg));
-					Information(conn->GetId() + wxT(" issued command: ") + msg);
-					ProcessConsoleInput(msg);
+					if (cmd == wxT("PRIVACTION"))
+					{
+						if (msg.Length())
+						{
+							msg = wxT("/me ") + msg;
+						}
+						else
+						{
+							msg = wxString(wxT("/me"));
+						}
+					}
+					ProcessConsoleInput(msg, conn->GetId());
 				}
 				else
 				{

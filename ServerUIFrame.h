@@ -40,7 +40,7 @@ public:
 	void SetPositionAndShow(bool force_foreground);
 
 protected:
-	virtual bool OnServerPreprocess(wxString &cmd, wxString &params);
+	virtual bool OnServerConsoleInputPreprocess(wxString &cmd, wxString &params, const wxString &nick);
 	virtual wxArrayString OnServerSupportedCommands();
 	virtual void OnServerStateChange();
 	virtual void OnServerConnectionChange();

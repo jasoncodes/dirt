@@ -1,11 +1,13 @@
-wallops. unknown commands should possibly just broadcast out to
-console@server. use say to force broadcast or a / prefix to force
-command. typing from the actual server console should output msg as from console@server
+* allow users to specify which browser to use in the options dialog.
+
+new dns code that always has the dns thread running
+but is blocked on an event normally
+the thread should be created and destroyed via wxModule
+
+prompt when pasting multiple lines
 
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
 increasing padding on staticboxes in option dialog should do it
-
-* allow users to specify which browser to use in the options dialog.
 
 primary/alternate labels on hotkeys are not centred vertically
 seems to be a bug in wxFlexGridSizer
@@ -15,8 +17,6 @@ win32: sometimes hitting ctrl-alt-d doesnt bring to top (although it appears to 
 win32: pressing ctrl-enter in the middle of a line of input results in the
 line being split into two lines, it should do the same thing as pressing
 ctrl-enter at the end of the input line
-
-MinGW+NT4: Pressing Alt+T followed by space results in crash
 
 GTK: startup with --host=jason.darktech.org results in it thinking
 that it didn't have focus and a red line appears at the top
@@ -34,14 +34,15 @@ GTK2: input control not font'd
 
 GTK2: TristateConfigPanel does not render correctly (depends on the theme it seems)
 
-prompt when pasting multiple lines
-
 implement digest auth in http.cpp
 
 default tab to work like it does in bash (dont pick unless not ambiguous, show list of possibles otherwise)
 
 /./././././../././././
 /././././././././././././././.
+
+NT4: Pressing Alt+T followed by space results in crash
+Definitely a bug in wx's MDI code. Have sent an email off to wx-dev about it
 
 see if possible to not use GTK yet on linux
 
@@ -85,9 +86,6 @@ each match will be clickable
 5 more will take you to the site
 
 always show ip along with hostname (in whois and also server user listing)
-
-[04:08] *** Error executing: cmd /k wget
-[04:08] *** Error executing: "cmd" /k wget
 
 add to ip list the ip the update came from and also the http proxy internal
 ip field
@@ -210,9 +208,6 @@ option to disable red and beep for a mdi child (for server console)
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
   probably via a short timer to make sure is processed after taking a breath7
-
-* wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
-  reproduces in unmodified controls sample
 
 * wxBug: each line read with wxTextFile has a null char on the end
   https://sourceforge.net/tracker/?func=detail&atid=309863&aid=789039&group_id=9863

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.14 2004-05-16 04:42:47 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.15 2004-05-23 06:01:09 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -72,10 +72,11 @@ void ServerUIConsole::OnEOF()
 	m_server->ProcessConsoleInput(wxT("/exit"));
 }
 
-bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &WXUNUSED(params))
+bool ServerUIConsole::OnServerConsoleInputPreprocess(wxString &cmd, wxString &params, const wxString &nick)
 {
 	if (cmd == wxT("EXIT"))
 	{
+		m_server->LogConsoleInput(cmd, params, nick);
 		ExitMainLoop();
 		return true;
 	}
