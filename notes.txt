@@ -27,11 +27,17 @@
 
 * when colour popup shows on GTK cannot programmically focus back to main window
 
-* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
-
 * allow saving of passwords for servers
 
 * optional password protection for saved passwords and private keys in dirt.ini
+
+* /lanlist
+
+* notices to users via console@server
+
+* automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
+
+* hotkey for minimize to tray
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
@@ -39,18 +45,18 @@
 
 * research that log control gdi thing in 9x
 
+* non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
+
 * flickering when ctrl-tab
 
 
 
 
-* automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
 
-* some hotkey for minimize to tray
 
-* server messages
+* gtk build doesnt know when it's MDI parent is focused or not
+  (flashing taskbar, flashing tray, auto restore, etc, not working)
 
-* /lanlist
 
 
 
