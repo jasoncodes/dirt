@@ -19,3 +19,7 @@
 
 * console client ui for win32
   (and hopefully automaticly linux w/ the help of a virtual x server)
+
+* dcc send/recv dialog
+
+* highlight/beep when app isn't focused (ClientUIMDIFrame::AddLine)

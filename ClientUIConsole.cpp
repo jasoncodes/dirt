@@ -91,7 +91,7 @@ void ClientUIConsole::OnTextEnter(wxCommandEvent& event)
 	m_client->ProcessInput(wxEmptyString, event.GetString());
 }
 
-bool ClientUIConsole::OnClientPreprocess(const wxString &context, const wxString &cmd, const wxString &params)
+bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
 {
 	if (cmd == "EXIT")
 	{

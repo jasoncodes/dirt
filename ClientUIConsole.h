@@ -13,7 +13,7 @@ public:
 
 protected:
 
-	virtual bool OnClientPreprocess(const wxString &context, const wxString &cmd, const wxString &params);
+	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
 	virtual void OnClientWarning(const wxString &context, const wxString &text);
 	virtual void OnClientInformation(const wxString &context, const wxString &text);

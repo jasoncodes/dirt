@@ -5,7 +5,7 @@ class ClientEventHandler
 {
 
 public:
-	virtual bool OnClientPreprocess(const wxString &context, const wxString &cmd, const wxString &params) { return false; }
+	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params) { return false; }
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientInformation(const wxString &context, const wxString &text) = 0;
