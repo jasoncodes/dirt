@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.60 2003-03-01 06:56:28 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.61 2003-03-01 07:33:36 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -123,7 +123,11 @@ void ClientUIMDIFrame::ResetRedLines()
 		{
 			ClientUIMDICanvas *canvas =
 				(ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
-			canvas->GetLog()->ResetRedLine();
+			LogControl *txtLog = canvas->GetLog();
+			if (txtLog)
+			{
+				txtLog->ResetRedLine();
+			}
 		}
 	}
 }
