@@ -33,7 +33,7 @@ OPTIMIZATIONS = -O1
 CXXFLAGS = \
 	$(strip \
 		$(OPTIMIZATION) `$(WXCONFIG) --cxxflags` $(KDE_CXXFLAGS) \
-		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include) -DNDEBUG \
+		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include -DNDEBUG \
 	)
 LINK_FLAGS = `$(WXCONFIG) --libs` $(KDE_LINK)
 .SUFFIXES: .o .cpp
