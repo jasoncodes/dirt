@@ -34,11 +34,11 @@
 
 * hide /oper password when being typed
 
+* is there a way to tell gethostbyname() to cancel?
+
 * dirt:// protocol registration on mozilla and/or KDE
 
 * tray icon support
 * file transfers
 * /bind
 * /alias
-
-* segfault from dns code on gtk. only when lookup() isn't called
