@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.14 2003-03-11 09:51:38 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.15 2003-03-19 10:06:36 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -22,7 +22,8 @@ enum
 {
 	ID_CLIENT = 1,
 	ID_SERVER,
-	ID_INTERNET
+	ID_INTERNET,
+	ID_LOGS
 };
 
 BEGIN_EVENT_TABLE(Splash, wxFrame)
@@ -31,6 +32,7 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 	EVT_BUTTON(ID_CLIENT, Splash::OnButton)
 	EVT_BUTTON(ID_SERVER, Splash::OnButton)
 	EVT_BUTTON(ID_INTERNET, Splash::OnButton)
+	EVT_BUTTON(ID_LOGS, Splash::OnButton)
 END_EVENT_TABLE()
 
 Splash::Splash()
@@ -43,12 +45,13 @@ Splash::Splash()
 	const int gap_x = 16;
 	const int gap_y = 16;
 
-	wxButton *btns[3];
+	wxButton *btns[4];
 	const int btn_count = 3;
 
 	btns[0] = new wxButton(this, ID_CLIENT, wxT("&Client"));
 	btns[1] = new wxButton(this, ID_SERVER, wxT("&Server"));
 	btns[2] = new wxButton(this, ID_INTERNET, wxT("&Internet"));
+	//btns[3] = new wxButton(this, ID_LOGS, wxT("&Logs"));
 
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
@@ -63,8 +66,16 @@ Splash::Splash()
 	}
 	
 	int total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
+
+	if (total_width > m_bmp->GetWidth()-gap_x*2)
+	{
+		total_width = m_bmp->GetWidth()-gap_x*2;
+		btn_width = (total_width - (gap_x * (btn_count - 1))) / btn_count;
+		total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
+	}
+
 	int start_pos = (m_bmp->GetWidth() - total_width) / 2;
-	
+
 	for (int i = 0; i < btn_count; ++i)
 	{
 		btns[i]->SetSize(start_pos + ((btn_width + gap_x) * i), pos_y, btn_width, -1);
