@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.60 2003-07-10 12:11:35 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.61 2003-07-10 14:06:16 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
+#include "LogControl.h"
 
 //////// ServerConnection ////////
 
@@ -1006,14 +1007,15 @@ void Server::PopulateFilteredWords()
 
 wxString Server::ProcessWordFilters(const wxString &text) const
 {
-	wxString output = text;
+	const wxString text_no_formatting = LogControl::ConvertModifiersIntoHtml(text, true);
+	wxString output = text_no_formatting;
 	for (size_t i = 0; i < m_filtered_words_list.GetCount(); ++i)
 	{
 		wxString old_value = m_filtered_words_list[i];
 		wxString new_value = m_config.GetConfig()->Read(wxT("/Server/Word Filters/") + old_value);
 		output = CaseInsensitiveReplace(output, m_filtered_words_list[i], new_value);
 	}
-	return output;
+	return (output != text_no_formatting) ? output : (const wxString&)text;
 }
 
 ByteBuffer Server::ProcessWordFilters(const ByteBuffer &data) const
