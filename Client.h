@@ -5,6 +5,7 @@ class FileTransfer;
 class URL;
 class ClientTimers;
 class ClientTimersEvent;
+class CryptSocketProxySettings;
 
 #include "util.h"
 
@@ -133,6 +134,8 @@ public:
 	virtual ClientContact* GetContactSelf() const { return m_contact_self; }
 	virtual ByteBuffer GetKeyLocalPublic() const = 0;
 	virtual ByteBuffer GetKeyLocalPrivate() const = 0;
+	virtual void NewProxySettings();
+	virtual const CryptSocketProxySettings* GetProxySettings() const = 0;
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);

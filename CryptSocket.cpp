@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.26 2003-05-31 04:25:32 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.28 2003-06-02 12:52:05 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
 #include "util.h"
 #include <wx/datetime.h>
+#include "CryptSocketProxy.h"
 
 //////// CryptSocketBase ////////
 
@@ -561,6 +562,10 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	sck->InitBuffers();
 	sck->InitSocketEvents();
 	sck->SetEventHandler(handler?handler:m_handler, (id!=wxID_ANY)?id:m_id);
+	if (GetProxySettings())
+	{
+		sck->SetProxySettings(*GetProxySettings());
+	}
 	sck->SetUserData(userdata);
 	bool success = ((wxSocketServer*)m_sck)->AcceptWith(*sck->m_sck);
 	if (success)

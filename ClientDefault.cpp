@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.32 2003-05-21 11:59:53 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.33 2003-06-02 12:52:05 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -14,6 +14,7 @@ RCS_ID($Id: ClientDefault.cpp,v 1.32 2003-05-21 11:59:53 jason Exp $)
 #include "CryptSocket.h"
 #include "util.h"
 #include "IPInfo.h"
+#include "CryptSocketProxy.h"
 
 enum
 {
@@ -31,6 +32,7 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 {
 	m_sck = new CryptSocketClient;
 	m_sck->SetEventHandler(this, ID_SOCKET);
+	NewProxySettings();
 	m_dns = new DNS;
 	m_dns->SetEventHandler(this, ID_DNS);
 }
@@ -39,6 +41,17 @@ ClientDefault::~ClientDefault()
 {
 	delete m_sck;
 	delete m_dns;
+}
+
+void ClientDefault::NewProxySettings()
+{
+	m_sck->SetProxySettings(CryptSocketProxySettings(m_config));
+	Client::NewProxySettings();
+}
+
+const CryptSocketProxySettings* ClientDefault::GetProxySettings() const
+{
+	return m_sck->GetProxySettings();
 }
 
 void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action)

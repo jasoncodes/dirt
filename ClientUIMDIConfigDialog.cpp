@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.10 2003-06-02 09:27:13 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.11 2003-06-02 12:52:05 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -533,6 +533,10 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		{
 			ErrMsg(wxT("Error saving proxy settings"));
 			success = false;
+		}
+		else
+		{
+			((ClientUIMDIFrame*)GetParent())->GetClient()->NewProxySettings();
 		}
 	}
 	

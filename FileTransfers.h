@@ -37,6 +37,8 @@ public:
 
 	wxString GetLastCompletedGetFilename() const { return m_last_completed_get_filename; }
 
+	void NewProxySettings();
+
 protected:
 	void OnTimer(wxTimerEvent &event);
 	void OnSocket(CryptSocketEvent &event);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.66 2003-05-23 13:18:53 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.67 2003-06-02 12:52:04 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -115,6 +115,11 @@ Client::~Client()
 void Client::Debug(const wxString &context, const wxString &text)
 {
 	m_event_handler->OnClientDebug(context, text);
+}
+
+void Client::NewProxySettings()
+{
+	m_file_transfers->NewProxySettings();
 }
 
 wxArrayString Client::GetSupportedCommands() const

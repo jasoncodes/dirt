@@ -4,6 +4,8 @@
 #include "util.h"
 #include "ConfigFile.h"
 
+class CryptSocketBase;
+
 enum CryptSocketProxyProtocol
 {
 	ppUnknown = -1,
@@ -173,6 +175,14 @@ protected:
 
 class CryptSocketProxy
 {
+
+public:
+	CryptSocketProxy(CryptSocketBase *sck);
+	virtual ~CryptSocketProxy();
+
+protected:
+	CryptSocketBase *m_sck;
+
 };
 
 /*
