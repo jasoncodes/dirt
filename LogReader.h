@@ -32,6 +32,7 @@ public:
 	virtual wxString GetText();
 
 protected:
+	virtual void Init(const wxString &filename);
 	virtual ByteBuffer Read();
 
 protected:
