@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.3 2003-03-04 00:29:48 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.4 2003-03-04 00:41:30 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -246,7 +246,7 @@ void HTTP::OnSocket(wxSocketEvent &event)
 			{
 				m_last_active = GetMillisecondTicks();
 				ByteBuffer buff(4096);
-				m_sck->Read(buff.Lock(), buff.Length());
+				m_sck->Read(buff.LockReadWrite(), buff.Length());
 				buff.Unlock();
 				wxCHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 				
@@ -258,7 +258,7 @@ void HTTP::OnSocket(wxSocketEvent &event)
 					}
 					else
 					{
-						m_buffIn += ByteBuffer(buff.Lock(), m_sck->LastCount());
+						m_buffIn += ByteBuffer(buff.LockRead(), m_sck->LastCount());
 						buff.Unlock();
 					}
 					ProcessIncoming();
@@ -361,7 +361,7 @@ void HTTP::ProcessIncoming()
 				if (m_chunk_remaining > 0)
 				{
 					size_t data_len = wxMin((size_t)m_chunk_remaining, m_buffIn.Length());
-					const byte *ptr = m_buffIn.Lock();
+					const byte *ptr = m_buffIn.LockRead();
 					DispatchContent(ByteBuffer(ptr, data_len));
 					ByteBuffer rest(ptr+data_len, m_buffIn.Length()-data_len);
 					m_buffIn.Unlock();
@@ -378,7 +378,7 @@ void HTTP::ProcessIncoming()
 
 					if (m_chunk_crlf_left && m_buffIn.Length() >= 2)
 					{
-						const byte *ptr = m_buffIn.Lock();
+						const byte *ptr = m_buffIn.LockRead();
 						if (ptr[0] == '\r' && ptr[1] == '\n')
 						{
 							ByteBuffer rest(ptr+2, m_buffIn.Length()-2);
@@ -398,7 +398,7 @@ void HTTP::ProcessIncoming()
 
 					if (!m_chunk_crlf_left && m_buffIn.Length() > 0)
 					{
-						const byte *ptr = m_buffIn.Lock();
+						const byte *ptr = m_buffIn.LockRead();
 						const byte *pos = findbytes(ptr, m_buffIn.Length(), (const byte*)"\r\n", 2);
 						if (pos)
 						{
@@ -453,7 +453,7 @@ void HTTP::ProcessIncoming()
 	else
 	{
 
-		const byte *ptr = m_buffIn.Lock();
+		const byte *ptr = m_buffIn.LockRead();
 		const byte *pos = findbytes(ptr, m_buffIn.Length(), (const byte*)"\r\n\r\n", 4);
 		if (pos)
 		{
@@ -549,7 +549,7 @@ void HTTP::MaybeSendData()
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
-	const byte *ptr = m_buffOut.Lock();
+	const byte *ptr = m_buffOut.LockRead();
 	size_t len = m_buffOut.Length();
 
 	while (len > 0)

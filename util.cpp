@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.30 2003-03-03 14:00:31 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.31 2003-03-04 00:41:30 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -282,7 +282,7 @@ wxString SecondsToMMSS(long seconds)
 ByteBuffer Uint32ToBytes(wxUint32 num)
 {
 	ByteBuffer bytes(4);
-	byte *ptr = bytes.Lock();
+	byte *ptr = bytes.LockReadWrite();
 	ptr[0] = ((num >> 24) & 0xff);
 	ptr[1] = ((num >> 16) & 0xff);
 	ptr[2] = ((num >> 8)  & 0xff);
@@ -304,7 +304,7 @@ wxUint32 BytesToUint32(const byte *data, int len)
 ByteBuffer Uint16ToBytes(wxUint16 num)
 {
 	ByteBuffer bytes(2);
-	byte *ptr = bytes.Lock();
+	byte *ptr = bytes.LockReadWrite();
 	ptr[0] = ((num >> 8)  & 0xff);
 	ptr[1] = ((num >> 0)  & 0xff);
 	bytes.Unlock();
@@ -410,11 +410,11 @@ ByteBuffer Pack(const ByteBufferArray &array)
 		total_len += array.Item(i).Length();
 	}
 	ByteBuffer buff(total_len);
-	byte *ptr = buff.Lock();
+	byte *ptr = buff.LockReadWrite();
 	for (size_t i = 0; i < array.GetCount(); ++i)
 	{
 		ByteBuffer tmp(array.Item(i));
-		const byte *tmpptr = tmp.Lock();
+		const byte *tmpptr = tmp.LockRead();
 		memcpy(ptr, tmpptr, tmp.Length());
 		ptr += tmp.Length() + 1;
 		tmp.Unlock();
@@ -435,7 +435,7 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 	
 		ByteBufferArray array;
 		ByteBuffer src(packed_array);
-		const byte *ptr = src.Lock();
+		const byte *ptr = src.LockRead();
 		size_t len = src.Length();
 
 		const byte *sep = (const byte*)memchr(ptr, 0, len);

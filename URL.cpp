@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.10 2003-03-03 13:55:50 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.11 2003-03-04 00:41:30 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -259,7 +259,7 @@ wxString URL::Escape(const wxString &text)
 	wxString output;
 	output.Alloc(text.Length() * 4);
 	ByteBuffer src(text);
-	const byte *ptr = src.Lock();
+	const byte *ptr = src.LockRead();
 	size_t len = src.Length();
 	for (size_t i = 0; i < len; ++i)
 	{
@@ -285,9 +285,9 @@ wxString URL::Unescape(const wxString &text)
 {
 	ByteBuffer src(text);
 	ByteBuffer dst(text.Length()+1);
-	const byte *srcptr = src.Lock();
+	const byte *srcptr = src.LockRead();
 	size_t srclen = src.Length();
-	byte *dstptr = dst.Lock();
+	byte *dstptr = dst.LockReadWrite();
 	for (size_t i = 0; i < srclen; ++i)
 	{
 		byte b = srcptr[i];

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.24 2003-02-27 08:17:55 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.26 2003-03-04 00:42:15 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -146,10 +146,10 @@ static wxString DecodePassword(const wxString &value, bool decrypt)
 		return wxEmptyString;
 	}
 
-	const byte *ptr = data.Lock();
+	const byte *ptr = data.LockRead();
 	ByteBuffer crc32(ptr, 4);
 	ByteBuffer len_buff(ptr+4, 4);
-	size_t len = BytesToUint32(len_buff.Lock(), len_buff.Length());
+	size_t len = BytesToUint32(len_buff.LockRead(), len_buff.Length());
 	len_buff.Unlock();
 	ByteBuffer AESKey(ptr+8, 32);
 	ByteBuffer enc(ptr+40, data.Length()-40);
@@ -166,7 +166,7 @@ static wxString DecodePassword(const wxString &value, bool decrypt)
 		return wxEmptyString;
 	}
 	
-	ByteBuffer dec(data.Lock(), len);
+	ByteBuffer dec(data.LockRead(), len);
 	data.Unlock();
 	
 	if (crc32 == Crypt::CRC32(AESKey + dec))
@@ -531,7 +531,6 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->m_isaway = true;
 			conn->m_awaymessage = (wxString)data;
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
-			Information(conn->GetId() + wxT(" is away: ") + conn->m_awaymessage);
 		}
 	}
 	else if (cmd == wxT("BACK"))
@@ -539,7 +538,6 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		if (conn->m_awaymessage.Length() > 0)
 		{
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
-			Information(conn->GetId() + wxT(" has returned (msg: ") + conn->m_awaymessage + (wxChar)OriginalModifier + wxT(")"));
 			conn->m_isaway = false;
 			conn->m_awaymessage = wxEmptyString;
 		}

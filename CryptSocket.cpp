@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.14 2003-02-24 07:31:09 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.15 2003-03-04 00:41:30 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -176,7 +176,7 @@ void CryptSocketBase::OnSocketInput()
 {
 
 	ByteBuffer buff(4096);
-	m_sck->Read(buff.Lock(), buff.Length());
+	m_sck->Read(buff.LockReadWrite(), buff.Length());
 	buff.Unlock();
 	CRYPTSOCKET_CHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 	
@@ -188,7 +188,7 @@ void CryptSocketBase::OnSocketInput()
 		}
 		else
 		{
-			m_buffIn += ByteBuffer(buff.Lock(), m_sck->LastCount());
+			m_buffIn += ByteBuffer(buff.LockRead(), m_sck->LastCount());
 			buff.Unlock();
 		}
 		DispatchIncoming();
@@ -218,7 +218,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 		{
 			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decryping message"));
 		}
-		ByteBuffer plain(dec.Lock(), data_len);
+		ByteBuffer plain(dec.LockRead(), data_len);
 		dec.Unlock();
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_INPUT, this, plain);
 		m_handler->AddPendingEvent(evt);
@@ -270,7 +270,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 void CryptSocketBase::DispatchIncoming()
 {
 
-	const byte *ptr = m_buffIn.Lock();
+	const byte *ptr = m_buffIn.LockRead();
 	size_t len = m_buffIn.Length();
 
 	while (len >= 2)
@@ -348,7 +348,7 @@ void CryptSocketBase::MaybeSendData()
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
-	const byte *ptr = m_buffOut.Lock();
+	const byte *ptr = m_buffOut.LockRead();
 	size_t len = m_buffOut.Length();
 
 	while (len > 0)
