@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.69 2004-03-15 07:16:05 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.70 2004-03-24 07:48:37 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -713,6 +713,50 @@ ServerConnection* Server::SendToNick(const wxString &nickname, const wxString &c
 	}
 }
 
+ByteBuffer Server::MakeNicknameValid(const ByteBuffer &src)
+{
+
+	wxString org_str = (wxString)src;
+	
+	wxString source_str = LogControl::ConvertModifiersIntoHtml(org_str, true);
+	
+	wxString output;
+	output.Alloc(source_str.Length());
+	
+	// grab any valid characters
+	for (size_t i = 0; i < source_str.Length(); ++i)
+	{
+		wxChar c = source_str[i];
+		if (wxIsalnum(c))
+		{
+			output += c;
+		}
+		else
+		{
+			switch (c)
+			{
+				case wxT('_'):
+				case wxT('-'):
+				case wxT('['):
+				case wxT(']'):
+				case wxT('\''):
+				case wxT(' '):
+					output += c;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	
+	// replace all multiple spaces with a single space
+	while (output.Replace(wxT("  "), wxT(" ")) > 0);
+
+	// return the new string if anything changed
+	return (org_str == output) ? src : (ByteBuffer)output;
+
+}
+
 bool Server::IsValidNickname(const wxString &nickname)
 {
 
@@ -953,12 +997,22 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		}
 		else
 		{
-			ByteBuffer new_nick = ProcessWordFilters(data);
+
+			if (!IsValidNickname(data))
+			{
+				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + data));
+				return;
+			}
+
+			ByteBuffer new_nick = MakeNicknameValid(ProcessWordFilters(data));
+			
 			if (!IsValidNickname(new_nick))
 			{
-				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + new_nick));
+				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + data));
+				return;
 			}
-			else if ((ByteBuffer)conn->m_nickname != new_nick)
+
+			if ((ByteBuffer)conn->m_nickname != new_nick)
 			{
 				if (conn->m_nickname.Length() == 0)
 				{

@@ -179,6 +179,7 @@ public:
 	virtual wxArrayString GetSupportedCommands() const;
 	virtual void InitLog();
 	static bool IsValidNickname(const wxString &nickname);
+	static ByteBuffer MakeNicknameValid(const ByteBuffer &src);
 
 protected:
 	void OnConfigFileChanged(wxCommandEvent &event);
