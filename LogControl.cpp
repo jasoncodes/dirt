@@ -774,7 +774,7 @@ wxRect LogControl::GetCellRect(wxHtmlCell *cell)
 	
 	wxRect rt(
 		cell->GetPosX(), cell->GetPosY(),
-		cell->GetWidth(), cell->GetHeight() + 1);
+		cell->GetWidth(), cell->GetHeight());
 	
 	wxHtmlCell *parent = cell->GetParent();
 

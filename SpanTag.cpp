@@ -57,7 +57,7 @@ public:
 
 				dc.DrawRectangle(
 					x + cell->GetPosX(), y + cell->GetPosY(),
-					cell->GetWidth(), cell->GetHeight() + 1);
+					cell->GetWidth(), cell->GetHeight());
 
 			}
 

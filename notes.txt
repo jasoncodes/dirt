@@ -27,3 +27,9 @@
 * type /lizard and it says (Lizard support is not available at this time)
 
 * tooltips for switchbar (maybe nick list)
+
+* single lines (ones that don't wrap) have a line of blank pixels
+  after the line (when highlighting and using background colour)
+  inducing wrapping (making window not as wide eliminates the problem)
+
+* highlighting has bugs on gtk (when updates happen while highlighting)
