@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.6 2003-05-31 05:02:14 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.7 2003-05-31 07:36:55 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
 #include "TristateConfigPanel.h"
 #include "StaticCheckBoxSizer.h"
 #include "RadioBoxPanel.h"
+#include "CryptSocketProxy.h"
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
 
@@ -52,6 +53,11 @@ public:
 protected:
 	virtual void OnSelectionChanged(int n)
 	{
+		bool enabled = (n > 0);
+		m_lblNetwork->Enable(enabled);
+		m_txtNetwork->Enable(enabled);
+		m_lblSubnet->Enable(enabled);
+		m_txtSubnet->Enable(enabled);
 	}
 
 protected:
@@ -93,6 +99,9 @@ public:
 protected:
 	virtual void OnSelectionChanged(int n)
 	{
+		bool enabled = (n > 0);
+		m_lblPorts->Enable(enabled);
+		m_txtPorts->Enable(enabled);
 	}
 
 protected:
@@ -104,11 +113,15 @@ protected:
 enum
 {
 	ID_LOG = 1,
-	ID_SOUND
+	ID_SOUND,
+	ID_PROXY_ENABLED,
+	ID_PROXY_PROTOCOL
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIConfigDialog, wxDialog)
 	EVT_BUTTON(wxID_OK, ClientUIMDIConfigDialog::OnOK)
+	EVT_CHECKBOX(ID_PROXY_ENABLED, ClientUIMDIConfigDialog::OnProxy)
+	EVT_COMBOBOX(ID_PROXY_PROTOCOL, ClientUIMDIConfigDialog::OnProxy)
 END_EVENT_TABLE()
 
 ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
@@ -119,10 +132,11 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	
 	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
-	m_chkProxy = new wxCheckBox(panel, wxID_ANY, wxT("&Proxy Support"));
+	m_chkProxy = new wxCheckBox(panel, ID_PROXY_ENABLED, wxT("&Proxy Support"));
 	m_lblProtocol = new wxStaticText(panel, wxID_ANY, wxT("Protocol:"));
-	const wxString protocols[] = { wxT("SOCKS 4"), wxT("SOCKS 5"), wxT("HTTP CONNECT") };
-	m_cmbProtocol = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, WXSIZEOF(protocols), protocols, wxCB_DROPDOWN|wxCB_READONLY);
+	const wxString* const protocol_names = CryptSocketProxySettings::GetProtocolNames();
+	size_t protocol_count = CryptSocketProxySettings::GetProtocolCount();
+	m_cmbProtocol = new wxComboBox(panel, ID_PROXY_PROTOCOL, protocol_names[0], wxDefaultPosition, wxDefaultSize, protocol_count, protocol_names, wxCB_DROPDOWN|wxCB_READONLY);
 	m_lblHostname = new wxStaticText(panel, wxID_ANY, wxT("Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY);
 	m_lblPort = new wxStaticText(panel, wxID_ANY, wxT("Port:"));
@@ -270,6 +284,32 @@ void ClientUIMDIConfigDialog::OnOK(wxCommandEvent &event)
 	}
 }
 
+void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
+{
+	bool enabled = m_chkProxy->IsChecked();
+	CryptSocketProxyProtocol protocol =
+		CryptSocketProxySettings::ProtocolFromString(m_cmbProtocol->GetValue());
+	wxASSERT(protocol != ppUnknown);
+	bool can_auth =
+		CryptSocketProxySettings::DoesProtocolSupportAuthentication(protocol);
+	m_lblProtocol->Enable(enabled);
+	m_cmbProtocol->Enable(enabled);
+	m_lblHostname->Enable(enabled);
+	m_txtHostname->Enable(enabled);
+	m_lblPort->Enable(enabled);
+	m_txtPort->Enable(enabled);
+	m_lblUsername->Enable(enabled && can_auth);
+	m_txtUsername->Enable(enabled && can_auth);
+	m_lblPassword->Enable(enabled && can_auth);
+	m_txtPassword->Enable(enabled && can_auth);
+	m_fraProxyTypes->Enable(enabled);
+	m_chkTypeServer->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctServer));
+	m_chkTypeDCCConnect->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctDCCConnect));
+	m_chkTypeDCCListen->Enable(enabled && CryptSocketProxySettings::DoesProtocolSupportConnectionType(protocol, pctDCCListen));
+	m_pnlDestNetwork->Enable(enabled);
+	m_pnlDestPorts->Enable(enabled);
+}
+
 void ClientUIMDIConfigDialog::LoadSettings()
 {
 
@@ -292,6 +332,9 @@ void ClientUIMDIConfigDialog::LoadSettings()
 			m_pnlSound->SetMode(Config::tsmDefault);
 		}
 	#endif
+
+	wxCommandEvent evt;
+	OnProxy(evt);
 
 }
 

@@ -6,9 +6,10 @@
 
 enum CryptSocketProxyProtocol
 {
-	ppHTTP,
-	ppSOCKS4,
-	ppSOCKS5
+	ppUnknown = -1,
+	ppSOCKS4 = 0,
+	ppSOCKS5,
+	ppHTTP
 };
 
 enum CryptSocketProxyDestMode
@@ -34,6 +35,16 @@ public:
 	bool LoadSettings();
 	bool SaveSettings();
 
+	static const wxString* const GetProtocolNames();
+	static size_t GetProtocolCount();
+	static bool DoesProtocolSupportAuthentication(CryptSocketProxyProtocol protocol);
+	static CryptSocketProxyProtocol ProtocolFromString(const wxString &protocol);
+	static wxString ProtocolToString(CryptSocketProxyProtocol protocol);
+	static bool DoesProtocolSupportConnectionType(CryptSocketProxyProtocol protocol, CryptSocketProxyConnectionTypes type);
+
+	bool DoesDestDestIPMatch(const wxString &dest_ip) const;
+	bool DoesDestPortMatch(wxUint16 port) const;
+
 	bool GetEnabled() const;
 	CryptSocketProxyProtocol GetProtocol() const;
 	wxString GetHostname() const;
@@ -49,6 +60,7 @@ public:
 
 	bool SetEnabled(bool enabled);
 	bool SetProtocol(CryptSocketProxyProtocol protocol);
+	bool SetProtocol(const wxString &protocol);
 	bool SetHostname(const wxString &hostname);
 	bool SetPort(wxUint16 port);
 	bool SetUsername(const wxString &username);
@@ -59,9 +71,6 @@ public:
 	bool SetDestNetworkSubnet(const wxString &subnet);
 	bool SetDestPortsMode(CryptSocketProxyDestMode mode);
 	bool SetDestPortRanges(const wxString &port_ranges);
-
-	bool DoesDestDestIPMatch(const wxString &dest_ip) const;
-	bool DoesDestPortMatch(wxUint16 port) const;
 
 protected:
 	Config &m_config;
@@ -86,11 +95,8 @@ class CryptSocketProxy
 {
 };
 
-/*class CryptSocketProxyNull : public CryptSocketProxy
-{
-};
-
-class CryptSocketProxyHTTP : public CryptSocketProxy
+/*
+class CryptSocketProxyNull : public CryptSocketProxy
 {
 };
 
@@ -100,6 +106,11 @@ class CryptSocketProxySOCKS4 : public CryptSocketProxy
 
 class CryptSocketProxySOCKS5 : public CryptSocketProxy
 {
-};*/
+};
+
+class CryptSocketProxyHTTP : public CryptSocketProxy
+{
+};
+*/
 
 #endif

@@ -16,6 +16,7 @@ public:
 
 protected:
 	void OnOK(wxCommandEvent &event);
+	void OnProxy(wxCommandEvent &event);
 
 protected:
 	virtual void LoadSettings();
