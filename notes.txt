@@ -2,9 +2,9 @@
 
 * flickering when ctrl-tab
 
-* mdi child icon sometimes doesn't show
+* hold ctrl for copy w/o formatting
 
-* hold ctrl for copy w/o formatting, find text via ctrl-f, etc
+* find text via ctrl-f
 
 * dcc send/recv dialog
 

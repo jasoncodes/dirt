@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.9 2003-02-25 11:55:36 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.10 2003-03-15 05:49:19 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
@@ -99,6 +99,11 @@ void SwitchBarChild::OnSize(wxSizeEvent& event)
 		m_canvas->Show();
 		event.Skip();
 	}
+
+	#ifdef __WXMSW__
+		HWND hWnd = (HWND)(GetParent()->GetHandle());
+		DefWindowProc(hWnd, WM_NCPAINT, 1, 0);
+	#endif
 
 }
 
