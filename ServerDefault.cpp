@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.28 2003-02-27 02:52:31 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.29 2003-02-27 03:01:06 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -297,35 +297,43 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 		}
 		else if (cmd == wxT("OPER"))
 		{
-			bool success;
-			try
+			ByteBuffer pass = m_config->GetAdminPassword(true);
+			if (pass.Length() > 0)
 			{
-				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(m_config->GetAdminPassword(true)), data);
-			}
-			catch (...)
-			{
-				success = false;
-			}
-			if (success)
-			{
-				if (!conn2->m_admin)
+				bool success;
+				try
 				{
-					conn2->m_admin = true;
-					Information(conn->GetId() + wxT(" is now a server administrator"));
+					success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(pass), data);
+				}
+				catch (...)
+				{
+					success = false;
+				}
+				if (success)
+				{
+					if (!conn2->m_admin)
+					{
+						conn2->m_admin = true;
+						Information(conn->GetId() + wxT(" is now a server administrator"));
+					}
+				}
+				else
+				{
+					if (conn2->m_admin)
+					{
+						Information(conn->GetId() + wxT(" is no longer a server administrator"));
+						conn2->m_admin = false;
+					}
+					else
+					{
+						Warning(conn->GetId() + wxT(" failed to become a server administrator"));
+						conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Invalid server administarator password"))));
+					}
 				}
 			}
 			else
 			{
-				if (conn2->m_admin)
-				{
-					Information(conn->GetId() + wxT(" is no longer a server administrator"));
-					conn2->m_admin = false;
-				}
-				else
-				{
-					Warning(conn->GetId() + wxT(" failed to become a server administrator"));
-					conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Invalid server administarator password"))));
-				}
+				conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Remote administration not enabled"))));
 			}
 			return true;
 		}
