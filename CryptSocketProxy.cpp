@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.6 2003-06-02 06:34:39 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.7 2003-06-02 08:00:12 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -47,19 +47,19 @@ bool CryptSocketProxySettings::LoadSettings()
 	int failcount = 0;
 
 	failcount += !Read(wxT("Enabled"), &CryptSocketProxySettings::SetEnabled);
-	failcount += !Read(wxT("Protocol"), &CryptSocketProxySettings::SetProtocol);
-	failcount += !Read(wxT("Hostname"), &CryptSocketProxySettings::SetHostname);
-	failcount += !Read(wxT("Port"), &CryptSocketProxySettings::SetPort);
-	failcount += !Read(wxT("Username"), &CryptSocketProxySettings::SetUsername);
-	failcount += !Read(wxT("Password"), &CryptSocketProxySettings::SetPassword);
-	failcount += !Read(wxT("Conditions/Connection Types/Server"), &CryptSocketProxySettings::SetConnectionType);
-	failcount += !Read(wxT("Conditions/Connection Types/DCC Connect"), &CryptSocketProxySettings::SetConnectionType);
-	failcount += !Read(wxT("Conditions/Connection Types/DCC Listen"), &CryptSocketProxySettings::SetConnectionType);
-	failcount += !Read(wxT("Conditions/Destination Network/Mode"), &CryptSocketProxySettings::SetDestNetworkMode);
-	failcount += !Read(wxT("Conditions/Destination Network/Network"), &CryptSocketProxySettings::SetDestNetworkNetwork);
-	failcount += !Read(wxT("Conditions/Destination Network/Subnet"), &CryptSocketProxySettings::SetDestNetworkSubnet);
-	failcount += !Read(wxT("Conditions/Destination Ports/Mode"), &CryptSocketProxySettings::SetDestPortsMode);
-	failcount += !Read(wxT("Conditions/Destination Ports/Ranges"), &CryptSocketProxySettings::SetDestPortRanges);
+//	failcount += !Read(wxT("Protocol"), &CryptSocketProxySettings::SetProtocol);
+//	failcount += !Read(wxT("Hostname"), &CryptSocketProxySettings::SetHostname);
+//	failcount += !Read(wxT("Port"), &CryptSocketProxySettings::SetPort);
+//	failcount += !Read(wxT("Username"), &CryptSocketProxySettings::SetUsername);
+//	failcount += !Read(wxT("Password"), &CryptSocketProxySettings::SetPassword);
+	failcount += !Read(wxT("Conditions/Connection Types/Server"), &CryptSocketProxySettings::SetConnectionType, pctServer);
+	failcount += !Read(wxT("Conditions/Connection Types/DCC Connect"), &CryptSocketProxySettings::SetConnectionType, pctDCCConnect);
+	failcount += !Read(wxT("Conditions/Connection Types/DCC Listen"), &CryptSocketProxySettings::SetConnectionType, pctDCCListen);
+//	failcount += !Read(wxT("Conditions/Destination Network/Mode"), &CryptSocketProxySettings::SetDestNetworkMode);
+//	failcount += !Read(wxT("Conditions/Destination Network/Network"), &CryptSocketProxySettings::SetDestNetworkNetwork);
+//	failcount += !Read(wxT("Conditions/Destination Network/Subnet"), &CryptSocketProxySettings::SetDestNetworkSubnet);
+//	failcount += !Read(wxT("Conditions/Destination Ports/Mode"), &CryptSocketProxySettings::SetDestPortsMode);
+//	failcount += !Read(wxT("Conditions/Destination Ports/Ranges"), &CryptSocketProxySettings::SetDestPortRanges);
 
 	return (failcount == 0);
 
@@ -75,10 +75,10 @@ bool CryptSocketProxySettings::SaveSettings()
 	failcount += !Write(wxT("Hostname"), &CryptSocketProxySettings::GetHostname);
 	failcount += !Write(wxT("Port"), &CryptSocketProxySettings::GetPort);
 	failcount += !Write(wxT("Username"), &CryptSocketProxySettings::GetUsername);
-	failcount += !Write(wxT("Password"), &CryptSocketProxySettings::GetPassword);
-	failcount += !Write(wxT("Conditions/Connection Types/Server"), &CryptSocketProxySettings::GetConnectionType);
-	failcount += !Write(wxT("Conditions/Connection Types/DCC Connect"), &CryptSocketProxySettings::GetConnectionType);
-	failcount += !Write(wxT("Conditions/Connection Types/DCC Listen"), &CryptSocketProxySettings::GetConnectionType);
+	failcount += !Write(wxT("Password"), &CryptSocketProxySettings::GetPassword, false);
+	failcount += !Write(wxT("Conditions/Connection Types/Server"), &CryptSocketProxySettings::GetConnectionType, pctServer);
+	failcount += !Write(wxT("Conditions/Connection Types/DCC Connect"), &CryptSocketProxySettings::GetConnectionType, pctDCCConnect);
+	failcount += !Write(wxT("Conditions/Connection Types/DCC Listen"), &CryptSocketProxySettings::GetConnectionType, pctDCCListen);
 	failcount += !Write(wxT("Conditions/Destination Network/Mode"), &CryptSocketProxySettings::GetDestNetworkMode);
 	failcount += !Write(wxT("Conditions/Destination Network/Network"), &CryptSocketProxySettings::GetDestNetworkNetwork);
 	failcount += !Write(wxT("Conditions/Destination Network/Subnet"), &CryptSocketProxySettings::GetDestNetworkSubnet);

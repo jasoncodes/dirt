@@ -88,9 +88,27 @@ protected:
 	}
 
 	template <typename T>
+	inline bool Read(const wxString &key, bool (CryptSocketProxySettings::*fn)(CryptSocketProxyConnectionTypes, T), CryptSocketProxyConnectionTypes type)
+	{
+		T x;
+		bool b = m_config.m_config->Read(m_config.m_path + wxT("/Proxy/") + key, &x);
+		if (b)
+		{
+			return (this->*fn)(type, x);
+		}
+		return true;
+	}
+
+	template <typename T>
 	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)() const)
 	{
 		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, (this->*fn)());
+	}
+
+	template <typename T, typename U>
+	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)(U) const, U x)
+	{
+		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, (this->*fn)(x));
 	}
 
 protected:
