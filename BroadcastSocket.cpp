@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: BroadcastSocket.cpp,v 1.7 2003-11-24 07:01:46 jason Exp $)
+RCS_ID($Id: BroadcastSocket.cpp,v 1.8 2004-12-13 05:55:48 jason Exp $)
 
 #include "BroadcastSocket.h"
 #include "ByteBuffer.h"
@@ -159,40 +159,10 @@ bool BroadcastSocket::Ok() const
 	#error "Sorry, your OS is not supported yet"
 #endif
 
-static inline socket_t GetSocket(GSocket *gsck)
-{
-	#if defined(__WXMSW__)
-		return gsck->m_fd;
-	#elif defined(__UNIX__)
-		return gsck->m_fd;
-	#else
-		#error "Sorry, your OS is not supported yet"
-	#endif
-}
-
-class MySocketBase : public wxObject
-{
-public:
-	GSocket *m_socket;
-};
-
-static inline GSocket* GetGSocket(wxDatagramSocket *sck)
-{
-	return ((MySocketBase*)sck)->m_socket;
-}
-
 static inline void EnableBroadcast(wxDatagramSocket *sck)
 {
-	GSocket *gsck = GetGSocket(sck);
-	wxASSERT(gsck);
-	socket_t fd = GetSocket(gsck);
-	#if defined(__WXMSW__) || defined(__UNIX__)
-		int value = 1;
-		int retval = setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (const char*)&value, sizeof(int));
-		wxCHECK_RET(retval == 0, wxT("setsockopt SO_BROADCAST failed"));
-	#else
-		#error "Sorry, your OS is not supported yet"
-	#endif
+	int value = 1;
+	sck->SetOption(SOL_SOCKET, SO_BROADCAST, (const char*)&value, sizeof(int));
 }
 
 void BroadcastSocket::CheckForIPs()
@@ -235,11 +205,19 @@ void BroadcastSocket::CheckForIPs()
 				addr.Hostname(data->m_ipinfo.IPAddressString);
 				addr.Service(m_port);
 				data->m_sck = new wxDatagramSocket(addr);
-				EnableBroadcast(data->m_sck);
-				data->m_sck->SetEventHandler(*this, ID_SOCKET);
-				data->m_sck->SetNotify(wxSOCKET_INPUT_FLAG);
-				data->m_sck->Notify(true);
-				m_data.Add(data);
+				if (data->m_sck->Ok())
+				{
+					EnableBroadcast(data->m_sck);
+					data->m_sck->SetEventHandler(*this, ID_SOCKET);
+					data->m_sck->SetNotify(wxSOCKET_INPUT_FLAG);
+					data->m_sck->Notify(true);
+					m_data.Add(data);
+				}
+				else
+				{
+					DebugMsg(wxString() << wxT("Error opening socket for UDP ") << data->m_ipinfo.IPAddressString << wxT(":") << (int)m_port);
+					delete data;
+				}
 			}
 		}
 

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.11 2004-05-31 08:47:21 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.12 2004-12-13 05:54:41 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -80,21 +80,10 @@ IPInfoEntry::IPInfoEntry()
 	#include <string.h>
 	#include <errno.h>
 
-	#include <sys/socket.h>
 	#include <sys/types.h>
-	#include <net/if.h>
-	#include <netdb.h>
-
-	#include <sys/ioctl.h>
-	#include <net/if_arp.h>
-	#include <arpa/inet.h>
-	#include <netinet/in.h>
-
-#else
-
-	#include <unistd.h>
 	#include <sys/socket.h>
-	#include <netdb.h>
+	#include <ifaddrs.h>
+	#include <net/if.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
 
@@ -158,133 +147,65 @@ IPInfoEntryArray GetIPInfo()
 
 	#elif defined(__UNIX__)
 
-		// begin new stuff
+		struct ifaddrs *addrs;
 
-		#define inaddrr(x) (*(struct in_addr *) &ifr->x[sizeof sa.sin_port])
-		#define IFRSIZE ((int)(size * sizeof (struct ifreq)))
-
-		unsigned char *u;
-		int sockfd, size = 1;
-		struct ifreq *ifr;
-		struct ifconf ifc;
-		struct sockaddr_in sa;
-
-		if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP)) > 0)
+		if (getifaddrs(&addrs) == 0)
 		{
 
-			ifc.ifc_len = IFRSIZE;
-			ifc.ifc_req = NULL;
+			struct ifaddrs *n;
 
-			do
+			for (n = addrs; n; n = n->ifa_next)
 			{
-
-				++size;
-
-				/* realloc buffer size until no overflow occurs  */
-				ifc.ifc_req = (ifreq*)realloc(ifc.ifc_req, IFRSIZE);
-				wxASSERT(ifc.ifc_req);
-
-				ifc.ifc_len = IFRSIZE;
-
-				int ret = ioctl(sockfd, SIOCGIFCONF, &ifc);
-				wxASSERT(ret == 0);
-
-			}
-			while (IFRSIZE <= ifc.ifc_len);
-
-			ifr = ifc.ifc_req;
-
-			for (; (char*)ifr < (char*)ifc.ifc_req + ifc.ifc_len; ++ifr)
-			{
-
-				if (ifr->ifr_addr.sa_data == (ifr + 1)->ifr_addr.sa_data)
+			
+				if (n->ifa_flags & IFF_UP &&
+					n->ifa_addr &&
+					n->ifa_addr->sa_family == AF_INET)
 				{
-					continue; /* duplicate, skip it */
-				}
+				
+					struct in_addr addr = ((struct sockaddr_in *)n->ifa_addr)->sin_addr;
+					struct in_addr netmask = ((struct sockaddr_in *)n->ifa_netmask)->sin_addr;
 
-				if (ioctl(sockfd, SIOCGIFFLAGS, ifr))
-				{
-					continue; /* failed to get flags, skip it */
-				}
-
-				IPInfoEntry entry;
-				entry.InterfaceName = wxString(ifr->ifr_name, wxConvLocal);
-				entry.IPAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-				entry.IPAddress = ntohl(inet_addr(entry.IPAddressString.mb_str()));
-
-				if (0 == ioctl(sockfd, SIOCGIFNETMASK, ifr))
-				{
-					entry.SubnetMaskString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-					entry.SubnetMask = ntohl(inet_addr(entry.SubnetMaskString.mb_str()));
-				}
-
-				if (ifr->ifr_flags & IFF_BROADCAST)
-				{
-					if (0 == ioctl(sockfd, SIOCGIFBRDADDR, ifr))
+					struct in_addr network;
+					network.s_addr = addr.s_addr & netmask.s_addr;
+					
+					struct in_addr broadcast;
+					if (n->ifa_flags & IFF_BROADCAST && n->ifa_broadaddr)
 					{
-						entry.BroadcastAddressString = wxString(inet_ntoa(inaddrr(ifr_addr.sa_data)), wxConvLocal);
-						entry.BroadcastAddress = ntohl(inet_addr(entry.BroadcastAddressString.mb_str()));
+						broadcast = ((struct sockaddr_in *)n->ifa_broadaddr)->sin_addr;
 					}
+					else
+					{
+						broadcast.s_addr = network.s_addr | ~netmask.s_addr;
+					}
+
+					IPInfoEntry entry;
+					
+					entry.InterfaceName = wxString(n->ifa_name, wxConvLibc);
+					
+					entry.IPAddress = ntohl(addr.s_addr);
+					entry.SubnetMask = ntohl(netmask.s_addr);
+					entry.NetworkAddress = ntohl(network.s_addr);
+					entry.BroadcastAddress  = ntohl(broadcast.s_addr);
+					
+					entry.IPAddressString = GetIPV4AddressString(entry.IPAddress);
+					entry.SubnetMaskString = GetIPV4AddressString(entry.SubnetMask);
+					entry.NetworkAddressString = GetIPV4AddressString(entry.NetworkAddress);
+					entry.BroadcastAddressString = GetIPV4AddressString(entry.BroadcastAddress);
+
+					entry.MTU = 0;
+					entry.Metric = 0;
+					
+					entries.Add(entry);
+			
 				}
-
-				if (0 == ioctl(sockfd, SIOCGIFMTU, ifr))
-				{
-					entry.MTU = ifr->ifr_mtu;
-				}
-
-				if (0 == ioctl(sockfd, SIOCGIFMETRIC, ifr))
-				{
-					entry.Metric = ifr->ifr_metric;
-				}
-
-				entries.Add(entry);
-
+			
 			}
 
-		}
-
-		close (sockfd);
-
-		// end new stuff
-
-	#else
-
-		// fallback for other OS (which might not even work)
-		char ac[80];
-		if (gethostname(ac, sizeof(ac)) == 0)
-		{
-
-			const wxString localhost_str = wxT("127.0.0.1");
-			bool found_localhost = false;
-			struct hostent *phe = gethostbyname(ac);
-			if (phe != 0)
-			{
-
-				for (int i = 0; phe->h_addr_list[i] != 0; ++i)
-				{
-					struct in_addr addr;
-					memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-					const char *ip = inet_ntoa(addr);
-					IPInfoEntry entry;
-					entry.IPAddressString = ByteBuffer((const byte*)ip, strlen(ip));
-					entry.IPAddress = ntohl(inet_addr(entry.IPAddressString));
-					found_localhost != (entry.IPAddressString == localhost_str);
-					entries.Add(entry);
-				}
-
-
-				if (!found_localhost)
-				{
-					IPInfoEntry entry;
-					entry.IPAddressString = localhost_str;
-					entry.IPAddress = ntohl(inet_addr(entry.IPAddressString));
-					entries.Add(entry);
-				}
-
-			}
+			freeifaddrs(addrs);
+			addrs = 0;
 
 		}
-
+	
 	#endif
 
 	return entries;

@@ -18,7 +18,8 @@ Dirt.kdevses
 Makefile.win
 *_private.*
 DirtGTK.tar.bz2
+DirtMac.tbz
 Makefile.config
 Dirt.kdevelop.pcs
 dirtlogs.cgi
-
+.gdb_history
