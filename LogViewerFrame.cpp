@@ -294,7 +294,7 @@ wxArrayString LogViewerFrame::GetLogFilenames(const wxString &dirname)
 		bool more_files = dir.GetFirst(&filename);
 		while (more_files)
 		{
-			if (RightEq(filename, wxT(".dirtlog")))
+			if (RightEq(filename, wxT(".dirtlog")) && wxFileName(dirname, filename).FileExists())
 			{
 				filenames.Add(filename);
 			}
