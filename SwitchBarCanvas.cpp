@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarCanvas.cpp,v 1.5 2003-05-06 06:58:13 jason Exp $)
+RCS_ID($Id: SwitchBarCanvas.cpp,v 1.6 2003-05-23 13:18:55 jason Exp $)
 
 #include "SwitchBarCanvas.h"
 #include "SwitchBarParent.h"
@@ -25,7 +25,7 @@ SwitchBarCanvas::SwitchBarCanvas(SwitchBarParent *parent, const wxPoint& pos, co
 		parent, -1,
 		(pos == wxDefaultPosition ? wxPoint(-256, -256) : pos),
 		(size == wxDefaultSize ? wxSize(128, 128) : size),
-		wxNO_BORDER | wxCLIP_CHILDREN), saved_state_valid(false)
+		wxNO_BORDER | wxCLIP_CHILDREN), m_saved_state_valid(false)
 {
 
 	m_parent = parent;

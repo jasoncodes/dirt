@@ -214,7 +214,7 @@ void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &event)
 	}
 	else
 	{
-		last_filename.Empty();
+		m_last_filename.Empty();
 	}
 
 }
@@ -272,7 +272,7 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 void LogViewerFrame::ViewLogFile(const wxString &filename)
 {
 
-	if (last_filename == filename) return;
+	if (m_last_filename == filename) return;
 
 	LogReader reader(filename);
 
@@ -281,7 +281,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 
 		wxFileName fn(filename);
 		
-		last_filename = fn.GetFullPath();
+		m_last_filename = fn.GetFullPath();
 
 		m_is_busy = true;
 
@@ -291,7 +291,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 			m_dir->ExpandPath(filepath);
 		}
 
-		last_filename = fn.GetFullPath();
+		m_last_filename = fn.GetFullPath();
 
 		EnsureItemSelected(m_tree->GetRootItem(), wxFileName(filename).GetFullName());
 
@@ -342,7 +342,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 	}
 	else
 	{
-		last_filename.Empty();
+		m_last_filename.Empty();
 		wxMessageBox(wxT("Unable to open log file"), wxT("Dirt Secure Chat"), wxOK|wxICON_ERROR, this);
 	}
 
@@ -380,7 +380,7 @@ wxArrayString LogViewerFrame::GetLogFilenames(const wxString &dirname)
 void LogViewerFrame::PopulateTree(const wxString &dirname)
 {
 
-	last_filename.Empty();
+	m_last_filename.Empty();
 
 	wxBusyCursor busy;
 
@@ -550,7 +550,7 @@ void LogViewerFrame::OnDelete(wxCommandEvent &event)
 		{
 		
 			m_log->Clear();
-			last_filename.Empty();
+			m_last_filename.Empty();
 
 			if (m_tree->GetChildrenCount(id))
 			{

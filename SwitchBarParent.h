@@ -55,18 +55,18 @@ protected:
 
 	void UpdateWindowMenu();
 
-	inline wxMenu *GetWindowMenu() { return mnuWindow; }
+	inline wxMenu *GetWindowMenu() { return m_mnuWindow; }
 
 private:
 	DECLARE_EVENT_TABLE()
 
 protected:
 	SwitchBar *m_switchbar;
-	wxTimer *tmrUpdateWindowMenu;
-	wxMenu *mnuWindow;
-	int num_window_menus;
-	int switchbar_popup_button_index;
-	SwitchBarCanvas *switchbar_popup_canvas;
+	wxTimer *m_tmrUpdateWindowMenu;
+	wxMenu *m_mnuWindow;
+	int m_num_window_menus;
+	int m_switchbar_popup_button_index;
+	SwitchBarCanvas *m_switchbar_popup_canvas;
 	wxAcceleratorEntry *m_accelerators;
 	size_t m_accelerator_count;
 

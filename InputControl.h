@@ -43,10 +43,10 @@ protected:
 	bool IsPrintable(const wxString &text);
 
 protected:
-	wxArrayString history;
-	size_t history_pos;
-	InputControlColourPopup *popup;
-	wxTextCtrl *txtBestSize;
+	wxArrayString m_history;
+	size_t m_history_pos;
+	InputControlColourPopup *m_popup;
+	wxTextCtrl *m_txtBestSize;
 	bool m_ctrl_down;
 	wxArrayString *m_tab_completion_list;
 	wxString m_tab_completion_prefix;

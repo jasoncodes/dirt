@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.37 2003-05-21 03:56:32 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.38 2003-05-23 13:18:54 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -45,17 +45,17 @@ END_EVENT_TABLE()
 FileTransfers::FileTransfers(Client *client)
 	: wxEvtHandler(), m_client(client)
 {
-	tmr = new wxTimer(this, ID_TIMER);
+	m_tmr = new wxTimer(this, ID_TIMER);
 	#ifdef __WXMSW__
-		tmrIdleEventFaker = new wxTimer(this, ID_TIMER_FAKE_IDLE);
+		m_tmrIdleEventFaker = new wxTimer(this, ID_TIMER_FAKE_IDLE);
 	#endif
 }
 
 FileTransfers::~FileTransfers()
 {
-	delete tmr;
+	delete m_tmr;
 	#ifdef __WXMSW__
-		delete tmrIdleEventFaker;
+		delete m_tmrIdleEventFaker;
 	#endif
 }
 
@@ -82,7 +82,7 @@ void FileTransfers::OnTimer(wxTimerEvent &event)
 		OnAppIdle(evt);
 		if (evt.MoreRequested())
 		{
-			tmrIdleEventFaker->Start(1, true);
+			m_tmrIdleEventFaker->Start(1, true);
 		}
 	#endif
 }
@@ -188,9 +188,9 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	m_client->m_event_handler->OnClientTransferNew(*t);
 	m_client->m_event_handler->OnClientTransferState(*t);
 
-	if (!tmr->IsRunning())
+	if (!m_tmr->IsRunning())
 	{
-		tmr->Start(1000);
+		m_tmr->Start(1000);
 	}
 
 	return t->transferid;
@@ -237,13 +237,17 @@ bool FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 				}
 			}
 		}
+		if (transfer.state == ftsGetComplete)
+		{
+			m_last_completed_get_filename = transfer.filename;
+		}
 		m_client->m_event_handler->OnClientTransferDelete(transfer, user_initiated);
 		
  		m_transfers.RemoveAt(index);
 		
 		if (GetTransferCount() == 0)
 		{
-			tmr->Stop();
+			m_tmr->Stop();
 		}
 
 		return true;
@@ -416,9 +420,9 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				m_client->m_event_handler->OnClientTransferNew(*t);
 				m_client->m_event_handler->OnClientTransferState(*t);
 
-				if (!tmr->IsRunning())
+				if (!m_tmr->IsRunning())
 				{
-					tmr->Start(1000);
+					m_tmr->Start(1000);
 				}
 
 				return true;
@@ -586,7 +590,7 @@ bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString
 
 wxArrayString FileTransfers::GetSupportedCommands()
 {
-	return SplitString(wxT("ACCEPT CANCEL HELP SEND RESUME OVERWRITE"), wxT(" "));
+	return SplitString(wxT("ACCEPT CANCEL HELP OPEN SEND RESUME OVERWRITE"), wxT(" "));
 }
 
 void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
@@ -594,6 +598,20 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 	if (cmd == wxT("HELP"))
 	{
 		Information(context, wxT("Supported DCC commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
+	}
+	else if (cmd == wxT("OPEN"))
+	{
+		if (GetLastCompletedGetFilename().Length())
+		{
+			if (!OpenFile(NULL, GetLastCompletedGetFilename(), false))
+			{
+				Warning(context, wxT("Error opening ") + GetLastCompletedGetFilename());
+			}
+		}
+		else
+		{
+			Warning(context, wxT("There have been no completed get transfers this session."));
+		}
 	}
 	else if (cmd == wxT("CANCEL"))
 	{

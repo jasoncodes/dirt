@@ -32,9 +32,9 @@ public:
 	SwitchBar* GetSwitchBar();
 
 protected:
-	bool saved_state_maximized;
-	wxRect saved_state_rect;
-	bool saved_state_valid;
+	bool m_saved_state_maximized;
+	wxRect m_saved_state_rect;
+	bool m_saved_state_valid;
 	SwitchBarParent *m_parent;
 
 private:

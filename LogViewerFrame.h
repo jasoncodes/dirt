@@ -44,7 +44,7 @@ protected:
 	wxTreeCtrl *m_tree;
 	wxGenericDirCtrl *m_dir;
 
-	wxString last_filename;
+	wxString m_last_filename;
 
 	ConfigFile m_config;
 	bool m_is_busy;

@@ -1,18 +1,8 @@
-* ctcp time
+* cvs diff -bu2 src/common/strconv.cpp > utf8fix.diff
 
-* /dcc open
+* multiple instances using one config file will cause data loss if both write
 
-* /run
-
-* /new (if any param and no -- then prepend --host=)
-
-* /servers
-
-* /about
-
-* nice about screen (wxHtmlWindow)
-
-* Create patch for EF BB BF ignore in wxMBConvUTF8 (or wxTextFile if can't do in UTF8)
+* nice about screen (wxHtmlWindow maybe?)
 
 * /notice
 
@@ -21,8 +11,6 @@
 * WTS event bindings: Terminal_Connect, Disconnect, Lock, Unlock
 
 * other scriptable bindings: Dirt_AuthPrompt, Connect, Disconnect
-
-* default server name of computer name
 
 * Win32: fast incoming messages cause FlashWindow() not to work on at least WinXP
   Maybe restrict the time between FlashWindow() calls to say 1 second except if
@@ -92,3 +80,5 @@
 * research that log control gdi thing in 9x
 
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
+
+* check that guards are in place where nessecery to trap malformed messages

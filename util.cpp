@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.67 2003-05-22 12:04:33 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.68 2003-05-23 13:18:56 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1156,7 +1156,7 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 
 bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 {
-	#ifdef KDE_AVAILABLE
+	#if defined(KDE_AVAILABLE)
 		wxString cmdline;
 		cmdline << wxT("konqueror ") << folder;
 		::wxBeginBusyCursor();
@@ -1170,9 +1170,34 @@ bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 				wxT("Error launching Konqueror"), wxOK | wxICON_ERROR, parent);
 		}
 		return success;
+	#elif defined(__WXMSW__)
+		return OpenFile(parent, folder, show_error);
 	#else
 		return OpenBrowser(parent, wxT("file://") + folder, show_error);
 	#endif
+}
+
+bool OpenExternalResource(wxWindow *parent, const wxString &name, bool show_error)
+{
+	wxFileName dir(name, wxEmptyString);
+	if (dir.DirExists())
+	{
+		return OpenFolder(parent, name, show_error);
+	}
+	else
+	{
+		wxFileName file(name);
+		if (file.FileExists())
+		{
+			return OpenFile(parent, name, show_error);
+		}
+		else
+		{
+			return
+				OpenFile(parent, name, false) ||
+				OpenBrowser(parent, name, show_error);
+		}
+	}
 }
 
 bool SetDefaultMenuItem(wxMenu &mnu, int id)

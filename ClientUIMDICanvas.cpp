@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.55 2003-05-22 01:46:22 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.56 2003-05-23 13:18:53 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -40,7 +40,8 @@ enum
 	ID_NICKLIST_SEND,
 	ID_NICKLIST_QUERY,
 	ID_NICKLIST_WHOIS,
-	ID_NICKLIST_PING
+	ID_NICKLIST_PING,
+	ID_NICKLIST_TIME
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -465,6 +466,7 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Append(ID_NICKLIST_QUERY, wxT("&Query"));
 	menu.Append(ID_NICKLIST_WHOIS, wxT("&Who Is"));
 	menu.Append(ID_NICKLIST_PING, wxT("&Ping"));
+	menu.Append(ID_NICKLIST_TIME, wxT("&Time"));
 
 	SetDefaultMenuItem(menu, ID_NICKLIST_QUERY);
 
@@ -520,6 +522,12 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 		case ID_NICKLIST_PING:
 		{
 			GetClient()->CTCP(wxEmptyString, nick, wxT("PING"), ByteBuffer());
+		}
+		break;
+
+		case ID_NICKLIST_TIME:
+		{
+			GetClient()->CTCP(wxEmptyString, nick, wxT("TIME"), ByteBuffer());
 		}
 		break;
 

@@ -87,9 +87,9 @@ protected:
 	wxCursor *m_cur_hand;
 	wxCursor *m_cur_arrow;
 
-	wxHtmlCell *last_start_cell;
-	wxHtmlCell *last_end_cell;
-	bool last_start_end_valid;
+	wxHtmlCell *m_last_start_cell;
+	wxHtmlCell *m_last_end_cell;
+	bool m_last_start_end_valid;
 
 	wxHtmlCell *m_red_line;
 

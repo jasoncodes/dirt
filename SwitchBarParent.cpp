@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.20 2003-05-22 01:46:23 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.21 2003-05-23 13:18:55 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -70,19 +70,19 @@ SwitchBarParent::SwitchBarParent(
 
 	m_switchbar = new SwitchBar(this, ID_SWITCHBAR, wxDefaultPosition, wxDefaultSize);
 
-	tmrUpdateWindowMenu = new wxTimer(this, ID_UPDATEWINDOWMENUTIMER);
+	m_tmrUpdateWindowMenu = new wxTimer(this, ID_UPDATEWINDOWMENUTIMER);
 
-	mnuWindow = new wxMenu;
-	mnuWindow->Append(ID_WINDOW_MINIMIZE, wxT("Mi&nimize\tEsc"));
-	mnuWindow->Append(ID_WINDOW_CLOSE, wxT("Cl&ose\tCtrl-F4"));
-	mnuWindow->AppendSeparator();
-	mnuWindow->Append(ID_WINDOW_CASCADE, wxT("&Cascade"));
-	mnuWindow->Append(ID_WINDOW_TILE, wxT("&Tile"));
-	mnuWindow->AppendSeparator();
-	mnuWindow->Append(ID_WINDOW_NEXT, wxT("&Next"));
-	mnuWindow->Append(ID_WINDOW_PREV, wxT("&Previous"));
-	mnuWindow->AppendSeparator();
-	num_window_menus = 0;
+	m_mnuWindow = new wxMenu;
+	m_mnuWindow->Append(ID_WINDOW_MINIMIZE, wxT("Mi&nimize\tEsc"));
+	m_mnuWindow->Append(ID_WINDOW_CLOSE, wxT("Cl&ose\tCtrl-F4"));
+	m_mnuWindow->AppendSeparator();
+	m_mnuWindow->Append(ID_WINDOW_CASCADE, wxT("&Cascade"));
+	m_mnuWindow->Append(ID_WINDOW_TILE, wxT("&Tile"));
+	m_mnuWindow->AppendSeparator();
+	m_mnuWindow->Append(ID_WINDOW_NEXT, wxT("&Next"));
+	m_mnuWindow->Append(ID_WINDOW_PREV, wxT("&Previous"));
+	m_mnuWindow->AppendSeparator();
+	m_num_window_menus = 0;
 
 	m_accelerator_count = 5;
 	m_accelerators = new wxAcceleratorEntry[5];
@@ -97,8 +97,8 @@ SwitchBarParent::SwitchBarParent(
 
 SwitchBarParent::~SwitchBarParent()
 {
-	delete tmrUpdateWindowMenu;
-	tmrUpdateWindowMenu = NULL;
+	delete m_tmrUpdateWindowMenu;
+	m_tmrUpdateWindowMenu = NULL;
 	delete[] m_accelerators;
 }
 
@@ -142,9 +142,9 @@ void SwitchBarParent::NextChild(bool bPrevious)
 void SwitchBarParent::UpdateWindowMenu()
 {
 	DoUpdateWindowMenu();
-	if (tmrUpdateWindowMenu)
+	if (m_tmrUpdateWindowMenu)
 	{
-		tmrUpdateWindowMenu->Start(100, true);
+		m_tmrUpdateWindowMenu->Start(100, true);
 	}
 }
 
@@ -161,17 +161,17 @@ void SwitchBarParent::OnUpdateWindowMenuTimer(wxTimerEvent &event)
 void SwitchBarParent::UpdateCheckMenuItem(int id, const wxString &label, bool enabled, bool checked)
 {
 
-	if ( mnuWindow->IsEnabled(id) != enabled )
+	if ( m_mnuWindow->IsEnabled(id) != enabled )
 	{
-		mnuWindow->Enable(id, enabled);
+		m_mnuWindow->Enable(id, enabled);
 	}
-	if ( mnuWindow->GetLabel(id) != label )
+	if ( m_mnuWindow->GetLabel(id) != label )
 	{
-		mnuWindow->SetLabel(id, label);
+		m_mnuWindow->SetLabel(id, label);
 	}
-	if ( mnuWindow->IsChecked(id) != checked )
+	if ( m_mnuWindow->IsChecked(id) != checked )
 	{
-		mnuWindow->Check(id, checked);
+		m_mnuWindow->Check(id, checked);
 	}
 
 }
@@ -179,7 +179,7 @@ void SwitchBarParent::UpdateCheckMenuItem(int id, const wxString &label, bool en
 void SwitchBarParent::DoUpdateWindowMenu()
 {
 
-	if (!tmrUpdateWindowMenu) return;
+	if (!m_tmrUpdateWindowMenu) return;
 	if (GetMenuBar() == NULL) return;
 	if (GetMenuBar()->FindItem(ID_WINDOW_CLOSE) == NULL) return;
 
@@ -196,26 +196,26 @@ void SwitchBarParent::DoUpdateWindowMenu()
 
 	int iNumDesired = (iNumChildren>0) ? iNumChildren : 1;
 
-	while (num_window_menus < iNumDesired)
+	while (m_num_window_menus < iNumDesired)
 	{
-		mnuWindow->AppendCheckItem(ID_WINDOW_WINDOWS + num_window_menus, wxT("XYZ"));
-		num_window_menus++;
+		m_mnuWindow->AppendCheckItem(ID_WINDOW_WINDOWS + m_num_window_menus, wxT("XYZ"));
+		m_num_window_menus++;
 	}
 
-	while (num_window_menus > iNumDesired)
+	while (m_num_window_menus > iNumDesired)
 	{
-		int id = ID_WINDOW_WINDOWS + num_window_menus - 1;
-		wxASSERT(mnuWindow->FindItem(id) != NULL);
-		mnuWindow->Destroy(id);
-		num_window_menus--;
+		int id = ID_WINDOW_WINDOWS + m_num_window_menus - 1;
+		wxASSERT(m_mnuWindow->FindItem(id) != NULL);
+		m_mnuWindow->Destroy(id);
+		m_num_window_menus--;
 	}
 
-	wxASSERT(num_window_menus == iNumDesired);
+	wxASSERT(m_num_window_menus == iNumDesired);
 
 	if (bIsChildren)
 	{
 
-		wxASSERT(num_window_menus == iNumChildren);
+		wxASSERT(m_num_window_menus == iNumChildren);
 
 		for (int i = 0; i < iNumChildren; ++i)
 		{
@@ -246,7 +246,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 	else
 	{
 
-		wxASSERT(num_window_menus == 1);
+		wxASSERT(m_num_window_menus == 1);
 
 		UpdateCheckMenuItem(
 			ID_WINDOW_WINDOWS,
@@ -312,13 +312,13 @@ SwitchBarChild* SwitchBarParent::NewWindow(SwitchBarCanvas *canvas, bool focus)
 
 	wxASSERT(canvas);
 
-	if (canvas->saved_state_valid)
+	if (canvas->m_saved_state_valid)
 	{
-		pos = canvas->saved_state_rect.GetPosition();
-		size = canvas->saved_state_rect.GetSize();
+		pos = canvas->m_saved_state_rect.GetPosition();
+		size = canvas->m_saved_state_rect.GetSize();
 		if (!current_child || !bMaximized)
 		{
-			bMaximized = canvas->saved_state_maximized;
+			bMaximized = canvas->m_saved_state_maximized;
 		}
 	}
 
@@ -383,10 +383,10 @@ void SwitchBarParent::OnSize(wxSizeEvent& event)
 void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 {
 
-	switchbar_popup_button_index = event.GetExtraLong();
-	switchbar_popup_canvas =
+	m_switchbar_popup_button_index = event.GetExtraLong();
+	m_switchbar_popup_canvas =
 		(SwitchBarCanvas*)(m_switchbar->
-			GetUserDataFromIndex(switchbar_popup_button_index));
+			GetUserDataFromIndex(m_switchbar_popup_button_index));
 
 	wxMenu menu;
 
@@ -395,15 +395,15 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 	menu.AppendSeparator();
 	menu.Append(ID_SWITCHBAR_CLOSE, wxT("&Close"));
 
-	menu.Enable(ID_SWITCHBAR_RESTORE, m_switchbar->GetSelectedIndex() != switchbar_popup_button_index);
-	menu.Enable(ID_SWITCHBAR_MINIMIZE, switchbar_popup_canvas->IsAttached());
-	menu.Enable(ID_SWITCHBAR_CLOSE, switchbar_popup_canvas->IsClosable());
+	menu.Enable(ID_SWITCHBAR_RESTORE, m_switchbar->GetSelectedIndex() != m_switchbar_popup_button_index);
+	menu.Enable(ID_SWITCHBAR_MINIMIZE, m_switchbar_popup_canvas->IsAttached());
+	menu.Enable(ID_SWITCHBAR_CLOSE, m_switchbar_popup_canvas->IsClosable());
 
 	SetDefaultMenuItem(menu, menu.IsEnabled(ID_SWITCHBAR_RESTORE) ?
 		ID_SWITCHBAR_RESTORE :
 		ID_SWITCHBAR_MINIMIZE);
 
-	if (switchbar_popup_canvas->OnPopupMenu(menu))
+	if (m_switchbar_popup_canvas->OnPopupMenu(menu))
 	{
 		wxPoint pos = m_switchbar->ScreenToClient(wxGetMousePosition());
 		m_switchbar->PopupMenu(&menu, pos);
@@ -413,23 +413,23 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 
 void SwitchBarParent::OnSwitchBarMenuItem(wxCommandEvent& event)
 {
-	if (switchbar_popup_canvas->OnPopupMenuItem(event))
+	if (m_switchbar_popup_canvas->OnPopupMenuItem(event))
 	{
 		if (event.GetId() == ID_SWITCHBAR_RESTORE)
 		{
-			m_switchbar->SimulateClick(switchbar_popup_button_index);
+			m_switchbar->SimulateClick(m_switchbar_popup_button_index);
 		}
 		else if (event.GetId() == ID_SWITCHBAR_MINIMIZE)
 		{
-			if (m_switchbar->GetSelectedIndex() != switchbar_popup_button_index)
+			if (m_switchbar->GetSelectedIndex() != m_switchbar_popup_button_index)
 			{
-				m_switchbar->SimulateClick(switchbar_popup_button_index);
+				m_switchbar->SimulateClick(m_switchbar_popup_button_index);
 			}
-			m_switchbar->SimulateClick(switchbar_popup_button_index);
+			m_switchbar->SimulateClick(m_switchbar_popup_button_index);
 		}
 		else if (event.GetId() == ID_SWITCHBAR_CLOSE)
 		{
-			CloseCanvas(switchbar_popup_canvas);
+			CloseCanvas(m_switchbar_popup_canvas);
 		}
 	}
 }
@@ -495,16 +495,16 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 			WINDOWPLACEMENT wndpl;
 			wndpl.length = sizeof (WINDOWPLACEMENT);
 			::GetWindowPlacement((HWND)child->GetHandle(), &wndpl);
-			canvas->saved_state_rect.x =
+			canvas->m_saved_state_rect.x =
 				wndpl.rcNormalPosition.left;
-			canvas->saved_state_rect.y =
+			canvas->m_saved_state_rect.y =
 				wndpl.rcNormalPosition.top;
-			canvas->saved_state_rect.width =
+			canvas->m_saved_state_rect.width =
 				wndpl.rcNormalPosition.right - wndpl.rcNormalPosition.left;
-			canvas->saved_state_rect.height =
+			canvas->m_saved_state_rect.height =
 				wndpl.rcNormalPosition.bottom - wndpl.rcNormalPosition.top;
 
-			canvas->saved_state_maximized =
+			canvas->m_saved_state_maximized =
 				(wndpl.flags & WPF_RESTORETOMAXIMIZED) != 0;
 				
 		#else
@@ -522,11 +522,11 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 
 		#endif
 
-		canvas->saved_state_valid = true;
+		canvas->m_saved_state_valid = true;
 		canvas->Show(false);
 		canvas->OnDetach();
 		canvas->Reparent(this);
-		if (canvas->saved_state_maximized)
+		if (canvas->m_saved_state_maximized)
 		{
 			child->Maximize(true);
 		}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.9 2003-05-15 08:02:34 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.10 2003-05-23 13:18:56 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -55,43 +55,43 @@ protected:
 		: wxFrame(NULL, -1, wxT("TrayIcon Event Handler"), wxDefaultPosition, wxSize(128, 64), wxCAPTION)
 	{
 		m_trayicon = trayicon;
-		TaskbarCreated = RegisterWindowMessage(wxT("TaskbarCreated"));
+		m_TaskbarCreated = RegisterWindowMessage(wxT("TaskbarCreated"));
 		SetExtraStyle(wxWS_EX_TRANSIENT);
-		nid.cbSize = extended_len;
-		nid.hWnd = (HWND)GetHandle();
-		nid.uID = 1;
-		nid.uFlags = NIF_MESSAGE;
-		nid.uCallbackMessage = WM_USER + 1;
-		nid.hIcon = 0;
-		nid.szTip[0] = 0;
-		m_ok = MyNotifyIcon(NIM_ADD, &nid) != 0;
+		m_nid.cbSize = extended_len;
+		m_nid.hWnd = (HWND)GetHandle();
+		m_nid.uID = 1;
+		m_nid.uFlags = NIF_MESSAGE;
+		m_nid.uCallbackMessage = WM_USER + 1;
+		m_nid.hIcon = 0;
+		m_nid.szTip[0] = 0;
+		m_ok = MyNotifyIcon(NIM_ADD, &m_nid) != 0;
 		if (!m_ok)
 		{
-			nid.cbSize = normal_len;
-			m_ok = MyNotifyIcon(NIM_ADD, &nid) != 0;
+			m_nid.cbSize = normal_len;
+			m_ok = MyNotifyIcon(NIM_ADD, &m_nid) != 0;
 		}
 	}
 
 	virtual ~TrayIconPrivate()
 	{
-		MyNotifyIcon(NIM_DELETE, &nid);
+		MyNotifyIcon(NIM_DELETE, &m_nid);
 	}
 
 	virtual void SetIcon(const char **xpm)
 	{
-		nid.uFlags = NIF_ICON;
+		m_nid.uFlags = NIF_ICON;
 		m_icon = wxIcon(xpm);
-		nid.hIcon = (HICON)m_icon.GetHICON();
-		MyNotifyIcon(NIM_MODIFY, &nid);
+		m_nid.hIcon = (HICON)m_icon.GetHICON();
+		MyNotifyIcon(NIM_MODIFY, &m_nid);
 	}
 
 	virtual void SetToolTip(const wxString &tooltip)
 	{
-		nid.uFlags = NIF_TIP;
-		size_t len = (sizeof nid.szTip) / (sizeof nid.szTip[0]);
-		wxStrncpy(nid.szTip, tooltip.c_str(), len);
-		nid.szTip[len-1] = 0;
-		MyNotifyIcon(NIM_MODIFY, &nid);
+		m_nid.uFlags = NIF_TIP;
+		size_t len = (sizeof m_nid.szTip) / (sizeof m_nid.szTip[0]);
+		wxStrncpy(m_nid.szTip, tooltip.c_str(), len);
+		m_nid.szTip[len-1] = 0;
+		MyNotifyIcon(NIM_MODIFY, &m_nid);
 	}
 
 protected:
@@ -193,10 +193,10 @@ protected:
 			}
 			return 0;
 		}
-		else if (nMsg == TaskbarCreated && m_trayicon)
+		else if (nMsg == m_TaskbarCreated && m_trayicon)
 		{
-			nid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
-			MyNotifyIcon(NIM_ADD, &nid);
+			m_nid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
+			MyNotifyIcon(NIM_ADD, &m_nid);
 			return wxFrame::MSWWindowProc(nMsg, wParam, lParam);
 		}
 		else
@@ -208,10 +208,10 @@ protected:
 
 protected:
 	TrayIcon *m_trayicon;
-	MYNOTIFYICONDATA nid;
+	MYNOTIFYICONDATA m_nid;
 	wxIcon m_icon;
 	bool m_ok;
-	UINT TaskbarCreated;
+	UINT m_TaskbarCreated;
 
 private:
 	DECLARE_EVENT_TABLE()

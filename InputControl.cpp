@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.13 2003-05-22 10:26:58 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.14 2003-05-23 13:18:54 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -95,14 +95,14 @@ public:
 		SetClientSize(client_width, static_size.y * 2);
 		PositionSelf();
 
-		tmr = new wxTimer(this);
-		tmr->Start(100);
+		m_tmr = new wxTimer(this);
+		m_tmr->Start(100);
 
 	}
 
 	~InputControlColourPopup()
 	{
-		delete tmr;
+		delete m_tmr;
 	}
 
 	InputControl *GetControl()
@@ -186,7 +186,7 @@ public:
 	}
 
 protected:
-	wxTimer *tmr;
+	wxTimer *m_tmr;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -216,8 +216,8 @@ InputControl::InputControl(
 	wxWindow* parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size)
 	: wxTextCtrl(parent, id, wxT(""), pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
-	history(),
-	history_pos(0), popup(NULL),
+	m_history(),
+	m_history_pos(0), m_popup(NULL),
 	m_ctrl_down(false), m_tab_completion_list(NULL), m_ignore_change(false)
 {
 
@@ -235,9 +235,9 @@ InputControl::InputControl(
 		html->Destroy();
 	}
 
-	txtBestSize = new wxTextCtrl(GetParent(), -1);
-	txtBestSize->Show(false);
-	txtBestSize->SetFont(GetFont());
+	m_txtBestSize = new wxTextCtrl(GetParent(), -1);
+	m_txtBestSize->Show(false);
+	m_txtBestSize->SetFont(GetFont());
 	SetSize(GetBestSize());
 
 	#ifdef __WXMSW__
@@ -259,21 +259,21 @@ InputControl::~InputControl()
 
 void InputControl::ClosePopup()
 {
-	if (popup != NULL)
+	if (m_popup != NULL)
 	{
-		popup->Show(false);
-		popup->Destroy();
-		popup = NULL;
+		m_popup->Show(false);
+		m_popup->Destroy();
+		m_popup = NULL;
 	}
 }
 
 void InputControl::ShowPopup()
 {
-	if (popup == NULL)
+	if (m_popup == NULL)
 	{
 
-		popup = new InputControlColourPopup(this, -1, wxT("Colour Index"));
-		popup->Show(true);
+		m_popup = new InputControlColourPopup(this, -1, wxT("Colour Index"));
+		m_popup->Show(true);
 
 		wxWindow *wnd = GetParent();
 		while (wnd->GetParent() != NULL)
@@ -288,19 +288,19 @@ void InputControl::ShowPopup()
 
 void InputControl::AddToHistory(const wxString &line)
 {
-	if ((history.GetCount() == 0) || (history.Last() != line))
+	if ((m_history.GetCount() == 0) || (m_history.Last() != line))
 	{
-		history.Add(line);
+		m_history.Add(line);
 	}
-	history_pos = history.GetCount();
+	m_history_pos = m_history.GetCount();
 }
 
 void InputControl::RemoveLastHistoryEntry()
 {
-	int count = history.GetCount();
+	int count = m_history.GetCount();
 	if (count > 0)
 	{
-		history.Remove(count - 1);
+		m_history.Remove(count - 1);
 	}
 }
 
@@ -327,9 +327,9 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 	if (event.GetKeyCode() == WXK_UP)
 	{
 
-		if (history_pos > 0)
+		if (m_history_pos > 0)
 		{
-			history_pos--;
+			m_history_pos--;
 			DisplayHistory();
 		}
 		else
@@ -341,9 +341,9 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 	else if (event.GetKeyCode() == WXK_DOWN)
 	{
 
-		if ((history_pos+1) < history.GetCount())
+		if ((m_history_pos+1) < m_history.GetCount())
 		{
-			history_pos++;
+			m_history_pos++;
 			DisplayHistory();
 		}
 		else
@@ -356,7 +356,7 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 			{
 				wxBell();
 			}
-			history_pos = history.GetCount();
+			m_history_pos = m_history.GetCount();
 		}
 
 	}
@@ -371,7 +371,7 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 
 void InputControl::DisplayHistory()
 {
-	SetValue(history[history_pos]);
+	SetValue(m_history[m_history_pos]);
 	SetInsertionPointEnd();
 }
 
@@ -675,5 +675,5 @@ void InputControl::ProcessInput()
 
 wxSize InputControl::DoGetBestSize() const
 {
-	return txtBestSize->GetBestSize();
+	return m_txtBestSize->GetBestSize();
 }

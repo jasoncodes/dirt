@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.45 2003-05-20 16:33:14 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.46 2003-05-23 13:18:54 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -108,7 +108,7 @@ class ModifierParser
 
 public:
 	ModifierParser()
-		: tagFont(wxT("font")), tagSpan(wxT("span")), tagBold(wxT("b")), tagUnderline(wxT("u"))
+		: m_tagFont(wxT("font")), m_tagSpan(wxT("span")), m_tagBold(wxT("b")), m_tagUnderline(wxT("u"))
 	{
 		strip_mode = false;
 		ResetAllState();
@@ -118,46 +118,46 @@ public:
 	bool strip_mode;
 
 protected:
-	wxString result;
-	int colour_pos;
-	bool had_comma;
-	bool last_was_comma;
-	int colour_number[2];
-	bool colour_number_valid[2];
+	wxString m_result;
+	int m_colour_pos;
+	bool m_had_comma;
+	bool m_last_was_comma;
+	int m_colour_number[2];
+	bool m_colour_number_valid[2];
 
-	ModifierParserTagEntryStack tag_stack;
+	ModifierParserTagEntryStack m_tag_stack;
 
-	ModifierParserTag tagFont;
-	ModifierParserTag tagSpan;
-	ModifierParserTag tagBold;
-	ModifierParserTag tagUnderline;
+	ModifierParserTag m_tagFont;
+	ModifierParserTag m_tagSpan;
+	ModifierParserTag m_tagBold;
+	ModifierParserTag m_tagUnderline;
 
-	ModifierParserTagEntryArray reverse_tags;
-	bool reverse_mode;
+	ModifierParserTagEntryArray m_reverse_tags;
+	bool m_reverse_mode;
 
 protected:
 	void ResetAllState()
 	{
-		result.Empty();
+		m_result.Empty();
 		ResetColourState();
-		tag_stack.Empty();
-		tagFont.active = false;
-		tagSpan.active = false;
-		tagBold.active = false;
-		tagUnderline.active = false;
-		reverse_tags.Empty();
-		reverse_mode = false;
+		m_tag_stack.Empty();
+		m_tagFont.active = false;
+		m_tagSpan.active = false;
+		m_tagBold.active = false;
+		m_tagUnderline.active = false;
+		m_reverse_tags.Empty();
+		m_reverse_mode = false;
 	}
 
 	void ResetColourState()
 	{
-		colour_pos = 0;
-		had_comma = false;
-		last_was_comma = false;
-		colour_number[0] = 0;
-		colour_number[1] = 0;
-		colour_number_valid[0] = false;
-		colour_number_valid[1] = false;
+		m_colour_pos = 0;
+		m_had_comma = false;
+		m_last_was_comma = false;
+		m_colour_number[0] = 0;
+		m_colour_number[1] = 0;
+		m_colour_number_valid[0] = false;
+		m_colour_number_valid[1] = false;
 	}
 
 	void end_tag_helper(ModifierParserTag &t)
@@ -166,11 +166,11 @@ protected:
 		{
 			if (debug_tags)
 			{
-				result << wxT("&lt;/") << t.name << wxT("&gt;");
+				m_result << wxT("&lt;/") << t.name << wxT("&gt;");
 			}
 			else
 			{
-				result << wxT("</") << t.name << wxT(">");
+				m_result << wxT("</") << t.name << wxT(">");
 			}
 		}
 	}
@@ -181,11 +181,11 @@ protected:
 		{
 			if (debug_tags)
 			{
-				result << wxT("&lt;") << t.name << wxT(" ") << attribs << wxT("&gt;");
+				m_result << wxT("&lt;") << t.name << wxT(" ") << attribs << wxT("&gt;");
 			}
 			else
 			{
-				result << wxT("<") << t.name << wxT(" ") << attribs << wxT(">");
+				m_result << wxT("<") << t.name << wxT(" ") << attribs << wxT(">");
 			}
 		}
 	}
@@ -198,7 +198,7 @@ protected:
 			ModifierParserTagEntryStack undo_stack;
 			while (true)
 			{
-				ModifierParserTagEntry entry = tag_stack.Pop();
+				ModifierParserTagEntry entry = m_tag_stack.Pop();
 				if (entry.tag.name == t.name)
 				{
 					last_attribs = entry.attribs;
@@ -212,7 +212,7 @@ protected:
 			while (!undo_stack.IsEmpty())
 			{
 				ModifierParserTagEntry entry = undo_stack.Pop();
-				tag_stack.Push(entry);
+				m_tag_stack.Push(entry);
 				start_tag_helper(entry.tag, entry.attribs);
 			}
 		}
@@ -223,7 +223,7 @@ protected:
 	{
 		wxString last_attribs = end_tag(t);
 		t.active = true;
-		tag_stack.Push(ModifierParserTagEntry(t, attribs));
+		m_tag_stack.Push(ModifierParserTagEntry(t, attribs));
 		start_tag_helper(t, attribs);
 		return last_attribs;
 	}
@@ -242,9 +242,9 @@ protected:
 
 	void CleanupStack()
 	{
-		while (!tag_stack.IsEmpty())
+		while (!m_tag_stack.IsEmpty())
 		{
-			ModifierParserTagEntry entry = tag_stack.Pop();
+			ModifierParserTagEntry entry = m_tag_stack.Pop();
 			entry.tag.active = false;
 			end_tag_helper(entry.tag);
 		}
@@ -252,9 +252,9 @@ protected:
 
 	void start_colour_tag(ModifierParserTag &t, wxString attribs)
 	{
-		if (reverse_mode)
+		if (m_reverse_mode)
 		{
-			reverse_tags.Add(ModifierParserTagEntry(t, attribs));
+			m_reverse_tags.Add(ModifierParserTagEntry(t, attribs));
 		}
 		else
 		{
@@ -264,9 +264,9 @@ protected:
 
 	void end_colour_tag(ModifierParserTag &t)
 	{
-		if (reverse_mode)
+		if (m_reverse_mode)
 		{
-			reverse_tags.Add(ModifierParserTagEntry(t, wxT("")));
+			m_reverse_tags.Add(ModifierParserTagEntry(t, wxT("")));
 		}
 		else
 		{
@@ -276,53 +276,53 @@ protected:
 
 	void EndOfColourCode()
 	{
-		if (colour_pos == 1 && !colour_number_valid[0])
+		if (m_colour_pos == 1 && !m_colour_number_valid[0])
 		{
-			end_colour_tag(tagSpan);
-			end_colour_tag(tagFont);
+			end_colour_tag(m_tagSpan);
+			end_colour_tag(m_tagFont);
 		}
-		else if (colour_number_valid[0])
+		else if (m_colour_number_valid[0])
 		{
-			start_colour_tag(tagFont, wxT("color=\"") + ColourToString(colour_number[0]) + wxT("\""));
-			if (colour_number_valid[1])
+			start_colour_tag(m_tagFont, wxT("color=\"") + ColourToString(m_colour_number[0]) + wxT("\""));
+			if (m_colour_number_valid[1])
 			{
-				start_colour_tag(tagSpan, wxT("style=\"background: ") + ColourToString(colour_number[1]) + wxT("\""));
+				start_colour_tag(m_tagSpan, wxT("style=\"background: ") + ColourToString(m_colour_number[1]) + wxT("\""));
 			}
 		}
-		colour_number_valid[0] = false;
-		colour_number_valid[1] = false;
-		colour_pos = 0;
+		m_colour_number_valid[0] = false;
+		m_colour_number_valid[1] = false;
+		m_colour_pos = 0;
 	}
 
 	void ReverseTag()
 	{
-		reverse_mode = !reverse_mode;
-		if (reverse_mode)
+		m_reverse_mode = !m_reverse_mode;
+		if (m_reverse_mode)
 		{
 			
-			wxString font_attribs = start_tag(tagFont, wxT("color=white"));
-			wxString span_attribs = start_tag(tagSpan, wxT("style='background: black'"));
+			wxString font_attribs = start_tag(m_tagFont, wxT("color=white"));
+			wxString span_attribs = start_tag(m_tagSpan, wxT("style='background: black'"));
 
-			reverse_tags.Empty();
+			m_reverse_tags.Empty();
 
 			if (font_attribs.Length() > 0)
 			{
-				reverse_tags.Add(ModifierParserTagEntry(tagFont, font_attribs));
+				m_reverse_tags.Add(ModifierParserTagEntry(m_tagFont, font_attribs));
 			}
 			if (span_attribs.Length() > 0)
 			{
-				reverse_tags.Add(ModifierParserTagEntry(tagSpan, span_attribs));
+				m_reverse_tags.Add(ModifierParserTagEntry(m_tagSpan, span_attribs));
 			}
 
 		}
 		else
 		{
-			end_tag(tagSpan);
-			end_tag(tagFont);
+			end_tag(m_tagSpan);
+			end_tag(m_tagFont);
 
-			for (size_t i = 0; i < reverse_tags.GetCount(); ++i)
+			for (size_t i = 0; i < m_reverse_tags.GetCount(); ++i)
 			{
-				ModifierParserTagEntry entry = reverse_tags.Item(i);
+				ModifierParserTagEntry entry = m_reverse_tags.Item(i);
 				if (entry.attribs.Length() > 0)
 				{
 					start_tag(entry.tag, entry.attribs);
@@ -342,29 +342,29 @@ public:
 		wxCOMPILE_TIME_ASSERT(modifier_count == 5, UnexpectedNumberOfModifiers);
 
 		ResetAllState();
-		result.Alloc(text.Length() * 3);
-		reverse_tags.Alloc(10);
+		m_result.Alloc(text.Length() * 3);
+		m_reverse_tags.Alloc(10);
 
 		for (size_t i = 0; i < text.Length(); ++i)
 		{
 
-			if (colour_pos == 0)
+			if (m_colour_pos == 0)
 			{
 				ResetColourState();
 			}
 
 			wxChar c = text[i];
 
-			if ( colour_pos > 0 && // is inside a colour code and
-				( (c == wxT(',') && had_comma) || // is either a 2nd comma
+			if ( m_colour_pos > 0 && // is inside a colour code and
+				( (c == wxT(',') && m_had_comma) || // is either a 2nd comma
 				  (c != wxT(',') && !wxIsdigit(c)) ) // or a non-valid character
 				)
 			{
 				EndOfColourCode();
-				had_comma = false;
-				if (last_was_comma)
+				m_had_comma = false;
+				if (m_last_was_comma)
 				{
-					result << wxT(',');
+					m_result << wxT(',');
 				}
 			}
 
@@ -373,7 +373,7 @@ public:
 
 				case BoldModifier:
 					EndOfColourCode();
-					toggle_tag(tagBold);
+					toggle_tag(m_tagBold);
 					break;
 
 				case OriginalModifier:
@@ -388,71 +388,71 @@ public:
 
 				case UnderlineModifier:
 					EndOfColourCode();
-					toggle_tag(tagUnderline);
+					toggle_tag(m_tagUnderline);
 					break;
 
 				case ColourModifier:
 					ResetColourState();
-					colour_pos = 1;
+					m_colour_pos = 1;
 					break;
 
 				case wxT('1'): case wxT('2'): case wxT('3'):
 				case wxT('4'): case wxT('5'): case wxT('6'):
 				case wxT('7'): case wxT('8'): case wxT('9'):
 				case wxT('0'): // isdigit()
-					if (colour_pos > 0)
+					if (m_colour_pos > 0)
 					{
-						colour_pos++;
-						if (colour_pos > 3)
+						m_colour_pos++;
+						if (m_colour_pos > 3)
 						{
 							EndOfColourCode();
 						}
 						else
 						{
-							int x = had_comma ? 1 : 0;
-							if (!colour_number_valid[x])
+							int x = m_had_comma ? 1 : 0;
+							if (!m_colour_number_valid[x])
 							{
-								colour_number[x] = 0;
-								colour_number_valid[x] = true;
+								m_colour_number[x] = 0;
+								m_colour_number_valid[x] = true;
 							}
-							colour_number[x] *= 10;
-							colour_number[x] += (c - wxT('0'));
+							m_colour_number[x] *= 10;
+							m_colour_number[x] += (c - wxT('0'));
 						}
 					}
-					if (colour_pos == 0)
+					if (m_colour_pos == 0)
 					{
-						result << c;
+						m_result << c;
 					}
 					break;
 
 				case wxT(','):
-					if (colour_pos > 0)
+					if (m_colour_pos > 0)
 					{
-						if (had_comma)
+						if (m_had_comma)
 						{
 							EndOfColourCode();
-							result << c << c;
+							m_result << c << c;
 						}
 						else
 						{
-							colour_pos = 1;
-							had_comma = true;
+							m_colour_pos = 1;
+							m_had_comma = true;
 						}
 					}
 					else
 					{
-						result << c;
+						m_result << c;
 					}
 					break;
 
 				default:
 					EndOfColourCode();
-					result << c;
+					m_result << c;
 					break;
 
 			}
 
-			last_was_comma = (c == wxT(','));
+			m_last_was_comma = (c == wxT(','));
 
 		}
 
@@ -460,7 +460,7 @@ public:
 
 		CleanupStack();
 
-		return result;
+		return m_result;
 
 	}
 
@@ -511,9 +511,9 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	m_tmpLastLink = NULL;
 	m_tmpLastCell = NULL;
 
-	last_start_cell = NULL;
-	last_end_cell = NULL;
-	last_start_end_valid = false;
+	m_last_start_cell = NULL;
+	m_last_end_cell = NULL;
+	m_last_start_end_valid = false;
 
 	m_Resizing = false;
 	m_iYOffset = 0;
@@ -764,10 +764,10 @@ void LogControl::OnDraw(wxDC& dcFront)
 			HighlightCells(dcBack, m_find_pos1, m_find_pos2);
 		}
 
-		if (last_start_end_valid)
+		if (m_last_start_end_valid)
 		{
 			InitDCForHighlighting(dcBack);
-			HighlightCells(dcBack, last_start_cell, last_end_cell);
+			HighlightCells(dcBack, m_last_start_cell, m_last_end_cell);
 		}
 
 #if USE_BACKBUFFER
@@ -1158,14 +1158,17 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 		captured = false;
 	}
 
-	if (last_start_end_valid && (!event.ButtonIsDown(1) || event.ButtonDown(1) || event.ButtonDown(2) || event.ButtonDown(3)))
+	if (m_last_start_end_valid &&
+		(!event.ButtonIsDown(1) || event.ButtonDown(1) ||
+		event.ButtonDown(2) || event.ButtonDown(3)))
 	{
 
 		if (!event.ButtonDown(2) && !event.ButtonDown(3))
 		{
 			if (wxTheClipboard->Open())
 			{
-				wxString text = GetTextFromRange(last_start_cell, last_end_cell, wxGetApp().IsControlDown());
+				wxString text = GetTextFromRange(
+					m_last_start_cell, m_last_end_cell, wxGetApp().IsControlDown());
 				wxTheClipboard->Clear();
 				wxTheClipboard->SetData(new wxTextDataObject(text));
 				wxTheClipboard->Flush();
@@ -1178,7 +1181,7 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 		Refresh();
 
-		last_start_end_valid = false;
+		m_last_start_end_valid = false;
 		down_pos_valid = false;
 
 	}
@@ -1220,18 +1223,18 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 			FirstCellFirst(&start_cell, &end_cell);
 
-			if (last_start_end_valid)
+			if (m_last_start_end_valid)
 			{
-				HighlightCellsDiff(dc, start_cell, end_cell, last_start_cell, last_end_cell);
+				HighlightCellsDiff(dc, start_cell, end_cell, m_last_start_cell, m_last_end_cell);
 			}
 			else
 			{
 				HighlightCells(dc, start_cell, end_cell);
 			}
 
-			last_start_cell = start_cell;
-			last_end_cell = end_cell;
-			last_start_end_valid = true;
+			m_last_start_cell = start_cell;
+			m_last_end_cell = end_cell;
+			m_last_start_end_valid = true;
 
 		}
 
@@ -1264,7 +1267,7 @@ void LogControl::OnIdle(wxIdleEvent& event)
 
 		wxHtmlCell *cell = m_Cell->FindCellByPos(pos.x, pos.y);
 
-		if (last_start_end_valid)
+		if (m_last_start_end_valid)
 		{
 			SetCursor(*m_cur_arrow);
 		}
@@ -1275,7 +1278,7 @@ void LogControl::OnIdle(wxIdleEvent& event)
 
 			if (lnk != m_tmpLastLink)
 			{
-				if (lnk == NULL || last_start_end_valid)
+				if (lnk == NULL || m_last_start_end_valid)
 				{
 					SetCursor(*m_cur_arrow);
 				}
@@ -1311,7 +1314,7 @@ void LogControl::Clear()
 {
 	m_red_line = NULL;
 	m_separators.Empty();
-	last_start_end_valid = false;
+	m_last_start_end_valid = false;
 	m_find_pos1 = m_Cell;
 	m_find_pos2 = m_Cell;
 	m_find_show_sel = false;

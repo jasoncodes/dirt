@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.51 2003-05-20 05:41:45 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.52 2003-05-23 13:18:55 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -139,7 +139,7 @@ wxString ServerConfig::GetSoundJoin() const
 
 wxString ServerConfig::GetServerName() const
 {
-	return m_config->Read(wxT("/Server/Server Name"), wxEmptyString);
+	return m_config->Read(wxT("/Server/Server Name"), wxGetHostName());
 }
 
 wxString ServerConfig::GetHostname() const

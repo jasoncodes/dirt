@@ -35,6 +35,8 @@ public:
 	bool AcceptTransfer(int transferid, const wxString &filename, bool resume);
 	bool DeleteTransfer(int transferid, bool user_initiated);
 
+	wxString GetLastCompletedGetFilename() const { return m_last_completed_get_filename; }
+
 protected:
 	void OnTimer(wxTimerEvent &event);
 	void OnSocket(CryptSocketEvent &event);
@@ -73,10 +75,11 @@ protected:
 protected:
 	Client *m_client;
 	FileTransferArray m_transfers;
-	wxTimer *tmr;
+	wxTimer *m_tmr;
 	#ifdef __WXMSW__
-		wxTimer *tmrIdleEventFaker;
+		wxTimer *m_tmrIdleEventFaker;
 	#endif
+	wxString m_last_completed_get_filename;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.119 2003-05-22 12:04:32 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.120 2003-05-23 13:18:53 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -509,7 +509,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST QUERY RESETWINDOWPOS LOGS LANLIST"), wxT(" "));
+	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -589,6 +589,44 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		argv[1] = param.c_str();
 		argv[2] = NULL;
 		::wxExecute((wxChar**)argv);
+		return true;
+	}
+	else if (cmd == wxT("NEW"))
+	{
+		wxArrayString param_array = SplitQuotedString(params, wxT(" "));
+		if (param_array.GetCount() && param_array[0u].Left(2) != wxT("--"))
+		{
+			param_array[0u].Prepend(wxT("--host="));
+		}
+		wxASSERT(wxTheApp->argc > 0);
+		const wxChar **argv = new const wxChar*[param_array.GetCount()+2];
+		wxString self = GetSelf();
+		argv[0] = self.c_str();
+		for (size_t i = 0; i < param_array.GetCount(); ++i)
+		{
+			argv[i+1] = param_array[i].c_str();
+		}
+		argv[param_array.GetCount()+1] = NULL;
+		::wxExecute((wxChar**)argv);
+		delete argv;
+		return true;
+	}
+	else if (cmd == wxT("ABOUT"))
+	{
+		ShowAbout();
+		return true;
+	}
+	else if (cmd == wxT("SERVERS"))
+	{
+		OpenBrowser(this, PUBLIC_LIST_URL, true);
+		return true;
+	}
+	else if (cmd == wxT("RUN"))
+	{
+		if (!OpenExternalResource(this, params, false))
+		{
+			OnClientWarning(context, wxT("Error executing: ") + params);
+		}
 		return true;
 	}
 	else if (cmd == wxT("DCC"))

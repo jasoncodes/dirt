@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.65 2003-05-19 13:27:09 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.66 2003-05-23 13:18:53 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1232,6 +1232,25 @@ bool Client::ProcessCTCPIn(const wxString &context, const wxString &nick, wxStri
 	{
 		CTCPReply(context, nick, type, data);
 		data = ByteBuffer();
+		return true;
+	}
+	else if (type == wxT("TIME"))
+	{
+		wxDateTime now = wxDateTime::Now();
+		wxTimeSpan tz_offset = now.ToGMT() - now;
+		wxString tz_str = tz_offset.Format(wxT("%H%M"));
+		if (tz_str[0u] != wxT('-'))
+		{
+			tz_str.Prepend(wxT('+'));
+		}
+		ByteBufferArray reply;
+		reply.Add(FormatISODateTime(now) + wxT(" UTC") + tz_str);
+		reply.Add(wxString() << wxGetUTCTime());
+		reply.Add(tz_offset.GetValue().ToString());
+		reply.Add(ByteBuffer());
+		reply.Add(data);
+		CTCPReply(context, nick, type, Pack(reply));
+		return true;
 	}
 	return m_file_transfers->OnClientCTCPIn(context, nick, type, data);
 }
