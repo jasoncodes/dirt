@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.21 2003-05-23 13:18:55 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.22 2003-05-24 12:01:06 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -513,12 +513,12 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 			{
 				child->Iconize(false);
 			}
-			canvas->saved_state_maximized = child->IsMaximized();
+			canvas->m_saved_state_maximized = child->IsMaximized();
 			if (child->IsMaximized())
 			{
 				child->Maximize(false);
 			}
-			canvas->saved_state_rect = child->GetRect();
+			canvas->m_saved_state_rect = child->GetRect();
 
 		#endif
 
