@@ -32,6 +32,7 @@ public:
 public:
 	virtual wxString GetNickname() const { return m_nickname; }
 	virtual wxString GetRemoteHost() const { return m_remotehost; }
+	virtual wxString GetRemoteHostAndPort() const { return m_remotehostandport; }
 	virtual wxString GetUserDetails() const { return m_userdetails; }
 	virtual wxString GetAwayMessage() const { return m_awaymessage; }
 	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }

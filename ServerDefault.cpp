@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.19 2003-02-19 00:20:34 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.20 2003-02-19 09:46:57 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -112,7 +112,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_remotehost = ::GetIPV4String(addr, false);
 					conn->m_remotehostandport =
 						wxString() << conn->m_remotehost << wxT(':') << addr.Service();
-					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + GetId());
+					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + conn->GetId());
 				}
 				break;
 

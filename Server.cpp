@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.12 2003-02-19 00:20:34 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.13 2003-02-19 09:46:57 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -50,7 +50,7 @@ ServerConnection::operator wxString() const
 
 wxString ServerConnection::GetId() const
 {
-	return
+	return wxString()
 		<< ((GetNickname().Length()) ? GetNickname() : wxT("*"))
 		<< wxT("@") + GetRemoteHostAndPort();
 }
@@ -275,10 +275,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	else if (cmd == wxT("USERDETAILS"))
 	{
 		conn->m_userdetails = data;
+		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
 	}
 	else if (cmd == wxT("USERAGENT"))
 	{
 		conn->m_useragent = data;
+		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
 	}
 	else if (cmd == wxT("PRIVMSG"))
 	{
@@ -323,11 +325,13 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					conn->Send(context, wxT("NICKLIST"), GetNickList());
 					conn->Send(context, wxT("NICK"), data);
 					conn->m_nickname = new_nick;
+					m_event_handler->OnServerInformation(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
 				}
 				else
 				{
 					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, data), true);
+					m_event_handler->OnServerInformation(conn->GetId() + wxT(" is now known as ") + new_nick);
 					conn->m_nickname = new_nick;
 				}
 			}
