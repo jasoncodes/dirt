@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.36 2003-05-20 16:43:39 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.37 2003-05-21 03:56:32 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -313,7 +313,7 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 		++i;
 	}
 	++i;
-	wxString last_server_hostname = m_client->GetLastURL().GetHostname();
+	wxString last_server_hostname = m_client->GetLastHostname();
 	Uint16Array server_ports;
 	if (i <= fields.GetCount() && ((fields.GetCount()-i) % 2) == 0)
 	{
@@ -325,8 +325,9 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 			{
 				return false;
 			}
+			wxString ip = fields[i];
 			if (last_server_hostname.Length() &&
-				m_client->m_server_ip_list.Index(wxString(fields[i])) > -1)
+				m_client->m_server_ip_list.Index(ip) > -1)
 			{
 				bool found = false;
 				for (size_t i = 0; i < server_ports.GetCount(); ++i)
@@ -342,8 +343,11 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 					server_ports.Add(port);
 				}
 			}
-			IPs.Add(fields[i]);
-			ports.Add(port);
+			if (wxString(ip) != last_server_hostname)
+			{
+				IPs.Add(ip);
+				ports.Add(port);
+			}
 			i += 2;
 		}
 		for (size_t i = 0; i < server_ports.GetCount(); ++i)
@@ -351,6 +355,7 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 			IPs.Insert(last_server_hostname, i);
 			ports.Insert(server_ports[i], i);
 		}
+		wxASSERT(IPs.GetCount() == ports.GetCount());
 		return true;
 	}
 	return false;
