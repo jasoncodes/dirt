@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.34 2003-03-15 08:19:04 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.35 2003-03-16 07:39:43 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -462,6 +462,11 @@ wxString Client::GetDefaultNick() const
 	if (i > -1)
 	{
 		nick = nick.Left(i);
+	}
+	if (nick == nick.Upper() || nick == nick.Lower())
+	{
+		nick = nick.Lower();
+		nick[(size_t)0] = wxToupper(nick[0]);
 	}
 	return nick;
 }
