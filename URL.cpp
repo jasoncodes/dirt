@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.1 2003-02-17 01:58:13 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.2 2003-02-17 02:10:02 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -79,33 +79,39 @@ wxString URL::Escape(const wxString &text)
 	return output;
 }
 
-// the following function will fail with any characters outside ASCII
-// support for UTF-8 URLs is planned in a future build
 wxString URL::Unescape(const wxString &text)
 {
-	wxString output;
-	output.Alloc(text.Length());
-	for (size_t i = 0; i < text.Length(); ++i)
+	ByteBuffer src(text);
+	ByteBuffer dst(text.Length());
+	byte *srcptr = src.Lock();
+	size_t srclen = src.Length();
+	byte *dstptr = dst.Lock();
+	for (size_t i = 0; i < srclen; ++i)
 	{
-		wxChar c = text[i];
-		if (c == wxT('+'))
+		byte b = srcptr[i];
+		if (b == '+')
 		{
-			output += wxT(' ');
+			*dstptr = ' ';
 		}
-		else if (c == wxT('%') && (i+2 < text.Length()) && wxIsxdigit(text[i+1]) && wxIsxdigit(text[i+2]))
+		else if (b == '%' && (i+2 < srclen) && isxdigit(srcptr[i+1]) && isxdigit(srcptr[i+2]))
 		{
 			wxString hex;
-			hex << text[i+1] << text[i+2];
+			hex << (wxChar)srcptr[i+1] << (wxChar)srcptr[i+2];
+			int c = 0;
 			wxSscanf(hex, wxT("%x"), &c);
 			i += 2;
-			output += c;
+			*dstptr = c;
 		}
 		else
 		{
-			output += c;
+			*dstptr = b;
 		}
+		dstptr++;
 	}
-	return output;
+	*dstptr = NULL;
+	src.Unlock();
+	dst.Unlock();
+	return dst;
 }
 
 wxString URL::GetProtocol(const wxString &default_protocol) const
