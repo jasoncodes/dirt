@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.21 2004-05-30 11:21:34 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.22 2004-05-31 07:49:55 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -102,12 +102,13 @@ class DNSThread : public wxThread
 
 	friend class DNS;
 
-protected:
+public:
 	DNSThread()
 		: wxThread(wxTHREAD_JOINABLE)
 	{
 	}
 
+protected:
 	virtual ExitCode Entry()
 	{
 
@@ -291,6 +292,101 @@ protected:
 
 };
 
+// DNS thread registration
+
+void DNSThreadInit()
+{
+
+	// thread startup code
+	if (!s_DNS_thread)
+	{
+
+		// due to a bug in wx, we make sure the first socket call
+		// occurs on the main thread, otherwise bad things happen
+		{
+			wxIPV4address addr;
+			addr.Hostname(wxT("127.0.0.1"));
+		}
+
+		DNSDebugMsg(wxT("main: first call, creating DNS thread"));
+		// create everything
+		s_DNS_queue = new DNSQueue;
+		s_DNS_condition_mutex = new wxMutex;
+		s_DNS_condition = new wxCondition(*s_DNS_condition_mutex);
+		s_DNS_startup_condition_mutex = new wxMutex;
+		s_DNS_startup_condition = new wxCondition(*s_DNS_startup_condition_mutex);
+		s_DNS_startup_condition_mutex->Lock();
+		s_DNS_thread = new DNSThread;
+		s_DNS_going_to_signal = true;
+		
+		DNSDebugMsg(wxT("main: starting the thread"));
+		// start the thread
+		if (s_DNS_thread->Create() != wxTHREAD_NO_ERROR)
+		{
+			wxLogFatalError(wxT("Error creating DNS thread"));
+			return;
+		}
+		if (s_DNS_thread->Run() != wxTHREAD_NO_ERROR)
+		{
+			wxLogFatalError(wxT("Error starting DNS thread"));
+			return;
+		}
+
+		DNSDebugMsg(wxT("main: waiting for the thread"));
+		// wait for thread to be ready
+		s_DNS_startup_condition->Wait();
+
+		DNSDebugMsg(wxT("main: thread is ready"));
+
+	}
+
+}
+
+void DNSThreadDestroy()
+{
+
+	if (s_DNS_thread)
+	{
+		s_DNS_shutdown = true;
+		s_DNS_condition->Broadcast();
+		s_DNS_thread->Delete();
+	}
+
+	delete s_DNS_thread;
+	delete s_DNS_condition;
+	delete s_DNS_condition_mutex;
+	delete s_DNS_startup_condition;
+	delete s_DNS_startup_condition_mutex;
+	delete s_DNS_queue;
+	delete s_DNS_section;
+
+	s_DNS_thread = NULL;
+	s_DNS_condition = NULL;
+	s_DNS_condition_mutex = NULL;
+	s_DNS_startup_condition = NULL;
+	s_DNS_startup_condition_mutex = NULL;
+	s_DNS_queue = NULL;
+	s_DNS_section = NULL;
+
+}
+
+static int g_DNS_registrations = 0;
+
+void DNSRegister()
+{
+	g_DNS_registrations++;
+	DNSThreadInit();
+}
+
+void DNSUnregister()
+{
+	g_DNS_registrations--;
+	if (!g_DNS_registrations)
+	{
+		DNSThreadDestroy();
+	}
+}
+
 // module
 
 class DNSModule: public wxModule
@@ -318,19 +414,7 @@ public:
 
 	void OnExit()
 	{
-		if (s_DNS_thread)
-		{
-			s_DNS_shutdown = true;
-			s_DNS_condition->Broadcast();
-			s_DNS_thread->Delete();
-		}
-		delete s_DNS_thread;
-		delete s_DNS_condition;
-		delete s_DNS_condition_mutex;
-		delete s_DNS_startup_condition;
-		delete s_DNS_startup_condition_mutex;
-		delete s_DNS_queue;
-		delete s_DNS_section;
+		DNSThreadDestroy();
 	}
 
 };
@@ -343,11 +427,17 @@ DNS::DNS()
 {
 	m_handler = NULL;
 	m_id = wxID_ANY;
+	m_registered = false;
 }
 
 DNS::~DNS()
 {
 	Cancel();
+	if (m_registered)
+	{
+		DNSUnregister();
+		m_registered = false;
+	}
 }
 
 void DNS::SetEventHandler(wxEvtHandler *handler, wxEventType id)
@@ -408,53 +498,16 @@ void DNS::Cancel(void *userdata)
 void DNS::Lookup(const wxString &question, bool is_reverse, void *userdata)
 {
 
-	DNSDebugMsg(wxT("main: lookup called with " + question));
-
 	DNSDebugMsg(wxT("main: grabbing mutex"));
 	s_DNS_section->Enter();
 	DNSDebugMsg(wxT("main: got mutex"));
 
-	// thread startup code
-	if (!s_DNS_thread)
+	DNSDebugMsg(wxT("main: lookup called with " + question));
+
+	if (!m_registered)
 	{
-
-		// due to a bug in wx, we make sure the first socket call
-		// occurs on the main thread, otherwise bad things happen
-		{
-			wxIPV4address addr;
-			addr.Hostname(wxT("127.0.0.1"));
-		}
-
-		DNSDebugMsg(wxT("main: first call, creating DNS thread"));
-		// create everything
-		s_DNS_queue = new DNSQueue;
-		s_DNS_condition_mutex = new wxMutex;
-		s_DNS_condition = new wxCondition(*s_DNS_condition_mutex);
-		s_DNS_startup_condition_mutex = new wxMutex;
-		s_DNS_startup_condition = new wxCondition(*s_DNS_startup_condition_mutex);
-		s_DNS_startup_condition_mutex->Lock();
-		s_DNS_thread = new DNSThread;
-		s_DNS_going_to_signal = true;
-		
-		DNSDebugMsg(wxT("main: starting the thread"));
-		// start the thread
-		if (s_DNS_thread->Create() != wxTHREAD_NO_ERROR)
-		{
-			wxLogFatalError(wxT("Error creating DNS thread"));
-			return;
-		}
-		if (s_DNS_thread->Run() != wxTHREAD_NO_ERROR)
-		{
-			wxLogFatalError(wxT("Error starting DNS thread"));
-			return;
-		}
-
-		DNSDebugMsg(wxT("main: waiting for the thread"));
-		// wait for thread to be ready
-		s_DNS_startup_condition->Wait();
-
-		DNSDebugMsg(wxT("main: thread is ready"));
-
+		DNSRegister();
+		m_registered = true;
 	}
 
 	s_DNS_going_to_signal = (s_DNS_queue->GetFirst() == NULL);
@@ -476,11 +529,13 @@ void DNS::Lookup(const wxString &question, bool is_reverse, void *userdata)
 	if (s_DNS_going_to_signal)
 	{
 		DNSDebugMsg(wxT("main: first entry in queue, locking mutex"));
+wxMutexGuiLeave();
 		s_DNS_condition_mutex->Lock();
 		DNSDebugMsg(wxT("main: signalling"));
 		s_DNS_condition->Signal();
 		DNSDebugMsg(wxT("main: unlocking mutex"));
 		s_DNS_condition_mutex->Unlock();
+wxMutexGuiEnter();
 	}
 
 }

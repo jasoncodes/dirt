@@ -44,6 +44,7 @@ public:
 protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
+	bool m_registered;
 
 	DECLARE_NO_COPY_CLASS(DNS)
 

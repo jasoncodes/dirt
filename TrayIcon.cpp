@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.15 2004-05-29 11:01:33 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.16 2004-05-31 07:49:56 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -437,7 +437,10 @@ bool TrayIcon::Ok()
 
 void TrayIcon::SetIcon(const char **xpm)
 {
-	m_priv->icon = wxIcon(xpm);
+	wxImage img = wxBitmap(xpm).ConvertToImage();
+	img.Rescale(24, 24);
+	m_priv->icon.CopyFromBitmap(img);
+	//m_priv->icon = wxIcon(xpm);
 	m_priv->Update();
 }
 

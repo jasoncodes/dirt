@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.36 2004-05-31 05:39:36 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.37 2004-05-31 07:49:55 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -115,6 +115,11 @@ public:
 	wxBitmap *GetDarkBitmap() const
 	{
 		return m_bmp2;
+	}
+
+	virtual bool AcceptsFocus() const
+	{
+		return false;
 	}
 
 protected:
