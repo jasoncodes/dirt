@@ -13,8 +13,6 @@
 
 * copy w/o formatting, find text, etc
 
-* scroll window when making selection drag
-
 * type -->blah'<--. problem is in ConvertUrlsToLinks
 
 * console client ui for win32

@@ -588,6 +588,8 @@ void LogControl::ClearRect(wxDC& dc, wxRect &rect)
 void LogControl::ClearBlankArea(wxDC &dc)
 {
 
+	dc.SetLogicalFunction(wxCOPY);
+
 	wxRect rtClearArea;
 
 	int x, y;
@@ -1017,6 +1019,30 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 	if ( !m_Cell )
 	{
 		return;
+	}
+
+	if (event.ButtonIsDown(1))
+	{
+		wxPoint pos = ScreenToClient(wxGetMousePosition());
+		wxSize size = GetSize();
+		int view_x, view_y;
+		GetViewStart(&view_x, &view_y);
+		if (pos.y < 0)
+		{
+			Scroll(-1, view_y - 1);
+		}
+		else if (pos.y > size.y)
+		{
+			Scroll(-1, view_y + 1);
+		}
+		if (pos.x < 0)
+		{
+			Scroll(view_x - 1, -1);
+		}
+		else if (pos.x > size.x)
+		{
+			Scroll(view_x + 1, -1);
+		}
 	}
 
 	wxPoint pos = GetVirtualMousePosition();
