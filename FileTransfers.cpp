@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.42 2003-06-04 05:56:25 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.43 2003-06-04 10:27:11 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -178,14 +178,12 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	SetProxyOnSocket(sck, false);
 	sck->SetUserData(t);
 	sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-	wxIPV4address addr;
-	addr.AnyAddress();
-	addr.Service(0);
-	if (!sck->Listen(addr))
+	if (!sck->Listen())
 	{
 		delete t;
 		return -1;
 	}
+	wxIPV4address addr;
 	sck->GetLocal(addr);
 	t->m_scks.Add(sck);
 
@@ -477,10 +475,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 								SetProxyOnSocket(sckClient, true);
 								sckClient->SetUserData(&t);
 								sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-								wxIPV4address addr;
-								addr.Hostname(IPs[i]);
-								addr.Service(ports[i]);
-								sckClient->Connect(addr);
+								sckClient->Connect(IPs[i], ports[i]);
 							}
 
 							t.filesent = ll;
@@ -895,10 +890,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 			SetProxyOnSocket(sckClient, true);
 			sckClient->SetUserData(&t);
 			sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-			wxIPV4address addr;
-			addr.Hostname(t.m_IPs[i]);
-			addr.Service(t.m_ports[i]);
-			sckClient->Connect(addr);
+			sckClient->Connect(t.m_IPs[i], t.m_ports[i]);
 		}
 
 		m_client->m_event_handler->OnClientTransferState(t);
@@ -914,12 +906,10 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		SetProxyOnSocket(sckServer, false);
 		sckServer->SetUserData(&t);
 		sckServer->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-		wxIPV4address addr;
-		addr.AnyAddress();
-		addr.Service(0);
-		if (sckServer->Listen(addr))
+		if (sckServer->Listen())
 		{
 			t.m_scks.Add(sckServer);
+			wxIPV4address addr;
 			sckServer->GetLocal(addr);
 			AppendMyIPs(data, addr.Service());
 		}

@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.31 2003-06-04 05:56:25 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.32 2003-06-04 10:27:11 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
 #include "util.h"
 #include <wx/datetime.h>
 #include "CryptSocketProxy.h"
+#include "DNS.h"
 
 //////// CryptSocketBase ////////
 
@@ -28,7 +29,8 @@ static time_t Now()
 
 enum
 {
-	ID_SOCKET = 1
+	ID_SOCKET = 1,
+	ID_DNS
 };
 
 enum MessageTypes
@@ -39,6 +41,7 @@ enum MessageTypes
 
 BEGIN_EVENT_TABLE(CryptSocketBase, wxEvtHandler)
 	EVT_SOCKET(ID_SOCKET, CryptSocketBase::OnSocket)
+	EVT_DNS(ID_DNS, CryptSocketBase::OnDNS)
 END_EVENT_TABLE()
 
 CryptSocketBase::CryptSocketBase()
@@ -48,6 +51,7 @@ CryptSocketBase::CryptSocketBase()
 	m_sck = NULL;
 	m_proxy = NULL;
 	m_proxy_settings = NULL;
+	m_DNS = NULL;
 	m_userdata = NULL;
 	m_bOutputOkay = false;
 	m_bInitialOutputEventSent = false;
@@ -85,6 +89,8 @@ void CryptSocketBase::Close()
 	}
 	delete m_proxy;
 	m_proxy = NULL;
+	delete m_DNS;
+	m_DNS = NULL;
 	m_has_connected = false;
 	wxASSERT(!Ok());
 	InitBuffers();
@@ -191,6 +197,11 @@ void CryptSocketBase::OnSocket(wxSocketEvent &event)
 
 	}
 
+}
+
+void CryptSocketBase::OnDNS(DNSEvent &event)
+{
+	wxFAIL_MSG(wxT("CryptSocketBase::OnDNS not implemented"));
 }
 
 void CryptSocketBase::OnSocketInput()
@@ -501,6 +512,7 @@ const CryptSocketProxySettings* CryptSocketBase::GetProxySettings() const
 
 void CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
 {
+	wxASSERT(GetType() == cstClient);
 	delete m_proxy;
 	m_proxy = NULL;
 	if (m_proxy_settings &&
@@ -513,6 +525,7 @@ void CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
 
 void CryptSocketBase::InitProxyListen()
 {
+	wxASSERT(GetType() == cstServer);
 	delete m_proxy;
 	m_proxy = NULL;
 	if (m_proxy_settings)
@@ -534,7 +547,7 @@ CryptSocketClient::~CryptSocketClient()
 {
 }
 
-void CryptSocketClient::Connect(wxSockAddress& addr)
+void CryptSocketClient::Connect(const wxString &host, wxUint16 port)
 {
 	
 	Destroy();
@@ -543,6 +556,23 @@ void CryptSocketClient::Connect(wxSockAddress& addr)
 	InitBuffers();
 	InitSocketEvents();
 	//InitProxyConnect();
+
+	wxIPV4address addr;
+	if (host.Length())
+	{
+		if (!addr.Hostname(host))
+		{
+			wxSocketEvent event;
+			event.SetEventObject(m_sck);
+			event.SetEventType(wxSOCKET_LOST);
+			OnSocket(event);
+		}
+	}
+	else
+	{
+		addr.AnyAddress();
+	}
+	addr.Service(port);
 
 	if (((wxSocketClient*)m_sck)->Connect(addr, false))
 	{
@@ -589,10 +619,23 @@ CryptSocketServer::~CryptSocketServer()
 {
 }
 
-bool CryptSocketServer::Listen(wxSockAddress& address)
+bool CryptSocketServer::Listen(const wxString &host, wxUint16 port)
 {
 	Destroy();
-	m_sck = new wxSocketServer(address, wxSOCKET_NOWAIT);
+	wxIPV4address addr;
+	if (host.Length())
+	{
+		if (!addr.Hostname(host))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		addr.AnyAddress();
+	}
+	addr.Service(port);
+	m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
 	InitSocketEvents();
 	return m_sck->Ok();
 }

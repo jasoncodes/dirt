@@ -7,6 +7,8 @@
 
 class CryptSocketProxy;
 class CryptSocketProxySettings;
+class DNS;
+class DNSEvent;
 
 //////// CryptSocketBase ////////
 
@@ -62,6 +64,7 @@ protected:
 	virtual void InitProxyListen();
 
 protected:
+	void OnDNS(DNSEvent &event);
 	void OnSocket(wxSocketEvent &event);
 	virtual void OnSocketInput();
 	virtual void OnSocketOutput();
@@ -77,6 +80,7 @@ protected:
 	wxEventType m_id;
 	void *m_userdata;
 	wxSocketBase *m_sck;
+	DNS *m_DNS;
 	bool m_has_connected;
 	ByteBuffer m_buffIn;
 	ByteBuffer m_buffOut;
@@ -121,7 +125,7 @@ public:
 	CryptSocketClient();
 	virtual ~CryptSocketClient();
 
-	virtual void Connect(wxSockAddress& addr);
+	virtual void Connect(const wxString &host, wxUint16 port);
 
 	virtual CryptSocketType GetType() const { return cstClient; }
 
@@ -142,7 +146,7 @@ public:
 	CryptSocketServer();
 	virtual ~CryptSocketServer();
 
-	virtual bool Listen(wxSockAddress& address);
+	virtual bool Listen(const wxString &host = wxEmptyString, wxUint16 port = 0);
 	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY, void *userdata = NULL);
 
 	virtual CryptSocketType GetType() const { return cstServer; }

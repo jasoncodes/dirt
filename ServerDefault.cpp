@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.60 2003-06-03 06:51:32 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.61 2003-06-04 10:27:12 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -92,11 +92,10 @@ ServerDefault::~ServerDefault()
 void ServerDefault::Start()
 {
 	wxCHECK_RET(!IsRunning(), wxT("Cannot start server. Server is already running."));
-	wxIPV4address addr;
-	addr.AnyAddress();
-	addr.Service(GetConfig().GetListenPort());
-	if (m_sckListen->Listen(addr))
+	wxUint16 port = GetConfig().GetListenPort();
+	if (m_sckListen->Listen(wxEmptyString, port))
 	{
+		wxIPV4address addr;
 		m_sckListen->GetLocal(addr);
 		Information(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
@@ -115,7 +114,9 @@ void ServerDefault::Start()
 	}
 	else
 	{
-		Warning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr, true));
+		wxString str;
+		str << wxT("Error starting server. Maybe a server is already running on port ") << port;
+		Warning(str);
 	}
 }
 

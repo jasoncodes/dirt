@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.36 2003-06-04 05:56:25 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.37 2003-06-04 10:27:11 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -123,17 +123,11 @@ void ClientDefault::OnDNS(DNSEvent &event)
 	bool ok = event.IsSuccess();
 	if (ok)
 	{
-		wxIPV4address *addr = (wxIPV4address*)event.GetAddress().Clone();
-		ok &= addr->Service(m_url.GetPort(11626));
-		if (ok)
-		{
-			m_last_server_hostname = GetIPV4AddressString(event.GetIP());
-			wxString msg;
-			msg << wxT("Connecting to ") << GetLastURLString();
-			m_event_handler->OnClientInformation(wxEmptyString, msg);
-			m_sck->Connect(*addr);
-		}
-		delete addr;
+		m_last_server_hostname = GetIPV4AddressString(event.GetIP());
+		wxString msg;
+		msg << wxT("Connecting to ") << GetLastURLString();
+		m_event_handler->OnClientInformation(wxEmptyString, msg);
+		m_sck->Connect(m_last_server_hostname, m_url.GetPort(11626));
 	}
 	if (!ok)
 	{
