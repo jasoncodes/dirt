@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.5 2003-06-02 10:14:43 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.6 2003-06-21 10:21:20 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -75,38 +75,62 @@ IPInfoEntry::IPInfoEntry()
 
 #endif
 
+typedef DWORD (WINAPI *PFNGETIPADDRTABLE)(PMIB_IPADDRTABLE, PULONG, BOOL);
+
 IPInfoEntryArray GetIPInfo()
 {
 
 	IPInfoEntryArray entries;
 
 	#if defined(__WXMSW__)
-		unsigned long dwSize = 0;
-		GetIpAddrTable(NULL, &dwSize, FALSE);
-		if (dwSize > 0)
+
+		HINSTANCE hIpHlpApi = LoadLibrary(wxT("iphlpapi"));
+
+		if (hIpHlpApi)
 		{
-			MIB_IPADDRTABLE *table = (MIB_IPADDRTABLE*)malloc(dwSize);
-			if (GetIpAddrTable(table, &dwSize, FALSE) == NO_ERROR)
+
+			PFNGETIPADDRTABLE pfnGetIpAddrTable =
+				(PFNGETIPADDRTABLE)GetProcAddress(hIpHlpApi, "GetIpAddrTable");
+
+			if (pfnGetIpAddrTable)
 			{
-				for (size_t i = 0; i < table->dwNumEntries; ++i)
+
+				unsigned long dwSize = 0;
+				pfnGetIpAddrTable(NULL, &dwSize, FALSE);
+				if (dwSize > 0)
 				{
-					MIB_IPADDRROW *row = &table->table[i];
-					if (row->dwAddr != 0 || row->dwMask != 0)
+
+					MIB_IPADDRTABLE *table = (MIB_IPADDRTABLE*)malloc(dwSize);
+
+					if (pfnGetIpAddrTable(table, &dwSize, FALSE) == NO_ERROR)
 					{
-						IPInfoEntry entry;
-						entry.IPAddress = row->dwAddr;
-						entry.SubnetMask = row->dwMask;
-						entry.NetworkAddress = (row->dwAddr & row->dwMask);
-						entry.BroadcastAddress  = (row->dwAddr & row->dwMask) | ~(row->dwMask);
-						entry.IPAddressString = GetIPV4AddressString(entry.IPAddress);
-						entry.SubnetMaskString = GetIPV4AddressString(entry.SubnetMask);
-						entry.NetworkAddressString = GetIPV4AddressString(entry.NetworkAddress);
-						entry.BroadcastAddressString = GetIPV4AddressString(entry.BroadcastAddress);
-						entries.Add(entry);
+						for (size_t i = 0; i < table->dwNumEntries; ++i)
+						{
+							MIB_IPADDRROW *row = &table->table[i];
+							if (row->dwAddr != 0 || row->dwMask != 0)
+							{
+								IPInfoEntry entry;
+								entry.IPAddress = row->dwAddr;
+								entry.SubnetMask = row->dwMask;
+								entry.NetworkAddress = (row->dwAddr & row->dwMask);
+								entry.BroadcastAddress  = (row->dwAddr & row->dwMask) | ~(row->dwMask);
+								entry.IPAddressString = GetIPV4AddressString(entry.IPAddress);
+								entry.SubnetMaskString = GetIPV4AddressString(entry.SubnetMask);
+								entry.NetworkAddressString = GetIPV4AddressString(entry.NetworkAddress);
+								entry.BroadcastAddressString = GetIPV4AddressString(entry.BroadcastAddress);
+								entries.Add(entry);
+							}
+						}
 					}
+
+					free(table);
+
 				}
+
 			}
-			free(table);
+
+			FreeModule(hIpHlpApi);
+
 		}
 
 	#elif defined(__UNIX__)

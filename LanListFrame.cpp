@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.6 2003-05-30 05:55:33 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.7 2003-06-21 10:21:20 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -61,6 +61,14 @@ LanListFrame::LanListFrame()
 
 	m_bcast = new BroadcastSocket;
 	m_bcast->SetEventHandler(this, ID_BROADCAST);
+
+	if (!m_bcast->Ok())
+	{
+		wxMessageBox(wxT("Windows 98 or Windows NT SP4 is required for this function"), wxT("Unsupported Operating System"), wxOK|wxICON_ERROR);
+		m_tmr = NULL;
+		Destroy();
+		return;
+	}
 
 	m_tmr = new wxTimer(this, ID_TIMER);
 	m_tmr->Start(ping_interval);
