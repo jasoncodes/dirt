@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.71 2003-03-13 02:04:25 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.72 2003-03-13 02:10:48 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -858,7 +858,7 @@ void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
 		{
 			wxString context =
 				(GetSwitchBar()->GetSelectedIndex() == 0) ?
-				wxEmptyString :
+				wxString() :
 				child->GetCanvas()->GetTitle();
 			m_client->ProcessAlias(context, m_client->GetBinding(name), wxEmptyString);
 			return;
