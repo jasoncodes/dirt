@@ -16,7 +16,11 @@
 
 * research that log control gdi thing in 9x
 
-* banning, kicking, etc
+* banning
+
+* kicking
+
+* quit messages
 
 * single lines (ones that don't wrap) have a line of blank pixels
   underneath the line (visible when highlighting and using background colour)
