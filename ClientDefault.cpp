@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.11 2003-02-16 11:29:39 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.12 2003-02-17 01:58:50 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -70,14 +70,22 @@ wxString ClientDefault::GetNickname()
 	return wxT("LOCALHOST");
 }
 
-bool ClientDefault::Connect(const wxString &url)
+bool ClientDefault::Connect(const URL &url)
 {
 	m_event_handler->OnClientDebug(wxEmptyString, wxT("Note: Connect does not support parameters yet, using localhost:11626"));
+	if (url.GetProtocol("dirt") != "dirt")
+	{
+		return false;
+	}
+	if (url.GetHostname().Length() == 0)
+	{
+		return false;
+	}
 	wxIPV4address addr;
-	addr.Hostname("127.0.0.1");
-	addr.Service(11626);
+	addr.Hostname(url.GetHostname());
+	addr.Service(url.GetPort(11626));
 	m_sck->Connect(addr);
-	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connecting to localhost:11626"));
+	m_event_handler->OnClientInformation(wxEmptyString, wxString() << wxT("Connecting to ") << url.GetHostname() << wxT(':') << url.GetPort(11626));
 	return true;
 }
 

@@ -389,6 +389,14 @@ SOURCE=.\SwitchBarParent.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\URL.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\URL.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\util.cpp
 # End Source File
 # Begin Source File

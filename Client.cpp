@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.13 2003-02-16 11:20:55 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.14 2003-02-17 01:58:50 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -86,7 +86,10 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 		{
 			Disconnect();
 		}
-		Connect(params);
+		if (!Connect(params))
+		{
+			m_event_handler->OnClientWarning(context, wxT("Error connecting to ") + params);
+		}
 	}
 	else if (cmd == wxT("DISCONNECT"))
 	{

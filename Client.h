@@ -2,6 +2,7 @@
 #define Client_H_
 
 #include "FileTransfer.h"
+#include "URL.h"
 
 class ClientEventHandler
 {
@@ -36,7 +37,7 @@ public:
 	virtual void Debug(const wxString &context, const wxString &text);
 
 	virtual void SendMessage(const wxString &nick, const wxString &message) = 0;
-	virtual bool Connect(const wxString &url) = 0;
+	virtual bool Connect(const URL &url) = 0;
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
 
