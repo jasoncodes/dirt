@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.17 2004-05-23 10:35:21 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.18 2005-03-02 14:32:00 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -600,23 +600,43 @@ wxString Config::GetTristateString(const wxString &key, bool is_dir) const
 
 }
 
+static Config::TristateMode MaybeToggleMode(const wxString &key, Config::TristateMode mode)
+{
+	/* Can't enable this until changes made in config dialog *
+	if (key == wxT("/Client/Log Directory"))
+	{
+		if (mode == Config::tsmNone)
+		{
+			mode = Config::tsmDefault;
+		}
+		else if (mode == Config::tsmDefault)
+		{
+			mode = Config::tsmNone;
+		}
+	}
+	*/
+	return mode;
+}
+
 Config::TristateMode Config::GetTristateMode(const wxString &key) const
 {
+	Config::TristateMode mode;
 	if (m_config->Exists(key))
 	{
 		if (GetTristate(key).Length())
 		{
-			return tsmCustom;
+			mode = tsmCustom;
 		}
 		else
 		{
-			return tsmNone;
+			mode = tsmNone;
 		}
 	}
 	else
 	{
-		return tsmDefault;
+		mode = tsmDefault;
 	}
+	return MaybeToggleMode(key, mode);
 }
 
 wxString Config::GetTristate(const wxString &key) const
@@ -626,6 +646,8 @@ wxString Config::GetTristate(const wxString &key) const
 
 bool Config::SetTristate(const wxString &key, TristateMode type, const wxString &path, bool is_dir)
 {
+
+	type = MaybeToggleMode(key, type);
 
 	switch (type)
 	{
