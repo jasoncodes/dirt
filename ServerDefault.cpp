@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.47 2003-04-01 03:44:28 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.48 2003-04-01 07:37:11 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -176,6 +176,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 						return;
 					}
 					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName());
+					conn->Send(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list));
 					#if wxUSE_WAVE
 						wxString filename = m_config.GetSoundConnection();
 						if (filename.Length() && wxFileName(filename).FileExists())
@@ -305,6 +306,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			{
 				Information(wxT("Your IP addresses are: ") + JoinArray(m_ip_list, wxT(", ")));
 			}
+			SendToAll(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list), false);
 		}
 	}
 	if (m_public_server && m_next_list_update <= now && !m_list_updating)

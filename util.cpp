@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.48 2003-03-31 07:49:38 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.49 2003-04-01 07:37:11 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -463,6 +463,17 @@ ByteBuffer Pack(const ByteBufferArray &array)
 	return buff;
 }
 
+ByteBuffer Pack(const wxArrayString &array)
+{
+	ByteBufferArray buff_array;
+	buff_array.Alloc(array.GetCount());
+	for (size_t i = 0; i < array.GetCount(); ++i)
+	{
+		buff_array.Add(array.Item(i));
+	}
+	return Pack(buff_array);
+}
+
 ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 {
 
@@ -506,6 +517,17 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 
 	}
 
+}
+
+wxArrayString ByteBufferArrayToArrayString(const ByteBufferArray &array)
+{
+	wxArrayString str_array;
+	str_array.Alloc(array.GetCount());
+	for (size_t i = 0; i < array.GetCount(); ++i)
+	{
+		str_array.Add(array.Item(i));
+	}
+	return str_array;
 }
 
 ByteBuffer PackStringHashMap(const StringHashMap &hashmap)

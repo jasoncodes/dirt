@@ -113,6 +113,7 @@ protected:
 	wxLongLong_t m_ping_timeout_tick;
 	long m_latency;
 	ClientConfig m_config;
+	wxArrayString m_server_ip_list;
 
 private:
 	DECLARE_EVENT_TABLE()

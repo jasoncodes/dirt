@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.40 2003-03-31 06:04:07 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.41 2003-04-01 07:37:11 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -388,6 +388,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nicks.Add(nickbuff.Item(i));
 		}
 		m_event_handler->OnClientUserList(nicks);
+	}
+	else if (cmd == wxT("IPLIST"))
+	{
+		m_server_ip_list = ByteBufferArrayToArrayString(Unpack(data));
 	}
 	else if (cmd == wxT("SERVERNAME"))
 	{
