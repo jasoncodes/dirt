@@ -39,6 +39,7 @@
 * dirt:// protocol registration for mozilla on X11
 
 * tray icon support
+* client side ping
 * /bind
 * /alias
 * file transfers
