@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.25 2003-03-11 00:21:39 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.26 2003-03-11 12:41:37 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -141,6 +141,14 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHostname);
+	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
+	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtSoundConnection);
+	wxButton *cmdSoundConnection = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetSize().y, m_txtSoundConnection->GetSize().y));
+	wxStaticText *lblSoundJoin = new wxStaticText(panel, -1, wxT("&Join Sound:"));
+	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtSoundJoin);
+	wxButton *cmdSoundJoin = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetSize().y, m_txtSoundJoin->GetSize().y));
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
 	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
@@ -182,6 +190,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
 				}
 				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
@@ -194,6 +204,18 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
+					wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
+					{
+						szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
+						szrSoundConnection->Add(cmdSoundConnection, 0, 0, 0);
+					}
+					szrTextBoxes->Add(szrSoundConnection, 1, wxBOTTOM | wxEXPAND, 8);
+					wxBoxSizer *szrSoundJoin = new wxBoxSizer(wxHORIZONTAL);
+					{
+						szrSoundJoin->Add(m_txtSoundJoin, 1, wxEXPAND, 0);
+						szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
+					}
+					szrTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
 				}
 				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
 

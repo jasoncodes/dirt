@@ -33,6 +33,8 @@ protected:
 	wxTextCtrl *m_txtMaxUsersIP;
 	wxTextCtrl *m_txtServerName;
 	wxTextCtrl *m_txtHostname;
+	wxTextCtrl *m_txtSoundConnection;
+	wxTextCtrl *m_txtSoundJoin;
 
 	wxCheckBox *m_chkPublicListEnabled;
 	wxStaticText *m_lblPublicListAuthentication;
