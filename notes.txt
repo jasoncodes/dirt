@@ -4,16 +4,14 @@
 	(*) None ( ) SOCKS 4 ( ) SOCKS 5 ( ) HTTP CONNECT
 	hostname port
 	username password (enabled for SOCKS 5 and HTTP CONNECT)
-	Use for following connections
-		[ ] chat [ ] DCC connect [ ] DCC listen (dcc modes only enabled for SOCKS)
-	Use for following destination network(s)
-		( ) Any ( ) Only the following ( ) Everything but the following
+	Connection Types
+		[ ] Chat [ ] DCC Connect [ ] DCC Listen (dcc modes only enabled for SOCKS)
+	Destination Networks
+		( ) Any ( ) Use only for ( ) Don't use for
 		Network Address and Subnet Mask (dot separated IPv4 addresses)
-	Use for following destination ports
-		( ) Any (*) Matching (*) Not matching
+	Destination Ports
+		( ) Any (*) Use only for ( ) Don't use for
 		list of ports and port ranges (comma separated, dash for ranges)
-
-	some way to pick when to use proxy
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
