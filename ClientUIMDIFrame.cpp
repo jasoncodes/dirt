@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.152 2004-05-30 12:46:40 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.153 2004-05-31 10:35:33 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -661,6 +661,11 @@ void ClientUIMDIFrame::DoFlashWindow()
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
 	return SplitString(wxT("ABOUT CLEAR CLEARALL CLOSE EXIT NEW TEST QUERY RESETWINDOWPOS RUN LOGS LANLIST SERVERS MINTOTRAY"), wxT(" "));
+}
+
+wxString ClientUIMDIFrame::OnClientExtraVersionInfo()
+{
+	return wxEmptyString;
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)

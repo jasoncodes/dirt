@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.89 2004-05-23 10:35:18 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.90 2004-05-31 10:35:33 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1211,7 +1211,13 @@ void Client::OnConnect()
 	}
 	userdetails << wxT(" on ") << GetOSDescription();
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
-	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
+	wxString user_agent = GetProductVersion() + wxT(' ') + GetRCSDate();
+	wxString extra_user_agent = m_event_handler->OnClientExtraVersionInfo();
+	if (extra_user_agent.Length())
+	{
+		user_agent << wxT(" (") << extra_user_agent << wxT(")");
+	}
+	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), user_agent));
 }
 
 void Client::OnTimerPing(wxTimerEvent &WXUNUSED(event))

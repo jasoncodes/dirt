@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.60 2004-05-22 17:08:47 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.61 2004-05-31 10:35:33 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -101,6 +101,11 @@ void ClientUIConsole::OnEOF()
 wxArrayString ClientUIConsole::OnClientSupportedCommands()
 {
 	return SplitString(wxT("EXIT"), wxT(" "));
+}
+
+wxString ClientUIConsole::OnClientExtraVersionInfo()
+{
+	return wxT("Console");
 }
 
 bool ClientUIConsole::OnClientPreprocess(const wxString &WXUNUSED(context), wxString &cmd, wxString &params)

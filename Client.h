@@ -56,6 +56,7 @@ class ClientEventHandler
 public:
 	virtual bool OnClientPreprocess(const wxString &WXUNUSED(context), wxString &WXUNUSED(cmd), wxString &WXUNUSED(params)) { return false; }
 	virtual wxArrayString OnClientSupportedCommands() { return wxArrayString(); }
+	virtual wxString OnClientExtraVersionInfo() = 0;
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientError(const wxString &context, const wxString &type, const wxString &text) = 0;

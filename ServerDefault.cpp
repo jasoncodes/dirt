@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.76 2004-05-31 08:05:49 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.77 2004-05-31 10:35:34 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -605,6 +605,20 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("hostname")] = m_config.GetHostname().Length() ? (m_config.GetHostname() + colon_port) : wxString();
 	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config.GetPublicListComment();
+	wxArrayString flags;
+	if (m_config.GetUserPassword(true).Length() > 0)
+	{
+		flags.Add(wxT("auth"));
+	}
+	if (m_filtered_words_list.GetCount() > 0)
+	{
+		flags.Add(wxT("wordfilter"));
+	}
+	if (m_log_public_messages != NULL)
+	{
+		flags.Add(wxT("public_log"));
+	}
+	post_data[wxT("flags")] = JoinArray(flags, wxT(","));
 
 	return post_data;
 
