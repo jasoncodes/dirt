@@ -1,3 +1,5 @@
+-include $(shell pwd)/Makefile.config
+
 ifneq ($(NOKDE),1)
 	KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
 	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
@@ -14,7 +16,7 @@ ifneq ($(NOKDE),1)
 endif
 
 CC = g++
-CPPFLAGS = `wx-config --cxxflags` $(KDE_CPPFLAGS) -O3
+CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS))
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
