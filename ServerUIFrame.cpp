@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.27 2003-03-11 03:48:21 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.28 2003-03-11 04:57:12 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -49,7 +49,7 @@ const char **xpms[13] = {
 	enabled_xpm
 };
 
-enum
+enum XPMs
 {
 	xpmDirt = 0,
 	xpmActive1,
@@ -101,9 +101,14 @@ ServerUIFrame::ServerUIFrame()
 	SetIcon(wxIcon(dirt_xpm));
 
 	m_tray = new TrayIcon;
-	m_tray->SetEventHandler(this, ID_TRAY);
-	m_tray->SetIcon(xpms[xpmDisabled]);
-	m_tray->SetToolTip(AppTitle(wxT("Server")) + wxT("\n") + wxT("Server stopped"));
+	if (m_tray->Ok())
+	{
+		m_tray->SetEventHandler(this, ID_TRAY);
+		m_last_xpm = xpmDisabled;
+		m_last_tooltip = wxT("Initializing");
+		m_tray->SetIcon(xpms[xpmDisabled]);
+		m_tray->SetToolTip(AppTitle(wxT("Server")) + wxT("\n") + wxT("Initializing"));
+	}
 
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
@@ -194,18 +199,28 @@ ServerUIFrame::ServerUIFrame()
 
 ServerUIFrame::~ServerUIFrame()
 {
-	delete m_tmrUpdateConnections;
+
+	wxTimer *tmr = m_tmrUpdateConnections;
+	Server *srv = m_server;
+	TrayIcon *tray = m_tray;
+
 	m_tmrUpdateConnections = NULL;
-	delete m_server;
 	m_server = NULL;
-	m_tray->SetEventHandler(NULL);
-	delete m_tray;
 	m_tray = NULL;
+
+	delete tmr;
+	tray->SetEventHandler(NULL);
+	delete tray;
+	delete srv;
+
 }
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)
 {
-	m_server->ProcessConsoleInput(event.GetString());
+	if (m_server)
+	{
+		m_server->ProcessConsoleInput(event.GetString());
+	}
 }
 
 void ServerUIFrame::OnServerInformation(const wxString &line)
@@ -294,6 +309,7 @@ void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
 
 void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 {
+	if (!m_server) return;
 	if (m_server->IsRunning())
 	{
 		m_server->Stop();
@@ -306,20 +322,23 @@ void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 
 void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 {
-	ServerUIFrameConfig dlg(this, m_server);
-	if (m_server->IsRunning() && m_server->GetConfig()->GetListenPort() != m_server->GetListenPort())
+	if (m_server)
 	{
-		if (wxMessageBox(wxT("For the listen port change to take effect you need to restart the server.\n\nWould you like to restart the server now?"), wxT("Listen Port Changed"), wxOK|wxCANCEL|wxICON_INFORMATION, this) == wxOK)
+		ServerUIFrameConfig dlg(this, m_server);
+		if (m_server && m_server->IsRunning() && m_server->GetConfig()->GetListenPort() != m_server->GetListenPort())
 		{
-			m_server->Stop();
-			m_server->Start();
+			if (wxMessageBox(wxT("For the listen port change to take effect you need to restart the server.\n\nWould you like to restart the server now?"), wxT("Listen Port Changed"), wxOK|wxCANCEL|wxICON_INFORMATION, this) == wxOK)
+			{
+				m_server->Stop();
+				m_server->Start();
+			}
 		}
 	}
 }
 
 void ServerUIFrame::OnClient(wxCommandEvent& event)
 {
-	wxASSERT(m_server->IsRunning());
+	wxASSERT(m_server && m_server->IsRunning());
 	wxASSERT(wxGetApp().argc > 0);
 	wxString param;
 	param << wxT("--host=dirt://localhost:") << m_server->GetListenPort() << wxT("/");
@@ -337,12 +356,14 @@ void ServerUIFrame::OnClear(wxCommandEvent& event)
 
 void ServerUIFrame::OnServerStateChange()
 {
-	m_cmdStartStop->SetLabel(m_server->IsRunning() ? wxT("&Stop") : wxT("&Start"));
-	m_cmdClient->Enable(m_server->IsRunning());
+	m_cmdStartStop->SetLabel((m_server && m_server->IsRunning()) ? wxT("&Stop") : wxT("&Start"));
+	m_cmdClient->Enable(m_server && m_server->IsRunning());
+	UpdateTrayIcon();
 }
 
 void ServerUIFrame::OnServerConnectionChange()
 {
+	if (!m_server) return;
 	while (m_lstConnections->GetItemCount() < (int)m_server->GetConnectionCount())
 	{
 		m_lstConnections->InsertItem(m_lstConnections->GetItemCount(), wxT("<NULL>"));
@@ -356,6 +377,55 @@ void ServerUIFrame::OnServerConnectionChange()
 		m_lstConnections->SetItemData(i, (long)(const void*)m_server->GetConnection(i));
 	}
 	UpdateConnectionList();
+	UpdateTrayIcon();
+}
+
+void ServerUIFrame::UpdateTrayIcon()
+{
+
+	if (m_tray->Ok())
+	{
+
+		XPMs new_xpm;
+		wxString new_tooltip;
+
+		if (!m_server || !m_server->IsRunning())
+		{
+			new_xpm = xpmDisabled;
+			new_tooltip = wxT("Server stopped");
+		}
+		else
+		{
+			size_t count = m_server->GetConnectionCount();
+			if (count == 0)
+			{
+				new_xpm = xpmEnabled;
+			}
+			else if (count < 10)
+			{
+				new_xpm = (XPMs)(xpmActive1+count-1);
+			}
+			else
+			{
+				new_xpm = xpmActiveMany;
+			}
+			new_tooltip.Empty();
+			new_tooltip << count << wxT(" users connected");
+		}
+
+		if (new_xpm != m_last_xpm)
+		{
+			m_tray->SetIcon(xpms[new_xpm]);
+			m_last_xpm = new_xpm;
+		}
+		if (new_tooltip != m_last_tooltip)
+		{
+			m_tray->SetToolTip(AppTitle(wxT("Server")) + wxT("\n") + new_tooltip);
+			m_last_tooltip = new_tooltip;
+		}
+
+	}
+
 }
 
 static void SetItemText(wxListCtrl *ctl, int index, int col, wxString value)
@@ -365,18 +435,21 @@ static void SetItemText(wxListCtrl *ctl, int index, int col, wxString value)
 
 void ServerUIFrame::UpdateConnectionList()
 {
-	for (int i = 0; i < m_lstConnections->GetItemCount(); ++i)
+	if (m_server)
 	{
-		const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);	
-		SetItemText(m_lstConnections, i, 0, conn->GetNickname());
-		SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
-		SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
-		SetItemText(m_lstConnections, i, 3, conn->IsAuthenticated()?(conn->IsAdmin()?wxT("Admin"):wxT("User")):wxT("N/A"));
-		SetItemText(m_lstConnections, i, 4, conn->IsAway()?(conn->GetAwayMessage().Length()?conn->GetAwayMessage():wxT("N/A")):(const wxString)wxEmptyString);
-		SetItemText(m_lstConnections, i, 5, conn->GetIdleTimeString());
-		SetItemText(m_lstConnections, i, 6, conn->GetLatencyString());
-		SetItemText(m_lstConnections, i, 7, conn->GetUserAgent());
-		SetItemText(m_lstConnections, i, 8, conn->GetJoinTimeString());
+		for (int i = 0; i < m_lstConnections->GetItemCount(); ++i)
+		{
+			const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);	
+			SetItemText(m_lstConnections, i, 0, conn->GetNickname());
+			SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
+			SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
+			SetItemText(m_lstConnections, i, 3, conn->IsAuthenticated()?(conn->IsAdmin()?wxT("Admin"):wxT("User")):wxT("N/A"));
+			SetItemText(m_lstConnections, i, 4, conn->IsAway()?(conn->GetAwayMessage().Length()?conn->GetAwayMessage():wxT("N/A")):(const wxString)wxEmptyString);
+			SetItemText(m_lstConnections, i, 5, conn->GetIdleTimeString());
+			SetItemText(m_lstConnections, i, 6, conn->GetLatencyString());
+			SetItemText(m_lstConnections, i, 7, conn->GetUserAgent());
+			SetItemText(m_lstConnections, i, 8, conn->GetJoinTimeString());
+		}
 	}
 }
 

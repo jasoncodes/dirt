@@ -6,7 +6,6 @@
 
 class InputControl;
 class TrayIcon;
-enum XPMs;
 
 class ServerUIFrame : public wxFrame, public ServerEventHandler
 {
@@ -50,7 +49,7 @@ protected:
 	wxButton *m_cmdClear;
 	wxTimer *m_tmrUpdateConnections;
 	TrayIcon *m_tray;
-	XPMs m_last_xpm;
+	int m_last_xpm;
 	wxString m_last_tooltip;
 
 private:
