@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.68 2004-05-23 01:38:00 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.69 2004-06-14 03:15:59 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1251,21 +1251,33 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 	m_wheel_rotation += event.GetWheelRotation();
 
-	if (m_wheel_rotation != 0 && event.GetWheelDelta())
+	int wheel_delta = event.GetWheelDelta();
+	if (wheel_delta == 0)
 	{
-		while (m_wheel_rotation >= event.GetWheelDelta())
+		wheel_delta = 120;
+	}
+
+	int lines_per_action = event.GetLinesPerAction();
+	if (lines_per_action == 0)
+	{
+		lines_per_action = 3;
+	}
+
+	if (m_wheel_rotation != 0);
+	{
+		while (m_wheel_rotation >= wheel_delta)
 		{
 			int view_x, view_y;
 			GetViewStart(&view_x, &view_y);
-			Scroll(-1, view_y - event.GetLinesPerAction());
-			m_wheel_rotation -= event.GetWheelDelta();
+			Scroll(-1, wxMax(0, view_y - lines_per_action));
+			m_wheel_rotation -= wheel_delta;
 		}
-		while (m_wheel_rotation <= -event.GetWheelDelta())
+		while (m_wheel_rotation <= -wheel_delta)
 		{
 			int view_x, view_y;
 			GetViewStart(&view_x, &view_y);
-			Scroll(-1, view_y + event.GetLinesPerAction());
-			m_wheel_rotation += event.GetWheelDelta();
+			Scroll(-1, view_y + lines_per_action);
+			m_wheel_rotation += wheel_delta;
 		}
 	}
 
