@@ -3,8 +3,6 @@
 * investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
   for SwitchBar on Windows XP/2003
 
-* ctrl-min not working on gtk
-
 * SOCKS 4/5 BIND support for DCC Listen
 
 * Mutex (win32 + unix)
@@ -151,3 +149,7 @@
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
 * check that guards are in place where necessary to trap malformed messages
+
+* replace TrayIcon with wxTaskBarIcon and then remove all KDE calls
+  (after confirming TaskbarCreated and X11 support exists in 2.4.1)
+  (and also after workaround for non-supporting X11 WMs somehow is done in wx)
