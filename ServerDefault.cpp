@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.67 2003-07-09 04:05:51 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.68 2003-07-10 02:19:14 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -41,7 +41,7 @@ void ServerDefaultConnection::SendData(const ByteBuffer &data)
 	m_sck->Send(data);
 }
 
-void ServerDefaultConnection::Terminate(const wxString &reason)
+void ServerDefaultConnection::Terminate(const ByteBuffer &reason)
 {
 	if (!m_quitmsg.Length())
 	{
@@ -329,7 +329,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 		{
 			if ((now-conn->m_lastping) > ping_timeout_delay)
 			{
-				conn->Terminate(wxT("Ping timeout"));
+				conn->Terminate(wxString(wxT("Ping timeout")));
 			}
 		}
 		else
@@ -346,7 +346,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			wxLongLong_t time_since_last_auth = now - conn->m_last_auth_time;
 			if (time_since_last_auth > 60 * 1000)
 			{
-				conn->Terminate(wxT("Failed to authenticate in 1 minute"));
+				conn->Terminate(wxString(wxT("Failed to authenticate in 1 minute")));
 			}
 		}
 	}

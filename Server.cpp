@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.57 2003-07-09 05:04:32 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.58 2003-07-10 02:19:13 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -844,14 +844,14 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 	else if (cmd == wxT("QUIT"))
 	{
-		wxString msg;
+		ByteBuffer msg;
 		if (data.Length())
 		{
 			msg = wxT("Quit: ") + ProcessWordFilters(data);
 		}
 		else
 		{
-			msg = wxT("Quit");
+			msg = wxString(wxT("Quit"));
 		}
 		conn->Terminate(msg);
 	}
@@ -918,12 +918,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		}
 		else
 		{
-			wxString new_nick = ProcessWordFilters(data);
+			ByteBuffer new_nick = ProcessWordFilters(data);
 			if (!IsValidNickname(new_nick))
 			{
 				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + new_nick));
 			}
-			else if (conn->m_nickname != new_nick)
+			else if ((ByteBuffer)conn->m_nickname != new_nick)
 			{
 				if (conn->m_nickname.Length() == 0)
 				{
@@ -1014,4 +1014,18 @@ wxString Server::ProcessWordFilters(const wxString &text) const
 		output = CaseInsensitiveReplace(output, m_filtered_words_list[i], new_value);
 	}
 	return output;
+}
+
+ByteBuffer Server::ProcessWordFilters(const ByteBuffer &data) const
+{
+	wxString text = data;
+	wxString text_filtered = ProcessWordFilters(text);
+	if (text != text_filtered)
+	{
+		return text_filtered;
+	}
+	else
+	{
+		return data;
+	}
 }

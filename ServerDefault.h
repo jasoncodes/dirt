@@ -24,7 +24,7 @@ public:
 
 protected:
 	virtual void SendData(const ByteBuffer &data);
-	virtual void Terminate(const wxString &reason);
+	virtual void Terminate(const ByteBuffer &reason);
 
 protected:
 	CryptSocketClient *m_sck;

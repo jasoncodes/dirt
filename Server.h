@@ -58,7 +58,7 @@ public:
 	virtual wxString GetId() const;
 	virtual bool IsAuthenticated() const { return m_authenticated; }
 	virtual bool IsAdmin() const { return m_admin; }
-	virtual void Terminate(const wxString &reason) = 0;
+	virtual void Terminate(const ByteBuffer &reason) = 0;
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
@@ -184,6 +184,7 @@ protected:
 	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data) = 0;
 	virtual wxString ProcessWordFilters(const wxString &text) const;
+	virtual ByteBuffer ProcessWordFilters(const ByteBuffer &data) const;
 
 protected:
 	ServerEventHandler *m_event_handler;
