@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.30 2004-05-30 12:46:40 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.31 2004-06-11 13:52:17 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -781,4 +781,13 @@ wxSize InputControl::DoGetBestSize() const
 bool InputControl::SetFont(const wxFont &font)
 {
 	return wxTextCtrl::SetFont(font) && m_txtBestSize->SetFont(font);
+}
+
+long InputControl::GetLastPosition() const
+{
+#ifdef __WXMAC__
+	return GetValue().Length();
+#else
+	return wxTextCtrl::GetLastPosition();
+#endif
 }

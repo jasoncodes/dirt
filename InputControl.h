@@ -48,6 +48,8 @@ public:
 	void SetTabCompletionList(wxArrayString *tab_completion_list);
 	virtual bool SetFont(const wxFont &font);
 
+	virtual long GetLastPosition() const;
+
 protected:
 	void OnChange(wxCommandEvent &event);
 	void OnEnterPress(wxCommandEvent &event);	
