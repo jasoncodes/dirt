@@ -21,7 +21,6 @@
   (and hopefully automaticly linux w/ the help of a virtual x server)
   * we can't gracefully exit read thread if it's blocking on a read
     (is there any way to portably send to our own stdin?)
-  * need to hook the "X" button and ctrl-c on win32 so can gracefully exit
 
 * dcc send/recv dialog
 

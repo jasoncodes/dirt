@@ -3,6 +3,8 @@
 
 #include "Client.h"
 
+class ReadThread;
+
 class ClientUIConsole : public wxEvtHandler, public ClientEventHandler
 {
 
@@ -22,7 +24,7 @@ protected:
 
 protected:
 	Client *m_client;
-	wxThread *m_read_thread;
+	ReadThread *m_read_thread;
 
 protected:
 	void OnTextEnter(wxCommandEvent& event);

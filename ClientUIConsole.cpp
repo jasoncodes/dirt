@@ -69,7 +69,6 @@ public:
 		return 0;
 	}
 
-protected:
 	void ProcessInput(const wxString &input)
 	{
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_ENTER, ID_CONSOLE_INPUT);
@@ -88,6 +87,35 @@ protected:
 
 };
 
+#ifdef __WXMSW__
+
+	ReadThread *ctrl_handler_read_thread;
+
+	BOOL WINAPI CtrlHandler (DWORD dwEvent)
+	{
+
+		switch (dwEvent)
+		{
+
+			case CTRL_C_EVENT:
+			case CTRL_BREAK_EVENT:
+			case CTRL_LOGOFF_EVENT:
+			case CTRL_SHUTDOWN_EVENT:
+			case CTRL_CLOSE_EVENT:
+				// handle all known events
+				ctrl_handler_read_thread->ProcessInput("/exit");
+				return TRUE;
+
+			default:
+				// unknown event -- better pass it on.
+				return FALSE;
+
+		}
+
+	}
+
+#endif
+
 BEGIN_EVENT_TABLE(ClientUIConsole, wxEvtHandler)
 	EVT_TEXT_ENTER(ID_CONSOLE_INPUT, ClientUIConsole::OnTextEnter)
 END_EVENT_TABLE()
@@ -99,6 +127,10 @@ ClientUIConsole::ClientUIConsole()
 	m_read_thread = new ReadThread(this, m_client);
 	m_read_thread->Create();
 	m_read_thread->Run();
+	#ifdef __WXMSW__
+		ctrl_handler_read_thread = m_read_thread;
+		SetConsoleCtrlHandler(CtrlHandler, TRUE);
+	#endif
 }
 
 ClientUIConsole::~ClientUIConsole()
@@ -129,23 +161,6 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 		return false;
 	}
 }
-
-/*void DirtConsole::MainLoop()
-{
-	StillGoing = true;
-	while (StillGoing)
-	{
-		app->ProcessPendingEvents();
-	}
-}
-
-void DirtConsole::ExitMainLoop()
-{
-	StillGoing = false;
-	#if defined(__WXMSW__)
-		wxWakeUpMainThread();
-	#endif
-}*/
 
 void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &text)
 {
