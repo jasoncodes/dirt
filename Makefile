@@ -2,8 +2,10 @@
 
 include ./Makefile.wx-config
 
-ifeq (,$(shell which $(WXCONFIG)))
-	DUMMY := $(error $(WXCONFIG) not found: Please ensure wxWidgets is correctly installed)
+WXCONFIG_APP = $(shell echo $(WXCONFIG) | awk '{print $$1}')
+
+ifeq (,$(shell which $(WXCONFIG_APP)))
+	DUMMY := $(error $(WXCONFIG_APP) not found: Please ensure wxWidgets is correctly installed)
 endif
 
 ifeq (,$(wildcard crypto/cryptlib.cpp))
