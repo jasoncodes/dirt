@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.7 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.8 2003-02-26 05:39:18 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -460,6 +460,7 @@ void InputControl::AddModifier(const wxString &modifier, bool is_colour_popup)
 	else
 	{
 
+		SetSelection(to, to);
 		SetInsertionPoint(to);
 		WriteText(modifier);
 		SetInsertionPoint(from);

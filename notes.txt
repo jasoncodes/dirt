@@ -32,8 +32,6 @@
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
-
 * gtk: cannot type into main canvas text box after using nicklist right click menu sometimes
 
 * file transfers
