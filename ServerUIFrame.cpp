@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.22 2003-02-21 13:07:30 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.23 2003-02-22 05:50:55 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -249,6 +249,14 @@ void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 {
 	ServerUIFrameConfig dlg(this, m_server);
+	if (m_server->IsRunning() && m_server->GetConfig()->GetListenPort() != m_server->GetListenPort())
+	{
+		if (wxMessageBox(wxT("For the listen port change to take effect you need to restart the server.\n\nWould you like to restart the server now?"), wxT("Listen Port Changed"), wxOK|wxCANCEL|wxICON_INFORMATION, this) == wxOK)
+		{
+			m_server->Stop();
+			m_server->Start();
+		}
+	}
 }
 
 void ServerUIFrame::OnClient(wxCommandEvent& event)

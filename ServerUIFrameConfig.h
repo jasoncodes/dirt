@@ -13,6 +13,7 @@ public:
 protected:
 	void OnOK(wxCommandEvent &event);
 	void OnReset(wxCommandEvent &event);
+	void OnChange(wxCommandEvent &event);
 
 protected:
 	virtual void LoadSettings();
@@ -23,6 +24,7 @@ protected:
 	wxTextCtrl *m_txtListenPort;
 	wxTextCtrl *m_txtUserPass;
 	wxTextCtrl *m_txtAdminPass;
+	wxButton *m_cmdApply;
 
 private:
 	DECLARE_EVENT_TABLE()

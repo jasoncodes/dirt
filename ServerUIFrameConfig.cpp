@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.5 2003-02-22 05:16:20 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.7 2003-02-22 05:55:10 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -19,6 +19,7 @@ BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(wxID_OK, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
+	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChange)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -31,17 +32,17 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
-	wxButton *cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
+	m_cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
 	wxButton *cmdReset = new wxButton(panel, ID_RESET, wxT("&Reset"));
 
 	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
-	m_txtListenPort = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtListenPort);
 	wxStaticText *lblUserPass = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	m_txtUserPass = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtUserPass);
-	wxStaticText *lblAdminPass = new wxStaticText(panel, -1, wxT("&Admin Password:"));
-	m_txtAdminPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	wxStaticText *lblAdminPass = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
+	m_txtAdminPass = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtAdminPass);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
@@ -55,11 +56,11 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
 				{
-					szrLabels->Add(lblListenPort, 1, wxRIGHT, 8);
-					szrLabels->Add(lblUserPass, 1, wxRIGHT, 8);
-					szrLabels->Add(lblAdminPass, 1, wxRIGHT, 8);
+					szrLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblUserPass, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblAdminPass, 1, wxBOTTOM, 8);
 				}
-				szrLeftTop->Add(szrLabels, 0, wxEXPAND, 0);
+				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
 				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
 				{
@@ -84,7 +85,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 		{
 			szrRight->Add(cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
-			szrRight->Add(cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
+			szrRight->Add(m_cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdReset, 0, wxBOTTOM | wxEXPAND, 8);
 		}
 		szrAll->Add(szrRight, 0, wxALL | wxEXPAND, 8);
@@ -126,15 +127,21 @@ void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
 		}
 		else
 		{
-			wxMessageBox(wxT("Unable to reset to defaults"), wxT("Error"), wxOK|wxICON_ERROR);
+			wxMessageBox(wxT("Unable to reset to defaults"), wxT("Error"), wxOK|wxICON_ERROR, this);
 		}
 	}
+}
+
+void ServerUIFrameConfig::OnChange(wxCommandEvent &event)
+{
+	m_cmdApply->Enable(true);
 }
 
 void ServerUIFrameConfig::LoadSettings()
 {
 	ServerConfig *config = m_server->GetConfig();
 	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
+	m_cmdApply->Enable(false);
 }
 
 bool ServerUIFrameConfig::SaveSettings()
@@ -143,11 +150,12 @@ bool ServerUIFrameConfig::SaveSettings()
 	long x;
 	if (!m_txtListenPort->GetValue().ToLong(&x) || !config->SetListenPort(x))
 	{
-		wxMessageBox(wxT("Invalid listen port"), wxT("Error"), wxOK|wxICON_ERROR);
+		wxMessageBox(wxT("Invalid listen port"), wxT("Error"), wxOK|wxICON_ERROR, this);
 		m_txtListenPort->SetFocus();
 		m_txtListenPort->SetSelection(-1, -1);
 		return false;
 	}
 	config->Flush();
+	m_cmdApply->Enable(false);
 	return true;
 }
