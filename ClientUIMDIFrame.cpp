@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.72 2003-03-13 02:10:48 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.73 2003-03-13 12:58:52 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -394,7 +394,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 			}
 			else if (m_tray && !m_tmrTray->IsRunning())
 			{
-				m_tmrTray->Start(250);
+				m_tmrTray->Start(500);
 			}
 		}
 
