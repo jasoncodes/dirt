@@ -25,6 +25,7 @@
 
 #include "Server.h"
 #include "HTTP.h"
+#include "DNS.h"
 
 class CryptSocketClient;
 class CryptSocketServer;
@@ -57,6 +58,7 @@ protected:
 	wxLongLong_t m_lastping;
 	wxString m_quitmsg;
 	wxLongLong_t m_last_auth_time;
+	int m_remoteport;
 
 	DECLARE_NO_COPY_CLASS(ServerDefaultConnection)
 
@@ -84,12 +86,14 @@ protected:
 	virtual StringHashMap GetPublicPostData(bool include_auth);
 	virtual void HTTPError(const wxString &errmsg);
 	virtual void HTTPSuccess();
+	void NewConnection(ServerDefaultConnection *conn);
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
 	void OnBroadcast(BroadcastSocketEvent &event);
 	void OnTimerPing(wxTimerEvent &event);
 	void OnHTTP(HTTPEvent &event);
+	void OnDNS(DNSEvent &event);
 
 protected:
 	CryptSocketServer *m_sckListen;
@@ -105,6 +109,7 @@ protected:
 	bool m_last_failed;
 	bool m_show_http_result;
 	wxString m_last_server_name;
+	DNS *m_dns;
 
 private:
 	DECLARE_EVENT_TABLE()

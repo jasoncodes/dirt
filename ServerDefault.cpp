@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.73 2004-05-27 21:42:24 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.74 2004-05-30 10:04:48 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -84,7 +84,8 @@ enum
 	ID_SOCKET = 100,
 	ID_BROADCAST,
 	ID_TIMER_PING,
-	ID_HTTP
+	ID_HTTP,
+	ID_DNS
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
@@ -92,6 +93,7 @@ BEGIN_EVENT_TABLE(ServerDefault, Server)
 	EVT_BROADCAST_SOCKET(ID_BROADCAST, ServerDefault::OnBroadcast)
 	EVT_TIMER(ID_TIMER_PING, ServerDefault::OnTimerPing)
 	EVT_HTTP(ID_HTTP, ServerDefault::OnHTTP)
+	EVT_DNS(ID_DNS, ServerDefault::OnDNS)
 END_EVENT_TABLE()
 
 ServerDefault::ServerDefault(ServerEventHandler *event_handler)
@@ -102,6 +104,8 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 	m_http.SetEventHandler(this, ID_HTTP);
 	m_bcast = NULL;
+	m_dns = new DNS;
+	m_dns->SetEventHandler(this, ID_DNS);
 }
 
 ServerDefault::~ServerDefault()
@@ -109,6 +113,7 @@ ServerDefault::~ServerDefault()
 	delete m_sckListen;
 	delete m_tmrPing;
 	delete m_bcast;
+	delete m_dns;
 }
 
 void ServerDefault::Start()
@@ -215,38 +220,17 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					m_last_active = ::wxGetUTCTime();
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
-					conn->m_remotehost = ::GetIPV4String(addr, false);
-					conn->m_remotehostandport =
-						wxString() << conn->m_remotehost << wxT(':') << (int)addr.Service();
+					conn->m_remoteport = addr.Service();
 					conn->m_remoteipstring = ::GetIPV4AddressString(addr);
-					conn->m_last_auth_time = GetMillisecondTicks();
-					Information(wxT("Incoming connection from ") + conn->GetId());
-					if (GetConnectionCount() > (size_t)m_config.GetMaxUsers())
+					conn->m_remotehost = ::GetIPV4String(addr, false, true);
+					if (conn->m_remotehost.Length() == 0)
 					{
-						conn->m_quitmsg = wxT("Too many connections");
-						conn->m_sck->CloseWithEvent();
-						return;
+						m_dns->Lookup(conn->m_remoteipstring, true, conn);
 					}
-					if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config.GetMaxUsersIP())
+					else
 					{
-						conn->m_quitmsg = wxT("Too many connections from this IP");
-						conn->m_sck->CloseWithEvent();
-						return;
+						NewConnection(conn);
 					}
-					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName());
-					conn->Send(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list));
-					conn->Send(wxEmptyString, wxT("IPSELF"), conn->m_remoteipstring);
-					#if wxUSE_SOUND
-						wxString filename = m_config.GetSoundConnection();
-						if (filename.Length() && wxFileName(filename).FileExists())
-						{
-							m_sound.Create(filename, false);
-							if (!m_sound.IsOk() || !m_sound.Play())
-							{
-								Warning(wxT("Error playing ") + filename);
-							}
-						}
-					#endif
 				}
 				break;
 
@@ -256,6 +240,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_connections.Remove(conn);
+					m_dns->Cancel(conn);
 					if (conn->m_quitmsg.Length() == 0)
 					{
 						conn->m_quitmsg = wxString(wxT("Connection lost"));
@@ -323,6 +308,50 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 	}
 
+}
+
+void ServerDefault::OnDNS(DNSEvent &event)
+{
+	ServerDefaultConnection *conn = (ServerDefaultConnection*)event.GetUserData();
+	if (conn)
+	{
+		conn->m_remotehost = event.GetHostname();
+		NewConnection(conn);
+	}
+}
+
+void ServerDefault::NewConnection(ServerDefaultConnection *conn)
+{
+	conn->m_remotehostandport =
+		wxString() << conn->m_remotehost << wxT(':') << conn->m_remoteport;
+	conn->m_last_auth_time = GetMillisecondTicks();
+	Information(wxT("Incoming connection from ") + conn->GetId());
+	if (GetConnectionCount() > (size_t)m_config.GetMaxUsers())
+	{
+		conn->m_quitmsg = wxT("Too many connections");
+		conn->m_sck->CloseWithEvent();
+		return;
+	}
+	if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config.GetMaxUsersIP())
+	{
+		conn->m_quitmsg = wxT("Too many connections from this IP");
+		conn->m_sck->CloseWithEvent();
+		return;
+	}
+	conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName());
+	conn->Send(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list));
+	conn->Send(wxEmptyString, wxT("IPSELF"), conn->m_remoteipstring);
+	#if wxUSE_SOUND
+		wxString filename = m_config.GetSoundConnection();
+		if (filename.Length() && wxFileName(filename).FileExists())
+		{
+			m_sound.Create(filename, false);
+			if (!m_sound.IsOk() || !m_sound.Play())
+			{
+				Warning(wxT("Error playing ") + filename);
+			}
+		}
+	#endif
 }
 
 void ServerDefault::OnBroadcast(BroadcastSocketEvent &event)

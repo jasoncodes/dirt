@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.19 2004-05-30 09:45:07 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.20 2004-05-30 10:04:48 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -339,7 +339,7 @@ void DNS::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 	m_id = id;
 }
 
-void DNS::Cancel()
+void DNS::Cancel(void *userdata)
 {
 
 	s_DNS_section->Enter();
@@ -355,7 +355,7 @@ void DNS::Cancel()
 
 			DNSQueueEntry *entry = node->GetData();
 
-			if (entry->owner == this)
+			if (entry->owner == this && (userdata == NULL || userdata == entry->userdata))
 			{
 				if (entry->in_progress)
 				{

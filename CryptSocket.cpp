@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.43 2004-05-30 09:24:31 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.44 2004-05-30 10:04:48 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -850,7 +850,7 @@ wxString CryptSocketServer::GetListenIP() const
 	wxString IP;
 	if (Ok() && GetLocal(addr))
 	{
-		IP = GetIPV4String(addr, false);
+		IP = GetIPV4String(addr, false, false);
 		if (IP == wxT("*"))
 		{
 			IP.Empty();

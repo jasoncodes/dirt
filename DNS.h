@@ -37,7 +37,7 @@ public:
 	virtual ~DNS();
 
 	virtual void Lookup(const wxString &question, bool is_reverse = false, void *userdata = NULL);
-	virtual void Cancel();
+	virtual void Cancel(void *userdata = NULL);
 
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
 

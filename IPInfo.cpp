@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.9 2004-05-16 04:42:45 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.10 2004-05-30 10:04:48 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -324,7 +324,7 @@ wxString GetIPV4AddressString(wxSockAddress &addr)
 	return GetIPV4AddressString(GetIPV4Address(addr));
 }
 
-wxString GetIPV4String(wxSockAddress &addr, bool include_port)
+wxString GetIPV4String(wxSockAddress &addr, bool include_port, bool fail_if_dns_needed)
 {
 	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, wxEmptyString, wxT("Not an IPV4 address"));
 	wxIPV4address *ipv4 = static_cast<wxIPV4address*>(&addr);
@@ -344,6 +344,10 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 	}
 	else
 	{
+		if (fail_if_dns_needed)
+		{
+			return wxEmptyString;
+		}
 		wxString hostname = ipv4->Hostname();
 		retval << (hostname.Length() ? hostname : ip);
 	}

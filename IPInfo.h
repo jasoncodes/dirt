@@ -50,7 +50,7 @@ wxUint32 GetIPV4Address(wxSockAddress &addr);
 bool IsValidIPV4Address(const wxUint32 ip);
 wxString GetIPV4AddressString(wxUint32 ip);
 wxString GetIPV4AddressString(wxSockAddress &addr);
-wxString GetIPV4String(wxSockAddress &addr, bool include_port);
+wxString GetIPV4String(wxSockAddress &addr, bool include_port, bool fail_if_dns_needed);
 wxArrayString GetIPAddresses();
 
 #endif
