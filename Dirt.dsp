@@ -653,6 +653,14 @@ SOURCE=.\SwitchBarParentGeneric.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\TextTools.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextTools.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\TrayIcon.cpp
 # End Source File
 # Begin Source File
@@ -682,6 +690,14 @@ SOURCE=.\util.cpp
 # Begin Source File
 
 SOURCE=.\util.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\utilgui.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\utilgui.h
 # End Source File
 # Begin Source File
 
