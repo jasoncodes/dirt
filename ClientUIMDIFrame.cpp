@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.128 2003-08-05 06:55:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.129 2003-08-05 11:34:58 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -27,6 +27,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.128 2003-08-05 06:55:00 jason Exp $)
 #include "ClientUIMDITransferResumeDialog.h"
 #include "ClientUIMDIConfigDialog.h"
 #include <wx/filename.h>
+#include "ClientUIMDIPasswordManagerDialog.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -41,6 +42,7 @@ DECLARE_APP(DirtApp)
 enum
 {
 	ID_FILE_EXIT = 1,
+	ID_TOOLS_PASSWORDS,
 	ID_TOOLS_OPTIONS,
 	ID_HELP_ABOUT,
 	ID_FOCUSTIMER,
@@ -64,6 +66,7 @@ enum
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
+	EVT_MENU(ID_TOOLS_PASSWORDS, ClientUIMDIFrame::OnToolsPasswords)
 	EVT_MENU(ID_TOOLS_OPTIONS, ClientUIMDIFrame::OnToolsOptions)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
@@ -101,6 +104,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	mnu->Append(mnuFile, wxT("&File"));
 
 	wxMenu *mnuTools = new wxMenu;
+	mnuTools->Append(ID_TOOLS_PASSWORDS, wxT("&Password Manager..."));
 	mnuTools->Append(ID_TOOLS_OPTIONS, wxT("&Options..."));
 	mnu->Append(mnuTools, wxT("&Tools"));
 
@@ -248,6 +252,11 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 void ClientUIMDIFrame::OnFileExit(wxCommandEvent &WXUNUSED(event))
 {
 	Close();
+}
+
+void ClientUIMDIFrame::OnToolsPasswords(wxCommandEvent &WXUNUSED(event))
+{
+	ClientUIMDIPasswordManagerDialog dlg(this);
 }
 
 void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent &WXUNUSED(event))
@@ -837,6 +846,10 @@ void ClientUIMDIFrame::NickPrompt(const wxString &nick)
 void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
 {
 	wxString pass = m_client->GetLastURL().GetPassword();
+	if (!pass.Length())
+	{
+		pass = m_client->GetConfig().GetSavedPassword(m_client->GetServerName(), true);
+	}
 	if (pass.Length())
 	{
 		m_client->Authenticate(pass);

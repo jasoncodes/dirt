@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.73 2003-08-05 06:55:00 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.74 2003-08-05 11:34:57 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -115,6 +115,56 @@ bool ClientConfig::GetFileTransferStatus() const
 bool ClientConfig::SetFileTransferStatus(bool mode)
 {
 	return m_config->Write(wxT("/Client/File Transfer Status"), mode);
+}
+
+wxArrayString ClientConfig::GetSavedPasswordServerNames() const
+{
+	wxArrayString list;
+	wxString old_path = m_config->GetPath();
+	m_config->SetPath(wxT("/Client/Server Passwords"));
+	list.Alloc(m_config->GetNumberOfEntries(false));
+	wxString val;
+	long i;
+	if (m_config->GetFirstEntry(val, i))
+	{
+		do
+		{
+			list.Add(val);
+		}
+		while (m_config->GetNextEntry(val, i));
+	}
+	m_config->SetPath(old_path);
+	return list;
+}
+
+wxString ClientConfig::GetSavedPassword(const wxString &server_name, bool decrypt) const
+{
+	return GetPassword(wxT("/Client/Server Passwords/")+server_name, decrypt);
+}
+
+bool ClientConfig::SetSavedPassword(const wxString &server_name, const wxString &password)
+{
+	return SetPassword(wxT("/Client/Server Passwords/")+server_name, password);
+}
+
+bool ClientConfig::DeleteSavedPassword(const wxString &server_name)
+{
+	wxString name = wxT("/Client/Server Passwords/")+server_name;
+	if (m_config->Exists(name))
+	{
+		return m_config->DeleteEntry(name, false);
+	}
+	return true;
+}
+
+bool ClientConfig::DeleteSavedPasswords()
+{
+	wxString name = wxT("/Client/Server Passwords");
+	if (m_config->Exists(name))
+	{
+		return m_config->DeleteGroup(name);
+	}
+	return true;
 }
 
 enum

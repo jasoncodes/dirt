@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.41 2003-08-05 06:08:06 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.42 2003-08-05 11:34:58 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -179,7 +179,14 @@ void ClientDefault::Authenticate(const ByteBuffer &auth)
 {
 	try
 	{
-		m_last_auth = m_config.EncodePassword(auth);
+		if (auth.Length())
+		{
+			m_last_auth = m_config.EncodePassword(auth);
+		}
+		else
+		{
+			m_last_auth = ByteBuffer();
+		}
 		ByteBuffer digest = Crypt::MD5MACDigest(m_authkey, auth);
 		m_sck->Send(EncodeMessage(wxEmptyString, wxT("AUTH"), digest));
 	}

@@ -89,6 +89,12 @@ public:
 	virtual bool GetFileTransferStatus() const;
 	virtual bool SetFileTransferStatus(bool mode);
 
+	virtual wxArrayString GetSavedPasswordServerNames() const;
+	virtual wxString GetSavedPassword(const wxString &server_name, bool decrypt) const;
+	virtual bool SetSavedPassword(const wxString &server_name, const wxString &password);
+	virtual bool DeleteSavedPassword(const wxString &server_name);
+	virtual bool DeleteSavedPasswords();
+
 protected:
 	virtual wxString GetSoundFileKey() const;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.57 2003-08-05 06:08:06 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.58 2003-08-05 11:34:58 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -129,6 +129,10 @@ void ClientUIConsole::OnClientStateChange()
 void ClientUIConsole::OnClientAuthNeeded(const wxString &text)
 {
 	wxString pass = m_client->GetLastURL().GetPassword();
+	if (!pass.Length())
+	{
+		pass = m_client->GetConfig().GetSavedPassword(m_client->GetServerName(), true);
+	}
 	if (pass.Length())
 	{
 		m_client->Authenticate(pass);

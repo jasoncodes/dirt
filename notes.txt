@@ -7,8 +7,6 @@
   only say something like "*** Connection restored" after the "*** Connection lost"
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
-* dialog for saving server passwords
-
 * don't add red line if own message
 
 * option to auto /back if talk in main window or talk in any window

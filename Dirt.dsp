@@ -293,6 +293,14 @@ SOURCE=.\ClientUIMDIFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIMDIPasswordManagerDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDIPasswordManagerDialog.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ClientUIMDITransferPanel.cpp
 # End Source File
 # Begin Source File

@@ -31,6 +31,7 @@ public:
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
+	void OnToolsPasswords(wxCommandEvent& event);
 	void OnToolsOptions(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusTimer(wxTimerEvent &event);
