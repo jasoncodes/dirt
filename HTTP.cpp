@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.6 2003-03-05 01:29:46 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.7 2003-03-05 07:34:28 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
 #include "Crypt.h"
+#include "DNS.h"
 
 HTTPHeader::HTTPHeader(const wxString &strHeader)
 	: m_strHeader(strHeader)
@@ -184,11 +185,13 @@ const ByteBuffer HTTP::s_buffEmpty = ByteBuffer();
 enum
 {
 	ID_SOCKET = 1,
+	ID_DNS,
 	ID_TIMER_TIMEOUT
 };
 
 BEGIN_EVENT_TABLE(HTTP, wxEvtHandler)
 	EVT_SOCKET(ID_SOCKET, HTTP::OnSocket)
+	EVT_DNS(ID_DNS, HTTP::OnDNS)
 	EVT_TIMER(ID_TIMER_TIMEOUT, HTTP::OnTimerTimeout)
 END_EVENT_TABLE()
 
@@ -205,6 +208,9 @@ HTTP::HTTP()
 		wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
 	m_sck->Notify(true);
 
+	m_dns = new DNS;
+	m_dns->SetEventHandler(this, ID_DNS);
+
 	m_tmrTimeout = new wxTimer(this, ID_TIMER_TIMEOUT);
 
 	ResetAll();
@@ -215,6 +221,7 @@ HTTP::~HTTP()
 {
 	ResetAll();
 	delete m_sck;
+	delete m_dns;
 	delete m_tmrTimeout;
 }
 
@@ -776,6 +783,7 @@ void HTTP::Close()
 {
 	m_tmrTimeout->Stop();
 	m_sck->Close();
+	m_dns->Cancel();
 	m_active = false;
 	m_connect_ok = false;
 	ClearState();
@@ -805,28 +813,48 @@ void HTTP::Connect(const URL &url)
 		AddPendingEvent(evt);
 		return;
 	}
-	wxIPV4address addr;
-	bool valid;
+	wxString hostname;
 	if (((wxString)m_proxy).Length() > 0)
 	{
-		valid = addr.Hostname(m_proxy.GetHostname());
-		valid &= addr.Service(m_proxy.GetPort(80));
+		hostname = m_proxy.GetHostname();
 	}
 	else
 	{
-		valid = addr.Hostname(m_url.GetHostname());
-		valid &= addr.Service(m_url.GetPort(80));
+		hostname = m_url.GetHostname();
 	}
-	if (!valid)
+	if (!m_dns->Lookup(hostname))
 	{
 		wxSocketEvent evt(ID_SOCKET);
 		evt.m_event = wxSOCKET_LOST;
 		AddPendingEvent(evt);
 	}
-	else if (m_sck->Connect(addr, false))
+}
+
+void HTTP::OnDNS(DNSEvent &event)
+{
+	bool ok = event.IsSuccess();
+	if (ok)
+	{
+		wxIPV4address *addr = (wxIPV4address*)event.GetAddress().Clone();
+		if (((wxString)m_proxy).Length() > 0)
+		{
+			ok = addr->Service(m_proxy.GetPort(80));
+		}
+		else
+		{
+			ok = addr->Service(m_url.GetPort(80));
+		}
+		if (ok && m_sck->Connect(*addr, false))
+		{
+			wxSocketEvent evt(ID_SOCKET);
+			evt.m_event = wxSOCKET_CONNECTION;
+			AddPendingEvent(evt);
+		}
+	}
+	if (!ok)
 	{
 		wxSocketEvent evt(ID_SOCKET);
-		evt.m_event = wxSOCKET_CONNECTION;
+		evt.m_event = wxSOCKET_LOST;
 		AddPendingEvent(evt);
 	}
 }

@@ -36,6 +36,9 @@ protected:
 
 };
 
+class DNS;
+class DNSEvent;
+
 class HTTP : public wxEvtHandler
 {
 
@@ -75,6 +78,7 @@ public:
 
 protected:
 	void OnSocket(wxSocketEvent &event);
+	void OnDNS(DNSEvent &event);
 	void OnTimerTimeout(wxTimerEvent &event);
 
 protected:
@@ -89,6 +93,7 @@ protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
 	wxSocketClient *m_sck;
+	DNS *m_dns;
 	URL m_proxy;
 	URL m_url;
 	ByteBuffer m_buffOut;
