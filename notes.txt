@@ -32,4 +32,4 @@
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* linux: use "signal(SIGINT, foo)" to catch "kill" or ctrl-c or something
+* linux: dirtconsole script and/or Xvfb are not Ctrl-C safe
