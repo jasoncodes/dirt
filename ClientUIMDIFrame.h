@@ -26,7 +26,6 @@ protected:
 	void OnFileExit(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusTimer(wxTimerEvent &event);
-	void OnTransferTimer(wxTimerEvent &event);
 	void OnActivate(wxActivateEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
@@ -38,13 +37,13 @@ protected:
 	virtual void OnClientUserList(const wxArrayString &nicklist);
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);
-	virtual void OnClientTransferNew(int transferid);
-	virtual void OnClientTransferDelete(int transferid);
-	virtual void OnClientTransferState(int transferid, FileTransferState state, const wxString &desc);
+	virtual void OnClientTransferNew(const FileTransfer &transfer);
+	virtual void OnClientTransferDelete(const FileTransfer &transfer);
+	virtual void OnClientTransferState(const FileTransfer &transfer);
+	virtual void OnClientTransferTimer(const FileTransfer &transfer);
 
 protected:
 	wxTimer *tmrFocus;
-	wxTimer *tmrTransfer;
 	Client *m_client;
 	bool m_focused;
 	NickListControl *m_lstNickList;

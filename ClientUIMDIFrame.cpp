@@ -23,14 +23,12 @@ enum
 	ID_FILE_EXIT = 1,
 	ID_HELP_ABOUT,
 	ID_FOCUSTIMER,
-	ID_TRANSFERTIMER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
-	EVT_TIMER(ID_TRANSFERTIMER, ClientUIMDIFrame::OnTransferTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
 END_EVENT_TABLE()
 
@@ -69,8 +67,6 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
 	tmrFocus->Start(100);
 
-	tmrTransfer = new wxTimer(this, ID_TRANSFERTIMER);
-
 	m_client = new ClientDefault(this);
 
 }
@@ -78,7 +74,6 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
 	delete tmrFocus;
-	delete tmrTransfer;
 	delete m_client;
 }
 
@@ -365,56 +360,41 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 
 }
 
-void ClientUIMDIFrame::OnClientTransferNew(int transferid)
+void ClientUIMDIFrame::OnClientTransferNew(const FileTransfer &transfer)
 {
-	const FileTransfer &transfer = m_client->GetFileTransfers()->GetTransferById(transferid);
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, transfer.issend ? TransferSendCanvas : TransferReceiveCanvas);
 	ClientUIMDITransferPanel *pnl = canvas->GetTransferPanel();
-	pnl->SetTransferId(transferid);
+	pnl->SetTransferId(transfer.transferid);
 	pnl->Update(transfer);
 	NewWindow(canvas, true);
-	if (!tmrTransfer->IsRunning())
-	{
-		tmrTransfer->Start(1000);
-	}
 }
 
-void ClientUIMDIFrame::OnClientTransferDelete(int transferid)
+void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer)
 {
-	ClientUIMDITransferPanel *pnl = GetContext(transferid);
+	ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
 	if (pnl)
 	{
 		pnl->SetTransferId(-1);
 		pnl->SetStatus(pnl->GetStatus() + " -- OnClientTransferDelete()");
 	}
-	if (m_client->GetFileTransfers()->GetTransferCount() == 1) // is last active transfer
-	{
-		tmrTransfer->Stop();
-	}
 }
 
-void ClientUIMDIFrame::OnClientTransferState(int transferid, FileTransferState state, const wxString &desc)
+void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 {
-	bool bIsError = ((state == ftsSendFail) || (state == ftsGetFail));
+	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
 	if (bIsError)
 	{
-		OnClientInformation(wxEmptyString, desc);
+		OnClientInformation(wxEmptyString, transfer.status);
 	}
 	else
 	{
-		OnClientWarning(wxEmptyString, desc);
+		OnClientWarning(wxEmptyString, transfer.status);
 	}
 }
 
-void ClientUIMDIFrame::OnTransferTimer(wxTimerEvent& event)
+void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)
 {
-	FileTransfers *transfers = m_client->GetFileTransfers();
-	wxASSERT(transfers->GetTransferCount() > 0);
-	for (int i = 0; i < transfers->GetTransferCount(); ++i)
-	{
-		const FileTransfer &transfer = transfers->GetTransferByIndex(i);
-		ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
-		wxASSERT(pnl);
-		pnl->Update(transfer);
-	}
+	ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
+	wxASSERT(pnl);
+	pnl->Update(transfer);
 }

@@ -35,6 +35,15 @@ FileTransfers::~FileTransfers()
 
 void FileTransfers::OnTimer(wxTimerEvent &event)
 {
+	for (int i = 0; i < GetTransferCount(); ++i)
+	{
+		FileTransfer &transfer = m_transfers.Item(i);
+		if (transfer.transferid > -1)
+		{
+			transfer.OnTimer();
+			m_client->m_event_handler->OnClientTransferTimer(transfer);
+		}
+	}
 }
 
 int FileTransfers::GetNewId()
@@ -50,7 +59,7 @@ int FileTransfers::GetNewId()
 void FileTransfers::Test()
 {
 
-	FileTransfer t;
+	FileTransfer t(this);
 	
 	t.transferid = GetNewId();
 	t.issend = true;
@@ -60,13 +69,13 @@ void FileTransfers::Test()
 	t.filesize = 363520;
 	t.time = 133;
 	t.timeleft = 67;
-	t.cps = 363520/200;
+	t.cps = -1;
 	t.filesent = 363520/3*2;
 	t.status = "Sending...";
 
 	m_transfers.Add(t);
 	
-	m_client->m_event_handler->OnClientTransferNew(t.transferid);
+	m_client->m_event_handler->OnClientTransferNew(t);
 
 	if (!tmr->IsRunning())
 	{
@@ -77,14 +86,24 @@ void FileTransfers::Test()
 
 void FileTransfers::DeleteTransfer(int transferid)
 {
+	
 	int index = FindTransfer(transferid);
+	
 	wxASSERT(index > -1);
-	m_client->m_event_handler->OnClientTransferDelete(transferid);
+	
+	// scope to prevent invalid reference when remove below
+	{
+		const FileTransfer &transfer = m_transfers.Item(index);
+		m_client->m_event_handler->OnClientTransferDelete(transfer);
+	}
+	
 	m_transfers.RemoveAt(index);
+	
 	if (GetTransferCount() == 0)
 	{
 		tmr->Stop();
 	}
+
 }
 
 int FileTransfers::GetTransferCount()

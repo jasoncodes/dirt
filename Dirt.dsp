@@ -341,6 +341,14 @@ SOURCE=.\Dirt.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\FileTransfer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FileTransfer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\FileTransfers.cpp
 # End Source File
 # Begin Source File

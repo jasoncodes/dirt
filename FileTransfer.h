@@ -1,6 +1,8 @@
 #ifndef FileTransfer_H_
 #define FileTransfer_H_
 
+#include "CPSCalc.h"
+
 class FileTransfers;
 
 enum FileTransferState
@@ -44,7 +46,13 @@ public:
 	wxString status;
 
 protected:
-	FileTransfer();
+	FileTransfer(FileTransfers *transfers);
+
+	void OnTimer();
+
+protected:
+	FileTransfers *m_transfers;
+	CPSCalc m_cps;
 
 };
 

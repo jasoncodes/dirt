@@ -125,11 +125,21 @@ wxString AddCommas(off_t size)
 
 wxString AddCommas(double size)
 {
-	wxString quotient = AddCommas((off_t)size);
+
+	off_t size2 = (off_t)size;
+	
 	wxString remainder = wxString::Format("%04.2lf", fmod(size, 1));
-	wxASSERT(remainder.Left(2) == "0.");
+	wxASSERT(remainder.Left(2) == "0." || remainder.Left(2) == "1.");
+	if (remainder.Left(2) == "1.")
+	{
+		size2++;
+	}
 	remainder = remainder.Mid(1);
+
+	wxString quotient = AddCommas((off_t)size2);
+
 	return wxString() << quotient << remainder;
+
 }
 
 wxString SizeToString(off_t size)
@@ -159,9 +169,13 @@ wxString SizeToString(off_t size)
 
 wxString SizeToLongString(off_t size, wxString suffix)
 {
-	return wxString()
-		<< SizeToString(size) << suffix
-		<< " (" << AddCommas(size) << " bytes" << suffix << ")";
+	wxString result;
+	result << SizeToString(size) << suffix;
+	if (size >= 1000)
+	{	
+		result << " (" << AddCommas(size) << " bytes" << suffix << ")";
+	}
+	return result;
 }
 
 wxString SecondsToMMSS(long seconds)

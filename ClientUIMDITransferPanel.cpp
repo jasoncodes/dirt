@@ -264,7 +264,14 @@ void ClientUIMDITransferPanel::SetTimeleft(long seconds)
 void ClientUIMDITransferPanel::SetCPS(long cps)
 {
 	m_cps = cps;
-	m_lblCPS->SetLabel(SizeToLongString(cps, "/sec"));
+	if (cps > -1)
+	{
+		m_lblCPS->SetLabel(SizeToLongString(cps, "/sec"));
+	}
+	else
+	{
+		m_lblCPS->SetLabel("??? bytes/sec");
+	}
 }
 
 void ClientUIMDITransferPanel::SetFileSent(off_t bytes)

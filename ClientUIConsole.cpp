@@ -347,25 +347,29 @@ void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &det
 	Output(msg);
 }
 
-void ClientUIConsole::OnClientTransferNew(int transferid)
+void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)
 {
 	// not implemented
 }
 
-void ClientUIConsole::OnClientTransferDelete(int transferid)
+void ClientUIConsole::OnClientTransferDelete(const FileTransfer &transfer)
 {
 	// not implemented
 }
 
-void ClientUIConsole::OnClientTransferState(int transferid, FileTransferState state, const wxString &desc)
+void ClientUIConsole::OnClientTransferState(const FileTransfer &transfer)
 {
-	bool bIsError = ((state == ftsSendFail) || (state == ftsGetFail));
+	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
 	if (bIsError)
 	{
-		OnClientInformation(wxEmptyString, desc);
+		OnClientInformation(wxEmptyString, transfer.status);
 	}
 	else
 	{
-		OnClientWarning(wxEmptyString, desc);
+		OnClientWarning(wxEmptyString, transfer.status);
 	}
+}
+
+void ClientUIConsole::OnClientTransferTimer(const FileTransfer &transfer)
+{
 }
