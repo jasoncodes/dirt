@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.88 2003-04-01 10:11:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.89 2003-04-02 03:03:43 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -289,9 +289,9 @@ void ClientUIMDIFrame::OnTrayRightClick(wxMouseEvent &event)
 	}
 }
 
-void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
+bool ClientUIMDIFrame::MinToTray()
 {
-	if (event.Iconized() && !m_tray && wxGetApp().IsControlDown())
+	if (!m_tray)
 	{
 		m_tray = new TrayIcon;
 		m_tray_flash = false;
@@ -302,13 +302,26 @@ void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
 			m_tray->SetIcon(dirt_xpm);
 			m_tray->SetToolTip(m_title);
 			Show(false);
+			return true;
 		}
 		else
 		{
 			delete m_tray;
 			m_tray = NULL;
+		}
+	}
+	return false;
+}
+
+void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
+{
+	if (event.Iconized() && wxGetApp().IsControlDown())
+	{
+		if (!MinToTray())
+		{
 			event.Skip();
 		}
+
 	}
 	else
 	{
@@ -1014,3 +1027,36 @@ void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 	event.Skip();
 
 }
+
+#ifdef __WXMSW__
+	long ClientUIMDIFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+	{
+		// The following is a hook for PowerMenu's "Minimize To Tray" system menu option
+		if (nMsg == WM_INITMENUPOPUP)
+		{
+			HMENU hMenu = GetSystemMenu((HWND)GetHandle(), FALSE);
+			if (hMenu == (HMENU)wParam)
+			{
+				MENUITEMINFO mii;
+				mii.cbSize = sizeof MENUITEMINFO;
+				mii.fMask = 0;
+				if (GetMenuItemInfo(hMenu, 0x1400, FALSE, &mii))
+				{
+					DeleteMenu(hMenu, 0x1400+768, MF_BYCOMMAND);
+				}
+				mii.fMask = MIIM_ID;
+				mii.wID = 0x1400+768;
+				SetMenuItemInfo(hMenu, 0x1400, FALSE, &mii);
+			}
+		}
+		else if (nMsg == WM_SYSCOMMAND)
+		{
+			if (wParam == 0x1400+768)
+			{
+				MinToTray();
+				return 0;
+			}
+		}
+		return SwitchBarParent::MSWWindowProc(nMsg, wParam, lParam);
+	}
+#endif

@@ -29,6 +29,10 @@
 
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
+* allow saving of passwords for servers
+
+* optional password protection for saved passwords and private keys in dirt.ini
+
 * prefix caption with number in brackets showing how many msgs are waiting?
 
 * suppress wxBell when /away?
@@ -39,8 +43,23 @@
 
 
 
+
+* automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
+
+* some hotkey for minimize to tray
+
+* server messages
+
+* /lanlist
+
+
+
+
+
 * finish ctcp
 
 * add CTCP PING
 
 * /alias ping /ctcp $1 ping
+
+* /timer

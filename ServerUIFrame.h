@@ -44,6 +44,10 @@ protected:
 	void OnConnectionRClick(wxListEvent &event);
 	void OnConnectionKick(wxCommandEvent &event);
 
+	#ifdef __WXMSW__
+		virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+	#endif
+
 protected:
 	virtual bool ResetWindowPos();
 	virtual void UpdateConnectionList();

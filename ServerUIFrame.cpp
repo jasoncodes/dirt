@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.48 2003-03-31 10:14:24 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.49 2003-04-02 03:03:43 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -237,7 +237,7 @@ void ServerUIFrame::OnSize(wxSizeEvent &event)
 
 void ServerUIFrame::OnClose(wxCloseEvent &event)
 {
-	if (m_size_set)
+	if (m_size_set && m_server)
 	{
 		SaveWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
 	}
@@ -266,7 +266,7 @@ void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
 
 void ServerUIFrame::OnIconize(wxIconizeEvent &event)
 {
-	if (event.Iconized() && m_tray->Ok())
+	if (event.Iconized() && m_tray && m_tray->Ok())
 	{
 		Show(false);
 	}
@@ -579,3 +579,35 @@ void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
 		m_right_click_conn->Terminate(msg);
 	}
 }
+
+#ifdef __WXMSW__
+	long ServerUIFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+	{
+		// The following is a hook for PowerMenu's "Minimize To Tray" system menu option
+		if (nMsg == WM_INITMENUPOPUP)
+		{
+			HMENU hMenu = GetSystemMenu((HWND)GetHandle(), FALSE);
+			if (hMenu == (HMENU)wParam)
+			{
+				MENUITEMINFO mii;
+				mii.cbSize = sizeof MENUITEMINFO;
+				mii.fMask = 0;
+				if (GetMenuItemInfo(hMenu, 0x1400, FALSE, &mii))
+				{
+					DeleteMenu(hMenu, 0x1400+768, MF_BYCOMMAND);
+				}
+				mii.fMask = MIIM_ID;
+				mii.wID = 0x1400+768;
+				SetMenuItemInfo(hMenu, 0x1400, FALSE, &mii);
+			}
+		}
+		else if (nMsg == WM_SYSCOMMAND)
+		{
+			if (wParam == 0x1400+768)
+			{
+				wParam = SC_MINIMIZE;
+			}
+		}
+		return wxFrame::MSWWindowProc(nMsg, wParam, lParam);
+	}
+#endif

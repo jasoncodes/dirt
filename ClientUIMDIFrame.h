@@ -25,6 +25,7 @@ public:
 	void ResetRedLines();
 	wxArrayString* GetNicklist() { return &m_nicklist; }
 	wxDateTime GetLogDate();
+	bool MinToTray();
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
@@ -39,6 +40,10 @@ protected:
 	void OnBinding(wxCommandEvent &event);
 	void OnCtrlF(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
+
+	#ifdef __WXMSW__
+		virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+	#endif
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual wxArrayString OnClientSupportedCommands();
