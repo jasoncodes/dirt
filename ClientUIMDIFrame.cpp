@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.95 2003-04-28 04:53:28 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.96 2003-04-28 08:12:50 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -424,7 +424,10 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	
 		if (bAlert)
 		{
-			wxBell();
+			if (!m_client->GetContactSelf() || !m_client->GetContactSelf()->IsAway())
+			{
+				wxBell();
+			}
 		}
 		
 		if (bFlashWindow)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.29 2003-04-13 04:31:00 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.30 2003-04-28 08:12:50 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -121,6 +121,8 @@ void ClientDefault::Disconnect(const wxString &msg)
 {
 	m_sck->Close();
 	m_dns->Cancel();
+	m_contact_self = NULL;
+	EmptyContacts();
 	m_event_handler->OnClientInformation(wxEmptyString, msg);
 	m_event_handler->OnClientStateChange();
 }

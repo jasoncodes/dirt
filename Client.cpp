@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.51 2003-04-18 10:05:43 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.52 2003-04-28 08:12:50 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -47,10 +47,12 @@ Client::Client(ClientEventHandler *event_handler)
 	m_server_name = wxEmptyString;
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 	m_timers = new ClientTimers(this, ID_TIMERS);
+	m_contact_self = NULL;
 }
 
 Client::~Client()
 {
+	EmptyContacts();
 	delete m_timers;
 	delete m_tmrPing;
 	delete m_file_transfers;
@@ -640,7 +642,15 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	}
 	else if (cmd == wxT("WHOIS"))
 	{
-		m_event_handler->OnClientWhoIs(context, UnpackByteBufferHashMap(data));
+		ByteBufferHashMap WhoIsData = UnpackByteBufferHashMap(data);
+		wxString nick = WhoIsData[wxT("NICK")];
+		ClientContact *contact = GetContact(nick);
+		if (contact)
+		{
+			contact->m_whois_cache = WhoIsData;
+			contact->m_whois_cache_time = GetMillisecondTicks();
+		}
+		m_event_handler->OnClientWhoIs(context, WhoIsData);
 	}
 	else if (cmd == wxT("AWAY") || cmd == wxT("BACK"))
 	{
@@ -650,7 +660,14 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			text = ByteBuffer();
 		}
-		if (cmd == wxT("AWAY"))
+		bool bIsAway = (cmd == wxT("AWAY"));
+		ClientContact *contact = GetContact(nick);
+		if (contact)
+		{
+			contact->m_is_away = bIsAway;
+			contact->m_away_message = text;
+		}
+		if (bIsAway)
 		{
 			m_event_handler->OnClientUserAway(nick, text);
 		}
@@ -667,10 +684,13 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			details = ByteBuffer();
 		}
+		ClientContact *contact = new ClientContact(this, nick);
+		m_contacts.Add(contact);
 		m_event_handler->OnClientUserJoin(nick, details);
 		if ((wxString)nick == m_nickname)
 		{
 			m_event_handler->OnClientStateChange();
+			m_contact_self = contact;
 		}
 	}
 	else if (cmd == wxT("PART"))
@@ -681,6 +701,12 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			details = ByteBuffer();
 			msg = ByteBuffer();
+		}
+		ClientContact *contact = GetContact(nick);
+		if (contact)
+		{
+			delete contact;
+			m_contacts.Remove(contact);
 		}
 		m_event_handler->OnClientUserPart(nick, details, msg);
 		if ((wxString)nick == m_nickname)
@@ -693,6 +719,11 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		ByteBuffer nick1, nick2;
 		if (Unpack(data, nick1, nick2))
 		{
+			ClientContact *contact = GetContact(nick1);
+			if (contact)
+			{
+				contact->m_nickname = nick2;
+			}
 			if ((wxString)nick1 == m_nickname)
 			{
 				m_nickname = nick2;
@@ -710,9 +741,26 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	{
 		wxArrayString nicks;
 		ByteBufferArray nickbuff = Unpack(data);
+		ClientContact *old_self = m_contact_self;
+		m_contacts.Remove(m_contact_self);
+		EmptyContacts();
 		for (size_t i = 0; i < nickbuff.GetCount(); ++i)
 		{
-			nicks.Add(nickbuff.Item(i));
+			wxString nick = nickbuff.Item(i);
+			nicks.Add(nick);
+			ClientContact *contact = new ClientContact(this, nick);
+			m_contacts.Add(contact);
+			if ((wxString)nick == m_nickname)
+			{
+				delete old_self;
+				old_self = NULL;
+				m_contact_self = contact;
+			}
+		}
+		if (old_self)
+		{
+			m_contacts.Insert(old_self, 0);
+			m_contact_self = old_self;
 		}
 		m_event_handler->OnClientUserList(nicks);
 	}
@@ -1113,4 +1161,44 @@ bool Client::ProcessCTCPReplyIn(const wxString &context, const wxString &nick, w
 bool Client::ProcessCTCPReplyOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
 {
 	return false;
+}
+
+size_t Client::GetContactCount() const
+{
+	return m_contacts.GetCount();
+}
+
+ClientContact* Client::GetContact(size_t index) const
+{
+	if (index >= 0 && index < m_contacts.GetCount())
+	{
+		return m_contacts.Item(index);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+ClientContact* Client::GetContact(const wxString &nick) const
+{
+	for (size_t i = 0; i < m_contacts.GetCount(); ++i)
+	{
+		ClientContact *contact = m_contacts.Item(i);
+		if (contact->GetNickname().CmpNoCase(nick) == 0)
+		{
+			return contact;
+		}
+	}
+	return NULL;
+}
+
+void Client::EmptyContacts()
+{
+	m_contact_self = NULL;
+	for (size_t i = 0; i < m_contacts.GetCount(); ++i)
+	{
+		delete m_contacts.Item(i);
+	}
+	m_contacts.Empty();
 }

@@ -9,6 +9,11 @@
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 
+class ClientContact;
+
+#include <wx/dynarray.h>
+WX_DEFINE_ARRAY(ClientContact*, ClientContactArray);
+
 class ClientEventHandler
 {
 
@@ -100,6 +105,10 @@ public:
 	virtual wxArrayString GetSupportedCommands() const;
 	virtual ClientConfig& GetConfig() { return m_config; }
 	virtual ClientTimers& GetTimers() { return *m_timers; }
+	virtual size_t GetContactCount() const;
+	virtual ClientContact* GetContact(size_t index) const;
+	virtual ClientContact* GetContact(const wxString &nick) const;
+	virtual ClientContact* GetContactSelf() const { return m_contact_self; }
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);
@@ -115,9 +124,12 @@ protected:
 	virtual bool ProcessCTCPOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
 	virtual bool ProcessCTCPReplyIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
 	virtual bool ProcessCTCPReplyOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
+	virtual void EmptyContacts();
 
 protected:
 	ClientEventHandler *m_event_handler;
+	ClientContactArray m_contacts;
+	ClientContact *m_contact_self;
 	FileTransfers *m_file_transfers;
 	ClientTimers *m_timers;
 	wxString m_nickname;
@@ -132,6 +144,38 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+
+};
+
+class ClientContact
+{
+
+	friend class Client;
+
+protected:
+	ClientContact(Client *client, wxString nickname)
+		: m_client(client), m_nickname(nickname)
+	{
+		m_is_away = false;
+		m_whois_cache_time = 0;
+	}
+
+public:
+	wxString GetNickname() const { return m_nickname; }
+	bool IsSelf() const { return m_client->GetNickname() == GetNickname(); }
+	bool IsAway() const { return m_is_away; }
+	wxString GetAwayMessage() const { return m_away_message; }
+
+protected:
+	Client *m_client;
+	wxString m_nickname;
+	bool m_is_away;
+	wxString m_away_message;
+	ByteBufferHashMap m_whois_cache;
+	wxLongLong_t m_whois_cache_time;
+
+private:
+	DECLARE_NO_COPY_CLASS(ClientContact)
 
 };
 
