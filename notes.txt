@@ -1,3 +1,5 @@
+* remove msvcp60.dll dependency
+
 * investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
   for SwitchBar on Windows XP/2003
 
