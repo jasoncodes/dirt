@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 		count++;
 		if (strlen(buff) == 0)
 		{
-			sprintf(tmp, "\\x%03x", c);
+			sprintf(tmp, "\\x%02x", c);
 		}
 		else
 		{
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		else
 		{
 			printf("\t\"%s\"\n", buff);
-			sprintf(buff, "\\x%03x", c);
+			sprintf(buff, "\\x%02x", c);
 		}
 	}
 
