@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.16 2003-02-21 07:53:13 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.17 2003-02-21 10:23:24 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -323,6 +323,27 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		conn->m_useragent = data;
 		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
 	}
+	else if (cmd == wxT("WHOIS"))
+	{
+		const ServerConnection *user = GetConnection(data);
+		if (user)
+		{
+			StringHashMap map;
+			map[wxT("NICK")] = user->GetNickname();
+			map[wxT("HOSTNAME")] = user->GetRemoteHost();
+			map[wxT("DETAILS")] = user->GetUserDetails();
+			map[wxT("AWAY")] = user->GetAwayMessage();
+			map[wxT("IDLE")] = user->GetIdleTimeString();
+			map[wxT("LATENCY")] = user->GetLatencyString();
+			map[wxT("AGENT")] = user->GetUserAgent();
+			map[wxT("JOINTIME")] = user->GetJoinTimeString();
+			conn->Send(context, cmd, PackHashMap(map));
+		}
+		else
+		{
+			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxT("No suck nick: ") + data));
+		}
+	}
 	else if (cmd == wxT("NICK"))
 	{
 		ServerConnection *tmp = GetConnection(data);
@@ -367,4 +388,3 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 
 }
-

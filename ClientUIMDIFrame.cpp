@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.50 2003-02-21 07:53:13 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.51 2003-02-21 10:23:24 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -490,6 +490,34 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 		old_canvas->SetTitle(new_nick);
 	}
 
+}
+
+void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const StringHashMap &details)
+{
+	StringHashMap details2(details);
+	wxString nickname = details2["NICK"];
+	AddLine(context, nickname + " is " + details2["DETAILS"]);
+	AddLine(context, nickname + " is connecting from " + details2["HOSTNAME"]);
+	if (details2["AWAY"].Length())
+	{
+		AddLine(context, nickname + " is away: " + details2["AWAY"]);
+	}
+	AddLine(context, nickname + " is using " + details2["AGENT"]);
+	AddLine(context, nickname + " has been idle for " + details2["IDLE"] + " (" + details2["LATENCY"] + " lag)");
+	AddLine(context, nickname + " signed on at " + details2["JOINTIME"]);
+	details2.erase("NICK");
+	details2.erase("DETAILS");
+	details2.erase("HOSTNAME");
+	details2.erase("AWAY");
+	details2.erase("AGENT");
+	details2.erase("IDLE");
+	details2.erase("LATENCY");
+	details2.erase("JOINTIME");
+	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	{
+		AddLine(context, nickname + " " + i->first + " = " + i->second);
+	}
+	AddLine(context, nickname + " End of /WHOIS");
 }
 
 void ClientUIMDIFrame::OnClientTransferNew(const FileTransfer &transfer)

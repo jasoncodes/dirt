@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.27 2003-02-20 07:43:24 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.28 2003-02-21 10:23:25 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -466,4 +466,29 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 
 	}
 
+}
+
+ByteBuffer PackHashMap(const StringHashMap &hashmap)
+{
+	ByteBufferArray list;
+	for (StringHashMap::const_iterator i = hashmap.begin(); i != hashmap.end(); ++i)
+	{
+		list.Add(i->first);
+		list.Add(i->second);
+	}
+	wxASSERT(list.GetCount() == hashmap.size() * 2);
+	return Pack(list);
+}
+
+StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap)
+{
+	StringHashMap hashmap;
+	ByteBufferArray list(Unpack(packed_hashmap));
+	wxASSERT(list.GetCount() % 2 == 0);
+	for (size_t i = 0; i < list.GetCount(); i += 2)
+	{
+		hashmap[list.Item(i)] = list.Item(i+1);
+	}
+	wxASSERT(list.GetCount() == hashmap.size() * 2);
+	return hashmap;
 }

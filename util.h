@@ -8,6 +8,9 @@
 class wxHtmlWinParser;
 class wxDateTime;
 
+#include "wx/hashmap.h"
+WX_DECLARE_STRING_HASH_MAP(wxString, StringHashMap);
+
 struct HeadTail
 {
 	wxString head, tail;
@@ -44,5 +47,7 @@ ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y, const ByteBuffer &z);
 bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y, ByteBuffer &z);
 ByteBuffer Pack(const ByteBufferArray &array);
 ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments = 0);
+ByteBuffer PackHashMap(const StringHashMap &hashmap);
+StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap);
 
 #endif

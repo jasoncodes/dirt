@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.25 2003-02-21 07:53:12 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.26 2003-02-21 10:23:24 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -115,9 +115,14 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 			m_event_handler->OnClientUserNick(m_nickname, m_nickname);
 		}
 	}
+	else if (cmd == wxT("WHOIS"))
+	{
+		ASSERT_CONNECTED();
+		WhoIs(context, params);
+	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
@@ -197,6 +202,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	{
 		m_event_handler->OnClientInformation(context, data);
 	}
+	else if (cmd == wxT("WHOIS"))
+	{
+		m_event_handler->OnClientWhoIs(context, UnpackHashMap(data));
+	}
 	else if (cmd == wxT("JOIN"))
 	{
 		ByteBuffer nick, details;
@@ -265,6 +274,12 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		}
 	}
 
+}
+
+void Client::WhoIs(const wxString &context, const wxString &nick)
+{
+	ASSERT_CONNECTED();
+	SendToServer(EncodeMessage(context, wxT("WHOIS"), nick));
 }
 
 void Client::OnConnect()

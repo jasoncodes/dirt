@@ -4,6 +4,7 @@
 #include "FileTransfer.h"
 #include "URL.h"
 #include "ByteBuffer.h"
+#include "util.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(wxEmptyString, wxT("Not connected")); return; } }
 
@@ -26,6 +27,7 @@ public:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick) = 0;
+	virtual void OnClientWhoIs(const wxString &context, const StringHashMap &details) = 0;
 	virtual void OnClientTransferNew(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferDelete(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferState(const FileTransfer &transfer) = 0;
@@ -50,6 +52,7 @@ public:
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
 	virtual const URL& GetLastURL() = 0;
+	virtual void WhoIs(const wxString &context, const wxString &nick);
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname();

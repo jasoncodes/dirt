@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.31 2003-02-21 07:53:13 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.32 2003-02-21 10:23:24 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -246,6 +246,34 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 
 	Output(msg);
 
+}
+
+void ClientUIConsole::OnClientWhoIs(const wxString &context, const StringHashMap &details)
+{
+	StringHashMap details2(details);
+	wxString nickname = details2["NICK"];
+	Output(nickname + " is " + details2["DETAILS"]);
+	Output(nickname + " is connecting from " + details2["HOSTNAME"]);
+	if (details2["AWAY"].Length())
+	{
+		Output(nickname + " is away: " + details2["AWAY"]);
+	}
+	Output(nickname + " is using " + details2["AGENT"]);
+	Output(nickname + " has been idle for " + details2["IDLE"] + " (" + details2["LATENCY"] + " lag)");
+	Output(nickname + " signed on at " + details2["JOINTIME"]);
+	details2.erase("NICK");
+	details2.erase("DETAILS");
+	details2.erase("HOSTNAME");
+	details2.erase("AWAY");
+	details2.erase("AGENT");
+	details2.erase("IDLE");
+	details2.erase("LATENCY");
+	details2.erase("JOINTIME");
+	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	{
+		Output(nickname + " " + i->first + " = " + i->second);
+	}
+	Output(nickname + " End of /WHOIS");
 }
 
 void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)
