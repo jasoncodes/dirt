@@ -1,10 +1,3 @@
-Extract the contents of http://prdownloads.sourceforge.net/cryptopp/crypto51.zip
+Extract the contents of http://www.mirrors.wiretapped.net/security/cryptography/libraries/cryptolib/cryptopp521.zip
 to this directory without overwriting existing files then compile.
-
-Win32 w/ VC++:
-	open "cryptlib.dsw" and do Build, Batch Build, Rebuild All
-
-Win32 w/ Dev-C++:
-	open "cryptlib - Win32 Release.dev" and do Execute, Rebuild All
-
-On non-Win32 systems, simply run "make" :)
+Alternatively, you can also download from http://prdownloads.sourceforge.net/cryptopp/cryptopp521.zip
