@@ -32,4 +32,5 @@
 
 * file transfers
 
-* at least win32: holding down the mouse button on logcontrol scrollbar stops network traffic
+* win32: scrolling, keeping any menu open or resizing/moving window stops all network traffic
+  from being processed (seems to be a win32 message pump problem)
