@@ -6,17 +6,20 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.2 2003-05-31 07:36:56 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.3 2003-05-31 07:44:56 jason Exp $)
 
 #include "CryptSocketProxy.h"
 
 static const wxString protocol_names[] =
 	{ wxT("SOCKS 4"), wxT("SOCKS 5"), wxT("HTTP CONNECT") };
 
-CryptSocketProxySettings::CryptSocketProxySettings(Config &m_config);
+CryptSocketProxySettings::CryptSocketProxySettings(Config &config)
+	: m_config(config)
+{
+}
 
-bool CryptSocketProxySettings::LoadSettings();
-bool CryptSocketProxySettings::SaveSettings();
+//bool CryptSocketProxySettings::LoadSettings();
+//bool CryptSocketProxySettings::SaveSettings();
 
 const wxString* const CryptSocketProxySettings::GetProtocolNames()
 {
@@ -90,6 +93,7 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 
 }
 
+/*
 bool CryptSocketProxySettings::DoesDestDestIPMatch(const wxString &dest_ip) const;
 bool CryptSocketProxySettings::DoesDestPortMatch(wxUint16 port) const;
 
@@ -119,3 +123,4 @@ bool CryptSocketProxySettings::SetDestNetworkNetwork(const wxString &network);
 bool CryptSocketProxySettings::SetDestNetworkSubnet(const wxString &subnet);
 bool CryptSocketProxySettings::SetDestPortsMode(CryptSocketProxyDestMode mode);
 bool CryptSocketProxySettings::SetDestPortRanges(const wxString &port_ranges);
+*/

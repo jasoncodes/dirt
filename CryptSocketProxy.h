@@ -30,7 +30,7 @@ class CryptSocketProxySettings
 {
 
 public:
-	CryptSocketProxySettings(Config &m_config);
+	CryptSocketProxySettings(Config &config);
 
 	bool LoadSettings();
 	bool SaveSettings();
