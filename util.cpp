@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.79 2003-08-24 15:52:15 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.80 2004-01-16 14:48:13 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -246,7 +246,7 @@ wxString SizeToString(wxLongLong_t size)
 	{
 		return wxString() << AddCommas(size / pow(1024, 2)) << wxT(" MB");
 	}
-	else if (size2 < 1099511627776)
+	else if (size2 < wxLL(1099511627776))
 	{
 		return wxString() << AddCommas(size / pow(1024, 3)) << wxT(" GB");
 	}
