@@ -3,9 +3,12 @@
 
 #include "CPSCalc.h"
 #include "File.h"
+#include "CryptSocket.h"
+
+#include <wx/dynarray.h>
+WX_DEFINE_ARRAY(wxUint16, Uint16Array);
 
 class FileTransfers;
-class CryptSocketBase;
 
 enum FileTransferState
 {
@@ -51,7 +54,7 @@ protected:
 
 public:
 	FileTransfer(const FileTransfer &other) { wxFAIL; }
-	virtual ~FileTransfer();
+	~FileTransfer();
 	wxString GetPrefixString() const;
 	wxString GetStateString() const;
 	operator wxString() const;
@@ -60,16 +63,19 @@ protected:
 	bool OnTimer(wxLongLong_t now);
 
 protected:
+	void ClearSockets();
+
+protected:
 	FileTransfers *m_transfers;
 	File m_file;
 	CPSCalc m_cps;
-	CryptSocketBase *m_sck;
+	CryptSocketArray m_scks;
 	bool m_connect_ok;
 	wxLongLong_t m_last_tick;
 
 	//  get only
-	wxString m_ip;
-	unsigned short m_port;
+	wxArrayString m_IPs;
+	Uint16Array m_ports;
 
 	// send only
 	bool m_got_accept;

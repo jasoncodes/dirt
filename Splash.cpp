@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.24 2003-04-30 05:07:53 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.25 2003-05-14 11:58:23 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -14,6 +14,9 @@ RCS_ID($Id: Splash.cpp,v 1.24 2003-04-30 05:07:53 jason Exp $)
 #include "LogViewerFrame.h"
 #include "LanListFrame.h"
 #include "util.h"
+#include "Dirt.h"
+
+DECLARE_APP(DirtApp)
 
 #include <wx/image.h>
 #include <wx/mstream.h>
@@ -157,8 +160,11 @@ void Splash::OnButton(wxCommandEvent &event)
 	{
 
 		case ID_CLIENT:
-			Destroy();
-			new ClientUIMDIFrame;
+			{
+				Destroy();
+				ClientUIMDIFrame *ui = new ClientUIMDIFrame;
+				wxGetApp().SetClient(ui->GetClient());
+			}
 			break;
 
 		case ID_SERVER:

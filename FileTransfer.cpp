@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.19 2003-05-13 06:11:43 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.20 2003-05-14 11:58:22 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -22,15 +22,22 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 		nickname(wxEmptyString), filename(wxEmptyString),
 		filesize(0), time(0), timeleft(-1), cps(-1),
 		filesent(0), status(wxEmptyString), m_transfers(transfers),
-		m_sck(NULL), m_connect_ok(false),
-		m_ip(wxEmptyString), m_port(0),
-		m_got_accept(false), m_more_idle(false)
+		m_connect_ok(false), m_got_accept(false), m_more_idle(false)
 {
 }
 
 FileTransfer::~FileTransfer()
 {
-	delete m_sck;
+	ClearSockets();
+}
+
+void FileTransfer::ClearSockets()
+{
+	for (size_t i = 0; i < m_scks.GetCount(); ++i)
+	{
+		delete m_scks[i];
+	}
+	m_scks.Empty();
 }
 
 static const wxLongLong_t s_timeout_pending = 180000;

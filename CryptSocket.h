@@ -75,8 +75,12 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(CryptSocketBase)
 
 };
+
+#include <wx/dynarray.h>
+WX_DEFINE_ARRAY(CryptSocketBase*, CryptSocketArray);
 
 //////// CryptSocketClient ////////
 

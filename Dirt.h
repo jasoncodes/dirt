@@ -38,6 +38,8 @@ public:
 	wxString GetConfigFilename() { return m_config_filename; }
 	wxString GetDefaultQuitMessage() { return m_default_quit_message; }
 
+	void SetClient(Client *client) { wxASSERT(!m_client && client); m_client = client; }
+
 protected:
 	bool ProcessCommandLine();
 

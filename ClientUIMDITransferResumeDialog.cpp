@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.2 2003-05-10 04:34:39 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.3 2003-05-14 11:58:22 jason Exp $)
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -52,7 +52,7 @@ ClientUIMDITransferResumeDialog::ClientUIMDITransferResumeDialog(wxWindow *paren
 		wxIcon icon = wxArtProvider::GetIcon(wxART_QUESTION);
 	#endif
 
-	wxStaticBitmap *bmpIcon = new wxStaticBitmap(panel, wxID_ANY, icon);
+	wxStaticBitmap *bmpIcon = new wxStaticBitmap(panel, wxID_ANY, icon, wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
 
 	wxButton *cmdYes = new wxButton(panel, wxID_YES, wxT("&Resume"));
 	cmdYes->Enable(can_resume);
