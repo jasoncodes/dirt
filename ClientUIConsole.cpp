@@ -251,12 +251,6 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 		OnClientInformation(context, "Supported commands: EXIT");
 		return false;
 	}
-	else if (cmd == "TEST")
-	{
-		OnClientDebug(context, "Screwing w/ stdin...");
-		fputs("\nblahblah\n",stdin);
-		return true;
-	}
 	else
 	{
 		return false;
