@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.22 2003-02-27 02:52:31 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.23 2003-02-27 05:20:44 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -18,6 +18,7 @@ ServerConnection::ServerConnection()
 	m_remotehost = wxEmptyString;
 	m_remotehostandport = wxEmptyString;
 	m_userdetails = wxEmptyString;
+	m_isaway = false;
 	m_awaymessage = wxEmptyString;
 	m_latency = -1;
 	m_useragent = wxEmptyString;
@@ -41,9 +42,9 @@ ServerConnection::operator wxString() const
 	{
 		retval << wxT("Admin; ");
 	}
-	if (GetAwayMessage().Length())
+	if (IsAway())
 	{
-		retval << wxT("Away: ") << GetAwayMessage() << wxT("; ");
+		retval << wxT("Away: ") << GetAwayMessage() << (wxChar)OriginalModifier << wxT("; ");
 	}
 	retval << wxT("Idle: ") << GetIdleTimeString() << wxT("; ");
 	retval << wxT("Lag: ") << GetLatencyString() << wxT("; ");
@@ -509,13 +510,39 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 	else if (cmd == wxT("USERDETAILS"))
 	{
-		conn->m_userdetails = data;
-		Information(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
+		if (conn->m_userdetails != (wxString)data)
+		{
+			conn->m_userdetails = (wxString)data;
+			Information(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
+		}
 	}
 	else if (cmd == wxT("USERAGENT"))
 	{
-		conn->m_useragent = data;
-		Information(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
+		if (conn->m_useragent != (wxString)data)
+		{
+			conn->m_useragent = (wxString)data;
+			Information(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
+		}
+	}
+	else if (cmd == wxT("AWAY"))
+	{
+		if (!conn->m_isaway || conn->m_awaymessage != (wxString)data)
+		{
+			conn->m_isaway = true;
+			conn->m_awaymessage = (wxString)data;
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
+			Information(conn->GetId() + wxT(" is away: ") + conn->m_awaymessage);
+		}
+	}
+	else if (cmd == wxT("BACK"))
+	{
+		if (conn->m_awaymessage.Length() > 0)
+		{
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
+			Information(conn->GetId() + wxT(" has returned (msg: ") + conn->m_awaymessage + (wxChar)OriginalModifier + wxT(")"));
+			conn->m_isaway = false;
+			conn->m_awaymessage = wxEmptyString;
+		}
 	}
 	else if (cmd == wxT("WHOIS"))
 	{
@@ -530,7 +557,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			{
 				map[wxT("ISADMIN")] = wxT("");
 			}
-			map[wxT("AWAY")] = user->GetAwayMessage();
+			if (user->IsAway())
+			{
+				map[wxT("AWAY")] = user->GetAwayMessage();
+			}
 			map[wxT("IDLE")] = wxString() << user->GetIdleTime();
 			map[wxT("IDLESTRING")] = user->GetIdleTimeString();
 			map[wxT("LATENCY")] = wxString() << user->GetLatency();
@@ -569,6 +599,14 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					Information(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
+					for (size_t i = 0; i < GetConnectionCount(); ++i)
+					{
+						ServerConnection *conn2 = GetConnection(i);
+						if (conn2->IsAway())
+						{
+							conn->Send(wxEmptyString, wxT("AWAY"), Pack(conn2->GetNickname(), conn2->GetAwayMessage()));
+						}
+					}
 				}
 				else
 				{

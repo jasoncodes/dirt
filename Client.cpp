@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.27 2003-02-27 02:52:31 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.28 2003-02-27 05:20:43 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -125,9 +125,19 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		ASSERT_CONNECTED();
 		Oper(context, params);
 	}
+	else if (cmd == wxT("AWAY"))
+	{
+		ASSERT_CONNECTED();
+		Away(params);
+	}
+	else if (cmd == wxT("BACK"))
+	{
+		ASSERT_CONNECTED();
+		Back();
+	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: AWAY BACK CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
@@ -211,6 +221,23 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	{
 		m_event_handler->OnClientWhoIs(context, UnpackHashMap(data));
 	}
+	else if (cmd == wxT("AWAY") || cmd == wxT("BACK"))
+	{
+		ByteBuffer nick, text;
+		if (!Unpack(data, nick, text))
+		{
+			nick = data;
+			text = ByteBuffer();
+		}
+		if (cmd == wxT("AWAY"))
+		{
+			m_event_handler->OnClientUserAway(nick, text);
+		}
+		else
+		{
+			m_event_handler->OnClientUserBack(nick, text);
+		}
+	}
 	else if (cmd == wxT("JOIN"))
 	{
 		ByteBuffer nick, details;
@@ -285,6 +312,13 @@ void Client::WhoIs(const wxString &context, const wxString &nick)
 {
 	ASSERT_CONNECTED();
 	SendToServer(EncodeMessage(context, wxT("WHOIS"), nick));
+}
+
+void Client::Away(const wxString &msg)
+{
+	wxString context = wxEmptyString;
+	ASSERT_CONNECTED();
+	SendToServer(EncodeMessage(context, msg.Length()?wxT("AWAY"):wxT("BACK"), msg));
 }
 
 void Client::OnConnect()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.33 2003-02-22 05:16:19 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.34 2003-02-27 05:20:44 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -248,34 +248,50 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 
 }
 
+void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg)
+{
+	OnClientInformation(wxEmptyString, nick + wxT(" is away: ") + msg);
+}
+
+void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg)
+{
+	OnClientInformation(wxEmptyString, nick + wxT(" has returned (msg: ") + msg + (wxChar)OriginalModifier + wxT(")"));
+}
+
 void ClientUIConsole::OnClientWhoIs(const wxString &context, const StringHashMap &details)
 {
 	StringHashMap details2(details);
-	wxString nickname = details2["NICK"];
-	Output(nickname + " is " + details2["DETAILS"]);
-	Output(nickname + " is connecting from " + details2["HOSTNAME"]);
-	if (details2["AWAY"].Length())
+	wxString nickname = details2[wxT("NICK")];
+	Output(nickname + wxT(" is ") + details2[wxT("DETAILS")]);
+	Output(nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")]);
+	if (details2.find(wxT("ISADMIN")) != details2.end())
 	{
-		Output(nickname + " is away: " + details2["AWAY"]);
+		Output(nickname + wxT(" is a server administrator"));
 	}
-	Output(nickname + " is using " + details2["AGENT"]);
-	Output(nickname + " has been idle for " + details2["IDLESTRING"] + " (" + details2["LATENCYSTRING"] + " lag)");
-	Output(nickname + " signed on at " + details2["JOINTIMESTRING"]);
-	details2.erase("NICK");
-	details2.erase("DETAILS");
-	details2.erase("HOSTNAME");
-	details2.erase("AWAY");
-	details2.erase("AGENT");
-	details2.erase("IDLE");
-	details2.erase("IDLESTRING");
-	details2.erase("LATENCY");
-	details2.erase("LATENCYSTRING");
-	details2.erase("JOINTIME");
-	details2.erase("JOINTIMESTRING");	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	if (details2.find(wxT("AWAY")) != details2.end())
 	{
-		Output(nickname + " " + i->first + " = " + i->second);
+		Output(nickname + wxT(" is away: ") + details2[wxT("AWAY")]);
 	}
-	Output(nickname + " End of /WHOIS");
+	Output(nickname + wxT(" is using ") + details2[wxT("AGENT")]);
+	Output(nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
+	Output(nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")]);
+	details2.erase(wxT("NICK"));
+	details2.erase(wxT("DETAILS"));
+	details2.erase(wxT("HOSTNAME"));
+	details2.erase(wxT("ISADMIN"));
+	details2.erase(wxT("AWAY"));
+	details2.erase(wxT("AGENT"));
+	details2.erase(wxT("IDLE"));
+	details2.erase(wxT("IDLESTRING"));
+	details2.erase(wxT("LATENCY"));
+	details2.erase(wxT("LATENCYSTRING"));
+	details2.erase(wxT("JOINTIME"));
+	details2.erase(wxT("JOINTIMESTRING"));
+	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	{
+		Output(nickname + wxT(" ") + i->first + wxT(" = ") + i->second);
+	}
+	Output(nickname + wxT(" End of /WHOIS"));
 }
 
 void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)

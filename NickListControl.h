@@ -11,6 +11,8 @@
 class NickListControl : public wxListBox
 {
 
+	static const wxString AwayPostfix;
+
 public:
 
 	NickListControl(wxWindow *parent, int id);
@@ -18,6 +20,8 @@ public:
 
 	virtual void Add(const wxString &nick);
 	virtual void Remove(const wxString &nick);
+	virtual bool GetAway(const wxString &nick);
+	virtual bool SetAway(const wxString &nick, bool away);
 	virtual void Clear();
 	virtual wxString GetNick(int index);
 	virtual int GetCount();

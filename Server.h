@@ -38,6 +38,7 @@ public:
 	virtual wxString GetRemoteHost() const { return m_remotehost; }
 	virtual wxString GetRemoteHostAndPort() const { return m_remotehostandport; }
 	virtual wxString GetUserDetails() const { return m_userdetails; }
+	virtual bool IsAway() const { return m_isaway; }
 	virtual wxString GetAwayMessage() const { return m_awaymessage; }
 	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }
 	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : wxT("N/A"); }
@@ -63,6 +64,7 @@ protected:
 	wxString m_remotehost;
 	wxString m_remotehostandport;
 	wxString m_userdetails;
+	bool m_isaway;
 	wxString m_awaymessage;
 	long m_lastactive;
 	time_t m_latency;

@@ -27,6 +27,8 @@ public:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick) = 0;
+	virtual void OnClientUserAway(const wxString &nick, const wxString &msg) = 0;
+	virtual void OnClientUserBack(const wxString &nick, const wxString &msg) = 0;
 	virtual void OnClientWhoIs(const wxString &context, const StringHashMap &details) = 0;
 	virtual void OnClientTransferNew(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferDelete(const FileTransfer &transfer) = 0;
@@ -54,6 +56,8 @@ public:
 	virtual const URL& GetLastURL() = 0;
 	virtual void WhoIs(const wxString &context, const wxString &nick);
 	virtual void Oper(const wxString &context, const wxString &pass) = 0;
+	virtual void Away(const wxString &msg);
+	virtual void Back() { Away(wxEmptyString); }
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname();

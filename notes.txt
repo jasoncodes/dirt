@@ -37,4 +37,3 @@
 * file transfers
 * support for public listing
 * tray icon support
-* /away

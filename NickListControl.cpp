@@ -6,10 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.12 2003-02-27 05:20:44 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
+
+const wxString NickListControl::AwayPostfix = wxT(" (Away)");
 
 BEGIN_EVENT_TABLE(NickListControl, wxListBox)
 	EVT_RIGHT_UP(NickListControl::OnRightUp)
@@ -33,7 +35,10 @@ NickListControl::~NickListControl()
 
 void NickListControl::Add(const wxString &nick)
 {
-	Append(nick);
+	if (GetNickIndex(nick) == -1)
+	{
+		Append(nick);
+	}
 }
 
 void NickListControl::Remove(const wxString &nick)
@@ -45,11 +50,39 @@ void NickListControl::Remove(const wxString &nick)
 	}
 }
 
+bool NickListControl::GetAway(const wxString &nick)
+{
+	int index = GetNickIndex(nick);
+	if (index > -1)
+	{
+		wxString nick = wxListBox::GetString(index);
+		return RightEq(nick, AwayPostfix);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool NickListControl::SetAway(const wxString &nick, bool away)
+{
+	int index = GetNickIndex(nick);
+	if (index > -1)
+	{
+		wxListBox::SetString(index, GetNick(index) + (away?AwayPostfix:wxEmptyString));
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 int NickListControl::GetNickIndex(const wxString &nick)
 {
 	for (int i = 0; i < GetCount(); ++i)
 	{
-		if (GetNick(i) == nick)
+		if (GetNick(i).CmpNoCase(nick) == 0)
 		{
 			return i;
 		}
@@ -64,7 +97,12 @@ void NickListControl::Clear()
 
 wxString NickListControl::GetNick(int index)
 {
-	return wxListBox::GetString(index);
+	wxString nick = wxListBox::GetString(index);
+	if (RightEq(nick, AwayPostfix))
+	{
+		nick = nick.Left(nick.Length() - AwayPostfix.Length());
+	}
+	return nick;
 }
 
 int NickListControl::GetSelectedIndex()

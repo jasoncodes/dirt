@@ -43,6 +43,8 @@ protected:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);
+	virtual void OnClientUserAway(const wxString &nick, const wxString &msg);
+	virtual void OnClientUserBack(const wxString &nick, const wxString &msg);
 	virtual void OnClientWhoIs(const wxString &context, const StringHashMap &details);
 	virtual void OnClientTransferNew(const FileTransfer &transfer);
 	virtual void OnClientTransferDelete(const FileTransfer &transfer);

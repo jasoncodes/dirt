@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.53 2003-02-24 12:43:44 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.54 2003-02-27 05:20:44 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -215,7 +215,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	bool bAlert = false;
 	bool bFlashWindow = false;
 
-	if (GetActiveChild() != canvas->GetParent())
+	if (!suppress_alert && GetActiveChild() != canvas->GetParent())
 	{
 		int button_index = m_switchbar->GetIndexFromUserData(canvas);
 		if (button_index > -1)
@@ -481,12 +481,13 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 {
 
 	wxString msg;
+	bool bIsSelf = (new_nick == m_client->GetNickname());
 	
 	if (old_nick == new_nick)
 	{
 		msg << wxT("*** You nickname is ") << new_nick;
 	}
-	else if (new_nick == m_client->GetNickname())
+	else if (bIsSelf)
 	{
 		msg << wxT("*** You are now known as ") << new_nick;
 	}
@@ -497,7 +498,7 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 		msg << new_nick;
 	}
 
-	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, bIsSelf, false);
 
 	if (old_nick == new_nick) return;
 
@@ -521,35 +522,58 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 }
 
+void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg)
+{
+	bool bIsSelf = (nick == m_client->GetNickname());
+	AddLine(wxEmptyString,
+		wxT("*** ") + nick + wxT(" is away: ") + msg,
+		wxColour(0,0,128), true, bIsSelf);
+	m_lstNickList->SetAway(nick, true);
+}
+
+void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &msg)
+{
+	bool bIsSelf = (nick == m_client->GetNickname());
+	AddLine(wxEmptyString,
+		wxT("*** ") + nick + wxT(" has returned (msg: ") + msg + (wxChar)OriginalModifier + wxT(")"),
+		wxColour(0,0,128), true, bIsSelf);
+	m_lstNickList->SetAway(nick, false);
+}
+
 void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const StringHashMap &details)
 {
 	StringHashMap details2(details);
-	wxString nickname = details2["NICK"];
-	AddLine(context, nickname + " is " + details2["DETAILS"]);
-	AddLine(context, nickname + " is connecting from " + details2["HOSTNAME"]);
-	if (details2["AWAY"].Length())
+	wxString nickname = details2[wxT("NICK")];
+	AddLine(context, nickname + wxT(" is ") + details2[wxT("DETAILS")]);
+	AddLine(context, nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")]);
+	if (details2.find(wxT("ISADMIN")) != details2.end())
 	{
-		AddLine(context, nickname + " is away: " + details2["AWAY"]);
+		AddLine(context, nickname + wxT(" is a server administrator"));
 	}
-	AddLine(context, nickname + " is using " + details2["AGENT"]);
-	AddLine(context, nickname + " has been idle for " + details2["IDLESTRING"] + " (" + details2["LATENCYSTRING"] + " lag)");
-	AddLine(context, nickname + " signed on at " + details2["JOINTIMESTRING"]);
-	details2.erase("NICK");
-	details2.erase("DETAILS");
-	details2.erase("HOSTNAME");
-	details2.erase("AWAY");
-	details2.erase("AGENT");
-	details2.erase("IDLE");
-	details2.erase("IDLESTRING");
-	details2.erase("LATENCY");
-	details2.erase("LATENCYSTRING");
-	details2.erase("JOINTIME");
-	details2.erase("JOINTIMESTRING");
+	if (details2.find(wxT("AWAY")) != details2.end())
+	{
+		AddLine(context, nickname + wxT(" is away: ") + details2[wxT("AWAY")]);
+	}
+	AddLine(context, nickname + wxT(" is using ") + details2[wxT("AGENT")]);
+	AddLine(context, nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
+	AddLine(context, nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")]);
+	details2.erase(wxT("NICK"));
+	details2.erase(wxT("DETAILS"));
+	details2.erase(wxT("HOSTNAME"));
+	details2.erase(wxT("ISADMIN"));
+	details2.erase(wxT("AWAY"));
+	details2.erase(wxT("AGENT"));
+	details2.erase(wxT("IDLE"));
+	details2.erase(wxT("IDLESTRING"));
+	details2.erase(wxT("LATENCY"));
+	details2.erase(wxT("LATENCYSTRING"));
+	details2.erase(wxT("JOINTIME"));
+	details2.erase(wxT("JOINTIMESTRING"));
 	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
-		AddLine(context, nickname + " " + i->first + " = " + i->second);
+		AddLine(context, nickname + wxT(" ") + i->first + wxT(" = ") + i->second);
 	}
-	AddLine(context, nickname + " End of /WHOIS");
+	AddLine(context, nickname + wxT(" End of /WHOIS"));
 }
 
 void ClientUIMDIFrame::OnClientTransferNew(const FileTransfer &transfer)
