@@ -28,13 +28,11 @@ public:
 	virtual int GetNickIndex(const wxString &nick);
 	virtual int GetSelectedIndex();
 	virtual wxString GetSelectedNick();
+	virtual int HitTest(const wxPoint &pt);
 
 protected:
 	void OnRightUp(wxMouseEvent &event);
 	void OnMotion(wxMouseEvent &event);
-
-protected:
-	int HitTest(const wxPoint &pt);
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -24,8 +24,6 @@
 
 	* ensure IP mappings are being done correctly
 
-	* drag drop files to contact list or query window to send
-
 	* context menu options
 		* accept to $last_get_dir/file.ext
 		* open file.ext

@@ -369,6 +369,14 @@ SOURCE=.\File.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\FileDropTarget.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FileDropTarget.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\FileTransfer.cpp
 # End Source File
 # Begin Source File

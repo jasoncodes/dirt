@@ -11,6 +11,7 @@ class Client;
 class ClientUIMDIFrame;
 class ClientUIMDITransferPanel;
 class LogWriter;
+class FileDropEvent;
 
 enum CanvasType
 {
@@ -47,6 +48,7 @@ public:
 
 	void ResizeChildren();
 	void LogControlTest();
+	void SendFiles(const wxString &nickname, const wxArrayString &filenames);
 
 protected:
 	void OnSize(wxSizeEvent &event);
@@ -54,6 +56,7 @@ protected:
 	void OnInputEnter(wxCommandEvent &event);
 	void OnLinkClicked(wxCommandEvent &event);
 	void OnSashDragged(wxSashEvent &event);
+	void OnFileDrop(FileDropEvent &event);
 	void OnNickListDblClick(wxCommandEvent &event);
 	void OnNickListMenu(wxCommandEvent &event);
 	void OnNickListMenuItem(wxCommandEvent &event);

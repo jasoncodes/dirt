@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.49 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.50 2003-05-11 04:38:23 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -19,6 +19,7 @@ RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.49 2003-05-07 12:23:00 jason Exp $)
 #include "LogWriter.h"
 #include "ClientUIMDITransferPanel.h"
 #include "SwitchBar.h"
+#include "FileDropTarget.h"
 
 #include "res/channel.xpm"
 #include "res/query.xpm"
@@ -32,6 +33,7 @@ enum
 	ID_PASSWORD,
 	ID_TRANSFER,
 	ID_SASH,
+	ID_DND,
 	ID_NICKLIST,
 	ID_NICKLIST_NICK,
 	ID_NICKLIST_MESSAGE,
@@ -49,6 +51,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_BUTTON(ID_LOG, ClientUIMDICanvas::OnLinkClicked)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 	EVT_SASH_DRAGGED(ID_SASH, ClientUIMDICanvas::OnSashDragged)
+	EVT_FILE_DROP(ID_DND, ClientUIMDICanvas::OnFileDrop)
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
 	EVT_MENU(wxID_ANY, ClientUIMDICanvas::OnNickListMenuItem)
@@ -112,6 +115,10 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 		m_txtInput->SetTabCompletionList(((ClientUIMDIFrame*)parent)->GetNicklist());
 		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtPassword = NULL;
+		if (type == QueryCanvas)
+		{
+			m_txtLog->SetDropTarget(new FileDropTarget(this, ID_DND));
+		}
 	}
 	else
 	{
@@ -129,6 +136,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 		m_sash->SetSashVisible(wxSASH_LEFT, true );
 		m_lstNickList = new NickListControl(m_sash, ID_NICKLIST);
 		m_lstNickList->SetFont(m_txtInput->GetFont());
+		m_lstNickList->SetDropTarget(new FileDropTarget(this, ID_DND));
 	}
 	else
 	{
@@ -229,6 +237,51 @@ void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
 	{
 		m_sash->SetSize(event.GetDragRect());
 		ResizeChildren();
+	}
+}
+
+void ClientUIMDICanvas::SendFiles(const wxString &nickname, const wxArrayString &filenames)
+{
+	for (size_t i = 0; i < filenames.GetCount(); ++i)
+	{
+		ProcessInput(wxT("/dcc send \"") + nickname + wxT("\" \"") + filenames[i] + wxT("\""));
+	}
+}
+
+void ClientUIMDICanvas::OnFileDrop(FileDropEvent &event)
+{
+	if (m_type == QueryCanvas)
+	{
+		if (event.IsDrop())
+		{
+			SendFiles(GetTitle(), event.GetFilenames());
+		}
+		event.Accept(true);
+	}
+	else
+	{
+		if (event.IsDrop())
+		{
+			wxString nick = m_lstNickList->GetSelectedNick();
+			if (nick.Length())
+			{
+				SendFiles(nick, event.GetFilenames());
+				event.Accept(true);
+			}
+		}
+		else
+		{
+			wxPoint pt = m_lstNickList->ScreenToClient(wxGetMousePosition());
+			int i = m_lstNickList->HitTest(pt);
+			if (i > -1)
+			{
+				m_lstNickList->SetSelection(i);
+			}
+			if (m_lstNickList->GetSelectedIndex() > -1)
+			{
+				event.Accept(true);
+			}
+		}
 	}
 }
 
