@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.29 2003-03-11 13:20:48 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.30 2003-03-11 13:37:29 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 #include <wx/filename.h>
@@ -140,12 +140,6 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
 	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtMaxUsersIP);
-	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
-	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtServerName);
-	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
-	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtHostname);
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
@@ -154,6 +148,12 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
 	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
+	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
+	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtServerName);
+	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
+	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtHostname);
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
 	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
@@ -193,10 +193,10 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
 				}
 				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
@@ -207,8 +207,6 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
 					wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
 					{
 						szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
@@ -221,6 +219,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 						szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
 					}
 					szrTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
 				}
 				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
 
@@ -401,6 +401,8 @@ void ServerUIFrameConfig::LoadSettings()
 	m_txtAdminPassword->SetValue(config->GetAdminPassword(false));
 	m_txtMaxUsers->SetValue(wxString()<<config->GetMaxUsers());
 	m_txtMaxUsersIP->SetValue(wxString()<<config->GetMaxUsersIP());
+	m_txtSoundConnection->SetValue(config->GetSoundConnection());
+	m_txtSoundJoin->SetValue(config->GetSoundJoin());
 	m_txtServerName->SetValue(config->GetServerName());
 	m_txtHostname->SetValue(config->GetHostname());
 	m_chkPublicListEnabled->SetValue(config->GetPublicListEnabled());
@@ -466,6 +468,16 @@ bool ServerUIFrameConfig::SaveSettings()
 	if (!config->SetHostname(m_txtHostname->GetValue()))
 	{
 		ReportError(wxT("Invalid hostname"), m_txtHostname);
+		return false;
+	}
+	if (!config->SetSoundConnection(m_txtSoundConnection->GetValue()))
+	{
+		ReportError(wxT("Invalid connection sound"), m_txtSoundConnection);
+		return false;
+	}
+	if (!config->SetSoundJoin(m_txtSoundJoin->GetValue()))
+	{
+		ReportError(wxT("Invalid join sound"), m_txtSoundJoin);
 		return false;
 	}
 	if (!config->SetPublicListEnabled(m_chkPublicListEnabled->GetValue()))

@@ -99,6 +99,9 @@ public:
 	long GetMaxUsers() const;
 	long GetMaxUsersIP() const;
 	
+	wxString GetSoundConnection() const;
+	wxString GetSoundJoin() const;
+
 	wxString GetServerName() const;
 	wxString GetHostname() const;
 	bool GetPublicListEnabled() const;
@@ -116,6 +119,9 @@ public:
 	bool SetAdminPassword(const wxString &password);
 	bool SetMaxUsers(long max_users);
 	bool SetMaxUsersIP(long max_users_ip);
+
+	bool SetSoundConnection(const wxString &filename) const;
+	bool SetSoundJoin(const wxString &filename) const;
 
 	bool SetServerName(const wxString &server_name);
 	bool SetHostname(const wxString &hostname);
