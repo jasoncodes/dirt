@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.9 2003-05-05 09:29:08 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.10 2003-05-06 04:13:50 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -60,6 +60,18 @@ int FileTransfers::GetNewId()
 	return index;
 }
 
+#include <sys/stat.h>
+
+static off_t GetFileLength(const wxString &filename)
+{
+	wxStructStat st;
+	if (wxStat(filename, &st) == 0)
+	{
+		return st.st_size;
+	}
+	return -1;
+}
+
 void FileTransfers::Test()
 {
 
@@ -70,9 +82,7 @@ void FileTransfers::Test()
 	t.state = ftsSendTransfer;
 	t.nickname = wxT("Jason");
 	t.filename = GetSelf();
-	wxStructStat st;
-	wxStat(t.filename, &st);
-	t.filesize = st.st_size;
+	t.filesize = GetFileLength(t.filename);
 	t.time = t.filesize / 3000;
 	t.timeleft = -1;
 	t.cps = -1;
