@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.22 2004-03-14 04:18:12 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.23 2004-03-14 08:04:07 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -17,9 +17,18 @@ RCS_ID($Id: InputControl.cpp,v 1.22 2004-03-14 04:18:12 jason Exp $)
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
 #endif
+
 #ifdef __WXGTK__
-	#include <gdk/gdk.h>
-	#include <gtk/gtk.h>
+
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
+static GdkWindow* GetGDKWindow(wxWindow *wnd)
+{
+	GtkWidget *gtk_widget = wnd->GetHandle();
+	return gtk_widget->window;
+}
+
 #endif
 
 class InputControlColourPanel : public wxPanel
@@ -170,19 +179,25 @@ public:
 
 		PositionSelf();
 
-		wxWindow *wnd = ::wxGetActiveWindow();
-		if (wnd != NULL && wnd != GetControlFrame())
+		if (wxWindow::FindFocus() != GetControl())
 		{
 			CloseMe();
+			return;
 		}
 
-		wnd = this;
+		if (GetControlFrame()->IsIconized())
+		{
+			CloseMe();
+			return;
+		}
+
+		wxWindow *wnd = this;
 		while (wnd != NULL)
 		{
 			if (!wnd->IsShown())
 			{
 				CloseMe();
-				break;
+				return;
 			}
 			wnd = wnd->GetParent();
 		}
@@ -266,6 +281,11 @@ void InputControl::ShowPopup()
 
 		m_popup = new InputControlColourPopup(this, -1, wxT("Colour Index"));
 		m_popup->Show(true);
+
+#ifdef __WXGTK__
+                gdk_window_focus(GetGDKWindow(m_popup->GetControlFrame()), 0);
+		gdk_window_raise(GetGDKWindow(m_popup));
+#endif
 
 		wxWindow *wnd = GetParent();
 		while (wnd->GetParent() != NULL)
