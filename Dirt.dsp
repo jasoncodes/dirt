@@ -277,6 +277,14 @@ SOURCE=.\ClientUIMDICanvas.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIMDIConfigDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDIConfigDialog.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ClientUIMDIFrame.cpp
 # End Source File
 # Begin Source File
@@ -582,6 +590,14 @@ SOURCE=.\TrayIcon.cpp
 # Begin Source File
 
 SOURCE=.\TrayIcon.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TristateConfigPanel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TristateConfigPanel.h
 # End Source File
 # Begin Source File
 

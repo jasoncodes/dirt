@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.43 2003-05-18 09:05:48 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.44 2003-05-19 13:27:10 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -625,7 +625,7 @@ void LogControl::ClearBlankArea(wxDC &dc)
 	if (bottom_gap_size > 0)
 	{
 
-		rtClearArea.height = GetClientSize().y;
+		rtClearArea.height = GetClientSize().y + wxHTML_SCROLL_STEP;
 		rtClearArea.y = GetClientSize().y - bottom_gap_size;
 
 		ClearRect(dc, rtClearArea);

@@ -74,6 +74,14 @@ public:
 	virtual bool SetLastSendDir(const wxString &dir);
 	virtual bool SetLastGetDir(const wxString &dir);
 
+	virtual wxString GetActualSoundFile() const;
+	virtual TristateMode GetSoundType() const;
+	virtual wxString GetSoundFile() const;
+	virtual bool SetSoundFile(TristateMode type, const wxString &filename);
+
+protected:
+	virtual wxString GetSoundFileKey() const;
+
 };
 
 class Client : public wxEvtHandler

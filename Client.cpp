@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.64 2003-05-15 10:41:18 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.65 2003-05-19 13:27:09 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -15,6 +15,7 @@ RCS_ID($Id: Client.cpp,v 1.64 2003-05-15 10:41:18 jason Exp $)
 #include "Crypt.h"
 #include "ClientTimers.h"
 #include "URL.h"
+#include <wx/filename.h>
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -47,6 +48,38 @@ bool ClientConfig::SetLastSendDir(const wxString &dir)
 bool ClientConfig::SetLastGetDir(const wxString &dir)
 {
 	return m_config->Write(wxT("/Client/Last Get Directory"), dir);
+}
+
+wxString ClientConfig::GetSoundFileKey() const
+{
+	return m_path+wxT("/Sound");
+}
+
+wxString ClientConfig::GetActualSoundFile() const
+{
+	return GetTristateString(GetSoundFileKey(), false);
+}
+
+Config::TristateMode ClientConfig::GetSoundType() const
+{
+	return GetTristateMode(GetSoundFileKey());
+}
+
+wxString ClientConfig::GetSoundFile() const
+{
+	return GetTristate(GetSoundFileKey());
+}
+
+bool ClientConfig::SetSoundFile(TristateMode type, const wxString &filename)
+{
+	if (type == tsmCustom)
+	{
+		if (!wxFileName(filename).FileExists())
+		{
+			return false;
+		}
+	}
+	return SetTristate(GetSoundFileKey(), type, filename, false);
 }
 
 enum

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.4 2003-05-14 16:25:28 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.5 2003-05-19 13:27:10 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -156,35 +156,105 @@ bool Config::SetPassword(const wxString &key, const wxString &password)
 	return m_config->Write(key, data);
 }
 
-wxString Config::GetActualLogDir() const
+wxString Config::GetTristateString(const wxString &key, bool is_dir) const
 {
 
-	switch (GetLogDirType())
+	switch (GetTristateMode(key))
 	{
 
-		case ldtNone:
+		case tsmNone:
 			return wxEmptyString;
 
-		case ldtDefault:
+		case tsmCustom:
 			{
-				wxFileName cfg(GetConfigFilename());
-				wxFileName fn(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), wxT(""));
-				fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
-				return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
-			}
-
-		case ldtCustom:
-			{
-				wxFileName fn(GetLogDirPath(), wxEmptyString);
+				wxFileName fn;
+				if (is_dir)
+				{
+					fn = wxFileName(GetTristate(key), wxEmptyString);
+				}
+				else
+				{
+					fn = wxFileName(GetTristate(key));
+				}
 				wxFileName cfg(GetConfigFilename());
 				fn.Normalize(wxPATH_NORM_DOTS|wxPATH_NORM_ABSOLUTE|wxPATH_NORM_TILDE,
 					cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 				return fn.GetFullPath();
 			}
 
+		case tsmDefault:
 		default:
 			wxFAIL_MSG(wxT("Unknown LogDirType"));
 			return wxEmptyString;
+
+	}
+
+}
+
+Config::TristateMode Config::GetTristateMode(const wxString &key) const
+{
+	if (m_config->Exists(key))
+	{
+		if (GetTristate(key).Length())
+		{
+			return tsmCustom;
+		}
+		else
+		{
+			return tsmNone;
+		}
+	}
+	else
+	{
+		return tsmDefault;
+	}
+}
+
+wxString Config::GetTristate(const wxString &key) const
+{
+	return m_config->Read(key);
+}
+
+bool Config::SetTristate(const wxString &key, TristateMode type, const wxString &path, bool is_dir)
+{
+
+	switch (type)
+	{
+
+		case tsmNone:
+			return m_config->Write(key, wxEmptyString);
+
+		case tsmDefault:
+			if (m_config->Exists(key))
+			{
+				return m_config->DeleteEntry(key);
+			}
+			else
+			{
+				return true;
+			}
+
+		case tsmCustom:
+			if (path.Length())
+			{
+				wxFileName fn;
+				if (is_dir)
+				{
+					fn = wxFileName(path, wxEmptyString);
+				}
+				else
+				{
+					fn = wxFileName(path);
+				}
+				wxFileName cfg(GetConfigFilename());
+				fn.MakeRelativeTo(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+				return m_config->Write(key, fn.GetFullPath());
+			}
+			return false;
+
+		default:
+			wxFAIL_MSG(wxT("Unknown TristateMode"));
+			return false;
 
 	}
 
@@ -195,56 +265,39 @@ wxString Config::GetLogDirKey() const
 	return m_path+wxT("/Log Directory");
 }
 
-Config::LogDirType Config::GetLogDirType() const
+wxString Config::GetActualLogDir() const
 {
-	if (m_config->Exists(GetLogDirKey()))
+	if (GetLogDirType() == tsmDefault)
 	{
-		if (GetLogDirPath().Length())
-		{
-			return ldtCustom;
-		}
-		else
-		{
-			return ldtNone;
-		}
+		wxFileName cfg(GetConfigFilename());
+		wxFileName fn(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), wxT(""));
+		fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
+		return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
 	}
 	else
 	{
-		return ldtDefault;
+		return GetTristateString(GetLogDirKey(), true);
 	}
+}
+
+Config::TristateMode Config::GetLogDirType() const
+{
+	return GetTristateMode(GetLogDirKey());
 }
 
 wxString Config::GetLogDirPath() const
 {
-	return m_config->Read(GetLogDirKey());
+	return GetTristate(GetLogDirKey());
 }
 
-bool Config::SetLogDir(LogDirType type, const wxString &dir)
+bool Config::SetLogDir(TristateMode type, const wxString &dir)
 {
-
-	switch (type)
+	if (type == tsmCustom)
 	{
-
-		case ldtNone:
-			return m_config->Write(GetLogDirKey(), wxEmptyString);
-
-		case ldtDefault:
-			return m_config->DeleteEntry(GetLogDirKey());
-
-		case ldtCustom:
-			if (dir.Length())
-			{
-				wxFileName fn(dir, wxEmptyString);
-				wxFileName cfg(GetConfigFilename());
-				fn.MakeRelativeTo(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
-				return m_config->Write(GetLogDirKey(), fn.GetFullPath());
-			}
+		if (!wxFileName(dir).DirExists())
+		{
 			return false;
-
-		default:
-			wxFAIL_MSG(wxT("Unknown LogDirType"));
-			return false;
-
+		}
 	}
-
+	return SetTristate(GetLogDirKey(), type, dir, true);
 }

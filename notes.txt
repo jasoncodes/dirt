@@ -1,12 +1,19 @@
-* on large LogControl, sometimes there's an off by one on the scroll and causes fake dupe line
+* force full line selection if holding control when highlighting in logcontrol
 
 * options dialog
-	* auto close transfers on complete
-	* auto close transfers on cancel
-	* auto close transfers on fail
-	* client log file options (none, default, custom)
-	* auto accept to <dir> (w/ checkbox for append nickname)
-	* sound to play on msg recv when not focused (none, default, custom)
+	file transfers
+		auto close on complete
+			[x] send [x] receive
+		auto close on remote cancel
+			[x] send [x] receive
+		auto close on fail
+			[x] send [x] receive
+		auto accept
+			directory with browse button
+			[x] append nickname to path
+	logging
+		( ) none, (*) default, ( ) custom
+		directory with browse button
 
 * server log file options in config dialog
 

@@ -18,11 +18,11 @@ class Config
 
 public:
 
-	enum LogDirType
+	enum TristateMode
 	{
-		ldtNone,
-		ldtDefault,
-		ldtCustom
+		tsmNone,
+		tsmDefault,
+		tsmCustom
 	};
 
 	Config(const wxString &path);
@@ -34,14 +34,19 @@ public:
 	virtual bool ResetToDefaults();
 
 	virtual wxString GetActualLogDir() const;
-	virtual LogDirType GetLogDirType() const;
+	virtual TristateMode GetLogDirType() const;
 	virtual wxString GetLogDirPath() const;
-	virtual bool SetLogDir(LogDirType type, const wxString &dir);
+	virtual bool SetLogDir(TristateMode type, const wxString &dir);
 
 protected:
 	virtual wxString GetPassword(const wxString &key, bool decrypt) const;
 	virtual bool SetPassword(const wxString &key, const wxString &password);
 	virtual wxString GetLogDirKey() const;
+
+	virtual wxString GetTristateString(const wxString &key, bool is_dir) const;
+	virtual TristateMode GetTristateMode(const wxString &key) const;
+	virtual wxString GetTristate(const wxString &key) const;
+	virtual bool SetTristate(const wxString &key, TristateMode type, const wxString &path, bool is_dir);
 
 protected:
 	ConfigFile *m_config;

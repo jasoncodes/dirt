@@ -4,6 +4,7 @@
 #include "SwitchBarParent.h"
 #include "Client.h"
 #include <wx/datetime.h>
+#include <wx/wave.h>
 
 class ClientUIMDICanvas;
 class NickListControl;
@@ -29,6 +30,7 @@ public:
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
+	void OnToolsOptions(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusTimer(wxTimerEvent &event);
 	void OnActivate(wxActivateEvent &event);
@@ -89,6 +91,9 @@ protected:
 	bool m_tray_auto_restore;
 	wxDateTime m_log_date;
 	bool m_log_date_okay;
+	#if wxUSE_WAVE
+		wxWave m_wave;
+	#endif
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
 	ClientUIMDITransferPanel* GetContext(const long transferid);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.115 2003-05-16 16:13:01 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.116 2003-05-19 13:27:10 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -25,6 +25,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.115 2003-05-16 16:13:01 jason Exp $)
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDITransferResumeDialog.h"
+#include "ClientUIMDIConfigDialog.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -39,6 +40,7 @@ DECLARE_APP(DirtApp)
 enum
 {
 	ID_FILE_EXIT = 1,
+	ID_TOOLS_OPTIONS,
 	ID_HELP_ABOUT,
 	ID_FOCUSTIMER,
 	ID_TRAY,
@@ -61,6 +63,7 @@ enum
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
+	EVT_MENU(ID_TOOLS_OPTIONS, ClientUIMDIFrame::OnToolsOptions)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
@@ -93,8 +96,12 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"), wxT("Quit the program"));
+	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"));
 	mnu->Append(mnuFile, wxT("&File"));
+
+	wxMenu *mnuTools = new wxMenu;
+	mnuTools->Append(ID_TOOLS_OPTIONS, wxT("&Options..."));
+	mnu->Append(mnuTools, wxT("&Tools"));
 
 	mnu->Append(GetWindowMenu(), wxT("&Window"));
 
@@ -240,6 +247,11 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 {
 	Close();
+}
+
+void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent& event)
+{
+	ClientUIMDIConfigDialog dlg(this);
 }
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
@@ -430,10 +442,44 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	
 		if (bAlert)
 		{
+
 			if (!m_client->GetContactSelf() || !m_client->GetContactSelf()->IsAway())
 			{
-				wxBell();
+
+				ClientConfig &config = m_client->GetConfig();
+
+				switch (config.GetSoundType())
+				{
+
+					case Config::tsmDefault:
+						wxBell();
+						break;
+
+					case Config::tsmCustom:
+						{
+							#if wxUSE_WAVE
+								wxString filename = config.GetActualSoundFile();
+								if (wxFileName(filename).FileExists())
+								{
+									m_wave.Create(filename, false);
+									if (m_wave.IsOk() && m_wave.Play())
+									{
+										break;
+									}
+								}
+							#endif
+							wxBell();
+						}
+						break;
+
+					case Config::tsmNone:
+					default:
+						break;
+
+				}
+
 			}
+
 		}
 		
 		if (bFlashWindow)
