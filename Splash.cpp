@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.5 2003-02-13 17:39:38 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.6 2003-02-14 01:57:44 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -28,19 +28,51 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 	EVT_BUTTON(ID_CLIENT, Splash::OnClient)
 END_EVENT_TABLE()
 
+// VC++ is broken
+#define for if(true)for
+
 Splash::Splash()
 	: wxFrame(NULL, -1, "Dirt Secure Chat " + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU)
 {
+
 	SetIcon(wxIcon( dirt_xpm ));
-	wxButton *cmdClient = new wxButton(this, ID_CLIENT, "&Client", wxPoint(32, 140));
-	wxButton *cmdServer = new wxButton(this, ID_SERVER, "&Server", wxPoint(128, 140));
+
+	const int pos_y = 140;
+	const int gap_x = 16;
+	const int gap_y = 16;
+
+	wxButton *btns[2];
+	const int btn_count = 2;
+
+	btns[0] = new wxButton(this, ID_CLIENT, "&Client");
+	btns[1] = new wxButton(this, ID_SERVER, "&Server");
+
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
 	wxImage img(is, wxBITMAP_TYPE_ANY);
 	m_bmp = new wxBitmap(img);
-	SetClientSize(m_bmp->GetWidth(), cmdClient->GetRect().GetBottom() + 16);
+
+	int btn_width = 0;
+	
+	for (int i = 0; i < btn_count; ++i)
+	{
+		btn_width = wxMax(btns[i]->GetSize().x, btn_width);
+	}
+	
+	int total_width = (btn_width * btn_count) + (gap_x * (btn_count - 1));
+	int start_pos = (m_bmp->GetWidth() - total_width) / 2;
+	
+	for (int i = 0; i < btn_count; ++i)
+	{
+		btns[i]->SetSize(start_pos + ((btn_width + gap_x) * i), pos_y, btn_width, -1);
+	}
+
+	SetClientSize(m_bmp->GetWidth(), btns[0]->GetRect().GetBottom() + gap_y);
+
 	CentreOnScreen();
+
 	Show();
+
 }
 
 Splash::~Splash()
