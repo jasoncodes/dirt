@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.84 2004-03-14 00:21:33 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.85 2004-03-15 07:23:25 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -419,7 +419,7 @@ wxString AppTitle(const wxString &suffix)
 {
 	return
 		wxT("Dirt Secure Chat") +
-		(suffix.Length() ? (wxT(" ") + suffix + wxT(" ")) : wxT(" ")) +
+		(suffix.Length() ? (wxT(" ") + suffix + wxT(" ")) : wxString(wxT(" "))) +
 		GetProductVersion();
 }
 
