@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.26 2003-02-20 06:42:02 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.27 2003-02-20 07:43:24 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -359,10 +359,7 @@ bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, Byte
 		data = tmp.Item(2);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y)

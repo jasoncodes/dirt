@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.6 2003-02-20 06:48:13 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.7 2003-02-20 07:43:24 jason Exp $)
 
 #include "Crypt.h"
 
@@ -359,9 +359,6 @@ ByteBuffer Crypt::MD5MACDigest(const ByteBuffer &key, const ByteBuffer &data)
 	try
 	{
 		mac.CalculateDigest(digest.Lock(), data.Lock(), data.Length());
-		digest.Unlock();
-		data.Unlock();
-		return digest;
 	}
 	catch (...)
 	{
@@ -369,6 +366,10 @@ ByteBuffer Crypt::MD5MACDigest(const ByteBuffer &key, const ByteBuffer &data)
 		data.Unlock();
 		throw;
 	}
+
+	digest.Unlock();
+	data.Unlock();
+	return digest;
 
 }
 
@@ -391,12 +392,10 @@ bool Crypt::MD5MACVerify(const ByteBuffer &key, const ByteBuffer &data, const By
 		throw;
 	}
 
+	bool match;
 	try
 	{
-		bool match = mac.VerifyDigest(digest.Lock(), data.Lock(), data.Length());
-		digest.Unlock();
-		data.Unlock();
-		return match;
+		match = mac.VerifyDigest(digest.Lock(), data.Lock(), data.Length());
 	}
 	catch (...)
 	{
@@ -404,5 +403,9 @@ bool Crypt::MD5MACVerify(const ByteBuffer &key, const ByteBuffer &data, const By
 		data.Unlock();
 		throw;
 	}
+
+	digest.Unlock();
+	data.Unlock();
+	return match;
 
 }
