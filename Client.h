@@ -7,6 +7,7 @@
 #include "util.h"
 #include <wx/confbase.h>
 #include <wx/fileconf.h>
+#include "ClientTimers.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 
@@ -97,9 +98,11 @@ public:
 	virtual FileTransfers* GetFileTransfers() const { return m_file_transfers; }
 	virtual wxArrayString GetSupportedCommands() const;
 	virtual ClientConfig& GetConfig() { return m_config; }
+	virtual ClientTimers& GetTimers() { return *m_timers; }
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);
+	void OnClientTimers(ClientTimersEvent &event);
 
 protected:
 	virtual void ProcessServerInput(const ByteBuffer &msg);
@@ -111,6 +114,7 @@ protected:
 protected:
 	ClientEventHandler *m_event_handler;
 	FileTransfers *m_file_transfers;
+	ClientTimers *m_timers;
 	wxString m_nickname;
 	wxString m_server_name;
 	wxTimer *m_tmrPing;

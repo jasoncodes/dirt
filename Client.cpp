@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.43 2003-04-01 10:11:00 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.44 2003-04-03 02:08:47 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -35,10 +35,12 @@ ClientConfig::~ClientConfig()
 enum
 {
 	ID_TIMER_PING = 100,
+	ID_TIMERS
 };
 
 BEGIN_EVENT_TABLE(Client, wxEvtHandler)
 	EVT_TIMER(ID_TIMER_PING, Client::OnTimerPing)
+	EVT_CLIENT_TIMERS(ID_TIMERS, Client::OnClientTimers)
 END_EVENT_TABLE()
 
 Client::Client(ClientEventHandler *event_handler)
@@ -48,10 +50,12 @@ Client::Client(ClientEventHandler *event_handler)
 	m_nickname = wxEmptyString;
 	m_server_name = wxEmptyString;
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
+	m_timers = new ClientTimers(this, ID_TIMERS);
 }
 
 Client::~Client()
 {
+	delete m_timers;
 	delete m_tmrPing;
 	delete m_file_transfers;
 }
@@ -64,7 +68,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME ME'S MSG MSGME MY NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -199,6 +203,243 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	else if (cmd == wxT("LIZARD"))
 	{
 		m_event_handler->OnClientInformation(context, wxT("Support for Lizard technology is not available at this time"));
+	}
+	else if (cmd == wxT("TIMER"))
+	{
+
+		if (params.Length() == 0)
+		{
+
+			m_event_handler->OnClientInformation(context, wxT("Timer help:"));
+			m_event_handler->OnClientInformation(context, wxT("    /timers"));
+			m_event_handler->OnClientInformation(context, wxT("      Lists active timers"));
+			m_event_handler->OnClientInformation(context, wxT("    /timers off"));
+			m_event_handler->OnClientInformation(context, wxT("      Halts all timers"));
+			m_event_handler->OnClientInformation(context, wxT("    /timer id"));
+			m_event_handler->OnClientInformation(context, wxT("      Lists information about timer called id"));
+			m_event_handler->OnClientInformation(context, wxT("    /timer id [start] times delay commands"));
+			m_event_handler->OnClientInformation(context, wxT("      Sets a timer called id that executes <commands>, <times> times (0 for unlimited), every <delay> seconds, starting at <start> (or immediately if <start> is ommited)"));
+
+		}
+		else
+		{
+
+			HeadTail ht = SplitQuotedHeadTail(params);
+			wxString id = ht.head;
+			params = ht.tail;
+
+			if (ht.tail.Length() == 0)
+			{
+
+				const ClientTimer *tmr = m_timers->Item(id);
+
+				if (tmr)
+				{
+
+					m_event_handler->OnClientInformation(context, wxT("Timer ") + tmr->GetName() + wxT(" information:"));
+
+					wxString msg;
+					
+					msg.Empty();
+					msg << wxT("    Context:     ") << (tmr->GetContext().Length() ? tmr->GetContext() : wxT("(None)"));
+					m_event_handler->OnClientInformation(context, msg);
+
+					msg.Empty();
+					msg << wxT("    Start Time:  ");
+					if (tmr->GetStartTime().IsValid())
+					{
+						if ((tmr->GetStartTime() - wxDateTime::Now()).Abs() > wxTimeSpan::Day())
+						{
+							msg << tmr->GetStartTime().Format(wxT("%Y/%m/%d %H:%M:%S"));
+						}
+						else
+						{
+							msg << tmr->GetStartTime().Format(wxT("%H:%M:%S"));
+						}
+					}
+					else
+					{
+						msg << wxT("N/A");
+					}
+					m_event_handler->OnClientInformation(context, msg);
+
+					msg.Empty();
+					msg << wxT("    Interval:    ");
+					if (tmr->GetInterval() % 1000)
+					{
+						msg << AddCommas((off_t)(tmr->GetInterval())) << wxT(" msec(s)");
+					}
+					else
+					{
+						msg << AddCommas((off_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
+					}
+					m_event_handler->OnClientInformation(context, msg);
+
+					msg.Empty();
+					msg << wxT("    Next Update: ");
+					if (tmr->GetNextTick())
+					{
+						msg << AddCommas((off_t)((tmr->GetNextTick() - GetMillisecondTicks())/1000)) << wxT(" sec(s)");
+					}
+					else
+					{
+						msg << wxT("N/A");
+					}
+					m_event_handler->OnClientInformation(context, msg);
+
+					msg.Empty();
+					msg << wxT("    Times Left:  ");
+					if (tmr->GetTimesRemaining() >= 0)
+					{
+						msg << tmr->GetTimesRemaining();
+					}
+					else
+					{
+						msg << wxT("Infinite");
+					}
+					m_event_handler->OnClientInformation(context, msg);
+
+					msg.Empty();
+					msg << wxT("    Command(s):  ") << tmr->GetCommands();
+					m_event_handler->OnClientInformation(context, msg);
+
+				}
+				else
+				{
+					m_event_handler->OnClientInformation(context, wxT("No such timer: ") + id);
+				}
+
+			}
+			else if (params.CmpNoCase(wxT("off")) == 0)
+			{
+
+				if (!m_timers->Remove(id))
+				{
+					m_event_handler->OnClientInformation(context, wxT("No such timer: ") + id);
+				}
+
+			}
+			else
+			{
+
+				ht = SplitQuotedHeadTail(params);
+
+				wxDateTime start_time = ParseDateTime(ht.head, true);
+
+				if (start_time.IsValid())
+				{
+					if (start_time < wxDateTime::Now())
+					{
+						m_event_handler->OnClientWarning(context, wxString() << wxT("Start time must be in the future"));
+						return;
+					}
+					ht = SplitQuotedHeadTail(ht.tail);
+				}
+
+				long times;
+				
+				if (!ht.head.ToLong(&times) || times < 0)
+				{
+					m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid number of times (or optional start time)"));
+					return;
+				}
+
+				if (times <= 0)
+				{
+					times = -1;
+				}
+
+				ht = SplitQuotedHeadTail(ht.tail);
+
+				double interval_secs;
+
+				if (!ht.head.ToDouble(&interval_secs) || interval_secs <= 0)
+				{
+					m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid interval"));
+					return;
+				}
+
+				wxLongLong_t interval_msecs = interval_secs * 1000;
+
+				wxString commands = ht.tail;
+
+				if (!commands.Length())
+				{
+					m_event_handler->OnClientWarning(context, wxString() << wxT("You must specify a list of commands to execute"));
+					return;
+				}
+
+				if (!m_timers->Add(id, context, commands, start_time, interval_msecs, times))
+				{
+					m_event_handler->OnClientWarning(context, wxString() << wxT("Error starting timer"));
+					return;
+				}
+
+			}
+
+		}
+	}
+	else if (cmd == wxT("TIMERS"))
+	{
+		if (params.CmpNoCase(wxT("off")) == 0)
+		{
+			if (m_timers->Clear())
+			{
+				m_event_handler->OnClientInformation(context, wxT("All timers halted"));
+			}
+			else
+			{
+				m_event_handler->OnClientInformation(context, wxT("No active timers"));
+			}
+		}
+		else
+		{
+			if (m_timers->GetCount())
+			{
+				m_event_handler->OnClientInformation(context, wxT("Active timers:"));
+				for (size_t i = 0; i < m_timers->GetCount(); ++i)
+				{
+					const ClientTimer *tmr = m_timers->Item(i);
+					wxString msg;
+					msg << wxT("    ") << tmr->GetName() << wxT(": ");
+					if (tmr->GetStartTime().IsValid())
+					{
+						msg << wxT("Starting ");
+						if ((tmr->GetStartTime() - wxDateTime::Now()).Abs() > wxTimeSpan::Day())
+						{
+							msg << tmr->GetStartTime().Format(wxT("%Y/%m/%d %H:%M:%S"));
+						}
+						else
+						{
+							msg << tmr->GetStartTime().Format(wxT("%H:%M:%S"));
+						}
+						msg << wxT(", ");
+					}
+					if (tmr->GetInterval() % 1000)
+					{
+						msg << AddCommas((off_t)tmr->GetInterval()) << wxT(" msec(s)");
+					}
+					else
+					{
+						msg << AddCommas((off_t)(tmr->GetInterval()/1000)) << wxT(" sec(s)");
+					}
+					if (tmr->GetTimesRemaining() >= 0)
+					{
+						msg << wxT(", ") << tmr->GetTimesRemaining() << wxT(" time(s) left");
+					}
+					if (tmr->GetNextTick())
+					{
+						msg << wxT(", next in ") << AddCommas((off_t)(tmr->GetNextTick() - GetMillisecondTicks())) << wxT(" sec(s)");
+					}
+					msg << wxT(": ") << tmr->GetCommands();
+					m_event_handler->OnClientInformation(context, msg);
+				}
+			}
+			else
+			{
+				m_event_handler->OnClientInformation(context, wxT("No active timers"));
+			}
+		}
 	}
 	else if (cmd == wxT("ALIAS") || cmd == wxT("BIND"))
 	{
@@ -765,4 +1006,10 @@ bool Client::SetBinding(const wxString &name, const wxString &value)
 	{
 		return true;
 	}
+}
+
+void Client::OnClientTimers(ClientTimersEvent &event)
+{
+	const ClientTimer &timer = event.GetTimer();
+	ProcessAlias(timer.GetContext(), timer.GetCommands(), wxEmptyString);
 }

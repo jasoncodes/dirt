@@ -63,5 +63,3 @@
 * add CTCP PING
 
 * /alias ping /ctcp $1 ping
-
-* /timer

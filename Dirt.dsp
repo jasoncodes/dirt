@@ -245,6 +245,14 @@ SOURCE=.\ClientDefault.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientTimers.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientTimers.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ClientUIConsole.cpp
 # End Source File
 # Begin Source File
