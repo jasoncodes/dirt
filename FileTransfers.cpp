@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.57 2003-08-14 06:12:06 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.58 2003-08-14 06:52:35 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -21,6 +21,7 @@ RCS_ID($Id: FileTransfers.cpp,v 1.57 2003-08-14 06:12:06 jason Exp $)
 #include "File.h"
 
 static const wxLongLong_t max_unack_count = 128 * 1024;
+static const off_t max_block_size = 2 * 1024;
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(FileTransferArray);
@@ -1258,7 +1259,6 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 
 		if (sck->Ok() && !sck->IsSendBufferFull() && (t.m_pos < t.filesize || first_time))
 		{
-			const off_t max_block_size = 2048;
 			off_t block_size = wxMin(t.filesize - t.m_pos, max_block_size);
 			wxASSERT(block_size > 0 || first_time);
 			ByteBuffer buff(block_size);

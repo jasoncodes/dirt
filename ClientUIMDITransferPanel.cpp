@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.29 2003-08-14 06:12:06 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.30 2003-08-14 06:52:35 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -485,7 +485,7 @@ void ClientUIMDITransferPanel::UpdateSentLabel()
 	str = SizeToLongString(m_filesent);
 	if (m_unack)
 	{
-		str << wxT(" (choke: ") << SizeToString(m_unack) << wxT(")");
+		str << wxT(" (unack: ") << SizeToString(m_unack) << wxT(")");
 	}
 	m_lblSent->SetLabel(str);
 }
