@@ -25,6 +25,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
+	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -32,6 +33,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 		wxPoint(-1, -1), wxSize(500, 400),
 		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL)
 {
+
+	m_focused = true;
 
 	SetIcon(wxIcon( dirt_xpm ));
 
@@ -84,14 +87,21 @@ ClientUIMDIFrame::~ClientUIMDIFrame()
 	delete m_client;
 }
 
+void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
+{
+	AddLine(wxEmptyString, wxString() << "Got activate event: " << event.GetActive());
+	m_focused = event.GetActive();
+}
+
 bool ClientUIMDIFrame::IsFocused()
 {
-	wxWindow *wnd = ::wxGetActiveWindow();
+/*	wxWindow *wnd = ::wxGetActiveWindow();
 	while (wnd && wnd->GetParent())
 	{
 		wnd = wnd->GetParent();
 	}
-	return wnd == this;
+	return wnd == this;*/
+	return m_focused;
 }
 
 void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
@@ -165,6 +175,11 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 			if (::GetForegroundWindow() != hWnd)
 			{
 				::FlashWindow(hWnd, TRUE);
+				bAlert = true;
+			}
+		#else
+			if (!IsFocused())
+			{
 				bAlert = true;
 			}
 		#endif
