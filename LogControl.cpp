@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.72 2004-06-26 06:07:14 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.73 2004-06-27 06:34:33 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1886,8 +1886,9 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 			if (url.Length() > 0)
 			{
+				const wxString extra_chars_to_remove = wxT(".,?!");
 				wxString extra_chars;
-				while (token.Right(1) == wxT('.') || token.Right(1) == wxT('?') || token.Right(1) == wxT('!'))
+				while (extra_chars_to_remove.Find(token.Right(1)) > -1)
 				{
 					extra_chars = token.Right(1) + extra_chars;
 					token = token.Left(token.Length() - 1);
