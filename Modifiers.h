@@ -53,55 +53,57 @@ const ModifierMapping modifier_mappings[] =
 	{ true,  false, false, 'K', ColourModifier,    wxT("\244"),  true  }
 };
 
+#define CLR_LONG(red, green, blue) (red + (green<<8) + (blue<<16))
+
 const size_t modifier_count = ((sizeof modifier_mappings) / (sizeof modifier_mappings[0]));
 
-const wxColour colours[] =
+const long colours[] =
 {
 
-	wxColour(255, 255, 255),
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   128),
-	wxColour(0,   128, 0),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   128),
+	CLR_LONG(0,   128, 0),
 
-	wxColour(255, 0,   0),
-	wxColour(128, 0,   0),
-	wxColour(128, 0,   128),
-	wxColour(255, 128, 0),
+	CLR_LONG(255, 0,   0),
+	CLR_LONG(128, 0,   0),
+	CLR_LONG(128, 0,   128),
+	CLR_LONG(255, 128, 0),
 
-	wxColour(255, 255, 0),
-	wxColour(0,   255, 0),
-	wxColour(0,   128, 128),
-	wxColour(0,   255, 255),
+	CLR_LONG(255, 255, 0),
+	CLR_LONG(0,   255, 0),
+	CLR_LONG(0,   128, 128),
+	CLR_LONG(0,   255, 255),
 
-	wxColour(0,   0,   255),
-	wxColour(255, 0,   255),
-	wxColour(128, 128, 128),
-	wxColour(192, 192, 192)
+	CLR_LONG(0,   0,   255),
+	CLR_LONG(255, 0,   255),
+	CLR_LONG(128, 128, 128),
+	CLR_LONG(192, 192, 192)
 
 };
 
-const wxColour colour_backgrounds[] =
+const long colour_backgrounds[] =
 {
 
-	wxColour(0,   0,   0),
-	wxColour(255, 255, 255),
-	wxColour(255, 255, 255),
-	wxColour(255, 255, 255),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(255, 255, 255),
 
-	wxColour(255, 255, 255),
-	wxColour(255, 255, 255),
-	wxColour(255, 255, 255),
-	wxColour(255, 255, 255),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(255, 255, 255),
+	CLR_LONG(255, 255, 255),
 
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0),
 
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0),
-	wxColour(0,   0,   0)
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0),
+	CLR_LONG(0,   0,   0)
 
 };
 

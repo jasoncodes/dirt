@@ -28,11 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogViewerFrame.cpp,v 1.26 2004-05-23 10:35:21 jason Exp $)
+RCS_ID($Id: LogViewerFrame.cpp,v 1.27 2004-07-19 09:35:35 jason Exp $)
 
 #include "LogViewerFrame.h"
 #include "LogReader.h"
-#include "util.h"
+#include "utilgui.h"
 #include <wx/progdlg.h>
 #include <wx/dir.h>
 #include "Dirt.h"

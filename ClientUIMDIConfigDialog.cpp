@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.27 2004-06-25 12:33:26 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.28 2004-07-19 09:35:35 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -39,6 +39,7 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.27 2004-06-25 12:33:26 jason Exp $)
 #include "HotKeyControl.h"
 #include <wx/notebook.h>
 #include "FontControl.h"
+#include "utilgui.h"
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
 static const wxString tray_icon_options[] = { wxT("Flash"), wxT("Always Image"), wxT("Always Blank") };

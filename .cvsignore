@@ -18,4 +18,5 @@ Makefile.win
 DirtGTK.tar.bz2
 Makefile.config
 Dirt.kdevelop.pcs
+dirtlogs.cgi
 

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.17 2004-05-16 04:42:46 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.18 2004-07-19 09:35:35 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -302,7 +302,7 @@ wxString LogReader::GetText()
 	return wxEmptyString;
 }
 
-wxColour LogReader::GetTextColour()
+long LogReader::GetTextColour()
 {
 	ByteBuffer buff = GetTextHelper();
 	if (buff.Length() > 4)
@@ -312,19 +312,19 @@ wxColour LogReader::GetTextColour()
 		if (data_len+4 > buff.Length())
 		{
 			buff.Unlock();
-			return wxColour();
+			return 0;
 		}
 		ByteBuffer data(ptr + 2, data_len);
 		buff.Unlock();
 		if (data_len >= 3)
 		{
 			ptr = data.LockRead();
-			wxColour colour(ptr[0], ptr[1], ptr[2]);
+			long clr = CLR_LONG(ptr[0], ptr[1], ptr[2]);
 			data.Unlock();
-			return colour;
+			return clr;
 		}
 	}
-	return wxColour();
+	return 0;
 }
 
 bool LogReader::GetTextConvertURLs()

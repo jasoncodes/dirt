@@ -28,10 +28,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.19 2004-05-16 04:42:47 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.20 2004-07-19 09:35:35 jason Exp $)
 
 #include "NickListControl.h"
-#include "util.h"
+#include "utilgui.h"
 
 #ifdef __WXMSW__
 #include <windows.h>

@@ -28,10 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.4 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.5 2004-07-19 09:35:35 jason Exp $)
 
 #include "ClientUIMDIPasswordManagerDialog.h"
 #include "ClientUIMDIFrame.h"
+#include "utilgui.h"
 
 class ClientUIMDIPasswordManagerAddDialog : public wxDialog
 {

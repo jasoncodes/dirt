@@ -28,13 +28,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.31 2004-06-11 13:52:17 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.32 2004-07-19 09:35:35 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
 #include "Modifiers.h"
 #include <wx/minifram.h>
-#include "util.h"
+#include "utilgui.h"
 #ifdef __WXMSW__
 	#include <windows.h>
 	#include <wx/msw/winundef.h>

@@ -28,7 +28,7 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.1 2004-07-18 18:28:57 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.2 2004-07-19 09:35:35 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
@@ -102,11 +102,11 @@ protected:
 
 };
 
-wxString ColourToString(const wxColour &clr)
+wxString ColourToString(int red, int green, int blue)
 {
 	return wxString::Format(
 		wxT("#%02x%02x%02x"),
-		clr.Red(), clr.Green(), clr.Blue());
+		red, green, blue);
 }
 
 wxString ColourToString(int colour_number)

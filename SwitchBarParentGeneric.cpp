@@ -28,13 +28,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.5 2004-06-14 01:46:47 jason Exp $)
+RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.6 2004-07-19 09:35:35 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
 #if !NATIVE_MDI
 
-#include "util.h"
+#include "utilgui.h"
 
 BEGIN_EVENT_TABLE(SwitchBarParent, wxFrame)
 	EVT_SIZE(SwitchBarParent::OnSize)

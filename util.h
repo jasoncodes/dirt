@@ -27,7 +27,6 @@
 #define for if(true)for
 
 #include "ByteBuffer.h"
-class wxHtmlWinParser;
 class wxDateTime;
 class wxConfigBase;
 
@@ -58,7 +57,6 @@ wxString StripQuotes(const wxString &text);
 wxString GetLongTimestamp();
 wxString GetShortTimestamp();
 wxString FormatISODateTime(const wxDateTime &datetime);
-void FixBorder(wxWindow *wnd);
 wxString AddCommas(wxLongLong_t size);
 wxString AddCommas(double size);
 wxString SizeToString(wxLongLong_t size);
@@ -71,7 +69,6 @@ wxUint32 BytesToUint32(const byte *data, int len);
 ByteBuffer Uint16ToBytes(wxUint16 num);
 wxUint16 BytesToUint16(const byte *data, int len);
 wxString AppTitle(const wxString &suffix = wxEmptyString);
-void ShowAbout(wxWindow *parent);
 ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data);
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y);
@@ -89,20 +86,10 @@ ByteBufferHashMap UnpackByteBufferHashMap(const ByteBuffer &packed_hashmap);
 const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, size_t lookfor_len);
 wxLongLong_t GetMillisecondTicks();
 wxString GetPublicListURL();
-bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
-bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error = true);
-bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error = true);
-bool OpenExternalResource(wxWindow *parent, const wxString &name, bool show_error = true);
-void ForceForegroundWindow(wxFrame *frm);
-void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized);
-void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show = false);
-void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString);
-void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString, bool show = false, bool default_maximized = false);
 wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future = false);
 wxString GetSelf();
 bool StringToLongLong(const wxString &str, wxLongLong_t *x);
 bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x);
-bool SetDefaultMenuItem(wxMenu &mnu, int id);
 wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value, const wxString &new_value);
 wxString GetOSDescription();
 void DebugMsg(const wxString &msg);

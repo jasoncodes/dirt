@@ -28,11 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.33 2004-05-22 18:27:31 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.34 2004-07-19 09:35:35 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
-#include "util.h"
+#include "utilgui.h"
 #include <wx/filename.h>
 #include "FileTransfer.h"
 #include "FileTransfers.h"

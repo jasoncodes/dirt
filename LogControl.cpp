@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.74 2004-07-18 18:28:57 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.75 2004-07-19 09:35:35 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -36,7 +36,7 @@ RCS_ID($Id: LogControl.cpp,v 1.74 2004-07-18 18:28:57 jason Exp $)
 #include <wx/tokenzr.h>
 #include <ctype.h>
 #include <wx/clipbrd.h>
-#include "util.h"
+#include "utilgui.h"
 #include "Dirt.h"
 #include "LogControl.h"
 #include "SpanTag.h"

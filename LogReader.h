@@ -29,6 +29,7 @@
 #include "Log.h"
 #include "Crypt.h"
 #include "util.h"
+#include "Modifiers.h"
 
 class LogReader
 {
@@ -56,7 +57,7 @@ public:
 	virtual LogEntryType GetNext();
 
 	virtual wxString GetText();
-	virtual wxColour GetTextColour();
+	virtual long GetTextColour();
 	virtual bool GetTextConvertURLs();
 
 protected:

@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-
-
+    
+    
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -20,20 +20,36 @@
 */
 
 
-#ifndef TextTools_H_
-#define TextTools_H_
-
-wxString FormatTextAsHtml(const wxString &text);
-wxString ConvertUrlsToLinks(const wxString &text);
-wxString ConvertModifiersIntoHtml(const wxString &text, bool strip_mode);
-bool IsEmail(const wxString &token);
-wxString ColourToString(int red, int green, int blue);
-wxString ColourToString(int colour_number);
-
-inline wxString ColourToString(const wxColour &clr)
-{
-	return ColourToString(clr.Red(), clr.Green(), clr.Blue());
-}
-
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
 #endif
+#ifndef WX_PRECOMP
+	#include "wx/wx.h"
+#endif
+#include "RCS.h"
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.1 2004-07-19 09:35:35 jason Exp $)
 
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv)
+{
+
+	puts("Content-Type: text/html; charset=utf-8");
+	puts("");
+
+	wxApp::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
+
+	wxInitializer initializer;
+	if ( !initializer )
+	{
+		fprintf(stderr, "Error initializing wxWidgets");
+		return EXIT_FAILURE;
+	}
+
+	puts("Testing");
+	
+	return EXIT_SUCCESS;
+	
+}

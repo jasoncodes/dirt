@@ -46,7 +46,8 @@ CXXFLAGS = \
 		$(COMPILE_FLAGS) `$(WXCONFIG) --cxxflags` \
 		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
 	)
-LINK_FLAGS = `$(WXCONFIG) --libs`
+LINK_FLAGS_GUI = `$(WXCONFIG) --libs`
+LINK_FLAGS_CLI = `$(WXCONFIG) --libs=base`
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS = \
@@ -60,7 +61,10 @@ OBJECTS = \
 	ServerUIConsole.o ServerUIFrame.o ServerUIFrameConfig.o SpanTag.o Splash.o StaticCheckBoxSizer.o \
 	SwitchBar.o SwitchBarCanvas.o SwitchBarChild.o SwitchBarChildGeneric.o SwitchBarParent.o \
 	SwitchBarParentGeneric.o TrayIcon.o TristateConfigPanel.o URL.o util.o crypto/libcryptopp.a \
-	TextTools.o
+	TextTools.o utilgui.o
+
+OBJECTS_DIRTLOGS_CGI = \
+	DirtLogsCGI.o TextTools.o RCS.o LogReader.o ByteBuffer.o util.o Crypt.o crypto/libcryptopp.a
 
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
 DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
@@ -73,7 +77,7 @@ ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
 	EXTRA_CLEAN = Dirt.res
 endif
 
-dirt : Dirt$(BINARY_SUFFIX)
+dirt : Dirt$(BINARY_SUFFIX) dirtlogs.cgi
 ifneq ($(DIRT_EXE_PERMS),xxx)
 	chmod +x dirt
 endif
@@ -101,9 +105,13 @@ all: clean dirt
 -include $(SOURCES:.cpp=.d)
 
 Dirt$(BINARY_SUFFIX): $(OBJECTS)
-	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS)
+	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS_GUI)
 	$(STRIP) Dirt$(BINARY_SUFFIX)
 	$(EXTRA_POST_LINK_CMD)
+
+dirtlogs.cgi: $(OBJECTS_DIRTLOGS_CGI)
+	$(CC) -o dirtlogs.cgi $(OBJECTS_DIRTLOGS_CGI) $(LINK_FLAGS_CLI)
+	$(STRIP) dirtlogs.cgi
 
 Dirt.res: Dirt.rc
 	$(WINDRES) $(WINDRES_FLAGS) -i Dirt.rc -J rc -o Dirt.res -O coff

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.60 2004-05-16 04:42:45 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.61 2004-07-19 09:35:35 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -38,6 +38,7 @@ RCS_ID($Id: FileTransfers.cpp,v 1.60 2004-05-16 04:42:45 jason Exp $)
 #include "URL.h"
 #include "CryptSocket.h"
 #include "CryptSocketProxy.h"
+#include "utilgui.h"
 
 #include <wx/filename.h>
 #include "File.h"

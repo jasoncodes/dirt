@@ -28,10 +28,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.10 2004-05-31 11:11:00 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.11 2004-07-19 09:35:35 jason Exp $)
 
 #include "LanListFrame.h"
-#include "util.h"
+#include "utilgui.h"
 #include "BroadcastSocket.h"
 
 #include "res/dirt.xpm"

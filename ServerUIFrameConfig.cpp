@@ -28,13 +28,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.51 2004-05-30 12:46:41 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.52 2004-07-19 09:35:35 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
 #include "StaticCheckBoxSizer.h"
+#include "utilgui.h"
 
 #include "res/sound.xpm"
 #include "res/sound_disabled.xpm"

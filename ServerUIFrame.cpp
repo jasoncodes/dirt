@@ -28,14 +28,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.66 2004-07-18 18:28:57 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.67 2004-07-19 09:35:35 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
 #include "ServerDefault.h"
 #include "TextTools.h"
 #include "InputControl.h"
-#include "util.h"
+#include "utilgui.h"
 #include "TrayIcon.h"
 #ifdef __WXMSW__
 	#include <windows.h>

@@ -28,13 +28,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.158 2004-07-08 09:10:38 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.159 2004-07-19 09:35:35 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
 #include "ClientUIMDICanvas.h"
 #include "ClientDefault.h"
-#include "util.h"
+#include "utilgui.h"
 #include "NickListControl.h"
 #include "Modifiers.h"
 #include "FileTransfer.h"
