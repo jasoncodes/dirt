@@ -38,23 +38,23 @@ const wxColour colours[] =
 
 	wxColour(255, 255, 255),
 	wxColour(0,   0,   0),
-	wxColour(0,   0,   127),
-	wxColour(0,   147, 0),
+	wxColour(0,   0,   128),
+	wxColour(0,   128, 0),
 
 	wxColour(255, 0,   0),
-	wxColour(127, 0,   0),
-	wxColour(156, 0,   156),
-	wxColour(252, 127, 0),
+	wxColour(128, 0,   0),
+	wxColour(128, 0,   128),
+	wxColour(255, 128, 0),
 
 	wxColour(255, 255, 0),
-	wxColour(0,   252, 0),
-	wxColour(0,   147, 147),
+	wxColour(0,   255, 0),
+	wxColour(0,   128, 128),
 	wxColour(0,   255, 255),
 
-	wxColour(0,   0,   252),
+	wxColour(0,   0,   255),
 	wxColour(255, 0,   255),
-	wxColour(127, 127, 127),
-	wxColour(210, 210, 210)
+	wxColour(128, 128, 128),
+	wxColour(192, 192, 192)
 
 };
 
