@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.137 2003-08-22 17:29:08 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.138 2003-08-26 05:51:58 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -1402,33 +1402,33 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer, bool
 void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 {
 
-	if (m_client->GetConfig().GetFileTransferStatus())
+	bool bAlert;
+	switch (transfer.state)
 	{
 
-		bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
-		
-		wxColour colour = bIsError ? *wxRED : wxColour(0,0,128);
-		
-		bool bAlert;
-		switch (transfer.state)
-		{
+		case ftsSendComplete:
+		case ftsSendFail:
+		case ftsGetPending:
+		case ftsGetComplete:
+		case ftsGetFail:
+			bAlert = true;
+			break;
 
-			case ftsSendComplete:
-			case ftsSendFail:
-			case ftsGetPending:
-			case ftsGetComplete:
-			case ftsGetFail:
-				bAlert = true;
-				break;
+		default:
+			bAlert = false;
+			break;
 
-			default:
-				bAlert = false;
-				break;
+	}
 
-		}
+	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
+	
+	wxColour colour = bIsError ? *wxRED : wxColour(0,0,128);
+	
+	wxString text;
+	text << wxT("*** ") << transfer.GetPrefixString() << transfer.status;
 
-		wxString text;
-		text << wxT("*** ") << transfer.GetPrefixString() << transfer.status;
+	if (m_client->GetConfig().GetFileTransferStatus())
+	{
 
 		AddLine(wxEmptyString, text, colour, true, !bAlert, false);
 
@@ -1436,11 +1436,14 @@ void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 	else
 	{
 
-		if (!IsFocused())
+		if (bAlert && !IsFocused())
 		{
 			DoAlert();
 			DoFlashWindow();
 		}
+
+		ClientUIMDICanvas *canvas = GetContext(wxEmptyString);
+		canvas->GetLogWriter()->AddText(text, colour, false);
 
 	}
 	

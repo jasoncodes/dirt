@@ -1,9 +1,5 @@
 * Add a config file for UNIX makefile so a NOKDE=1 setting can be kept
 
-* open when complete is broken
-
-* show file transfer statuses in log even if unticked in options
-
 * ability to search logs. get details from 2003/08/23 log with Blacksage
 
 * senders should sit in the send loop for upto 500 ms
