@@ -26,7 +26,7 @@ protected:
 
 	wxCheckBox *m_chkProxy;
 	wxStaticText *m_lblProtocol;
-	wxChoice *m_cmbProtocol;
+	wxComboBox *m_cmbProtocol;
 	wxStaticText *m_lblHostname, *m_lblPort, *m_lblUsername, *m_lblPassword;
 	wxTextCtrl *m_txtHostname, *m_txtPort, *m_txtUsername, *m_txtPassword;
 	wxStaticBox *m_fraProxyTypes;

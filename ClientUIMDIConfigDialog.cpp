@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.5 2003-05-30 10:38:05 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.6 2003-05-31 05:02:14 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -122,7 +122,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_chkProxy = new wxCheckBox(panel, wxID_ANY, wxT("&Proxy Support"));
 	m_lblProtocol = new wxStaticText(panel, wxID_ANY, wxT("Protocol:"));
 	const wxString protocols[] = { wxT("SOCKS 4"), wxT("SOCKS 5"), wxT("HTTP CONNECT") };
-	m_cmbProtocol = new wxChoice(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(protocols), protocols);
+	m_cmbProtocol = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, WXSIZEOF(protocols), protocols, wxCB_DROPDOWN|wxCB_READONLY);
 	m_lblHostname = new wxStaticText(panel, wxID_ANY, wxT("Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY);
 	m_lblPort = new wxStaticText(panel, wxID_ANY, wxT("Port:"));
@@ -141,7 +141,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_pnlDestNetwork = new DestNetworkPanel(panel, wxID_ANY);
 	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
 
-	m_chkProxy->Enable(false);
+/*	m_chkProxy->Enable(false);
 	m_lblProtocol->Enable(false);
 	m_cmbProtocol->Enable(false);
 	m_lblHostname->Enable(false);
@@ -158,7 +158,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_chkTypeDCCListen->Enable(false);
 	m_pnlDestNetwork->Enable(false);
 	m_pnlDestPorts->Enable(false);
-
+*/
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
 
@@ -171,7 +171,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 		wxBoxSizer *szrMain = new wxBoxSizer(wxHORIZONTAL);
 		{
 
-			wxStaticBox *fraProxy = new wxStaticBox(panel, wxID_ANY, wxString(wxT(' '), 22));
+			wxStaticBox *fraProxy = new wxStaticBox(panel, wxID_ANY, wxString(wxT(' '), 28));
 			wxSizer *szrProxy = new StaticCheckBoxSizer(fraProxy, m_chkProxy, wxVERTICAL);
 			{
 
