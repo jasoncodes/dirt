@@ -23,15 +23,23 @@
 #ifndef RCS_H_
 #define RCS_H_
 
-// use this at the top of every CPP file like: RCS_ID($Id: RCS.h,v 1.5 2004-05-16 04:42:47 jason Exp $)
-#define RCS_ID(x,y) static int rcs_id_ ## wxMAKE_UNIQUE_ASSERT_NAME = add_rcs_id( wxT( #x ), wxT( #y ) );
+class wxString;
+class wxDateTime;
+
+// use this at the top of every CPP file like: RCS_ID($Id: RCS.h,v 1.6 2004-06-14 01:46:47 jason Exp $)
+#define RCS_ID(x,y) \
+	static int rcs_id_ ## wxMAKE_UNIQUE_ASSERT_NAME = \
+	add_rcs_id( wxT( #x ), wxT( #y ), __TDATE__, __TTIME__ );
 
 // call this when you want to know the calculated info
 wxString GetRCSDate();
 wxString GetRCSAuthor();
 wxString GetProductVersion();
+wxDateTime GetCompileDate();
 
 // don't call this directly, used by RCS_ID macro
-int add_rcs_id(const wxChar *x, const wxChar *y);
+int add_rcs_id(
+	const wxChar *rcs_id_part1, const wxChar *rcs_id_part2,
+	const wxChar *file_compile_date, const wxChar *file_compile_time);
 
 #endif

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.67 2004-06-11 12:33:33 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.68 2004-06-14 01:46:47 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -486,7 +486,13 @@ void ClientUIMDICanvas::ResizeChildren()
 
 			m_txtLog->SetSize(nick_left - log_width, 0, log_width, log_height);
 			m_sash->SetSize(nick_left, 0, nick_width, log_height);
-			m_lstNickList->SetSize(m_sash->GetDefaultBorderSize(), 0, nick_width - m_sash->GetDefaultBorderSize(), log_height);
+			int desired_width = nick_width - m_sash->GetDefaultBorderSize();
+			m_lstNickList->SetSize(m_sash->GetDefaultBorderSize(), 0, desired_width, log_height);
+			int actual_width = m_lstNickList->GetSize().x;
+			if (actual_width != desired_width)
+			{
+				ResizeChildren();
+			}
 
 		}
 		else

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.94 2004-06-11 14:31:24 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.95 2004-06-14 01:46:47 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -335,27 +335,27 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 	
 	wxString result;
 
-	if (day || hour)
-	{
-		if (verbose)
-		{
-			result = wxString::Format(wxT("%d hour%s, "), hour, plural(hour));
-		}
-		else
-		{
-			result = wxString::Format(wxT("%02d:"), hour);
-		}
-	}
-
 	if (day)
 	{
 		if (verbose)
 		{
-			result = wxString::Format(wxT("%d day%s, "), day, plural(day));
+			result += wxString::Format(wxT("%d day%s, "), day, plural(day));
 		}
 		else
 		{
-			result = wxString::Format(wxT("%02d:"), day);
+			result += wxString::Format(wxT("%02d:"), day);
+		}
+	}
+
+	if (day || hour)
+	{
+		if (verbose)
+		{
+			result += wxString::Format(wxT("%d hour%s, "), hour, plural(hour));
+		}
+		else
+		{
+			result += wxString::Format(wxT("%02d:"), hour);
 		}
 	}
 
@@ -472,6 +472,7 @@ void ShowAbout(wxWindow *parent)
 		<< wxT("\n")
 		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
 		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
+		<< wxT("Compilation date: ") << FormatISODateTime(GetCompileDate()) << wxT("\n")
 		<< wxT("\n")
 		<< wxT("http://dirt.gslabs.com.au/"),
 		wxT("About Dirt Secure Chat"),

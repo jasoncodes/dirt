@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.4 2004-05-22 19:22:04 jason Exp $)
+RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.5 2004-06-14 01:46:47 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -309,8 +309,12 @@ void SwitchBarParent::OnWindowMinimize(wxCommandEvent& WXUNUSED(event))
 
 void SwitchBarParent::OnWindowClose(wxCommandEvent& WXUNUSED(event))
 {
-	wxASSERT(GetActiveChild() != NULL);
-	GetActiveChild()->Close();
+	SwitchBarCanvas *canvas = GetActiveCanvas();
+	wxASSERT(canvas != NULL);
+	if (canvas->IsClosable())
+	{
+		CloseCanvas(canvas);
+	}
 }
 
 void SwitchBarParent::OnWindowNext(wxCommandEvent& WXUNUSED(event))
