@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.57 2003-02-27 07:54:59 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.58 2003-02-27 08:00:10 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -40,6 +40,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL)
 {
 
+	m_client = NULL;
 	m_focused = true;
 	m_alert = false;
 	m_flash = 0;
