@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.24 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.25 2003-02-14 03:57:00 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -83,13 +83,13 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	if (type == ChannelCanvas || type == QueryCanvas)
 	{
-		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtInput = new InputControl(this, ID_INPUT);
+		m_txtLog = new LogControl(this, ID_LOG);
 	}
 	else
 	{
-		m_txtLog = NULL;
 		m_txtInput = NULL;
+		m_txtLog = NULL;
 	}
 
 	if (type == ChannelCanvas)

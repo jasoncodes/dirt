@@ -6,10 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.13 2003-02-13 16:20:43 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.14 2003-02-14 03:57:00 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
+#include "ServerUIConsole.h"
+#include "ClientUIMDIFrame.h"
+#include "ServerUIFrame.h"
 #include "Splash.h"
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -119,13 +122,6 @@ bool DirtApp::IsConsole()
 
 	#endif
 
-	wxCmdLineParser cmdline(argc, argv);
-
-	cmdline.AddSwitch("c", "console", "Console Mode", 0);
-	cmdline.AddSwitch("g", "gui", "GUI Mode", 0);
-
-	cmdline.Parse();
-
 	#ifdef __WXMSW__
 
 		#define CANT_CHANGE_MODE \
@@ -133,22 +129,22 @@ bool DirtApp::IsConsole()
 			"requires changes to the binary.\nThe command line option " \
 			"that was specified to change this mode has been ignored.\n"
 
-		if (cmdline.Found("g") && bIsConsole)
+		if (cmdline->Found("g") && bIsConsole)
 		{
 			puts(CANT_CHANGE_MODE);
 		}
-		else if (cmdline.Found("c") && !bIsConsole)
+		else if (cmdline->Found("c") && !bIsConsole)
 		{
 			wxMessageBox(CANT_CHANGE_MODE, "Unsupported Option", wxICON_ERROR);
 		}
 
 	#else
 
-		if (cmdline.Found("g"))
+		if (cmdline->Found("g"))
 		{
 			bIsConsole = false;
 		}
-		else if (cmdline.Found("c"))
+		else if (cmdline->Found("c"))
 		{
 			bIsConsole = true;
 		}
@@ -161,23 +157,93 @@ bool DirtApp::IsConsole()
 
 bool DirtApp::OnInit()
 {
+	
+	m_console = NULL;
+	ProcessCommandLine();
+	
 	if (IsConsole())
 	{
-		m_console = new ClientUIConsole;
+
+		switch (m_appmode)
+		{
+
+			case appClient:
+			case appDefault:
+				m_console = new ClientUIConsole;
+				break;
+
+			case appServer:
+				m_console = new ServerUIConsole;
+				break;
+
+			default:
+				wxFAIL_MSG("Unknown AppMode");
+				return false;
+
+		}
+
 	}
 	else
 	{
-		m_console = NULL;
-		new Splash;
+
+		switch (m_appmode)
+		{
+
+			case appDefault:
+				new Splash;
+				break;
+
+			case appClient:
+				new ClientUIMDIFrame;
+				break;
+
+			case appServer:
+				new ServerUIFrame;
+				break;
+
+			default:
+				wxFAIL_MSG("Unknown AppMode");
+				return false;
+
+		}
+		
+
 	}
+
 	return true;
+
 }
 
 int DirtApp::OnExit()
 {
-	if (m_console)
-	{
-		delete m_console;
-	}
+	delete m_console;
+	delete cmdline;
 	return wxApp::OnExit();
+}
+
+void DirtApp::ProcessCommandLine()
+{
+
+	cmdline = new wxCmdLineParser(argc, argv);
+
+	cmdline->AddSwitch("c", "console", "Console Mode", 0);
+	cmdline->AddSwitch("g", "gui", "GUI Mode", 0);
+	cmdline->AddSwitch("l", "client", "Client Mode", 0);
+	cmdline->AddSwitch("s", "server", "Server Mode", 0);
+
+	cmdline->Parse();
+
+	if (cmdline->Found("s"))
+	{
+		m_appmode = appServer;
+	}
+	else if (cmdline->Found("l"))
+	{
+		m_appmode = appClient;
+	}
+	else
+	{
+		m_appmode = appDefault;
+	}
+
 }

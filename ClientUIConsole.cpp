@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.23 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.24 2003-02-14 03:56:59 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -26,7 +26,7 @@ ClientUIConsole::~ClientUIConsole()
 
 void ClientUIConsole::Output(const wxString &line)
 {
-	Console::Output(Timestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
+	Console::Output(GetShortTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
 }
 
 void ClientUIConsole::OnInput(const wxString &line)

@@ -309,6 +309,38 @@ SOURCE=.\RCS.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Server.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Server.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerDefault.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerDefault.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerUIConsole.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerUIConsole.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerUIFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerUIFrame.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SpanTag.cpp
 # End Source File
 # Begin Source File

@@ -1,7 +1,14 @@
 #ifndef Dirt_H_
 #define Dirt_H_
 
-class ClientUIConsole;
+class Console;
+
+enum AppMode
+{
+	appDefault,
+	appClient,
+	appServer
+};
 
 class DirtApp : public wxApp
 {
@@ -13,8 +20,13 @@ public:
 	bool IsConsole();
 
 protected:
-	ClientUIConsole *m_console;
+	void ProcessCommandLine();
 
+protected:
+	Console *m_console;
+	wxCmdLineParser *cmdline;
+	AppMode m_appmode;
+		
 };
 
 #endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.39 2003-02-13 14:50:55 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.40 2003-02-14 03:57:00 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -189,7 +189,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 {
 
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
-	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour, tmmParse, convert_urls);
+	canvas->GetLog()->AddTextLine(GetShortTimestamp() + line, line_colour, tmmParse, convert_urls);
 	
 	if (!suppress_alert)
 	{

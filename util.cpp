@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.16 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.17 2003-02-14 03:57:00 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -74,9 +74,14 @@ HeadTail SplitHeadTail(const wxString &text, const wxString &sep)
 	return result;
 }
 
-wxString Timestamp()
+wxString GetShortTimestamp()
 {
 	return wxDateTime::Now().Format("[%H:%M] ");
+}
+
+wxString GetLongTimestamp()
+{
+	return wxDateTime::Now().Format("%Y/%m/%d %H:%M:%S ");
 }
 
 void FixBorder(wxWindow *wnd)
