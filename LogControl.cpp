@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.27 2003-03-12 07:33:17 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.28 2003-03-13 03:22:25 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1372,9 +1372,43 @@ wxString LogControl::FormatTextAsHtml(const wxString &text)
 		html = wxT("&nbsp;") + html.Mid(1);
 	}
 	html.Replace(wxT("\t"), wxT("&nbsp;&nbsp;&nbsp; "));
-	html.Replace(wxT("  "), wxT(" &nbsp;"));
 
-	return html;
+	wxString html2;
+	html2.Alloc(html.Length()*2);
+
+	bool last_was_space = false;
+	bool last_was_modifier = false;
+	for (size_t i = 0; i < html.Length(); ++i)
+	{
+		wxChar c = html[i];
+		if (IsModifier(c))
+		{
+			last_was_modifier = true;
+			last_was_space = true;
+			html2 += c;
+		}
+		else if (wxIsspace(c))
+		{
+			last_was_modifier = false;
+			if (last_was_space)
+			{
+				html2 += wxT("&nbsp;");
+			}
+			else
+			{
+				html2 += c;
+			}
+			last_was_space = !last_was_space;
+		}
+		else
+		{
+			last_was_modifier &= ((c == wxT(',')) || wxIsdigit(c));
+			last_was_space = last_was_modifier;
+			html2 += c;
+		}
+	}
+
+	return html2;
 
 }
 
