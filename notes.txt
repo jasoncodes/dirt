@@ -1,3 +1,9 @@
+* /clearall
+
+* /close
+
+* highlight part of url and mouse pointer should reset back to hand after release
+
 * win32: scrolling, keeping any menu open, resizing/moving window, etc
   stops all network traffic from being processed (seems to be a win32 message pump problem)
   this problem reproduces in the socket sample
@@ -51,5 +57,3 @@
 * research that log control gdi thing in 9x
 
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
-
-* flickering when ctrl-tab
