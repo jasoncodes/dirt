@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.6 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.7 2003-05-02 02:04:27 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -37,13 +37,15 @@ FileTransfers::~FileTransfers()
 
 void FileTransfers::OnTimer(wxTimerEvent &event)
 {
-	for (int i = 0; i < GetTransferCount(); ++i)
+	for (int i = GetTransferCount() - 1; i >= 0; --i)
 	{
 		FileTransfer &transfer = m_transfers.Item(i);
 		if (transfer.transferid > -1)
 		{
-			transfer.OnTimer();
-			m_client->m_event_handler->OnClientTransferTimer(transfer);
+			if (transfer.OnTimer())
+			{
+				m_client->m_event_handler->OnClientTransferTimer(transfer);
+			}
 		}
 	}
 }

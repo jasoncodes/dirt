@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.5 2003-03-29 05:30:07 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.6 2003-05-02 02:04:27 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "CPSCalc.h"
+#include "Client.h"
 
 FileTransfer::FileTransfer(FileTransfers *transfers)
 	:
@@ -21,15 +22,15 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 {
 }
 
-void FileTransfer::OnTimer()
+bool FileTransfer::OnTimer()
 {
 	if (filesent >= 300 * 1024)
 	{
-		filesent += 2048;
+		filesent += 8192;
 	}
 	else
 	{
-		filesent += filesent / 50;
+		filesent += filesent / 25;
 	}
 	if (filesent >= filesize)
 	{
@@ -48,6 +49,15 @@ void FileTransfer::OnTimer()
 		{
 			timeleft = -1;
 		}
+		return true;
 	}
-
+	else
+	{
+		state = ftsGetComplete;
+		status = wxT("Transfer complete");
+		m_transfers->m_client->m_event_handler->OnClientTransferState(*this);
+		m_transfers->m_client->m_event_handler->OnClientTransferTimer(*this);
+		m_transfers->DeleteTransfer(transferid);
+		return false;
+	}
 }

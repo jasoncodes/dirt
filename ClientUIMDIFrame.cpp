@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.100 2003-04-30 07:16:44 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.101 2003-05-02 02:04:27 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -970,7 +970,11 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer)
 	if (pnl)
 	{
 		pnl->SetTransferId(-1);
-		pnl->SetStatus(pnl->GetStatus() + wxT(" -- OnClientTransferDelete()"));
+		int index = GetSwitchBar()->GetIndexFromUserData(pnl->GetParent());
+		if (index > -1)
+		{
+			GetSwitchBar()->SetButtonHighlight(index, true);
+		}
 	}
 }
 
@@ -979,11 +983,11 @@ void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
 	if (bIsError)
 	{
-		OnClientInformation(wxEmptyString, transfer.status);
+		OnClientWarning(wxEmptyString, transfer.status);
 	}
 	else
 	{
-		OnClientWarning(wxEmptyString, transfer.status);
+		OnClientInformation(wxEmptyString, transfer.status);
 	}
 }
 

@@ -48,7 +48,7 @@ public:
 protected:
 	FileTransfer(FileTransfers *transfers);
 
-	void OnTimer();
+	bool OnTimer();
 
 protected:
 	FileTransfers *m_transfers;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.45 2003-04-03 07:35:20 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.46 2003-05-02 02:04:27 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -398,11 +398,11 @@ void ClientUIConsole::OnClientTransferState(const FileTransfer &transfer)
 	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
 	if (bIsError)
 	{
-		OnClientInformation(wxEmptyString, transfer.status);
+		OnClientWarning(wxEmptyString, transfer.status);
 	}
 	else
 	{
-		OnClientWarning(wxEmptyString, transfer.status);
+		OnClientInformation(wxEmptyString, transfer.status);
 	}
 }
 

@@ -67,6 +67,7 @@ protected:
 class Client : public wxEvtHandler
 {
 
+	friend class FileTransfer;
 	friend class FileTransfers;
 
 public:
