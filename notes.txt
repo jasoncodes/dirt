@@ -19,5 +19,3 @@
 * dcc send/recv dialog
 
 * only scroll to bottom if scrollpos was already at bottom?
-
-* add console build types to VC

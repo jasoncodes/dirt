@@ -1,8 +1,11 @@
-Debug
-Release
-DebugDll
-ReleaseDll
 ConsoleDebug
+ConsoleDebugDll
+ConsoleRelease
+ConsoleReleaseDll
+Debug
+DebugDll
+Release
+ReleaseDll
 *.ncb
 *.opt
 *.plg
