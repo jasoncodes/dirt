@@ -39,4 +39,3 @@
 * file transfers
 
 * flashing tray icon stops being orange sometimes. after a short delay it seems.
-  it'll be the updating of the frame caption for sure...
