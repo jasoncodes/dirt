@@ -98,13 +98,11 @@ LogViewerFrame::LogViewerFrame()
 	SetSizeHints(300,200);
 	CentreOnScreen();
 
-	m_config = new wxFileConfig(wxT("dirt"), wxT(""), wxGetApp().GetConfigFilename());
-	m_config->SetUmask(0077);
-	RestoreWindowState(this, m_config, wxT("Log Viewer"), true, true);
+	RestoreWindowState(this, &m_config, wxT("Log Viewer"), true, true);
 	int sash1pos = m_sash1->GetSize().x;
 	int sash2pos = m_sash2->GetSize().y;
-	m_config->Read(wxT("/Log Viewer/WindowState/Sash1"), &sash1pos, sash1pos);
-	m_config->Read(wxT("/Log Viewer/WindowState/Sash2"), &sash2pos, sash2pos);
+	m_config.Read(wxT("/Log Viewer/WindowState/Sash1"), &sash1pos, sash1pos);
+	m_config.Read(wxT("/Log Viewer/WindowState/Sash2"), &sash2pos, sash2pos);
 	m_sash1->SetSize(sash1pos, -1);
 	m_sash2->SetSize(-1, sash2pos);
 	ResizeChildren();
@@ -113,16 +111,15 @@ LogViewerFrame::LogViewerFrame()
 
 LogViewerFrame::~LogViewerFrame()
 {
-	delete m_config;
 }
 
 void LogViewerFrame::OnClose(wxCloseEvent &event)
 {
-	SaveWindowState(this, m_config, wxT("Log Viewer"));
+	SaveWindowState(this, &m_config, wxT("Log Viewer"));
 	int sash1pos = m_sash1->GetSize().x;
 	int sash2pos = m_sash2->GetSize().y;
-	m_config->Write(wxT("/Log Viewer/WindowState/Sash1"), sash1pos);
-	m_config->Write(wxT("/Log Viewer/WindowState/Sash2"), sash2pos);
+	m_config.Write(wxT("/Log Viewer/WindowState/Sash1"), sash1pos);
+	m_config.Write(wxT("/Log Viewer/WindowState/Sash2"), sash2pos);
 	event.Skip();
 }
 

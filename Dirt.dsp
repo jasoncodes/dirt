@@ -285,6 +285,14 @@ SOURCE=.\ClientUIMDITransferPanel.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConfigFile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConfigFile.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Console.cpp
 # End Source File
 # Begin Source File

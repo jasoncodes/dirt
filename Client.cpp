@@ -6,16 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.50 2003-04-18 09:34:44 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.51 2003-04-18 10:05:43 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
 #include "Modifiers.h"
 #include "FileTransfers.h"
 #include "Crypt.h"
-#include "Dirt.h"
-
-DECLARE_APP(DirtApp)
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -23,8 +20,7 @@ const wxLongLong_t ping_timeout_delay = 45000;
 
 ClientConfig::ClientConfig()
 {
- 	m_config = new wxFileConfig(wxT("dirt"), wxT(""), wxGetApp().GetConfigFilename());
-	m_config->SetUmask(0077);
+	m_config = new ConfigFile;
 }
 
 ClientConfig::~ClientConfig()

@@ -4,10 +4,8 @@
 #include <wx/sashwin.h>
 #include <wx/dirctrl.h>
 #include <wx/treectrl.h>
-#include <wx/confbase.h>
-#include <wx/fileconf.h>
-
 #include "LogControl.h"
+#include "ConfigFile.h"
 
 class LogViewerFrame : public wxFrame
 {
@@ -46,7 +44,7 @@ protected:
 
 	wxString last_filename;
 
-	wxFileConfig *m_config;
+	ConfigFile m_config;
 
 private:
 	DECLARE_EVENT_TABLE()

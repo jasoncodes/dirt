@@ -5,8 +5,6 @@
 #include "URL.h"
 #include "ByteBuffer.h"
 #include "util.h"
-#include <wx/confbase.h>
-#include <wx/fileconf.h>
 #include "ClientTimers.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
@@ -45,6 +43,8 @@ public:
 
 };
 
+#include "ConfigFile.h"
+
 class ClientConfig
 {
 
@@ -52,10 +52,10 @@ public:
 	ClientConfig();
 	virtual ~ClientConfig();
 
-	virtual wxConfigBase *GetConfig() const { return m_config; }
+	virtual wxConfigBase* GetConfig() const { return m_config; }
 
 protected:
-	wxFileConfig *m_config;
+	ConfigFile *m_config;
 
 };
 

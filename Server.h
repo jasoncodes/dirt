@@ -85,8 +85,7 @@ WX_DEFINE_ARRAY(ServerConnection*, ServerConnectionArray);
 
 //////// ServerConfig ////////
 
-#include <wx/confbase.h>
-#include <wx/fileconf.h>
+#include "ConfigFile.h"
 
 class ServerConfig
 {
@@ -146,7 +145,7 @@ protected:
 	bool SetPassword(const wxString &key, const wxString &password);
 
 protected:
-	wxFileConfig *m_config;
+	ConfigFile *m_config;
 
 };
 
