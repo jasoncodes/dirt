@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.16 2004-05-22 17:08:49 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.17 2004-05-23 10:35:21 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -593,7 +593,7 @@ wxString Config::GetTristateString(const wxString &key, bool is_dir) const
 
 		case tsmDefault:
 		default:
-			wxFAIL_MSG(wxT("Unknown LogDirType"));
+			wxFAIL_MSG(wxT("Unsupported TristateMode in GetTristateString"));
 			return wxEmptyString;
 
 	}

@@ -115,6 +115,11 @@ public:
 	virtual wxString GetSoundFile() const;
 	virtual bool SetSoundFile(TristateMode type, const wxString &filename);
 
+	virtual wxString GetActualWebBrowser() const;
+	virtual TristateMode GetWebBrowserType() const;
+	virtual wxString GetWebBrowserFile() const;
+	virtual bool SetWebBrowser(TristateMode type, const wxString &filename);
+
 	virtual bool GetTaskbarNotification() const;
 	virtual bool SetTaskbarNotification(bool mode);
 
@@ -138,6 +143,7 @@ public:
 
 protected:
 	virtual wxString GetSoundFileKey() const;
+	virtual wxString GetWebBrowserKey() const;
 
 };
 

@@ -33,6 +33,8 @@ class NickListControl;
 class ClientUIMDITransferPanel;
 class TrayIcon;
 
+bool OpenPreferredBrowser(wxWindow *parent, const wxString &URL);
+
 class ClientUIMDIFrame : public SwitchBarParent, public ClientEventHandler
 {
 
@@ -52,6 +54,7 @@ public:
 	void RestoreFromTray();
 	void InitLogs();
 	static bool IsHotKeySupported();
+	void OpenBrowser(const wxString &URL);
 
 protected:
 	void OnFileExit(wxCommandEvent& event);

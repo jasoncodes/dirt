@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.27 2004-05-16 04:42:48 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.28 2004-05-23 10:35:21 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -196,7 +196,7 @@ void Splash::OnButton(wxCommandEvent &event)
 			break;
 
 		case ID_INTERNET:
-			if (OpenBrowser(this, GetPublicListURL()))
+			if (OpenPreferredBrowser(this, GetPublicListURL()))
 			{
 				Destroy();
 			}

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.149 2004-05-22 19:22:03 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.150 2004-05-23 10:35:19 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -777,7 +777,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("SERVERS"))
 	{
-		OpenBrowser(this, PUBLIC_LIST_URL, true);
+		OpenBrowser(PUBLIC_LIST_URL);
 		return true;
 	}
 	else if (cmd == wxT("RUN"))
@@ -852,6 +852,56 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	{
 		return false;
 	}
+}
+
+bool OpenPreferredBrowser(wxWindow *parent, const wxString &URL)
+{
+	
+	ClientConfig config;
+	
+	switch (config.GetWebBrowserType())
+	{
+
+		case Config::tsmDefault:
+			return OpenBrowser(parent, PUBLIC_LIST_URL, true);
+
+		case Config::tsmCustom:
+			{
+				wxString cmdline;
+				cmdline = config.GetActualWebBrowser();
+				if (cmdline.Left(1) != wxT('"') && cmdline.Find(wxT(" ")) > -1)
+				{
+					cmdline = wxT("\"") + cmdline + wxT("\"");
+				}
+				cmdline << wxT(" ") << URL;
+				::wxBeginBusyCursor();
+				long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
+				::wxEndBusyCursor();
+				bool success = (pid != 0);
+				if (!success)
+				{
+					wxMessageBox(
+						wxT("Error executing: ") + cmdline,
+						wxT("Error Launching Web Browser"),
+						wxOK | wxICON_ERROR, parent);
+				}
+				return success;
+			}
+
+		default:
+			wxMessageBox(
+				wxT("No web browser configured."),
+				wxT("Error Launching Web Browser"),
+				wxOK | wxICON_ERROR, parent);
+			return false;
+
+	}
+
+}
+
+void ClientUIMDIFrame::OpenBrowser(const wxString &URL)
+{
+	OpenPreferredBrowser(this, URL);
 }
 
 void ClientUIMDIFrame::OnClientDebug(const wxString &context, const wxString &text)

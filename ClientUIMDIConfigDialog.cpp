@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.25 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.26 2004-05-23 10:35:19 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -157,7 +157,8 @@ enum
 	ID_LOG = 1,
 	ID_SOUND,
 	ID_PROXY_ENABLED,
-	ID_PROXY_PROTOCOL
+	ID_PROXY_PROTOCOL,
+	ID_BROWSER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIConfigDialog, wxDialog)
@@ -206,6 +207,14 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(pnlGeneral, wxID_ANY, wxT("System Tray Icon:"));
 	m_cmbSystemTrayIcon = new wxComboBox(pnlGeneral, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
 	m_pnlSound = new TristateConfigPanel(pnlGeneral, ID_SOUND, wxT("Notification Sound"), wxT("Sound Files|*.wav|All Files|*"), true);
+
+	m_pnlBrowser = new TristateConfigPanel(pnlGeneral, ID_BROWSER, wxT("Web Browser"),
+#ifdef __WXMSW__
+		wxT("Executables|*.exe|All Files|*"),
+#else
+		wxT("All Files|*"),
+#endif
+		false);
 
 	wxPanel *pnlProxy = new wxPanel(notebook, wxID_ANY);
 
@@ -297,11 +306,13 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 					szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
 					szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
 				}
-				szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
-				szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
+				szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxEXPAND, 4);
+				szrNotification->Add(m_pnlSound, 0, wxEXPAND|wxALL, 2);
 
 			}
 			szrGeneralRight->Add(szrNotification, 1, wxEXPAND, 0);
+
+			szrGeneralRight->Add(m_pnlBrowser, 0, wxEXPAND|wxTOP, 8);
 
 		}
 		szrGeneral->Add(szrGeneralRight, 1, wxTOP|wxBOTTOM|wxRIGHT, 8);
@@ -392,6 +403,11 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	szrPanel->SetSizeHints(this);
 
 	FitInside();
+	wxSize size = GetClientSize();
+	if (size.x < 500)
+	{
+		SetClientSize(500, size.y);
+	}
 	CentreOnParent();
 	cmdOK->SetDefault();
 	CenterOnParent();
@@ -476,6 +492,11 @@ void ClientUIMDIConfigDialog::LoadSettings()
 			m_pnlSound->SetMode(Config::tsmDefault);
 		}
 	#endif
+	m_pnlBrowser->SetMode(m_config->GetWebBrowserType());
+	if (m_config->GetWebBrowserType() == Config::tsmCustom)
+	{
+		m_pnlBrowser->SetPath(m_config->GetActualWebBrowser());
+	}
 
 	m_proxy_settings->LoadSettings();
 
@@ -603,6 +624,15 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		if (!m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath()))
 		{
 			ErrMsg(wxT("Error setting notification sound"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetWebBrowser(m_pnlBrowser->GetMode(), m_pnlBrowser->GetPath()))
+		{
+			ErrMsg(wxT("Error setting web browser"));
 			success = false;
 		}
 	}

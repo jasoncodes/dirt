@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.88 2004-05-23 06:01:10 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.89 2004-05-23 10:35:21 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -710,14 +710,48 @@ wxString GetPublicListURL()
 	return PUBLIC_LIST_URL;
 }
 
+#ifdef __WXMAC__
+	#include <Carbon/Carbon.h>
+#endif
+
 bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 {
 
 	wxLogNull supress_log;
 
-	#ifdef __WXMSW__
+	#if defined(__WXMSW__)
 
 		return OpenFile(parent, URL, show_error);
+
+	#elif defined(__WXMAC__)
+
+		// http://wiki.wxwindows.org/wiki.pl?Carbon_Code_To_Open_URLs_On_WxMac
+
+		ICInstance icInstance;
+
+		OSType psiSignature = '????';
+
+		OSStatus error = ICStart(&icInstance, psiSignature);
+		if ( error != noErr )
+		{
+			return false;
+		}
+
+		ConstStr255Param hint = 0;
+		long length = url.Length();
+		long start = 0;
+		long end = length;
+
+		#if !TARGET_CARBON
+			// maybe needed to work on non-carbon target
+			ICFindConfigFile(icInstance, 0, nil);
+		#endif
+
+		ICLaunchURL(icInstance, hint, url.c_str(), length, & start, & end);
+
+		ICStop(icInstance);
+
+		return true;
 
 	#else
 
@@ -1094,9 +1128,9 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 
 		wxString file, params;
 
-		wxFileName fn(filename);
-
-		if (fn.FileExists() || fn.DirExists())
+		if (filename.Find(wxT("://")) > -1 ||
+			wxFileName(filename).FileExists() ||
+			wxFileName(filename).DirExists())
 		{
 			file = filename;
 			params = wxEmptyString;
@@ -1121,7 +1155,6 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 				params = wxEmptyString;
 			}
 		}
-		wxMessageBox(wxString() << wxT('x') << file << wxT('x') << params << wxT('x'));
 
 		::wxBeginBusyCursor();
 		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxEmptyString, file, params, NULL, SW_NORMAL);
@@ -1220,6 +1253,11 @@ bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 
 bool OpenExternalResource(wxWindow *parent, const wxString &name, bool show_error)
 {
+
+	if (name.Find(wxT("://")) > -1)
+	{
+		return OpenBrowser(parent, name, show_error);
+	}
 
 	if (wxFileName(name, wxEmptyString).DirExists())
 	{

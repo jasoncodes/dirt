@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.65 2004-05-22 19:22:03 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.66 2004-05-23 10:35:19 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -529,7 +529,7 @@ Client *ClientUIMDICanvas::GetClient()
 
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent &event)
 {
-	OpenBrowser(this, event.GetString());
+	((ClientUIMDIFrame*)m_parent)->OpenBrowser(event.GetString());
 }
 
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)

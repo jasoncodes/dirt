@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.88 2004-05-22 17:08:46 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.89 2004-05-23 10:35:18 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -91,6 +91,11 @@ wxString ClientConfig::GetSoundFileKey() const
 	return m_path+wxT("/Sound");
 }
 
+wxString ClientConfig::GetWebBrowserKey() const
+{
+	return m_path+wxT("/Web Browser");
+}
+
 wxString ClientConfig::GetActualSoundFile() const
 {
 	return GetTristateString(GetSoundFileKey(), false);
@@ -116,6 +121,33 @@ bool ClientConfig::SetSoundFile(TristateMode type, const wxString &filename)
 		}
 	}
 	return SetTristate(GetSoundFileKey(), type, filename, false);
+}
+
+wxString ClientConfig::GetActualWebBrowser() const
+{
+	return GetTristateString(GetWebBrowserKey(), false);
+}
+
+Config::TristateMode ClientConfig::GetWebBrowserType() const
+{
+	return GetTristateMode(GetWebBrowserKey());
+}
+
+wxString ClientConfig::GetWebBrowserFile() const
+{
+	return GetTristate(GetWebBrowserKey());
+}
+
+bool ClientConfig::SetWebBrowser(TristateMode type, const wxString &filename)
+{
+	if (type == tsmCustom)
+	{
+		if (!wxFileName(filename).FileExists())
+		{
+			return false;
+		}
+	}
+	return SetTristate(GetWebBrowserKey(), type, filename, false);
 }
 
 bool ClientConfig::GetTaskbarNotification() const

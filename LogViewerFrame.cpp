@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogViewerFrame.cpp,v 1.25 2004-05-16 04:42:46 jason Exp $)
+RCS_ID($Id: LogViewerFrame.cpp,v 1.26 2004-05-23 10:35:21 jason Exp $)
 
 #include "LogViewerFrame.h"
 #include "LogReader.h"
@@ -38,6 +38,7 @@ RCS_ID($Id: LogViewerFrame.cpp,v 1.25 2004-05-16 04:42:46 jason Exp $)
 #include "Dirt.h"
 #include "LogControl.h"
 #include <wx/filename.h>
+#include "ClientUIMDIFrame.h"
 
 DECLARE_APP(DirtApp)
 
@@ -185,7 +186,7 @@ void LogViewerFrame::OnSize(wxSizeEvent &event)
 
 void LogViewerFrame::OnLinkClicked(wxCommandEvent& event)
 {
-	OpenBrowser(this, event.GetString());
+	OpenPreferredBrowser(this, event.GetString());
 }
 
 void LogViewerFrame::OnSashDragged(wxSashEvent &event)

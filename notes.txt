@@ -1,5 +1,3 @@
-* allow users to specify which browser to use in the options dialog.
-
 new dns code that always has the dns thread running
 but is blocked on an event normally
 the thread should be created and destroyed via wxModule

@@ -68,6 +68,7 @@ protected:
 	wxCheckBox *m_chkFileTransferStatus;
 	wxComboBox *m_cmbSystemTrayIcon;
 	TristateConfigPanel *m_pnlSound;
+	TristateConfigPanel *m_pnlBrowser;
 
 	wxCheckBox *m_chkProxy;
 	wxStaticText *m_lblProtocol;
