@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.76 2003-03-18 06:36:39 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.77 2003-03-19 14:31:42 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -19,6 +19,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.76 2003-03-18 06:36:39 jason Exp $)
 #include "FileTransfers.h"
 #include "TrayIcon.h"
 #include "Dirt.h"
+#include "LogWriter.h"
 
 DECLARE_APP(DirtApp)
 
@@ -73,6 +74,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_focused = true;
 	m_alert = false;
 	m_flash = 0;
+	m_log_date_okay = false;
 	UpdateCaption();
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -372,7 +374,25 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 		bFlashWindow = true;
 	}
 
-	canvas->GetLog()->AddTextLine(GetShortTimestamp() + line, line_colour, tmmParse, convert_urls, true, bAlert);
+	wxString text = GetShortTimestamp() + line;
+
+	canvas->GetLog()->AddTextLine(text, line_colour, tmmParse, convert_urls, true, bAlert);
+	LogWriter *log = canvas->GetLogWriter();
+	if (log)
+	{
+		if (log->Ok())
+		{
+			log->AddText(text, line_colour, convert_urls);
+		}
+		else
+		{
+			if (!canvas->GetLogWriterWarningShown())
+			{
+				canvas->SetLogWriterWarningShown(true);
+				OnClientWarning(context, wxT("Error writing log file"));
+			}
+		}
+	}
 	
 	if (!suppress_alert)
 	{
@@ -881,4 +901,14 @@ void ClientUIMDIFrame::OnCtrlF(wxCommandEvent &event)
 		LogControl *txtLog = canvas->GetLog();
 		txtLog->ShowFindDialog(true);
 	}
+}
+
+wxDateTime ClientUIMDIFrame::GetLogDate()
+{
+	if (!m_log_date_okay)
+	{
+		m_log_date = LogWriter::GenerateNewLogDate(wxT("Client"));
+		m_log_date_okay = true;
+	}
+	return m_log_date;
 }

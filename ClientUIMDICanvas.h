@@ -6,6 +6,7 @@
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
 #include <wx/sashwin.h>
+#include "LogWriter.h"
 
 class NickListControl;
 class Client;
@@ -37,6 +38,9 @@ public:
 	Client* GetClient();
 	bool GetPasswordMode() const;
 	void SetPasswordMode(bool value);
+	LogWriter* GetLogWriter() const { return m_log; }
+	bool GetLogWriterWarningShown() const { return m_log_warning_shown; }
+	void SetLogWriterWarningShown(bool log_warning_shown) { m_log_warning_shown = log_warning_shown; }
 
 	void LogControlTest();
 
@@ -70,6 +74,9 @@ protected:
 	NickListControl *m_lstNickList;
 
 	ClientUIMDITransferPanel *m_pnlTransfer;
+
+	LogWriter *m_log;
+	bool m_log_warning_shown;
 
 private:
 	DECLARE_EVENT_TABLE()

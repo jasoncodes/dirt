@@ -3,6 +3,7 @@
 
 #include "Client.h"
 #include "Console.h"
+#include "LogWriter.h"
 
 class ClientUIConsole : public Console, public ClientEventHandler
 {
@@ -47,6 +48,8 @@ protected:
 protected:
 	Client *m_client;
 	bool m_passmode;
+	LogWriter m_log;
+	bool m_log_warning_given;
 
 };
 

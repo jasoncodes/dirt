@@ -3,6 +3,7 @@
 
 #include "SwitchBarParent.h"
 #include "Client.h"
+#include <wx/datetime.h>
 
 class ClientUIMDICanvas;
 class NickListControl;
@@ -23,6 +24,7 @@ public:
 	bool ResetWindowPos();
 	void ResetRedLines();
 	wxArrayString* GetNicklist() { return &m_nicklist; }
+	wxDateTime GetLogDate();
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
@@ -74,6 +76,8 @@ protected:
 	wxTimer *m_tmrTray;
 	bool m_tray_flash;
 	bool m_tray_auto_restore;
+	wxDateTime m_log_date;
+	bool m_log_date_okay;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
 	ClientUIMDITransferPanel* GetContext(const long transferid);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.38 2003-03-16 12:24:21 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.39 2003-03-19 14:34:52 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -16,7 +16,8 @@ RCS_ID($Id: ClientUIConsole.cpp,v 1.38 2003-03-16 12:24:21 jason Exp $)
 #include "Modifiers.h"
 
 ClientUIConsole::ClientUIConsole(bool no_input)
-	: Console(no_input)
+	: Console(no_input),
+	m_log(LogWriter::GenerateFilename(wxT("Client"), LogWriter::GenerateNewLogDate(wxT("Client")))), m_log_warning_given(false)
 {
 	m_passmode = false;
 	m_client = new ClientDefault(this);
@@ -29,7 +30,17 @@ ClientUIConsole::~ClientUIConsole()
 
 void ClientUIConsole::Output(const wxString &line)
 {
-	Console::Output(GetShortTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
+	wxString text = GetShortTimestamp() + line;
+	Console::Output(LogControl::ConvertModifiersIntoHtml(text, true));
+	if (m_log.Ok())
+	{
+		m_log.AddText(text);
+	}
+	else if (!m_log_warning_given)
+	{
+		m_log_warning_given = true;
+		OnClientWarning(wxEmptyString, "Error writing log file");
+	}
 }
 
 void ClientUIConsole::OnInput(const wxString &line)

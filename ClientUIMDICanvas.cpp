@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.41 2003-03-18 06:36:38 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.42 2003-03-19 14:31:42 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -56,6 +56,23 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 	wxIcon icon = wxNullIcon;
 
 	m_type = type;
+	m_log_warning_shown = false;
+
+	if (type == QueryCanvas || type == ChannelCanvas)
+	{
+		wxDateTime log_date = ((ClientUIMDIFrame*)parent)->GetLogDate();
+		wxString log_nick = (type == QueryCanvas)?title:wxString();
+		wxString log_filename = LogWriter::GenerateFilename(wxT("Client"), log_date, log_nick);
+		m_log = new LogWriter(log_filename);
+		if (m_log->Ok())
+		{
+			m_log->AddSeparator();
+		}
+	}
+	else
+	{
+		m_log = NULL;
+	}
 
 	switch (type)
 	{
@@ -127,6 +144,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 ClientUIMDICanvas::~ClientUIMDICanvas()
 {
+	delete m_log;
 }
 
 void ClientUIMDICanvas::DoGotFocus()
