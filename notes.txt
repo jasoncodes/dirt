@@ -35,7 +35,7 @@
 
 * scripting (/exec and /eval)
 
-* banning (wxIsWild(), wxMatchWild())
+* banning (wxIsWild(), wxMatchWild(), wxString::Matches())
 
 * hide /oper password when being typed
 
