@@ -161,7 +161,6 @@ void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
 void ClientUIMDICanvas::ResizeChildren()
 {
 
-	
 	wxSize size = GetClientSize();
 
 	if (m_pnlTransfer != NULL)
@@ -205,14 +204,23 @@ void ClientUIMDICanvas::ResizeChildren()
 				nick_width = min_width_nick;
 				log_width = size.x - nick_width;
 			}
-			
-			m_txtLog->SetSize(0, 0, log_width, log_height);
-			m_sash->SetSize(log_width, 0, nick_width, log_height);
+
+			if (log_width < min_width_log)
+			{
+				log_width = min_width_log;
+			}
+
+			int nick_left = size.x - nick_width;
+
+			m_txtLog->SetSize(nick_left - log_width, 0, log_width, log_height);
+			m_sash->SetSize(nick_left, 0, nick_width, log_height);
 
 		}
 		else
 		{
+
 			m_txtLog->SetSize(0, 0, size.x, log_height);
+
 		}
 
 	}
