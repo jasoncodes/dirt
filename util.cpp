@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.53 2003-04-03 05:23:50 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.54 2003-04-28 11:35:23 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1015,4 +1015,47 @@ wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future)
 		}
 	}
 	return dt;
+}
+
+wxString GetSelf()
+{
+
+	wxString first_arg =
+		(wxTheApp->argc > 0) ? wxTheApp->argv[0] : wxEmptyString;
+
+	#if defined(__WXMSW__)
+
+		wxChar buff[4096];
+
+		DWORD len = GetModuleFileName(NULL, buff, WXSIZEOF(buff));
+
+		return len?wxString(buff,len):first_arg;
+
+	#elif defined(__UNIX__)
+
+		wxChar buff[4096];
+
+		int len = readlink("/proc/self/exe", buff, WXSIZEOF(buff));
+		if (len > 0)
+		{
+			return wxString(buff, len);
+		}
+		else
+		{
+			if (realpath(argv[0], buff))
+			{
+				return buff;
+			}
+			else
+			{
+				return first_arg;
+			}
+		}
+
+	#else
+
+		return first_arg;
+
+	#endif
+
 }

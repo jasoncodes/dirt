@@ -69,5 +69,6 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool sh
 void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString);
 void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString, bool show = false, bool default_maximized = false);
 wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future = false);
+wxString GetSelf();
 
 #endif
