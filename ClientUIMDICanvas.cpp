@@ -52,17 +52,22 @@ protected:
 	void OnSize(wxSizeEvent &event)
 	{
 
-		int old_pos = GetSashPosition();
-		int old_size = GetWindow2()->GetSize().x;
-
-		wxSplitterWindow::OnSize(event);
-
-		if (old_pos > 0)
+		if (GetSize().x > 0 && GetSize().y > 0)
 		{
-			int new_size = GetWindow2()->GetSize().x;
-			int size_diff = new_size - old_size;
-			int new_pos = old_pos + size_diff;
-			SetSashPosition(new_pos);
+		
+			int old_pos = GetSashPosition();
+			int old_size = GetWindow2()->GetSize().x;
+
+			wxSplitterWindow::OnSize(event);
+
+			if (old_pos > 0)
+			{
+				int new_size = GetWindow2()->GetSize().x;
+				int size_diff = new_size - old_size;
+				int new_pos = old_pos + size_diff;
+				SetSashPosition(new_pos);
+			}
+
 		}
 
 	}
