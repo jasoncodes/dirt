@@ -63,9 +63,6 @@ protected:
 	bool OnTimer(wxLongLong_t now);
 
 protected:
-	void ClearSockets();
-
-protected:
 	FileTransfers *m_transfers;
 	File m_file;
 	CPSCalc m_cps;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.29 2003-05-14 11:58:23 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.30 2003-05-14 12:06:08 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -772,7 +772,7 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 						CryptSocketServer *sckListen = (CryptSocketServer*)event.GetSocket();
 						sckListen->SetEventHandler(NULL, wxID_ANY);
 						CryptSocketBase *sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
-						t->ClearSockets();
+						WX_CLEAR_ARRAY(t->m_scks);
 						t->m_scks.Add(sck);
 					}
 					else

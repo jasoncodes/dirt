@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.20 2003-05-14 11:58:22 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.21 2003-05-14 12:06:08 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -28,16 +28,7 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 
 FileTransfer::~FileTransfer()
 {
-	ClearSockets();
-}
-
-void FileTransfer::ClearSockets()
-{
-	for (size_t i = 0; i < m_scks.GetCount(); ++i)
-	{
-		delete m_scks[i];
-	}
-	m_scks.Empty();
+	WX_CLEAR_ARRAY(m_scks);
 }
 
 static const wxLongLong_t s_timeout_pending = 180000;
