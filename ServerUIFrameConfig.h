@@ -19,24 +19,25 @@ protected:
 	virtual void LoadSettings();
 	virtual bool SaveSettings();
 	virtual void ReportError(const wxString &error_message, wxTextCtrl *txt);
+	virtual void ReportError(const wxString &error_message, wxCheckBox *chk);
 
 protected:
 	Server *m_server;
 	wxTextCtrl *m_txtListenPort;
 	wxTextCtrl *m_txtUserPassword;
 	wxTextCtrl *m_txtAdminPassword;
-wxTextCtrl *m_txtServerName;
-wxTextCtrl *m_txtHostname;
+	wxTextCtrl *m_txtServerName;
+	wxTextCtrl *m_txtHostname;
 
-wxCheckBox *m_chkPublicListEnabled;
-wxTextCtrl *m_txtPublicListAuthentication;
-wxTextCtrl *m_txtPublicListComment;
+	wxCheckBox *m_chkPublicListEnabled;
+	wxTextCtrl *m_txtPublicListAuthentication;
+	wxTextCtrl *m_txtPublicListComment;
 
-wxCheckBox *m_chkHTTPProxyEnabled;
-wxTextCtrl *m_txtHTTPProxyHostname;
-wxTextCtrl *m_txtHTTPProxyPort;
-wxTextCtrl *m_txtHTTPProxyUsername;
-wxTextCtrl *m_txtHTTPProxyPassword;
+	wxCheckBox *m_chkHTTPProxyEnabled;
+	wxTextCtrl *m_txtHTTPProxyHostname;
+	wxTextCtrl *m_txtHTTPProxyPort;
+	wxTextCtrl *m_txtHTTPProxyUsername;
+	wxTextCtrl *m_txtHTTPProxyPassword;
 
 	wxButton *m_cmdApply;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.15 2003-03-04 06:17:25 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.16 2003-03-04 06:39:05 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -311,6 +311,16 @@ void ServerUIFrameConfig::LoadSettings()
 	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
 	m_txtUserPassword->SetValue(config->GetUserPassword(false));
 	m_txtAdminPassword->SetValue(config->GetAdminPassword(false));
+	m_txtServerName->SetValue(config->GetServerName());
+	m_txtHostname->SetValue(config->GetHostname());
+	m_chkPublicListEnabled->SetValue(config->GetPublicListEnabled());
+	m_txtPublicListAuthentication->SetValue(config->GetPublicListAuthentication(false));
+	m_txtPublicListComment->SetValue(config->GetPublicListComment());
+	m_chkHTTPProxyEnabled->SetValue(config->GetHTTPProxyEnabled());
+	m_txtHTTPProxyHostname->SetValue(config->GetHTTPProxyHostname());
+	m_txtHTTPProxyPort->SetValue(wxString()<<config->GetHTTPProxyPort());
+	m_txtHTTPProxyUsername->SetValue(config->GetHTTPProxyUsername());
+	m_txtHTTPProxyPassword->SetValue(config->GetHTTPProxyPassword(false));
 	m_cmdApply->Enable(false);
 }
 
@@ -319,6 +329,12 @@ void ServerUIFrameConfig::ReportError(const wxString &error_message, wxTextCtrl 
 	wxMessageBox(error_message, wxT("Error"), wxOK|wxICON_ERROR, this);
 	txt->SetFocus();
 	txt->SetSelection(-1, -1);
+}
+
+void ServerUIFrameConfig::ReportError(const wxString &error_message, wxCheckBox *chk)
+{
+	wxMessageBox(error_message, wxT("Error"), wxOK|wxICON_ERROR, this);
+	chk->SetFocus();
 }
 
 bool ServerUIFrameConfig::SaveSettings()
@@ -338,6 +354,56 @@ bool ServerUIFrameConfig::SaveSettings()
 	if (!config->SetAdminPassword(m_txtAdminPassword->GetValue()))
 	{
 		ReportError(wxT("Invalid admin password"), m_txtAdminPassword);
+		return false;
+	}
+	if (!config->SetServerName(m_txtServerName->GetValue()))
+	{
+		ReportError(wxT("Invalid server name"), m_txtServerName);
+		return false;
+	}
+	if (!config->SetHostname(m_txtHostname->GetValue()))
+	{
+		ReportError(wxT("Invalid hostname"), m_txtHostname);
+		return false;
+	}
+	if (!config->SetPublicListEnabled(m_chkPublicListEnabled->GetValue()))
+	{
+		ReportError(wxT("Invalid public list enabled"), m_chkPublicListEnabled);
+		return false;
+	}
+	if (!config->SetPublicListAuthentication(m_txtPublicListAuthentication->GetValue()))
+	{
+		ReportError(wxT("Invalid public list authentication"), m_txtPublicListAuthentication);
+		return false;
+	}
+	if (!config->SetPublicListComment(m_txtPublicListComment->GetValue()))
+	{
+		ReportError(wxT("Invalid public list comment"), m_txtPublicListComment);
+		return false;
+	}
+	if (!config->SetHTTPProxyEnabled(m_chkHTTPProxyEnabled->GetValue()))
+	{
+		ReportError(wxT("Invalid HTTP proxy enabled"), m_chkHTTPProxyEnabled);
+		return false;
+	}
+	if (!config->SetHTTPProxyHostname(m_txtHTTPProxyHostname->GetValue()))
+	{
+		ReportError(wxT("Invalid XXX"), m_txtHTTPProxyHostname);
+		return false;
+	}
+	if (!m_txtHTTPProxyPort->GetValue().ToLong(&x) || !config->SetHTTPProxyPort(x))
+	{
+		ReportError(wxT("Invalid HTTP proxy port"), m_txtHTTPProxyPort);
+		return false;
+	}
+	if (!config->SetHTTPProxyUsername(m_txtHTTPProxyUsername->GetValue()))
+	{
+		ReportError(wxT("Invalid HTTP proxy username"), m_txtHTTPProxyUsername);
+		return false;
+	}
+	if (!config->SetHTTPProxyPassword(m_txtHTTPProxyPassword->GetValue()))
+	{
+		ReportError(wxT("Invalid HTTP proxy password"), m_txtHTTPProxyPassword);
 		return false;
 	}
 	config->Flush();
