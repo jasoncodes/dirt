@@ -1,5 +1,5 @@
 /* XPM */
-static char *active-8_xpm[]={
+static char *active_6_xpm[]={
 "16 16 7 1",
 ". c None",
 "b c #000000",
@@ -13,9 +13,9 @@ static char *active-8_xpm[]={
 "...a#########aa.",
 "..a#a##bbbb#acda",
 ".aeea#bb##bbadda",
-".aaaa#bb##bbaaaa",
-"a...c#bb##bba...",
-"ec..c##bbbb##a..",
+".aaaa#bb####aaaa",
+"a...c#bb####a...",
+"ec..c#bbbbb##a..",
 "a..c##bb##bb#a..",
 "ec.c##bb##bb##a.",
 "a..ea#bb##bbaaa.",

@@ -1,5 +1,5 @@
 /* XPM */
-static char *active-9_xpm[]={
+static char *active_5_xpm[]={
 "16 16 7 1",
 ". c None",
 "b c #000000",
@@ -11,11 +11,11 @@ static char *active-9_xpm[]={
 "................",
 ".....#######....",
 "...a#########aa.",
-"..a#a##bbbb#acda",
-".aeea#bb##bbadda",
-".aaaa#bb##bbaaaa",
-"a...c#bb##bba...",
-"ec..c##bbbbb#a..",
+"..a#a#bbbbbbacda",
+".aeea#bb####adda",
+".aaaa#bb####aaaa",
+"a...c#bbbbb#a...",
+"ec..c#bb##bb#a..",
 "a..c######bb#a..",
 "ec.c######bb##a.",
 "a..ea#bb##bbaaa.",
