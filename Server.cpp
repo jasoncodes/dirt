@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.26 2003-03-04 00:42:15 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.25 2003-03-04 00:41:30 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -531,6 +531,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->m_isaway = true;
 			conn->m_awaymessage = (wxString)data;
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
+			Information(conn->GetId() + wxT(" is away: ") + conn->m_awaymessage);
 		}
 	}
 	else if (cmd == wxT("BACK"))
@@ -538,6 +539,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		if (conn->m_awaymessage.Length() > 0)
 		{
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
+			Information(conn->GetId() + wxT(" has returned (msg: ") + conn->m_awaymessage + (wxChar)OriginalModifier + wxT(")"));
 			conn->m_isaway = false;
 			conn->m_awaymessage = wxEmptyString;
 		}
