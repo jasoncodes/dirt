@@ -29,3 +29,6 @@
   at same time, and close the alt route if main succeeds, etc
 
 * flashing text for main frame as FlashWindow() alternative
+
+* prefix caption with number in brackets showing how many msgs are waiting?
+
