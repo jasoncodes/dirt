@@ -75,7 +75,9 @@ protected:
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_ENTER, ID_CONSOLE_INPUT);
 		event.SetString(input);
 		m_console->AddPendingEvent(event);
-		wxWakeUpMainThread();
+		#if defined(__WXMSW__) || defined(__WXMAC__)
+			wxWakeUpMainThread();
+		#endif
 	}
 
 protected:
