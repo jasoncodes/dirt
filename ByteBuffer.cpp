@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.11 2003-03-26 12:40:19 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.12 2003-03-26 12:45:43 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -217,7 +217,7 @@ ByteBuffer::operator wxString() const
 		if (actual_len > 0)
 		{
 			char *buff = new char[actual_len*2];
-			size_t buff_len = wxConvLocal.WC2MB(buff, unicode, actual_len*2);
+			size_t buff_len = wxConvLocal.WC2MB(buff, unicode, actual_len);
 			if (buff_len == (size_t)-1)
 			{
 				buff_len = actual_len;
@@ -226,7 +226,7 @@ ByteBuffer::operator wxString() const
 					buff[i] = (unicode[i] > 0xff) ? wxT('?') : (wxChar)unicode[i];
 				}
 			}
-			result = wxString(buff, buff_len-1);
+			result = wxString(buff, buff_len);
 			delete buff;
 		}
 	#endif
