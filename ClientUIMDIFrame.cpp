@@ -139,7 +139,10 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	if (GetActiveChild() != canvas->GetParent())
 	{
 		int button_index = m_switchbar->GetIndexFromUserData(canvas);
-		m_switchbar->SetButtonHighlight(button_index, true);
+		if (button_index)
+		{
+			m_switchbar->SetButtonHighlight(button_index, true);
+		}
 	}
 }
 

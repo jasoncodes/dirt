@@ -298,8 +298,11 @@ void SwitchBar::OnMouse(wxMouseEvent &event)
 void SwitchBar::SelectButton(int button_index)
 {
 	wxASSERT(button_index >= -1 && button_index < GetButtonCount());
-	m_selected = button_index;
-	Refresh();
+	if (m_selected != button_index)
+	{
+		m_selected = button_index;
+		Refresh();
+	}
 }
 
 int SwitchBar::GetButtonCount()
@@ -342,8 +345,11 @@ void SwitchBar::RemoveButton(int button_index)
 void SwitchBar::SetButtonCaption(int button_index, const wxString &caption)
 {
 	wxASSERT(button_index > -1 && button_index < GetButtonCount());
-	m_buttons.Item(button_index).caption = caption;
-	Refresh();
+	if (m_buttons.Item(button_index).caption != caption)
+	{
+		m_buttons.Item(button_index).caption = caption;
+		Refresh();
+	}
 }
 
 wxString SwitchBar::GetButtonCaption(int button_index)
@@ -368,8 +374,11 @@ wxIcon SwitchBar::GetButtonIcon(int button_index)
 void SwitchBar::SetButtonHighlight(int button_index, bool new_value)
 {
 	wxASSERT(button_index > -1 && button_index < GetButtonCount());
-	m_buttons.Item(button_index).highlight = new_value;
-	Refresh();
+	if (m_buttons.Item(button_index).highlight != new_value)
+	{
+		m_buttons.Item(button_index).highlight = new_value;
+		Refresh();
+	}
 }
 
 bool SwitchBar::GetButtonHighlight(int button_index)
@@ -382,8 +391,11 @@ void SwitchBar::SetButtonProgress(int button_index, int new_value)
 {
 	wxASSERT(button_index > -1 && button_index < GetButtonCount());
 	wxASSERT(new_value >= 0 && new_value <= 100);
-	m_buttons.Item(button_index).progress = new_value;
-	Refresh();
+	if (m_buttons.Item(button_index).progress != new_value)
+	{
+		m_buttons.Item(button_index).progress = new_value;
+		Refresh();
+	}
 }
 
 int SwitchBar::GetButtonProgress(int button_index)

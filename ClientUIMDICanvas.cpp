@@ -50,7 +50,10 @@ void ClientUIMDICanvas::DoGotFocus()
 	m_txtInput->SetFocus();
 	SwitchBar *switchbar = m_parent->GetSwitchBar();
 	int button_index = switchbar->GetIndexFromUserData(this);
-	switchbar->SetButtonHighlight(button_index, false);
+	if (button_index > -1)
+	{
+		switchbar->SetButtonHighlight(button_index, false);
+	}
 }
 
 void ClientUIMDICanvas::OnFocus(wxFocusEvent &event)

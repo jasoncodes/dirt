@@ -9,6 +9,8 @@
 * need a portable way open a URL
   ShellExecute works good on Win32, but what about others?
 
+* animations, flickering, etc, happening when minimize, ctrl-tab, etc
+
 
 currently working on console client ui for win32
 (and hopefully automaticly linux w/ the help of a virtual x server)
