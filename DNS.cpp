@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.20 2004-05-30 10:04:48 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.21 2004-05-30 11:21:34 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -115,10 +115,18 @@ protected:
 		// lock the condition mutex all ready for notifications from main thread
 		s_DNS_condition_mutex->Lock();
 
-		DNSDebugMsg(wxT("thread: broadcasting ready to go msg"));
+		bool first_time = true;
+
+		DNSDebugMsg(wxT("thread: locking ready mutex"));
+		s_DNS_startup_condition_mutex->Lock();
+
+		DNSDebugMsg(wxT("thread: signalling ready to go"));
 		// let the main thread know we are up and running
 		// and the normal condition is ready to be notified on
-		s_DNS_startup_condition->Broadcast();
+		s_DNS_startup_condition->Signal();
+
+		DNSDebugMsg(wxT("thread: unlocking read mutex"));
+		s_DNS_startup_condition_mutex->Unlock();
 
 		DNSDebugMsg(wxT("thread: here we go"));
 		// variables used to send events, NULL normally
@@ -128,9 +136,18 @@ protected:
 		while (!TestDestroy() && !s_DNS_shutdown)
 		{
 			
-			s_DNS_section->Enter();
-			bool is_empty = (s_DNS_queue->GetFirst() == NULL);
-			s_DNS_section->Leave();
+			bool is_empty;
+			if (first_time)
+			{
+				is_empty = true;
+				first_time = false;
+			}
+			else
+			{
+				s_DNS_section->Enter();
+				is_empty = (s_DNS_queue->GetFirst() == NULL);
+				s_DNS_section->Leave();
+			}
 
 			if (s_DNS_going_to_signal || is_empty)
 			{
