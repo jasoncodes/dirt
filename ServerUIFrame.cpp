@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.54 2003-04-29 13:12:58 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.55 2003-04-30 02:47:17 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -126,7 +126,7 @@ ServerUIFrame::ServerUIFrame()
 
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
-	m_lstConnections = new wxListCtrl(panel, ID_CONNECTIONS, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	m_lstConnections = new wxListCtrl(panel, ID_CONNECTIONS, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_SINGLE_SEL);
 	FixBorder(m_lstConnections);
 	m_lstConnections->InsertColumn(0, wxT("Nickname"),     wxLIST_FORMAT_LEFT, 96);
 	m_lstConnections->InsertColumn(1, wxT("Host"),         wxLIST_FORMAT_LEFT, 96);
