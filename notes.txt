@@ -42,6 +42,4 @@
   or similar and freezes the GTK thread app. seems to always happen when moving mouse
   over tray icon when the icon changes
 
-* /bind
-
 * file transfers

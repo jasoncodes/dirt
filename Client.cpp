@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.32 2003-03-13 00:48:36 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.33 2003-03-13 02:04:25 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -154,35 +154,40 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: AWAY BACK CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
 		m_event_handler->OnClientInformation(context, wxT("Support for Lizard technology is not available at this time"));
 	}
-	else if (cmd == wxT("ALIAS"))
+	else if (cmd == wxT("ALIAS") || cmd == wxT("BIND"))
 	{
 		HeadTail ht = SplitQuotedHeadTail(params);
+		bool bIsAlias = (cmd == wxT("ALIAS"));
 		if (ht.head.Length())
 		{
-			if (SetAlias(ht.head, ht.tail))
+			bool b = bIsAlias ? SetAlias(ht.head, ht.tail) : SetBinding(ht.head, ht.tail);
+			if (b)
 			{
 				m_event_handler->OnClientInformation(context, ht.head + wxT(" = ") + (ht.tail.Length()?(wxT('"')+ht.tail+wxT('"')):wxString(wxT("(Nothing)"))));
 			}
 			else
 			{
-				m_event_handler->OnClientWarning(context, wxT("Error setting alias"));
+				m_event_handler->OnClientWarning(context, wxString()<<wxT("Error setting ")<<(bIsAlias?wxT("alias: "):wxT("binding: "))<<ht.head);
 			}
 		}
 		else
 		{
-			m_event_handler->OnClientInformation(context, wxT("Current aliases:"));
-			wxArrayString list = GetAliasList();
+			m_event_handler->OnClientInformation(context, wxString()<<wxT("Current ")<<(bIsAlias?wxT("aliases:"):wxT("bindings:")));
+			wxArrayString list = bIsAlias?GetAliasList():GetBindingList();
 			if (list.GetCount())
 			{
 				for (size_t i = 0; i < list.GetCount(); ++i)
 				{
-					m_event_handler->OnClientInformation(context, wxT("    ")+list.Item(i)+wxT(" = \"")+GetAlias(list.Item(i))+wxT('"'));
+					m_event_handler->OnClientInformation(context,
+						wxString()<<wxT("    ")<<list.Item(i)<<wxT(" = \"")<<
+						(bIsAlias?GetAlias(list.Item(i)):GetBinding(list.Item(i)))
+						<<wxT('"'));
 				}
 			}
 			else
@@ -620,6 +625,47 @@ bool Client::SetAlias(const wxString &name, const wxString &value)
 	else if (GetAlias(name).Length())
 	{
 		return m_config->DeleteEntry(wxT("Client/Aliases/")+name) && m_config->Flush();
+	}
+	else
+	{
+		return true;
+	}
+}
+
+wxArrayString Client::GetBindingList() const
+{
+	wxArrayString list;
+	wxString old_path = m_config->GetPath();
+	m_config->SetPath(wxT("Client/Bindings"));
+	list.Alloc(m_config->GetNumberOfEntries(false));
+	wxString val;
+	long i;
+	if (m_config->GetFirstEntry(val, i))
+	{
+		do
+		{
+			list.Add(val);
+		}
+		while (m_config->GetNextEntry(val, i));
+	}
+	m_config->SetPath(old_path);
+	return list;
+}
+
+wxString Client::GetBinding(const wxString &name) const
+{
+	return m_config->Read(wxT("Client/Bindings/")+name, wxEmptyString);
+}
+
+bool Client::SetBinding(const wxString &name, const wxString &value)
+{
+	if (value.Length())
+	{
+		return m_config->Write(wxT("Client/Bindings/")+name, value) && m_config->Flush();
+	}
+	else if (GetBinding(name).Length())
+	{
+		return m_config->DeleteEntry(wxT("Client/Bindings/")+name) && m_config->Flush();
 	}
 	else
 	{

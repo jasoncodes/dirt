@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.70 2003-03-13 01:30:35 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.71 2003-03-13 02:04:25 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -33,7 +33,18 @@ enum
 	ID_TRAY,
 	ID_TRAYTIMER,
 	ID_RESTORE,
-	ID_BINDING
+	ID_BINDING_F1,
+	ID_BINDING_F2,
+	ID_BINDING_F3,
+	ID_BINDING_F4,
+	ID_BINDING_F5,
+	ID_BINDING_F6,
+	ID_BINDING_F7,
+	ID_BINDING_F8,
+	ID_BINDING_F9,
+	ID_BINDING_F10,
+	ID_BINDING_F11,
+	ID_BINDING_F12,
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
@@ -46,7 +57,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_ICONIZE(ClientUIMDIFrame::OnIconize)
 	EVT_MENU(ID_RESTORE, ClientUIMDIFrame::OnRestore)
 	EVT_TIMER(ID_TRAYTIMER, ClientUIMDIFrame::OnTrayTimer)
-	EVT_MENU(ID_BINDING, ClientUIMDIFrame::OnBinding)
+	EVT_MENU_RANGE(ID_BINDING_F1, ID_BINDING_F12, ClientUIMDIFrame::OnBinding)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -93,10 +104,12 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_client = new ClientDefault(this);
 
-	size_t num_accel = 2;
+	size_t num_accel = 12;
 	wxAcceleratorEntry *entries = new wxAcceleratorEntry[GetAcceleratorCount()+num_accel];
-	entries[0].Set(0, WXK_F1, ID_BINDING);
-	entries[1].Set(0, WXK_F2, ID_BINDING);
+	for (size_t i = 0; i < 12; ++i)
+	{
+		entries[i].Set(0, WXK_F1+i, ID_BINDING_F1+i);
+	}
 	for (size_t i = num_accel; i < GetAcceleratorCount()+num_accel; ++i)
 	{
 		entries[i] = GetAccelerators()[i-num_accel];
@@ -833,6 +846,23 @@ void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)
 
 void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
 {
-	OnClientDebug(wxEmptyString, wxT("OnBinding"));
+	wxString name;
+	if (event.GetId() >= ID_BINDING_F1 && event.GetId() <= ID_BINDING_F12)
+	{
+		name = wxString()<<wxT("F")<<(event.GetId()-ID_BINDING_F1+1);
+	}
+	if (name.Length())
+	{
+		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
+		if (child)
+		{
+			wxString context =
+				(GetSwitchBar()->GetSelectedIndex() == 0) ?
+				wxEmptyString :
+				child->GetCanvas()->GetTitle();
+			m_client->ProcessAlias(context, m_client->GetBinding(name), wxEmptyString);
+			return;
+		}
+	}
 	event.Skip();
 }

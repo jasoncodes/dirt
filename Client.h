@@ -64,6 +64,9 @@ public:
 	wxArrayString GetAliasList() const;
 	virtual wxString GetAlias(const wxString &name) const;
 	virtual bool SetAlias(const wxString &name, const wxString &value);
+	wxArrayString GetBindingList() const;
+	virtual wxString GetBinding(const wxString &name) const;
+	virtual bool SetBinding(const wxString &name, const wxString &value);
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname() const;
