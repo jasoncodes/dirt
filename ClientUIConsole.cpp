@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.34 2003-02-27 05:20:44 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.35 2003-02-27 07:46:12 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -159,11 +159,11 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 	{
 		if (is_action)
 		{
-			Output(wxString() << wxT("* ") + m_client->GetNickname() + wxT(" ") + text);
+			Output(wxString() << wxT("* ") + nick + wxT(" ") + text);
 		}
 		else
 		{
-			Output(wxString() << wxT("<") + m_client->GetNickname() + wxT("> ") + text);
+			Output(wxString() << wxT("<") + nick + wxT("> ") + text);
 		}
 	}
 }
