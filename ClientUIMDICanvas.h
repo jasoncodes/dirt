@@ -41,6 +41,7 @@ protected:
 	void OnLinkClicked(wxCommandEvent &event);
 	void OnNickListDblClick(wxCommandEvent &event);
 	void OnNickListMenu(wxCommandEvent &event);
+	void OnNickListMessage(wxCommandEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnActivate();

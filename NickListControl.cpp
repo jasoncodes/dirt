@@ -69,6 +69,12 @@ int NickListControl::GetSelectedIndex()
 	return wxListBox::GetSelection();
 }
 
+wxString NickListControl::GetSelectedNick()
+{
+	int index = GetSelectedIndex();
+	return (index > -1) ? GetNick(index) : wxEmptyString;
+}
+
 int NickListControl::GetCount()
 {
 	return wxListBox::GetCount();

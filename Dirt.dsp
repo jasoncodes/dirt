@@ -345,6 +345,14 @@ SOURCE=.\Modifiers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\NickListControl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\NickListControl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SpanTag.cpp
 # End Source File
 # Begin Source File

@@ -6,7 +6,7 @@
  * EVT_LISTBOX_DCLICK for double click
  *
  * Get the nick index via event.GetInt() and
- * use NickListControl::GetNick() to get the nick
+ * use NickListControl::GetSelectedNick() to get the nick
  */
 class NickListControl : public wxListBox
 {
@@ -22,7 +22,8 @@ public:
 	virtual wxString GetNick(int index);
 	virtual int GetCount();
 	virtual int GetNickIndex(const wxString &nick);
-	int GetSelectedIndex();
+	virtual int GetSelectedIndex();
+	virtual wxString GetSelectedNick();
 
 protected:
 	void OnRightUp(wxMouseEvent &event);

@@ -22,8 +22,10 @@ enum
 {
 	ID_LOG = 1,
 	ID_INPUT,
+	ID_TRANSFER,
 	ID_NICKLIST,
-	ID_TRANSFER
+	ID_NICKLIST_NICK,
+	ID_NICKLIST_MESSAGE
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -34,6 +36,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
+	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMessage)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
@@ -236,21 +239,43 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 {
-	wxString nick = m_lstNickList->GetNick(event.GetInt());
+	OnNickListMessage(event);
+}
+
+void ClientUIMDICanvas::OnNickListMessage(wxCommandEvent &event)
+{
+
+	wxString nick = m_lstNickList->GetSelectedNick();
+
 	if (nick.Length() > 0)
 	{
+
 		wxString msg = ::wxGetTextFromUser("Message to send to " + nick + ":", "Dirt Secure Chat");
+		
 		if (msg.Length() > 0)
 		{
 			GetClient()->SendMessage(nick, msg);
 		}
+
 	}
+
 }
 
 void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 {
-	wxString nick = m_lstNickList->GetNick(event.GetInt());
-	wxMessageBox("Right click on " + nick);
+
+	wxString nick = m_lstNickList->GetSelectedNick();
+
+	wxMenu menu;
+
+	menu.Append(ID_NICKLIST_NICK, nick);
+	menu.Enable(ID_NICKLIST_NICK, false);
+	menu.AppendSeparator();
+	menu.Append(ID_NICKLIST_MESSAGE, "Send &Message");
+
+	wxPoint pos = ScreenToClient(wxGetMousePosition());
+	PopupMenu(&menu, pos);
+
 }
 
 void ClientUIMDICanvas::LogControlTest()
