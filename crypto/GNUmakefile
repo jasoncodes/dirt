@@ -56,7 +56,7 @@ LIBOBJS = \
 	des.o dessp.o filters.o fips140.o integer.o iterhash.o md5.o \
 	md5mac.o misc.o modes.o mqueue.o nbtheory.o osrng.o pkcspad.o \
 	pubkey.o queue.o randpool.o rdtables.o rijndael.o rsa.o sha.o \
-	zdeflate.o zinflate.o zlib.o
+	zdeflate.o zinflate.o zlib.o pssr.o
 
 all: libcryptopp.a
 
