@@ -76,6 +76,9 @@ protected:
 	wxArrayString *m_tab_completion_list;
 	wxString m_tab_completion_prefix;
 	bool m_ignore_change;
+	size_t m_edit_row;
+	wxString m_edit_text;
+	bool m_typed_something;
 
 private:
 	DECLARE_EVENT_TABLE()

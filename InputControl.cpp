@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.26 2004-05-22 17:08:49 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.27 2004-05-22 18:27:31 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -257,7 +257,8 @@ InputControl::InputControl(
 	: wxTextCtrl(parent, id, wxT(""), pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
 	m_history(),
 	m_history_pos(0), m_popup(NULL),
-	m_ctrl_down(false), m_tab_completion_list(NULL), m_ignore_change(false)
+	m_ctrl_down(false), m_tab_completion_list(NULL),
+	m_ignore_change(false), m_edit_row(0), m_typed_something(false)
 {
 
 	m_txtBestSize = new wxTextCtrl(GetParent(), wxID_ANY);
@@ -325,7 +326,10 @@ void InputControl::AddToHistory(const wxString &line)
 {
 	if ((m_history.GetCount() == 0) || (m_history.Last() != line))
 	{
-		m_history.Add(line);
+		if (line.Length())
+		{
+			m_history.Add(line);
+		}
 	}
 	m_history_pos = m_history.GetCount();
 }
@@ -364,11 +368,31 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 
 		if (m_history_pos > 0)
 		{
+			if (m_typed_something)
+			{
+				m_edit_text = GetValue();
+				m_edit_row = m_history_pos;
+				if (m_edit_text.Length() == 0 && m_history_pos != m_history.GetCount())
+				{
+					m_history_pos = m_edit_row = m_history.GetCount();
+					InputControl::OnKeyDown(event);
+					return;
+				}
+			}
 			m_history_pos--;
 			DisplayHistory();
 		}
 		else
 		{
+			if (m_typed_something)
+			{
+				if (GetValue().Length() == 0 && m_history_pos != m_history.GetCount())
+				{
+					m_history_pos = m_edit_row = m_history.GetCount();
+					InputControl::OnKeyDown(event);
+					return;
+				}
+			}
 			Alert();
 		}
 
@@ -378,36 +402,64 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 
 		if ((m_history_pos+1) < m_history.GetCount())
 		{
+			if (m_typed_something)
+			{
+				m_edit_text = GetValue();
+				m_edit_row = m_history_pos;
+				if (m_edit_text.Length() == 0)
+				{
+					m_history_pos = m_edit_row = m_history.GetCount();
+					return;
+				}
+			}
 			m_history_pos++;
 			DisplayHistory();
 		}
 		else
 		{
-			if (GetValue().Length() > 0)
+			if (m_history_pos+1 == m_edit_row)
 			{
-				SetValue(wxT(""));
+				if (m_history_pos == m_history.GetCount())
+				{
+					SetValue(wxEmptyString);
+				}
+				else
+				{
+					SetValue(m_edit_text);
+				}
+				m_typed_something = true;
+				SetInsertionPointEnd();
+				m_history_pos = m_history.GetCount();
 			}
-			else
-			{
-				Alert();
-			}
-			m_history_pos = m_history.GetCount();
 		}
 
 	}
 	else if (!ModifierCheck(event))
 	{
-
+		m_typed_something = true;
 		event.Skip();
-
 	}
 
 }
 
 void InputControl::DisplayHistory()
 {
-	SetValue(m_history[m_history_pos]);
+	if (m_edit_row == m_history_pos)
+	{
+		SetValue(m_edit_text);
+		m_typed_something = true;
+	}
+	else
+	{
+		SetValue(m_history[m_history_pos]);
+		m_typed_something = false;
+	}
 	SetInsertionPointEnd();
+}
+
+void InputControl::Alert()
+{
+	//wxBell();
 }
 
 void InputControl::MaybeClosePopup(wxKeyEvent& event)

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.32 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.33 2004-05-22 18:27:31 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -445,7 +445,9 @@ void ClientUIMDITransferPanel::SetNickname(const wxString &nickname)
 void ClientUIMDITransferPanel::SetFilename(const wxString &filename)
 {
 	m_filename = filename;
-	m_lblFilename->SetLabel(filename);
+	wxString tmp(filename);
+	tmp.Replace(wxT("&"), wxT("&&"));
+	m_lblFilename->SetLabel(tmp);
 	UpdateCaption();
 }
 

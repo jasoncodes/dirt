@@ -1,3 +1,10 @@
+wallops. unknown commands should possibly just broadcast out to
+console@server. use say to force broadcast or a / prefix to force
+command. typing from the actual server console should output msg as from console@server
+
+Pressing Escape should close the ctrl-k popup,
+else clear the input control, else minimize selected mdi client
+
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
 increasing padding on staticboxes in option dialog should do it
 
@@ -11,10 +18,6 @@ win32: sometimes hitting ctrl-alt-d doesnt bring to top (although it appears to 
 win32: pressing ctrl-enter in the middle of a line of input results in the
 line being split into two lines, it should do the same thing as pressing
 ctrl-enter at the end of the input line
-
-make down arrow on input row not do anything
-
-make up arrow then down arrow bring back the last line that was being typed
 
 MinGW+NT4: Pressing Alt+T followed by space results in crash
 
@@ -38,8 +41,6 @@ prompt when pasting multiple lines
 
 implement digest auth in http.cpp
 
-filename label in filetransferpanel doesnt convert & to &&
-
 default tab to work like it does in bash (dont pick unless not ambiguous, show list of possibles otherwise)
 
 /./././././../././././
@@ -61,10 +62,6 @@ to a normal user as well as option to specify config file to use.
 
 full support to control service settings from the console such as admin
 password, user password, public list, max users, etc.
-
-wallops. unknown commands should possibly just broadcast out to
-console@server. use say to force broadcast or a / prefix to force
-command.
 
 optional alert sound if certain words are mentioned (i.e. your name)
 
@@ -110,9 +107,6 @@ disabled
 dirt needs a only listen on these ports option for send and recieve
 what'll will eventually end up implementing some sorta option to hint
 to dirt what good ports to try would be
-
-Pressing Escape should close the ctrl-k popup if open rather than minimizing
-selected mdi client
 
 for enhanced word filter: option not to use filter for nicks, msg, away, etc
 

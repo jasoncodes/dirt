@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.4 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferResumeDialog.cpp,v 1.5 2004-05-22 18:27:31 jason Exp $)
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -57,11 +57,12 @@ ClientUIMDITransferResumeDialog::ClientUIMDITransferResumeDialog(wxWindow *paren
 	wxString text;
 	text << wxT("Would you like to resume or overwrite\n\n");
 	text << new_filename << wxT("\n\n");
-	text << wxT("with ") << wxFileName(org_filename).GetFullName();
-	text << wxT(" from ") << nickname << wxT("?\n\n");
+	text << wxT("with \"") << wxFileName(org_filename).GetFullName();
+	text << wxT("\" from ") << nickname << wxT("?\n\n");
 	text << wxT("Note: You should only resume if the\n");
 	text << wxT("existing file is an incomplete copy of\n");
 	text << wxT("the remote file.\n");
+	text.Replace(wxT("&"), wxT("&&"));
 
 	wxStaticText *lblText = new wxStaticText(panel, wxID_ANY, text);
 
