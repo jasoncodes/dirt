@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.64 2004-05-30 12:46:41 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.65 2004-06-19 12:42:38 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -479,6 +479,7 @@ void ServerUIFrame::OnClear(wxCommandEvent &WXUNUSED(event))
 void ServerUIFrame::OnServerStateChange()
 {
 	m_cmdStartStop->SetLabel((m_server && m_server->IsRunning()) ? wxT("&Stop") : wxT("&Start"));
+	m_cmdStartStop->SetSize(m_cmdClient->GetSize());
 	m_cmdClient->Enable(m_server && m_server->IsRunning());
 	UpdateTrayIcon();
 }
