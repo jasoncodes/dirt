@@ -32,6 +32,11 @@ public:
 	operator wxString() const;
 	wxString GetHexDump(bool uppercase = true, bool space = true) const;
 
+	int Find(const ByteBuffer &to_find) const;
+	ByteBuffer Left(int len) const;
+	ByteBuffer Right(int len) const;
+	ByteBuffer Mid(int pos, int len = -1) const;
+
 protected:
 	ByteBuffer(ByteBufferData *data);
 	void Release();

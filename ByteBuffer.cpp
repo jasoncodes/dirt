@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.12 2003-03-26 12:45:43 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.13 2003-06-05 12:02:06 jason Exp $)
 
 #include "ByteBuffer.h"
+#include "util.h"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ByteBufferArray)
@@ -264,4 +265,50 @@ wxString ByteBuffer::GetHexDump(bool uppercase, bool space) const
 
 	return hex;
 
+}
+int ByteBuffer::Find(const ByteBuffer &to_find) const
+{
+	const byte *ptr1 = LockRead();
+	const byte *ptr2 = to_find.LockRead();
+	const byte *pos = findbytes(ptr1, Length(), ptr2, to_find.Length());
+	int result = pos ? (pos-ptr1) : -1;
+	Unlock();
+	to_find.Unlock();
+	return result;
+}
+
+ByteBuffer ByteBuffer::Left(int len) const
+{
+	len = wxMin(wxMax(len, 0), (int)Length());
+	const byte *ptr = LockRead();
+	ByteBuffer result(ptr, len);
+	Unlock();
+	return result;
+}
+
+ByteBuffer ByteBuffer::Right(int len) const
+{
+	len = wxMin(wxMax(len, 0), (int)Length());
+	const byte *ptr = LockRead();
+	ByteBuffer result(ptr + Length() - len, len);
+	Unlock();
+	return result;
+}
+
+ByteBuffer ByteBuffer::Mid(int pos, int len) const
+{
+	if (pos < 0)
+	{
+		len += pos;
+	}
+	if (len < 0)
+	{
+		len = Length();
+	}
+	pos = wxMin(wxMax(pos, 0), (int)Length() - 1);
+	len = wxMin(wxMax(len, 0), (int)Length() - pos);
+	const byte *ptr = LockRead();
+	ByteBuffer result(ptr + pos, len);
+	Unlock();
+	return result;
 }
