@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.2 2003-04-30 07:04:29 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.3 2003-04-30 07:08:44 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -194,7 +194,7 @@ void LanListFrame::ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t l
 		<< GetAndKill(info, wxT("peakusers")) << wxT(" peak, ")
 		<< GetAndKill(info, wxT("maxusers")) << wxT(" max)");
 	m_lstServers->SetItem(index, 3, users);
-	m_lstServers->SetItem(index, 4, AddCommas(ToLong(GetAndKill(info, wxT("avgping")))) + wxT(" ms"));
+	m_lstServers->SetItem(index, 4, AddCommas((off_t)ToLong(GetAndKill(info, wxT("avgping")))) + wxT(" ms"));
 	m_lstServers->SetItem(index, 5, GetAndKill(info, wxT("version")));
 	m_lstServers->SetItem(index, 6, SecondsToMMSS(ToLong(GetAndKill(info, wxT("idletime")))));
 	m_lstServers->SetItem(index, 7, SecondsToMMSS(ToLong(GetAndKill(info, wxT("uptime")))));
