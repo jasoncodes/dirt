@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.39 2003-05-26 02:58:28 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.40 2003-05-26 03:04:39 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -252,7 +252,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 							szrLeftTopRightTop->Add(m_txtMaxUsersIP, 0, wxEXPAND);
 
 					}
-					szrLeftTopRight->Add(szrLeftTopRightTop, 0, wxEXPAND, 0);
+					szrLeftTopRight->Add(szrLeftTopRightTop, 0, wxEXPAND | wxBOTTOM, 8);
 				
 					szrLeftTopRight->Add(m_pnlLog, 0, wxEXPAND, 0);
 
@@ -269,19 +269,18 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 				wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
 				{
 
-					wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
+					wxFlexGridSizer *szrLeftPublicInner = new wxFlexGridSizer(2, 8, 8);
+					szrLeftPublicInner->AddGrowableCol(1);
 					{
-						szrLabels->Add(m_lblPublicListAuthentication, 1, wxBOTTOM, 4);
-						szrLabels->Add(m_lblPublicListComment, 1, wxTOP, 4);
-					}
-					szrLeftPublic->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
-					wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
-					{
-						szrTextBoxes->Add(m_txtPublicListAuthentication, 1, wxBOTTOM | wxEXPAND, 4);
-						szrTextBoxes->Add(m_txtPublicListComment, 1, wxTOP | wxEXPAND, 4);
+						szrLeftPublicInner->Add(m_lblPublicListAuthentication, 0, wxALIGN_CENTER_VERTICAL);
+						szrLeftPublicInner->Add(m_txtPublicListAuthentication, 0, wxEXPAND);
+						
+						szrLeftPublicInner->Add(m_lblPublicListComment, 0, wxALIGN_CENTER_VERTICAL);
+						szrLeftPublicInner->Add(m_txtPublicListComment, 0, wxEXPAND);
+
 					}
-					szrLeftPublic->Add(szrTextBoxes, 1, wxEXPAND, 0);
+					szrLeftPublic->Add(szrLeftPublicInner, 1, wxEXPAND, 0);
 				
 				}
 				szrLeftBottom->Add(szrLeftPublic, 3, wxRIGHT, 8);
@@ -290,21 +289,24 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 				wxBoxSizer *szrLeftProxy = new StaticCheckBoxSizer(fraLeftProxy, m_chkHTTPProxyEnabled, wxVERTICAL);
 				{
 
-					wxBoxSizer *szrRow1 = new wxBoxSizer(wxHORIZONTAL);
+					wxFlexGridSizer *szrRow1 = new wxFlexGridSizer(4, 8, 8);
+					szrRow1->AddGrowableCol(1);
 					{
-						szrRow1->Add(m_lblHTTPProxyHostname, 0, wxRIGHT, 8);
-						szrRow1->Add(m_txtHTTPProxyHostname, 1, wxRIGHT, 8);
-						szrRow1->Add(m_lblHTTPProxyPort, 0, wxRIGHT, 8);
-						szrRow1->Add(m_txtHTTPProxyPort, 0, 0, 0);
+						szrRow1->Add(m_lblHTTPProxyHostname, 0, wxALIGN_CENTER_VERTICAL);
+						szrRow1->Add(m_txtHTTPProxyHostname, 0, wxEXPAND);
+						szrRow1->Add(m_lblHTTPProxyPort, 0, wxALIGN_CENTER_VERTICAL);
+						szrRow1->Add(m_txtHTTPProxyPort, 0, 0);
 					}
 					szrLeftProxy->Add(szrRow1, 0, wxEXPAND | wxBOTTOM, 8);
 
-					wxBoxSizer *szrRow2 = new wxBoxSizer(wxHORIZONTAL);
+					wxFlexGridSizer *szrRow2 = new wxFlexGridSizer(4, 8, 8);
+					szrRow2->AddGrowableCol(1);
+					szrRow2->AddGrowableCol(3);
 					{
-						szrRow2->Add(m_lblHTTPProxyUsername, 0, wxRIGHT, 8);
-						szrRow2->Add(m_txtHTTPProxyUsername, 1, wxRIGHT, 8);
-						szrRow2->Add(m_lblHTTPProxyPassword, 0, wxRIGHT, 8);
-						szrRow2->Add(m_txtHTTPProxyPassword, 1, 0, 0);
+						szrRow2->Add(m_lblHTTPProxyUsername, 0, wxALIGN_CENTER_VERTICAL);
+						szrRow2->Add(m_txtHTTPProxyUsername, 0, wxEXPAND);
+						szrRow2->Add(m_lblHTTPProxyPassword, 0, wxALIGN_CENTER_VERTICAL);
+						szrRow2->Add(m_txtHTTPProxyPassword, 0, wxEXPAND);
 					}
 					szrLeftProxy->Add(szrRow2, 0, wxEXPAND, 0);
 
