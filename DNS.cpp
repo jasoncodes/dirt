@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.22 2004-05-31 07:49:55 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.23 2004-06-01 06:54:06 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -528,14 +528,29 @@ void DNS::Lookup(const wxString &question, bool is_reverse, void *userdata)
 	// wake the thread up if this is the first entry in the queue
 	if (s_DNS_going_to_signal)
 	{
+
 		DNSDebugMsg(wxT("main: first entry in queue, locking mutex"));
-wxMutexGuiLeave();
+
+//#ifdef __WXGTK__
+//		if (wxThread::IsMain())
+//		{
+//			wxMutexGuiLeave();
+//		}
+//#endif
+
 		s_DNS_condition_mutex->Lock();
 		DNSDebugMsg(wxT("main: signalling"));
 		s_DNS_condition->Signal();
 		DNSDebugMsg(wxT("main: unlocking mutex"));
 		s_DNS_condition_mutex->Unlock();
-wxMutexGuiEnter();
+
+//#ifdef __WXGTK__
+//		if (wxThread::IsMain())
+//		{
+//			wxMutexGuiEnter();
+//		}
+//#endif
+
 	}
 
 }
