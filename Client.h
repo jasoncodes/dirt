@@ -5,6 +5,8 @@
 #include "URL.h"
 #include "ByteBuffer.h"
 #include "util.h"
+#include <wx/confbase.h>
+#include <wx/fileconf.h>
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 
@@ -48,7 +50,6 @@ public:
 
 	virtual void ProcessConsoleInput(const wxString &context, const wxString &input);
 	virtual void Debug(const wxString &context, const wxString &text);
-
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action) = 0;
 	virtual bool Connect(const URL &url) = 0;
 	virtual void Disconnect(const wxString &msg = wxT("Disconnected")) = 0;
@@ -59,6 +60,10 @@ public:
 	virtual void Away(const wxString &msg);
 	virtual void Back() { Away(wxEmptyString); }
 	virtual long GetLatency() const { return m_latency; }
+	virtual void ProcessAlias(const wxString &context, const wxString &cmds, const wxString &params);
+	wxArrayString GetAliasList() const;
+	virtual wxString GetAlias(const wxString &name) const;
+	virtual bool SetAlias(const wxString &name, const wxString &value);
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname() const;
@@ -87,6 +92,7 @@ protected:
 	wxString m_ping_data;
 	wxLongLong_t m_ping_timeout_tick;
 	long m_latency;
+	wxFileConfig *m_config;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.30 2003-03-12 11:10:06 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.31 2003-03-12 14:03:40 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -34,10 +34,13 @@ Client::Client(ClientEventHandler *event_handler)
 	m_nickname = wxEmptyString;
 	m_server_name = wxEmptyString;
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
+	m_config = new wxFileConfig(wxT("dirt"));
+	m_config->SetUmask(0077);
 }
 
 Client::~Client()
 {
+	delete m_config;
 	delete m_tmrPing;
 	delete m_file_transfers;
 }
@@ -157,9 +160,48 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		m_event_handler->OnClientInformation(context, wxT("Support for Lizard technology is not available at this time"));
 	}
+	else if (cmd == wxT("ALIAS"))
+	{
+		HeadTail ht = SplitQuotedHeadTail(params);
+		if (ht.head.Length())
+		{
+			if (SetAlias(ht.head, ht.tail))
+			{
+				m_event_handler->OnClientInformation(context, ht.head + wxT(" = ") + (ht.tail.Length()?(wxT('"')+ht.tail+wxT('"')):wxString(wxT("(Nothing)"))));
+			}
+			else
+			{
+				m_event_handler->OnClientWarning(context, wxT("Error setting alias"));
+			}
+		}
+		else
+		{
+			m_event_handler->OnClientInformation(context, wxT("Current aliases:"));
+			wxArrayString list = GetAliasList();
+			if (list.GetCount())
+			{
+				for (size_t i = 0; i < list.GetCount(); ++i)
+				{
+					m_event_handler->OnClientInformation(context, wxT("    ")+list.Item(i)+wxT(" = \"")+GetAlias(list.Item(i))+wxT('"'));
+				}
+			}
+			else
+			{
+				m_event_handler->OnClientInformation(context, wxT("    (None)"));
+			}
+		}
+	}
 	else
 	{
-		m_event_handler->OnClientWarning(context, wxT("Unrecognized command: ") + cmd);
+		wxString cmds = GetAlias(cmd);
+		if (cmds.Length())
+		{
+			ProcessAlias(context, cmds, params);
+		}
+		else
+		{
+			m_event_handler->OnClientWarning(context, wxT("Unrecognized command: ") + cmd);
+		}
 	}
 
 }
@@ -410,3 +452,72 @@ wxString Client::GetDefaultNick() const
 	return nick;
 }
 
+static inline wxString GetToken(wxString &tokens, const wxString &sep)
+{
+	HeadTail ht = SplitHeadTail(tokens, sep);
+	tokens = ht.tail;
+	return ht.head;
+}
+
+void Client::ProcessAlias(const wxString &context, const wxString &cmds, const wxString &params)
+{
+	m_event_handler->OnClientWarning(context, wxT("Aliases are not implemented yet"));
+	wxString tokens(cmds);
+	while (tokens.Length())
+	{
+		wxString tmp = GetToken(tokens, wxT("|"));
+		while (tokens.Length() && tokens[0] == wxT('|'))
+		{
+			tokens = tokens.Mid(1);
+			tmp += wxT('|') + GetToken(tokens, wxT("|"));
+		}
+		// todo: replace below 4 lines with proper parser
+		// and add support for $1, $2, $2-, $2-4, etc
+		static const wxString ReplaceTemp(wxT("\x0d7\x0c1\x0cf"));
+		tmp.Replace(wxT("$$"), ReplaceTemp);
+		tmp.Replace(wxT("$*"), params);
+		tmp.Replace(ReplaceTemp, wxT("$"));
+		ProcessConsoleInput(context, tmp);
+	}
+}
+
+wxArrayString Client::GetAliasList() const
+{
+	wxArrayString list;
+	wxString old_path = m_config->GetPath();
+	m_config->SetPath(wxT("Client/Aliases"));
+	list.Alloc(m_config->GetNumberOfEntries(false));
+	wxString val;
+	long i;
+	if (m_config->GetFirstEntry(val, i))
+	{
+		do
+		{
+			list.Add(val);
+		}
+		while (m_config->GetNextEntry(val, i));
+	}
+	m_config->SetPath(old_path);
+	return list;
+}
+
+wxString Client::GetAlias(const wxString &name) const
+{
+	return m_config->Read(wxT("Client/Aliases/")+name, wxEmptyString);
+}
+
+bool Client::SetAlias(const wxString &name, const wxString &value)
+{
+	if (value.Length())
+	{
+		return m_config->Write(wxT("Client/Aliases/")+name, value) && m_config->Flush();
+	}
+	else if (GetAlias(name).Length())
+	{
+		return m_config->DeleteEntry(wxT("Client/Aliases/")+name) && m_config->Flush();
+	}
+	else
+	{
+		return true;
+	}
+}

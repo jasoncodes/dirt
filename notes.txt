@@ -43,5 +43,5 @@
   over tray icon when the icon changes
 
 * /bind
-* /alias
+
 * file transfers
