@@ -30,3 +30,5 @@
 * highlight/beep when app isn't focused (ClientUIMDIFrame::AddLine)
 
 * set window pos to bottom of screen, full width
+
+* only scroll to bottom if scrollpos was already at bottom?

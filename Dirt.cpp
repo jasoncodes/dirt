@@ -14,16 +14,20 @@ IMPLEMENT_APP(DirtApp)
 
 static bool IsConsole()
 {
+	bool bIsConsole;
 	#ifdef __WXMSW__
+		// maybe use return val of SHGetFileInfo(.., SHGFI_EXETYPE)
+		// or check the subsystem field in IMAGE_OPTIONAL_HEADER
 		#ifdef _CONSOLE
-			return true;
+			bIsConsole = true;
 		#else
-			return false;
+			bIsConsole = false;
 		#endif
 	#else
 		// no detection for non-Win32 yet.. defaulting to GUI
-		return false;
+		bIsConsole = false;
 	#endif
+	return bIsConsole;
 }
 
 bool DirtApp::OnInit()
