@@ -1,17 +1,40 @@
-"[Dave TIME reply]: 2003/09/10 11:19:58 UTC-700" should show UTC-0700
+* change ctrl/shift/alt detection to use ::GetKeyState() for __WXMSW__ and
+  GetCurrentKeyModifiers() for __WXMAC__
 
-wordfilter: once a match is made in the line, the replacement shouldnt be matched against
+* colour codes in the urls (ctrl-k 4 test.com) is highly broke
+  in convert to html func
 
-when auto-away after reconnect, need to send away time (ticks offset since /away)
+* if a url ends in . or ? then strip it from the url
 
-don't hyperlink "news:", "http:", etc by themselves
+* don't hyperlink "news:", "http:", etc by themselves
 
-[00:13] *** Looking up 198.142.235.68
-[00:13] *** Connecting to 198.142.235.68
-[00:13] *** Ping timeout
-[00:13] *** Looking up 198.142.235.68
-[00:13] *** Connecting to 198.142.235.68
-[00:13] *** Ping timeout
+* Automaticly /lock when not focused for X minutes
+  min2tray if not already
+  tray icon wouldn't flash and would have a lock icon on it
+  minimizing would automaticly go to tray
+  no auto restore, no bell, no flash tray icon (just red line)
+  give 5 second warning before locking (mintotray and then flash lock icon)?
+
+* stop flash after x seconds 3rd icon should be a yellow exclaimation point
+
+* strip formatting chars from nick before checking if valid
+
+* Word Filters: need some way to allow case preservation
+  and a way to match whole word only both on a selective
+  filter by filter case. also must be easily usable via
+  the server console, a GUI would be nice too.
+
+* an option not to match against already replaced words in word filters
+  would be nice
+
+* "[Dave TIME reply]: 2003/09/10 11:19:58 UTC-700" should show UTC-0700
+
+* when auto-away after reconnect, need to send away time
+  (ticks offset since /away) to keep "away since" correct
+
+* [00:13] *** Looking up 198.142.235.68
+  [00:13] *** Connecting to 198.142.235.68
+  [00:13] *** Ping timeout
 
 * set default height to say 40% of primary display or 300px (which ever is more)
 
@@ -30,7 +53,7 @@ don't hyperlink "news:", "http:", etc by themselves
 * only flash 2 times then display maybe a third icon option for system tray
 
 * dirt.pl should not count private ips (192.168.*.*, 172.16.*.* ->
-172.32.*.*, 10.*.*.*) in choosing something for the hostname field
+  172.32.*.*, 10.*.*.*) in choosing something for the hostname field
 
 * ability to search logs
 	* how load the log search frame?
