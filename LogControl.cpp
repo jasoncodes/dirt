@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.24 2003-02-28 14:57:43 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.25 2003-03-03 00:35:54 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -644,7 +644,7 @@ void LogControl::OnErase(wxEraseEvent& event)
 
 }
 
-#define USE_BACKBUFFER 0
+#define USE_BACKBUFFER 1
 
 void LogControl::OnDraw(wxDC& dcFront)
 {
@@ -672,9 +672,24 @@ void LogControl::OnDraw(wxDC& dcFront)
 
 #if USE_BACKBUFFER
 
-		static wxBitmap bmpBack(
+		static wxSize BitmapSize = wxSize(
 			wxSystemSettings::GetMetric(wxSYS_SCREEN_X),
 			wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
+		static wxBitmap bmpBack(BitmapSize.x, BitmapSize.y);
+		wxSize ClientSize = GetClientSize();
+		if (ClientSize.x > BitmapSize.x || ClientSize.y > BitmapSize.y)
+		{
+			if (ClientSize.x > BitmapSize.x)
+			{
+				BitmapSize.x = ClientSize.x;
+			}
+			if (ClientSize.y > BitmapSize.y)
+			{
+				BitmapSize.y = ClientSize.y;
+			}
+			bmpBack = wxBitmap(BitmapSize.x, BitmapSize.y);
+			wxBell();
+		}
 		wxMemoryDC dcBack;
 		dcBack.SelectObject(bmpBack);
 		PrepareDC(dcBack);
