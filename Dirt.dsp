@@ -21,6 +21,7 @@ CFG=Dirt - Win32 Debug
 !MESSAGE "Dirt - Win32 Debug DLL" (based on "Win32 (x86) Application")
 !MESSAGE "Dirt - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "Dirt - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "Dirt - Win32 Console Release" (based on "Win32 (x86) Application")
 !MESSAGE "Dirt - Win32 Console Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
@@ -136,6 +137,33 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
+!ELSEIF  "$(CFG)" == "Dirt - Win32 Console Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ConsoleRelease"
+# PROP BASE Intermediate_Dir "ConsoleRelease"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ConsoleRelease"
+# PROP Intermediate_Dir "ConsoleRelease"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
+# ADD CPP /nologo /MD /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /FR /YX"wx/wxprec.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
+# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmsw.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386
+# SUBTRACT LINK32 /pdb:none
+
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Console Debug"
 
 # PROP BASE Use_MFC 0
@@ -171,6 +199,7 @@ LINK32=link.exe
 # Name "Dirt - Win32 Debug DLL"
 # Name "Dirt - Win32 Release"
 # Name "Dirt - Win32 Debug"
+# Name "Dirt - Win32 Console Release"
 # Name "Dirt - Win32 Console Debug"
 # Begin Source File
 
