@@ -1,4 +1,6 @@
-* file transfers send from cable -> dialup go to 100% almost instantly on sender side
+* when recv gets a packet, send "ACK" with the current new file pos
+  sender uses the ack to update filesent, cps, etc
+  another variable will have to be used by sender to know how much has been sent (and unack'd)
 
 * on large LogControl, sometimes there's an off by one on the scroll and causes fake dupe line
 
