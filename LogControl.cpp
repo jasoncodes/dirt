@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.70 2004-06-15 18:14:31 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.71 2004-06-19 02:57:02 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1891,6 +1891,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 				{
 					extra_chars = token.Right(1) + extra_chars;
 					token = token.Left(token.Length() - 1);
+					url = url.Left(url.Length() - 1);
 				}
 				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\">") + token + wxT("</a>") + extra_chars;
 			}

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.69 2004-06-14 02:47:47 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.70 2004-06-19 02:57:02 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -685,7 +685,7 @@ void ClientUIMDICanvas::LogControlTest()
 		tmp.Trim();
 		m_txtLog->AddTextLine(tmp);
 	}
-	m_txtLog->AddTextLine(wxT("Testing 1 2 3. http://www.test.com/ is a test."));
+	m_txtLog->AddTextLine(wxT("Testing 1 2 3. http://dirt.gslabs.com.au/."));
 	wxChar ctrl_b = wxT('\x002');
 	wxChar ctrl_c = wxT('\x003');
 	wxChar ctrl_r = wxT('\x016');

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.95 2004-06-14 01:46:47 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.96 2004-06-19 02:57:03 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1175,14 +1175,16 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 			}
 		}
 
+		LPCTSTR params_api = (params.Length() > 0) ? params.c_str() : (const wxChar*)NULL;
+
 		::wxBeginBusyCursor();
-		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxEmptyString, file, params, NULL, SW_SHOWMAXIMIZED);
+		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxEmptyString, file, params_api, NULL, SW_SHOWMAXIMIZED);
 		::wxEndBusyCursor();
 		bool success = ((int)hInstance > 32);
 		if (!success)
 		{
 			::wxBeginBusyCursor();
-			hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), file, params, NULL, SW_SHOWMAXIMIZED);
+			hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), file, params_api, NULL, SW_SHOWMAXIMIZED);
 			::wxEndBusyCursor();
 			success = ((int)hInstance > 32);
 		}
