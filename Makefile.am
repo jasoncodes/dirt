@@ -1,12 +1,14 @@
-KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
-ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
-	QAPP_H := $(QTDIR)/include/qapplication.h
-	ifeq ($(wildcard $(QAPP_H)),$(QAPP_H))
-		QTLIB := $(QTDIR)/lib/libqt-mt.so
-		ifeq ($(wildcard $(QTLIB)),$(QTLIB))
-			KDE_DIR := $(shell kde-config --prefix)
-			KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
-			KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
+ifneq ($(NOKDE),)
+	KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
+	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
+		QAPP_H := $(QTDIR)/include/qapplication.h
+		ifeq ($(wildcard $(QAPP_H)),$(QAPP_H))
+			QTLIB := $(QTDIR)/lib/libqt-mt.so
+			ifeq ($(wildcard $(QTLIB)),$(QTLIB))
+				KDE_DIR := $(shell kde-config --prefix)
+				KDE_CPPFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
+				KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
+			endif
 		endif
 	endif
 endif
@@ -34,7 +36,7 @@ ifneq ($(DIRTSERVER_EXE_PERMS),xxx)
 endif
 
 clean:
-	rm -f *.o Dirt
+	rm -f *.o Dirt DirtGTK.tar.gz
 
 all: clean dirt
 
@@ -55,5 +57,4 @@ crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: dirt
-	strip Dirt && upx --best Dirt && tar zcvf DirtGTK.tar.gz Dirt dirt dirtconsole
-
+	strip Dirt && upx -q --best Dirt && tar zcf DirtGTK.tar.gz Dirt dirt dirtconsole
