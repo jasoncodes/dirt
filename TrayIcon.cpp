@@ -28,16 +28,18 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.14 2004-05-16 04:42:49 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.15 2004-05-29 11:01:33 jason Exp $)
 
 #include "TrayIcon.h"
 
-#if defined(WIN32)
+#if defined(__WXMSW__)
 
-#ifdef __WXMSW__
-	#include <windows.h>
-	#include <wx/msw/winundef.h>
-#endif
+// As of 2004/05/29, wxWidget's wxTaskBarIcon fits our needs fine
+// except it doesn't support long tooltips (i.e. > 64 chars)
+// So our own implementation will still be used for wxMSW.
+
+#include <windows.h>
+#include <wx/msw/winundef.h>
 
 struct MYNOTIFYICONDATA
 {
@@ -59,8 +61,8 @@ struct MYNOTIFYICONDATA
     DWORD dwInfoFlags;
 };
 
-static size_t normal_len = 24 + sizeof(wxChar)*64;
-static size_t extended_len = normal_len + 16 + sizeof(wxChar)*384;
+static const size_t normal_len = 24 + sizeof(wxChar)*64;
+static const size_t extended_len = normal_len + 16 + sizeof(wxChar)*384;
 
 class TrayIconPrivate : public wxFrame
 {
@@ -313,265 +315,113 @@ bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
 
 }
 
-#elif defined(KDE_AVAILABLE)
+#else
 
-#include "KDE.h"
-#include <kapplication.h>
-#include <ksystemtray.h>
-#include <qimage.h>
-#include <qtooltip.h>
-#include <netwm.h>
-#include "util.h"
+#include "wx/taskbar.h"
 
-class TrayIconPrivate : public KSystemTray
+class TrayIconPrivate : public wxTaskBarIcon
 {
 
 public:
 	TrayIconPrivate(TrayIcon *trayicon)
-		: KSystemTray(), m_trayicon(trayicon)
+		: wxTaskBarIcon(), m_trayicon(trayicon)
+	{
+		last_set_okay = true;
+	}
+
+    void OnMouse(wxEvent &event)
 	{
 
-		kapp->lock();
-		setAlignment(Qt::AlignTop|Qt::AlignLeft);
-		setGeometry(-128,-128,64,64);
-		NETRootInfo nri_before(qt_xdisplay(), NET::KDESystemTrayWindows);
-		nri_before.activate();
-		int before = nri_before.kdeSystemTrayWindowsCount();
-		show();
-		bool success = false;
-		wxLongLong_t stop_time = GetMillisecondTicks() + 1000;
-		while (!success && GetMillisecondTicks() < stop_time)
-		{
-			NETRootInfo nri_after(qt_xdisplay(), NET::KDESystemTrayWindows);
-			nri_after.activate();
-			int after = nri_after.kdeSystemTrayWindowsCount();
-			if (after > before)
-			{
-				success = true;
-				break;
-			}
-			wxThread::Sleep(50);
-		}
+		wxEventType src_type = event.GetEventType();
+		wxEventType type;
 
-		if (success)
+		if (src_type == wxEVT_TASKBAR_LEFT_DOWN)
 		{
-			update();
-			repaint();
+			type = wxEVT_LEFT_DOWN;
+		}
+		else if (src_type == wxEVT_TASKBAR_LEFT_UP)
+		{
+			type = wxEVT_LEFT_UP;
+		}
+		else if (src_type == wxEVT_TASKBAR_RIGHT_DOWN)
+		{
+			type = wxEVT_RIGHT_DOWN;
+		}
+		else if (src_type == wxEVT_TASKBAR_RIGHT_UP)
+		{
+			type = wxEVT_RIGHT_UP;
+		}
+		else if (src_type == wxEVT_TASKBAR_LEFT_DCLICK)
+		{
+			type = wxEVT_LEFT_DCLICK;
+		}
+		else if (src_type == wxEVT_TASKBAR_RIGHT_DCLICK)
+		{
+			type = wxEVT_RIGHT_DCLICK;
 		}
 		else
 		{
-			hide();
+			return; // a type we wern't expecting
 		}
-		kapp->unlock();
 
-	}
+		wxMouseEvent evt(type);
 
-	virtual ~TrayIconPrivate()
-	{
-	}
+		evt.SetId(m_trayicon->m_id);
 
-protected:
-	void mousePressEvent(QMouseEvent *e)
-	{
-		OnMouseEvent(e);
-	}
+		evt.m_x = 0;
+		evt.m_y = 0;
 
-	void mouseReleaseEvent(QMouseEvent *e)
-	{
-		OnMouseEvent(e);
-	}
+		evt.m_leftDown = false;
+		evt.m_middleDown = false;
+		evt.m_rightDown = false;
 
-	void OnMouseEvent(QMouseEvent *e)
-	{
-		WXTYPE type = 0;
-		switch (e->button())
+		if (m_trayicon->m_handler)
 		{
-			case Qt::LeftButton:
-				switch (e->type())
-				{
-					case QEvent::MouseButtonPress:
-						type = wxEVT_LEFT_DOWN;
-						break;
-					case QEvent::MouseButtonRelease:
-						type = wxEVT_LEFT_UP;
-						break;
-					case QEvent::MouseButtonDblClick:
-						type = wxEVT_LEFT_DCLICK;
-						break;
-				}
-				break;
-			case Qt::MidButton:
-				switch (e->type())
-				{
-					case QEvent::MouseButtonPress:
-						type = wxEVT_MIDDLE_DOWN;
-						break;
-					case QEvent::MouseButtonRelease:
-						type = wxEVT_MIDDLE_UP;
-						break;
-					case QEvent::MouseButtonDblClick:
-						type = wxEVT_MIDDLE_DCLICK;
-						break;
-				}
-				break;
-			case Qt::RightButton:
-				switch (e->type())
-				{
-					case QEvent::MouseButtonPress:
-						type = wxEVT_RIGHT_DOWN;
-						break;
-					case QEvent::MouseButtonRelease:
-						type = wxEVT_RIGHT_UP;
-						break;
-					case QEvent::MouseButtonDblClick:
-						type = wxEVT_RIGHT_DCLICK;
-						break;
-				}
-				break;
-		}
-
-		if (type)
-		{
-
-			wxMouseEvent evt(type);
-
-			evt.SetId(m_trayicon->m_id);
-
-			evt.m_x = e->globalX();
-			evt.m_y = e->globalY();
-
-			evt.m_leftDown = (e->stateAfter()&Qt::LeftButton);
-			evt.m_middleDown = (e->stateAfter()&Qt::MidButton);
-			evt.m_rightDown = (e->stateAfter()&Qt::RightButton);
-
-			if (m_trayicon->m_handler)
-			{
-				m_trayicon->m_handler->AddPendingEvent(evt);
-			}
-
+			m_trayicon->m_handler->AddPendingEvent(evt);
 		}
 
 	}
 
-protected:
+    void OnMenu(wxCommandEvent &event)
+	{
+		if (m_trayicon->m_handler)
+		{
+			m_trayicon->m_handler->AddPendingEvent(event);
+		}
+	}
+
+	void Update()
+	{
+		last_set_okay = SetIcon(icon, tooltip);
+	}
+
 	TrayIcon *m_trayicon;
+	bool last_set_okay;
+	wxIcon icon;
+	wxString tooltip;
 
-};
-
-TrayIcon::TrayIcon()
-	: wxEvtHandler()
-{
-	m_handler = NULL;
-	m_id = -1;
-	if (DoesDCOPFileExist())
-	{
-		KDEThread::Init();
-		m_priv = new TrayIconPrivate(this);
-	}
-	else
-	{
-		m_priv = NULL;
-	}
-}
-
-TrayIcon::~TrayIcon()
-{
-	if (m_priv)
-	{
-		m_priv->deleteLater();
-	}
-}
-
-void TrayIcon::SetEventHandler(wxEvtHandler *handler, wxEventType id)
-{
-	m_handler = handler;
-	m_id = id;
-}
-
-bool TrayIcon::Ok()
-{
-	return m_priv && m_priv->winId() && m_priv->isVisible();
-}
-
-void TrayIcon::SetIcon(const char **xpm)
-{
-	if (m_priv)
-	{
-		kapp->lock();
-		QImage img(xpm);
-		QPixmap pixmap(img.smoothScale(24, 24));
-		m_priv->setPixmap(pixmap);
-		m_priv->update();
-		kapp->processEvents();
-		kapp->unlock();
-	}
-}
-
-void TrayIcon::SetToolTip(const wxString &tooltip)
-{
-	if (m_priv)
-	{
-		kapp->lock();
-		#if wxUSE_UNICODE
-			QToolTip::add(m_priv, QString((const QChar*)tooltip.c_str(), tooltip.Length()));
-		#else
-			QToolTip::add(m_priv, tooltip.c_str());
-		#endif
-		kapp->unlock();
-	}
-}
-
-class TrayIconPopupHandler : public wxEvtHandler
-{
-
-public:
-	TrayIconPopupHandler(wxEvtHandler *handler)
-		: wxEvtHandler(), m_handler(handler)
-	{
-	}
-
-protected:
-	void OnMenu(wxCommandEvent &event)
-	{
-		if (m_handler)
-		{
-			m_handler->AddPendingEvent(event);
-		}
-	}
-
-protected:
-	wxEvtHandler *m_handler;
-
-private:
 	DECLARE_EVENT_TABLE()
 
 };
 
-BEGIN_EVENT_TABLE(TrayIconPopupHandler, wxEvtHandler)
-	EVT_MENU(wxID_ANY, TrayIconPopupHandler::OnMenu)
+BEGIN_EVENT_TABLE(TrayIconPrivate, wxTaskBarIcon)
+    EVT_MENU(wxID_ANY, TrayIconPrivate::OnMenu)
+	EVT_TASKBAR_LEFT_DOWN(TrayIconPrivate::OnMouse)
+	EVT_TASKBAR_LEFT_UP(TrayIconPrivate::OnMouse)
+	EVT_TASKBAR_RIGHT_DOWN(TrayIconPrivate::OnMouse)
+	EVT_TASKBAR_RIGHT_UP(TrayIconPrivate::OnMouse)
+	EVT_TASKBAR_LEFT_DCLICK(TrayIconPrivate::OnMouse)
+	EVT_TASKBAR_RIGHT_DCLICK(TrayIconPrivate::OnMouse)
 END_EVENT_TABLE()
-
-bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
-{
-	TrayIconPopupHandler evt(m_handler);
-	wxFrame *frm = new wxFrame(NULL, wxID_ANY, wxEmptyString);
-	frm->PushEventHandler(&evt);
-	wxTopLevelWindows.DeleteObject(frm);
-	menu->UpdateUI();
-	bool result = frm->PopupMenu(menu, frm->ScreenToClient(pos));
-	frm->PopEventHandler(false);
-	frm->Destroy();
-	return result;
-}
-
-#else
 
 TrayIcon::TrayIcon()
 {
+	m_priv = new TrayIconPrivate(this);
 }
 
 TrayIcon::~TrayIcon()
 {
+	delete m_priv;
 }
 
 void TrayIcon::SetEventHandler(wxEvtHandler *handler, wxEventType id)
@@ -582,20 +432,24 @@ void TrayIcon::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 
 bool TrayIcon::Ok()
 {
-	return false;
+	return m_priv->IsOk() && m_priv->last_set_okay;
 }
 
 void TrayIcon::SetIcon(const char **xpm)
 {
+	m_priv->icon = wxIcon(xpm);
+	m_priv->Update();
 }
 
 void TrayIcon::SetToolTip(const wxString &tooltip)
 {
+	m_priv->tooltip = tooltip;
+	m_priv->Update();
 }
 
-bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
+bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &WXUNUSED(pos))
 {
-	return false;
+	return m_priv->PopupMenu(menu);
 }
 
 #endif

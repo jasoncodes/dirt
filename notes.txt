@@ -350,7 +350,3 @@ option to disable red and beep for a mdi child (for server console)
   maybe the fix will be to use a wxFont cache in wxHTML?
 
 * check that guards are in place where necessary to trap malformed messages
-
-* replace TrayIcon with wxTaskBarIcon and then remove all KDE calls
-  (after confirming TaskbarCreated and X11 support exists in 2.4.1)
-  (and also after workaround for non-supporting X11 WMs somehow is done in wx)

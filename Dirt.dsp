@@ -457,14 +457,6 @@ SOURCE=.\IPInfo.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\KDE.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\KDE.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\LanListFrame.cpp
 # End Source File
 # Begin Source File

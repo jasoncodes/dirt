@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINV
 Includes=
 Linker=-lwxmsw25_html -lwxmsw25_adv -lwxbase25_net -lwxbase25_xml -lwxmsw25_core -lwxbase25 -lwxregex -lwxpng -lwxjpeg -lwxzlib -lwxtiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
 Libs=crypto\Release\;$(WXWIN)\lib\gcc_lib
-UnitCount=118
+UnitCount=116
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Release_private.rc
@@ -369,26 +369,6 @@ BuildCmd=
 
 [Unit35]
 FileName=InputControl.h
-Folder=
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit36]
-FileName=KDE.cpp
-Folder=
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit37]
-FileName=KDE.h
 Folder=
 Compile=1
 CompileCpp=1
@@ -1205,7 +1185,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit117]
+[Unit36]
 FileName=SwitchBarParentGeneric.cpp
 CompileCpp=1
 Folder=Dirt
@@ -1215,7 +1195,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit118]
+[Unit37]
 FileName=SwitchBarParentGeneric.h
 CompileCpp=1
 Folder=Dirt

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.91 2004-05-29 07:46:51 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.92 2004-05-29 11:01:33 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1255,21 +1255,7 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 
 bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 {
-	#if defined(KDE_AVAILABLE)
-		wxString cmdline;
-		cmdline << wxT("konqueror ") << folder;
-		::wxBeginBusyCursor();
-		long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
-		::wxEndBusyCursor();
-		bool success = (pid != 0);
-		if (!success && show_error)
-		{
-			wxMessageBox(
-				wxT("Unable to open ") + folder,
-				wxT("Error launching Konqueror"), wxOK | wxICON_ERROR, parent);
-		}
-		return success;
-	#elif defined(__WXMSW__)
+	#if defined(__WXMSW__)
 		return OpenFile(parent, folder, show_error);
 	#else
 		return OpenBrowser(parent, wxT("file://") + folder, show_error);

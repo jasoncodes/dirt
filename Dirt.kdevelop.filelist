@@ -57,8 +57,6 @@ IPInfo.cpp
 IPInfo.h
 InputControl.cpp
 InputControl.h
-KDE.cpp
-KDE.h
 LanListFrame.cpp
 LanListFrame.h
 Log.h

@@ -2,21 +2,6 @@
 
 include ./Makefile.wx-config
 
-ifeq ($(ENABLE-KDE),1)
-	KAPP_H := $(shell kde-config --prefix 2> /dev/null)/include/kde/kapplication.h
-	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
-		QAPP_H := $(QTDIR)/include/qapplication.h
-		ifeq ($(wildcard $(QAPP_H)),$(QAPP_H))
-			QTLIB := $(QTDIR)/lib/libqt-mt.so
-			ifeq ($(wildcard $(QTLIB)),$(QTLIB))
-				KDE_DIR := $(shell kde-config --prefix)
-				KDE_CXXFLAGS := -I$(KDE_DIR)/include/kde -I$(QTDIR)/include -DKDE_AVAILABLE -DQT_THREAD_SUPPORT
-				KDE_LINK := $(KDE_DIR)/lib/libkdeui.so $(QTDIR)/lib/libqt-mt.so
-			endif
-		endif
-	endif
-endif
-
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
 	GTK_EXTRAS = `pkg-config --cflags gtk+-2.0`
 else
@@ -32,10 +17,10 @@ OPTIMIZATIONS = -O1
 
 CXXFLAGS = \
 	$(strip \
-		$(OPTIMIZATION) `$(WXCONFIG) --cxxflags` $(KDE_CXXFLAGS) \
+		$(OPTIMIZATION) `$(WXCONFIG) --cxxflags` \
 		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include -DNDEBUG \
 	)
-LINK_FLAGS = `$(WXCONFIG) --libs` $(KDE_LINK)
+LINK_FLAGS = `$(WXCONFIG) --libs`
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
