@@ -31,6 +31,7 @@ public:
 	long GetTimeleft();
 	long GetCPS();
 	wxLongLong_t GetFileSent();
+	wxLongLong_t GetUnackCount();
 	wxString GetStatus();
 
 	void SetTransferId(long id);
@@ -42,6 +43,7 @@ public:
 	void SetTimeleft(long seconds);
 	void SetCPS(long cps);
 	void SetFileSent(wxLongLong_t bytes);
+	void SetUnackCount(wxLongLong_t bytes);
 	void SetStatus(const wxString &status);
 
 	wxString GetShortFilename();
@@ -61,6 +63,7 @@ protected:
 	void OpenFile();
 	void OpenFolder();
 	wxFileName GetFilenameObject();
+	void UpdateSentLabel();
 
 protected:
 	ClientUIMDICanvas *m_canvas;
@@ -87,6 +90,7 @@ protected:
 	long m_timeleft;
 	long m_cps;
 	wxLongLong_t m_filesent;
+	wxLongLong_t m_unack;
 	wxString m_status;
 	bool m_open_file_when_complete;
 	bool m_open_folder_when_complete;

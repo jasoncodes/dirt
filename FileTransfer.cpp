@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.26 2003-06-19 07:14:36 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.27 2003-08-14 06:12:06 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -19,18 +19,23 @@ RCS_ID($Id: FileTransfer.cpp,v 1.26 2003-06-19 07:14:36 jason Exp $)
 FileTransfer::FileTransfer(FileTransfers *transfers)
 	:
 		transferid(-1), remoteid(-1), issend(false), state(ftsUnknown),
-		nickname(wxEmptyString), filename(wxEmptyString),
+		nickname(wxEmptyString), isself(false), filename(wxEmptyString),
 		filesize(0), time(0), timeleft(-1), cps(-1),
 		filesent(0), resume(0),
 		status(wxEmptyString), m_transfers(transfers),
 		m_connect_ok(false), m_cant_connect(false), m_accept_sent(false),
-		m_got_accept(false), m_more_idle(false)
+		m_got_accept(false), m_more_idle(false), m_pos(0)
 {
 }
 
 FileTransfer::~FileTransfer()
 {
 	WX_CLEAR_ARRAY(m_scks);
+	m_file.Close();
+	if (filesize && wxFileName::FileExists(filename) && !File::Length(filename))
+	{
+		wxRemoveFile(filename);
+	}
 }
 
 static const wxLongLong_t s_timeout_pending = 180000;
@@ -161,4 +166,11 @@ size_t FileTransfer::GetConnectCount() const
 		}
 	}
 	return num_connects;
+}
+
+wxLongLong_t FileTransfer::GetUnacknowledgedCount() const
+{
+	wxASSERT(issend);
+	wxASSERT(filesent <= m_pos);
+	return m_pos - filesent;
 }

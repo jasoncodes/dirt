@@ -39,6 +39,7 @@ public:
 	bool issend;
 	FileTransferState state;
 	wxString nickname;
+	bool isself;
 	wxString filename;
 	wxLongLong_t filesize;
 	long time;
@@ -58,6 +59,7 @@ public:
 	wxString GetStateString() const;
 	operator wxString() const;
 	size_t GetConnectCount() const;
+	wxLongLong_t GetUnacknowledgedCount() const;
 
 protected:
 	bool OnTimer(wxLongLong_t now);

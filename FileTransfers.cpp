@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.56 2003-08-05 13:04:37 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.57 2003-08-14 06:12:06 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -19,6 +19,8 @@ RCS_ID($Id: FileTransfers.cpp,v 1.56 2003-08-05 13:04:37 jason Exp $)
 
 #include <wx/filename.h>
 #include "File.h"
+
+static const wxLongLong_t max_unack_count = 128 * 1024;
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(FileTransferArray);
@@ -169,6 +171,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->issend = true;
 	t->state = ftsSendListening;
 	t->nickname = contact->GetNickname();
+	t->isself = contact->IsSelf();
 	wxFileName fn(filename);
 	wxASSERT(fn.FileExists());
 	m_client->GetConfig().SetLastSendDir(fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
@@ -1168,6 +1171,10 @@ void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteB
 			wxASSERT((ll <= t.filesize && ll > t.filesent) || (ll == 0 && t.filesize == 0));
 			t.m_last_tick = GetMillisecondTicks();
 			t.filesent = ll;
+			if (!t.isself)
+			{
+				MaybeSendData(t);
+			}
 		}
 	}
 	else
@@ -1230,6 +1237,10 @@ static int s_idle_stack = 0;
 
 void FileTransfers::MaybeSendData(FileTransfer &t)
 {
+	if (!t.isself && t.GetUnacknowledgedCount() >= max_unack_count)
+	{
+		return;
+	}
 	bool first_time = false;
 	wxASSERT(t.issend);
 	if (t.m_connect_ok && t.m_got_accept)

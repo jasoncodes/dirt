@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.133 2003-08-13 09:47:50 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.134 2003-08-14 06:12:06 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -441,20 +441,25 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 	bool bAlert = false;
 	bool bFlashWindow = false;
 
-	if (!suppress_alert && GetActiveChild() != canvas->GetParent())
+	if (!suppress_alert)
 	{
-		int button_index = m_switchbar->GetIndexFromUserData(canvas);
-		if (button_index > -1)
-		{
-			m_switchbar->SetButtonHighlight(button_index, true);
-		}
-		bAlert = true;
-	}
 
-	if (!IsFocused())
-	{
-		bAlert = true;
-		bFlashWindow = config.GetTaskbarNotification();
+		if (GetActiveChild() != canvas->GetParent())
+		{
+			int button_index = m_switchbar->GetIndexFromUserData(canvas);
+			if (button_index > -1)
+			{
+				m_switchbar->SetButtonHighlight(button_index, true);
+			}
+			bAlert = true;
+		}
+
+		if (!IsFocused())
+		{
+			bAlert = true;
+			bFlashWindow = config.GetTaskbarNotification();
+		}
+
 	}
 
 	wxString text = GetShortTimestamp() + line;

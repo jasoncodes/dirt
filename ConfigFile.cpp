@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.9 2003-08-12 07:43:05 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.10 2003-08-14 06:12:06 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -273,6 +273,7 @@ bool ConfigFile::MaybeFlush()
 
 wxDateTime ConfigFile::GetLastFileModified() const
 {
+	wxLogNull supress_log;
 	wxFileName fn(m_filename);
 	wxDateTime last_mod = fn.GetModificationTime();
 	wxASSERT(last_mod.IsValid());

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.28 2003-08-01 07:48:00 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.29 2003-08-14 06:12:06 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -94,6 +94,7 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_timeleft = 0;
 	m_cps = 0;
 	m_filesent = 0;
+	m_unack = 0;
 	m_status = wxEmptyString;
 
 }
@@ -183,6 +184,10 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 	}
 	SetCPS(cps);
 	SetFileSent(transfer.filesent);
+	if (transfer.issend)
+	{
+		SetUnackCount(transfer.GetUnacknowledgedCount());
+	}
 	SetStatus(transfer.status);
 	int index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
 	if (index > -1)
@@ -388,6 +393,11 @@ wxLongLong_t ClientUIMDITransferPanel::GetFileSent()
 	return m_filesent;
 }
 
+wxLongLong_t ClientUIMDITransferPanel::GetUnackCount()
+{
+	return m_unack;
+}
+
 wxString ClientUIMDITransferPanel::GetStatus()
 {
 	return m_status;
@@ -459,8 +469,25 @@ void ClientUIMDITransferPanel::SetCPS(long cps)
 void ClientUIMDITransferPanel::SetFileSent(wxLongLong_t bytes)
 {
 	m_filesent = bytes;
-	m_lblSent->SetLabel(SizeToLongString(bytes));
+	UpdateSentLabel();
 	UpdateProgress();
+}
+
+void ClientUIMDITransferPanel::SetUnackCount(wxLongLong_t bytes)
+{
+	m_unack = bytes;
+	UpdateSentLabel();
+}
+
+void ClientUIMDITransferPanel::UpdateSentLabel()
+{
+	wxString str;
+	str = SizeToLongString(m_filesent);
+	if (m_unack)
+	{
+		str << wxT(" (choke: ") << SizeToString(m_unack) << wxT(")");
+	}
+	m_lblSent->SetLabel(str);
 }
 
 void ClientUIMDITransferPanel::SetStatus(const wxString &status)

@@ -1,7 +1,5 @@
 * with common dialog open no messages are pumped
 
-* delete failed get file if 0 bytes and file length > 0
-
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
   reproduces in unmodified controls sample
 
@@ -18,9 +16,7 @@
   only say something like "*** Connection restored" after the "*** Connection lost"
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
-* some way to limit number of unACK'd bytes
-
-* don't add red line if own message
+* slow clients freeze when faster clients send to them
 
 * option to auto /back if talk in main window or talk in any window
 
