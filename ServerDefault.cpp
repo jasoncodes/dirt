@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.29 2003-02-27 03:01:06 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.30 2003-03-03 14:00:30 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -14,15 +14,6 @@ const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
 const long ping_timer_interval = 2500;
-
-static wxLongLong_t GetMillisecondTicks()
-{
-	#ifdef __WXMSW__
-		return ::timeGetTime();
-	#else
-		return wxGetLocalTimeMillis().GetValue();
-	#endif
-}
 
 ServerDefaultConnection::ServerDefaultConnection()
 {

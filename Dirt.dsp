@@ -275,6 +275,14 @@ SOURCE=.\FileTransfers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\HTTP.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HTTP.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\InputControl.cpp
 # End Source File
 # Begin Source File

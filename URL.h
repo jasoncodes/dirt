@@ -7,6 +7,7 @@ class URL
 public:
 	URL();
 	URL(const wxString &url);
+	URL(const URL &url, const wxString &rel_url);
 	virtual ~URL();
 
 	operator wxString() const;
@@ -31,6 +32,7 @@ public:
 	virtual void SetUsername(const wxString &username);
 	virtual void SetPassword(const wxString &password);
 	virtual void SetPath(const wxString &path);
+	virtual void SetPathWithQueryAndRef(const wxString &path_with_query_and_ref);
 	virtual void SetQuery(const wxString &query);
 	virtual void SetReference(const wxString &reference);
 

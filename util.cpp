@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.29 2003-03-03 13:55:50 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.30 2003-03-03 14:00:31 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -525,4 +525,13 @@ const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, si
 		}
 	}
 	return NULL;
+}
+
+wxLongLong_t GetMillisecondTicks()
+{
+	#ifdef __WXMSW__
+		return ::timeGetTime();
+	#else
+		return wxGetLocalTimeMillis().GetValue();
+	#endif
 }

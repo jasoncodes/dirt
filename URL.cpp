@@ -6,10 +6,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.9 2003-02-20 06:42:02 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.10 2003-03-03 13:55:50 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
+#include "util.h"
 
 URL::URL()
 {
@@ -89,22 +90,132 @@ URL::URL(const wxString &url)
 		SetHostname(Unescape(m_hostname));
 	}
 
-	i = tmp.Find(wxT('#'), true);
+	SetPathWithQueryAndRef(tmp);
+
+}
+
+void URL::SetPathWithQueryAndRef(const wxString &path_with_query_and_ref)
+{
+
+	wxString tmp(path_with_query_and_ref);
+
+	int i = tmp.Find(wxT('#'), true);
 	if (i > -1)
 	{
-		m_reference = Unescape(tmp.Mid(i+1));
+		m_reference = tmp.Mid(i+1);
 		tmp = tmp.Left(i);
+	}
+	else
+	{
+		m_reference = wxEmptyString;
 	}
 
 	i = tmp.Find(wxT('?'), true);
 	if (i > -1)
 	{
-		m_query = Unescape(tmp.Mid(i+1));
+		m_query = tmp.Mid(i+1);
 		tmp = tmp.Left(i);
+	}
+	else
+	{
+		m_query = wxEmptyString;
 	}
 
 	m_path = Unescape(tmp);
 
+}
+
+static wxString gethost(const wxString &url)
+{
+	int i = url.Find(wxT("://"));
+	if (i > -1)
+	{
+		return URL(url).GetHostname();
+	}
+	return wxEmptyString;
+}
+
+static wxString getauth(const wxString &url)
+{
+	int i = url.Find(wxT("://"));
+	if (i > -1)
+	{
+		return URL(url).GetAuthentication();
+	}
+	return wxEmptyString;
+}
+
+URL::URL(const URL &url, const wxString &rel_url)
+{
+	
+	if (LeftEq(rel_url.Lower(), wxT("mailto:")))
+	{
+		*this = rel_url;
+		return;
+	}
+
+	if (rel_url.Length() == 0)
+	{
+		*this = url;
+		return;
+	}
+
+	int i = rel_url.Find(wxT("://"));
+
+	if (i > -1)
+	{
+		bool f = true;
+		for (int k = 0; k < i; ++k)
+		{
+			if (!wxIsalpha(rel_url[k]))
+			{
+				f = false;
+				break;
+			}
+		}
+		if (f)
+		{
+			if ((url.GetHostname() == gethost(rel_url)) && (url.GetHostname().Length() > 0) && (getauth(rel_url).Length() == 0))
+			{
+				wxString auth = GetAuthentication();
+				*this = rel_url;
+				SetAuthentication(auth);
+			}
+			else
+			{
+				*this = rel_url;
+			}
+			return;
+		}
+	}
+
+	*this = url;
+
+	if (rel_url[0] == wxT('/'))
+	{
+		SetPathWithQueryAndRef(rel_url);
+	}
+	else
+	{
+
+		wxString path = Escape(GetPath());
+		int i = path.Find(wxT('/'), true);
+
+		if (i > -1)
+		{
+			path = path.Left(i+1);
+		}
+		else
+		{
+			path += wxT('/');
+		}
+
+		path += rel_url;
+
+		SetPathWithQueryAndRef(path);
+
+	}
+	
 }
 
 URL::~URL()
@@ -134,11 +245,11 @@ URL::operator wxString() const
 	}
 	if (GetQuery().Length())
 	{
-		url << wxT('?') << Escape(GetQuery());
+		url << wxT('?') << GetQuery();
 	}
 	if (GetReference().Length())
 	{
-		url << wxT('#') << Escape(GetReference());
+		url << wxT('#') << GetReference();
 	}
 	return url;
 }

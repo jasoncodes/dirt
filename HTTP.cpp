@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.1 2003-03-03 13:55:57 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.2 2003-03-03 14:00:30 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -222,15 +222,6 @@ void HTTP::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 {
 	m_handler = handler;
 	m_id = id;
-}
-
-static wxLongLong_t GetMillisecondTicks()
-{
-	#ifdef __WXMSW__
-		return ::timeGetTime();
-	#else
-		return wxGetLocalTimeMillis().GetValue();
-	#endif
 }
 
 void HTTP::OnTimerTimeout(wxTimerEvent &event)

@@ -50,5 +50,6 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments = 0);
 ByteBuffer PackHashMap(const StringHashMap &hashmap);
 StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap);
 const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, size_t lookfor_len);
+wxLongLong_t GetMillisecondTicks();
 
 #endif
