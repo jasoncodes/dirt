@@ -1,7 +1,3 @@
-new dns code that always has the dns thread running
-but is blocked on an event normally
-the thread should be created and destroyed via wxModule
-
 prompt when pasting multiple lines
 
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
@@ -15,10 +11,6 @@ win32: sometimes hitting ctrl-alt-d doesnt bring to top (although it appears to 
 win32: pressing ctrl-enter in the middle of a line of input results in the
 line being split into two lines, it should do the same thing as pressing
 ctrl-enter at the end of the input line
-
-GTK: startup with --host=jason.darktech.org results in it thinking
-that it didn't have focus and a red line appears at the top
-with multiple taskbar flashes
 
 GTK: hotkey support
 
@@ -60,9 +52,6 @@ full support to control service settings from the console such as admin
 password, user password, public list, max users, etc.
 
 optional alert sound if certain words are mentioned (i.e. your name)
-
-public list updates stopped working in gtk ver. i have a feeling it blocked and never
-timed out. check that there is a hard timeout on all operations
 
 add size hints for mdi children
 
@@ -128,8 +117,6 @@ Rate limiting and pausing for file transfers
 * auto /back on send public message (send /back before send the public message)
 
 strip trailing comma or period from url
-
-look for bottlenecks in titlebar latency meter
 
 option to disable red and beep for a mdi child (for server console)
 
