@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.72 2003-06-19 08:59:01 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.73 2003-07-09 03:31:01 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1231,4 +1231,24 @@ bool SetDefaultMenuItem(wxMenu &mnu, int id)
 
 	#endif
 
+}
+
+wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value, const wxString &new_value)
+{
+	const wxString text_upper = text.Upper();
+	const wxString old_value_upper = old_value.Upper();
+	wxASSERT(text.Length() == text_upper.Length());
+	wxASSERT(old_value.Length() == old_value_upper.Length());
+	wxString output = text;
+	size_t start_pos = 0;
+	int offset = 0;
+	size_t find_pos = old_value_upper.Length()?text_upper.find(old_value_upper, start_pos):wxString::npos;
+	while (find_pos != wxString::npos)
+	{
+		output.replace(find_pos+offset, old_value_upper.Length(), new_value);
+		start_pos = find_pos + old_value_upper.Length();
+		offset += new_value.Length() - old_value.Length();
+		find_pos = old_value_upper.Length()?text_upper.find(old_value_upper, start_pos):wxString::npos;
+	}
+	return output;
 }
