@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChildGeneric.cpp,v 1.2 2004-05-16 04:42:48 jason Exp $)
+RCS_ID($Id: SwitchBarChildGeneric.cpp,v 1.3 2004-06-11 12:07:50 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -64,9 +64,14 @@ SwitchBarChild::~SwitchBarChild()
 
 void SwitchBarChild::OnSize(wxSizeEvent& WXUNUSED(event))
 {
-	if (GetChildren().GetCount() == 1)
+	wxWindowList &list = GetChildren();
+	for (wxWindowListNode *node = list.GetFirst(); node; node = node->GetNext())
 	{
-		GetChildren().GetFirst()->GetData()->SetSize(GetClientSize());
+		wxWindow *child = node->GetData();
+		if (child->IsShown())
+		{
+			child->SetSize(GetClientSize());
+		}
 	}
 }
 
