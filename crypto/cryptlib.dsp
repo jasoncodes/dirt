@@ -354,6 +354,10 @@ SOURCE=.\polynomi.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\pssr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\pubkey.cpp
 # End Source File
 # Begin Source File
@@ -407,10 +411,6 @@ SOURCE=.\rw.cpp
 # Begin Source File
 
 SOURCE=.\safer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\sapphire.cpp
 # End Source File
 # Begin Source File
 
@@ -867,10 +867,6 @@ SOURCE=.\rw.h
 # Begin Source File
 
 SOURCE=.\safer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\sapphire.h
 # End Source File
 # Begin Source File
 
