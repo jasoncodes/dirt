@@ -19,7 +19,7 @@ public:
 	virtual bool Ok() const;
 
 	virtual ByteBuffer GetPublicKey();
-	virtual void SetPrivateKey(const wxString &private_key);
+	virtual bool SetPrivateKey(const wxString &private_key);
 
 	virtual ByteBufferHashMap GetProperties() const;
 	virtual ByteBuffer GetProperty(const wxString &name) const;
@@ -40,6 +40,7 @@ protected:
 protected:
 	wxFile m_file;
 	Crypt m_crypt;
+	ByteBuffer m_public_key;
 	ByteBuffer m_private_key;
 	ByteBufferHashMap m_properties;
 	ByteBuffer m_entry;

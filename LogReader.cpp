@@ -6,31 +6,40 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.3 2003-03-18 11:15:12 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.4 2003-03-18 11:57:34 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
 
 LogReader::LogReader(const wxString &filename); // not implemented yet
 
-LogReader::~LogReader(); // not implemented yet
+LogReader::~LogReader()
+{
+}
 
 wxString LogReader::GetDefaultLogDirectory()
 {
 	wxFileName fn(wxGetHomeDir(), wxT(""));
 	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
-	return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
+	return fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
 }
 
 bool LogReader::Ok() const; // not implemented yet
 
 ByteBuffer LogReader::GetPublicKey(); // not implemented yet
 
-void LogReader::SetPrivateKey(const wxString &private_key); // not implemented yet
+bool LogReader::SetPrivateKey(const wxString &private_key); // not implemented yet
 
-ByteBufferHashMap LogReader::GetProperties() const; // not implemented yet
+ByteBufferHashMap LogReader::GetProperties() const
+{
+	return m_properties;
+}
 
-ByteBuffer LogReader::GetProperty(const wxString &name) const; // not implemented yet
+ByteBuffer LogReader::GetProperty(const wxString &name) const
+{
+	ByteBufferHashMap::const_iterator i = m_properties.find(name);
+	return (i != m_properties.end()) ? i->second : ByteBuffer();
+}
 
 bool LogReader::IsEof() const; // not implemented yet
 
@@ -48,6 +57,7 @@ ByteBuffer LogReader::Read(); // not implemented yet
 
 //	wxFile m_file;
 //	Crypt m_crypt;
+//	ByteBuffer m_public_key;
 //	ByteBuffer m_private_key;
 //	ByteBufferHashMap m_properties;
 //	ByteBuffer m_entry;

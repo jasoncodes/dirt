@@ -6,6 +6,7 @@ enum LogEntryType
 	letInvalid = -1,
 	letPublicKey,
 	letBlockKey,
+	letProperty,
 	letText,
 	letSeparator
 };
