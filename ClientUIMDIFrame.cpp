@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.153 2004-05-31 10:35:33 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.154 2004-06-03 05:39:11 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -868,7 +868,7 @@ bool OpenPreferredBrowser(wxWindow *parent, const wxString &URL)
 	{
 
 		case Config::tsmDefault:
-			return OpenBrowser(parent, PUBLIC_LIST_URL, true);
+			return OpenBrowser(parent, URL, true);
 
 		case Config::tsmCustom:
 			{

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.92 2004-05-29 11:01:33 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.93 2004-06-03 05:39:11 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -756,7 +756,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 		}
 
 		ConstStr255Param hint = 0;
-		long length = url.Length();
+		long length = URL.Length();
 		long start = 0;
 		long end = length;
 
@@ -765,7 +765,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 			ICFindConfigFile(icInstance, 0, nil);
 		#endif
 
-		ICLaunchURL(icInstance, hint, url.c_str(), length, & start, & end);
+		ICLaunchURL(icInstance, hint, URL.c_str(), length, & start, & end);
 
 		ICStop(icInstance);
 
