@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.15 2003-05-28 11:44:23 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.16 2003-05-28 11:54:11 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -514,12 +514,12 @@ void InputControl::RaiseEvent(const wxString &text)
 
 void InputControl::OnChar(wxKeyEvent& event)
 {
-	if ( event.KeyCode() == WXK_RETURN )
+	if ( event.GetKeyCode() == WXK_RETURN )
 	{
 		m_tab_completion_prefix = wxEmptyString;
 		ProcessInput();
 	}
-	else if ( event.KeyCode() == WXK_TAB )
+	else if ( event.GetKeyCode() == WXK_TAB )
 	{
 
 		wxString val = GetValue();
