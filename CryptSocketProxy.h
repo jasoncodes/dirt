@@ -88,7 +88,7 @@ protected:
 	}
 
 	template <typename T>
-	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)())
+	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)() const)
 	{
 		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, this->fn());
 	}
