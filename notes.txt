@@ -122,6 +122,8 @@
 
 * scripting (/exec and /eval)
 
+* create script to generate crypto++ makefiles and change to crypto++ cvs head
+
 * banning (wxIsWild(), wxMatchWild(), wxString::Matches())
 
 * hide /oper password when being typed

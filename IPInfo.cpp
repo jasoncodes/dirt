@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.4 2003-06-02 05:57:48 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.5 2003-06-02 10:14:43 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -299,7 +299,8 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 	}
 	else
 	{
-		retval << ipv4->Hostname();
+		wxString hostname = ipv4->Hostname();
+		retval << (hostname.Length() ? hostname : ip);
 	}
 	if (include_port)
 	{
