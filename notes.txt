@@ -1,22 +1,29 @@
-* SOCKS 4/5 BIND support for DCC Listen
+* URGENT: DCC Connect proxy seems highly broken
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
 	make sure recursive safe (int m_depth;)
 	wxCriticalSection to protect m_depth;
 	assert on unlocking an unlocked mutex
+	assert on locked mutex during destruction
 	use same class layout as TrayIcon
+	void Lock();
+	void Unlock();
+	bool IsLocked() const;
+	size_t GetLockDepth() const;
 
 * multiple instances using one config file will cause data loss if both write
-	make ConfigFile extend wxConfigBase and forward to internal wx
-	before forwarding anything, call EnsureLatestLoaded()
-	call Flush() after any modification call
-	the whole of any modification method should have the mutex locked
-	constructor
+	* make ConfigFile extend wxConfigBase and forward to internal wx
+	* the whole of any forwarding method should have the mutex locked
+	* before forwarding anything, call EnsureLatestLoaded()
+	* if (m_mutex->GetLockDepth() == 1) call Flush() after any modification forwarding
+	* constructor
 		m_filename = GetConfigFilename();
 		m_mutex = new Mutex(m_filename + wxT(".lock"));
 		ReInit();
-	Flush(bool);
+	* destructor
+		wxASSERT_MSG(!m_mutex->IsLocked(), wxT("EndBatch() not called before destroying ConfigFile"));	
+	* Flush(bool);
 		m_mutex->Lock();
 		wxASSERT(IsLatestLoaded());
 		bool ok = wxFileConfig::Flush();
@@ -26,26 +33,35 @@
 		}
 		m_mutex->Unlock();
 		return ok;
-	protected wxDateTime GetLastFileModified() const;
-	bool IsLatestLoaded() const;
+	* protected wxDateTime GetLastFileModified() const;
+	* void BeginBatch();
+		m_mutex->Lock();
+		EnsureLatestLoaded();
+	* void EndBatch();
+		wxASSERT_MSG(m_mutex->IsLocked(), wxT("EndBatch() without BeginBatch()"));
+		Flush();
+		m_mutex->Unlock();
+	* bool IsLatestLoaded() const;
 		m_mutex->Lock();
 		bool latest = (m_last_file_mod == GetLastFileModified());
 		m_mutex->Unlock();
 		return latest;
-	ReInit()
+	* ReInit()
 		m_mutex->Lock();
 		delete m_config;
 		m_config = new wxFileConfig(wxT("dirt"), wxT(""), m_filename);
 		m_config->SetUmask(0077);
 		m_last_file_mod = GetLastFileModified();
 		m_mutex->Unlock();
-	EnsureLatestLoaded
+	* EnsureLatestLoaded
 		m_mutex->Lock();
 		if (!IsLatestLoaded())
 		{
 			ReInit();
 		}
 		m_mutex->Unlock();
+
+* SOCKS 4/5 BIND support for DCC Listen
 
 * /dcc close complete, /dcc close all, /dcc close fail
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.57 2003-05-22 01:46:23 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.58 2003-06-27 00:19:18 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -507,7 +507,12 @@ void ServerUIFrame::UpdateTrayIcon()
 				new_xpm = xpmActiveMany;
 			}
 			new_tooltip.Empty();
-			new_tooltip << count << wxT(" users connected");
+			new_tooltip << count << wxT(" user") << ((count==1)?wxT(""):wxT("s")) << wxT(" connected");
+			wxString name = m_server->GetConfig().GetServerName();
+			if (name.Length())
+			{
+				new_tooltip << wxT(" (") << name << wxT(")");
+			}
 		}
 
 		if (new_xpm != m_last_xpm)
