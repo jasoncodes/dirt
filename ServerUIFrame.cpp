@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.33 2003-03-11 09:51:38 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.34 2003-03-11 09:55:18 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -197,7 +197,7 @@ ServerUIFrame::ServerUIFrame()
 
 	ResetWindowPos();
 
-	if (!m_server->IsRunning())
+	if (!m_server->IsRunning() || !m_tray->Ok())
 	{
 		Show();
 	}

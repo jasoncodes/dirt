@@ -44,7 +44,7 @@
 
 * filter local ips from avg ping
 
-* tray icon support
+* client tray icon
 * client side ping
 * /bind
 * /alias
