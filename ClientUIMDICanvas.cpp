@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.72 2004-11-25 09:47:21 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.73 2004-12-05 07:32:30 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -231,11 +231,17 @@ void ClientUIMDICanvas::DoGotFocus()
 	{
 		m_txtInput->SetFocus();
 	}
-	SwitchBar *switchbar = m_parent->GetSwitchBar();
-	int button_index = switchbar->GetIndexFromUserData(this);
-	if (button_index > -1 && !m_pnlTransfer)
+	if (m_parent)
 	{
-		switchbar->SetButtonHighlight(button_index, false);
+		SwitchBar *switchbar = m_parent->GetSwitchBar();
+		if (switchbar)
+		{
+			int button_index = switchbar->GetIndexFromUserData(this);
+			if (button_index > -1 && !m_pnlTransfer)
+			{
+				switchbar->SetButtonHighlight(button_index, false);
+			}
+		}
 	}
 }
 
@@ -298,7 +304,7 @@ void ClientUIMDICanvas::OnKeyDown(wxKeyEvent &event)
 void ClientUIMDICanvas::OnFocusCheck()
 {
 
-	if (m_txtInput->IsShown())
+	if (m_txtInput && m_txtInput->IsShown())
 	{
 		if (FindFocus() == m_txtInput)
 		{
@@ -313,7 +319,7 @@ void ClientUIMDICanvas::OnFocusCheck()
 		}
 	}
 
-	if (((ClientUIMDIFrame*)m_parent)->IsFocused())
+	if (m_parent && ((ClientUIMDIFrame*)m_parent)->IsFocused())
 	{
 		((ClientUIMDIFrame*)m_parent)->ResetRedLines();
 	}
