@@ -1,7 +1,9 @@
 * add a user database to Client
-  Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache
+  Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache, WHOIS cache age
 
 * suppress wxBell when /away?
+
+* away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
 
 * change all config file code to use utf-8 for file storage
 
