@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.47 2003-03-31 07:26:59 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.48 2003-03-31 10:14:24 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -237,21 +237,24 @@ void ServerUIFrame::OnSize(wxSizeEvent &event)
 
 void ServerUIFrame::OnClose(wxCloseEvent &event)
 {
-	SaveWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
+	if (m_size_set)
+	{
+		SaveWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
+	}
 	event.Skip();
 }
 
 void ServerUIFrame::SetPositionAndShow()
 {
-	if (!m_size_set)
+	if (m_size_set)
+	{
+		ForceForegroundWindow(this);
+	}
+	else
 	{
 		ResetWindowPos();
 		RestoreWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"), true);
 		m_size_set = true;
-	}
-	else
-	{
-		ForceForegroundWindow(this);
 	}
 	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
 }
