@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.41 2003-03-12 06:59:06 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.42 2003-03-15 08:19:04 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -40,6 +40,10 @@ void ServerDefaultConnection::SendData(const ByteBuffer &data)
 void ServerDefaultConnection::Terminate(const wxString &reason)
 {
 	m_quitmsg = reason;
+	if (GetNickname().Length())
+	{
+		Send(wxEmptyString, wxT("PART"), Pack(GetNickname(), GetInlineDetails(), m_quitmsg));
+	}
 	m_sck->CloseWithEvent();
 }
 

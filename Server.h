@@ -12,6 +12,7 @@ class ServerEventHandler
 
 public:
 	virtual bool OnServerPreprocess(wxString &cmd, wxString &params) { return false; }
+	virtual wxArrayString OnServerSupportedCommands() { return wxArrayString(); }
 	virtual void OnServerStateChange() = 0;
 	virtual void OnServerConnectionChange() = 0;
 	virtual void OnServerInformation(const wxString &line) = 0;
@@ -178,6 +179,7 @@ public:
 	virtual long GetLowestIdleTime() const;
 	virtual time_t GetAverageLatency() const;
 	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
+	virtual wxArrayString GetSupportedCommands() const;
 
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);

@@ -18,6 +18,7 @@ public:
 
 protected:
 	virtual bool OnServerPreprocess(wxString &cmd, wxString &params);
+	virtual wxArrayString OnServerSupportedCommands();
 	virtual void OnServerStateChange();
 	virtual void OnServerConnectionChange();
 	virtual void OnServerInformation(const wxString &line);

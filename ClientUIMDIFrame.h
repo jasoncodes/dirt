@@ -37,6 +37,7 @@ protected:
 	void OnBinding(wxCommandEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
+	virtual wxArrayString OnClientSupportedCommands();
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
 	virtual void OnClientWarning(const wxString &context, const wxString &text);
 	virtual void OnClientError(const wxString &context, const wxString &type, const wxString &text);

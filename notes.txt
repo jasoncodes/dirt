@@ -20,7 +20,7 @@
 
 * banning
 
-* kicking
+* right click menu for connection list in server
 
 * quit messages
 

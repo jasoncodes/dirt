@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.35 2003-03-12 08:00:45 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.36 2003-03-15 08:19:04 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -424,6 +424,15 @@ void Server::Warning(const wxString &line)
 	}
 }
 
+wxArrayString Server::GetSupportedCommands() const
+{
+	wxArrayString cmds;
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("HELP KICK START STOP USERS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, m_event_handler->OnServerSupportedCommands());
+	cmds.Sort();
+	return cmds;
+}
+
 void Server::ProcessConsoleInput(const wxString &input)
 {
 
@@ -482,9 +491,36 @@ void Server::ProcessConsoleInput(const wxString &input)
 			Warning(wxT("Server is not running"));
 		}
 	}
+	else if (cmd == wxT("KICK"))
+	{
+		HeadTail ht = SplitQuotedHeadTail(params);
+		if (!ht.head.Length())
+		{
+			Warning(wxT("No nickname specified"));
+			return;
+		}
+		ServerConnection *conn = GetConnection(ht.head);
+		if (conn)
+		{
+			if (ht.tail.Length())
+			{
+				ht.tail = wxT("Kicked: ") + ht.tail;
+			}
+			else
+			{
+				ht.tail = wxT("Kicked");
+			}
+			conn->Terminate(ht.tail);
+		}
+		else
+		{
+			Warning(wxT("No such nickname: ") + ht.head);
+		}
+	}
+
 	else if (cmd == wxT("HELP"))
 	{
-		Information(wxT("Supported commands: HELP START STOP USERS"));
+		Information(wxT("Supported commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
 	}
 	else
 	{

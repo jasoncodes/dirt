@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.73 2003-03-13 12:58:52 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.74 2003-03-15 08:19:04 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -402,6 +402,11 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 }
 
+wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
+{
+	return SplitString(wxT("CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS"), wxT(" "));
+}
+
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
 {
 	if (cmd == wxT("CLEAR"))
@@ -447,11 +452,6 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	{
 		m_client->GetFileTransfers()->Test();
 		return true;
-	}
-	else if (cmd == wxT("HELP"))
-	{
-		OnClientInformation(context, wxT("Supported commands: CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS"));
-		return false;
 	}
 	else
 	{

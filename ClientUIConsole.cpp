@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.36 2003-03-12 06:47:06 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.37 2003-03-15 08:19:04 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -50,17 +50,17 @@ void ClientUIConsole::OnEOF()
 	m_client->ProcessConsoleInput(wxEmptyString, wxT("/exit"));
 }
 
+wxArrayString ClientUIConsole::OnClientSupportedCommands()
+{
+	return SplitString(wxT("EXIT"), wxT(" "));
+}
+
 bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
 {
 	if (cmd == wxT("EXIT"))
 	{
 		ExitMainLoop();
 		return true;
-	}
-	else if (cmd == wxT("HELP"))
-	{
-		OnClientInformation(context, wxT("Supported commands: EXIT"));
-		return false;
 	}
 	else
 	{

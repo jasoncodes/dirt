@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.10 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.11 2003-03-15 08:19:04 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -57,15 +57,15 @@ bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &params)
 		ExitMainLoop();
 		return true;
 	}
-	else if (cmd == wxT("HELP"))
-	{
-		OnServerInformation(wxT("Supported commands: EXIT"));
-		return false;
-	}
 	else
 	{
 		return false;
 	}
+}
+
+wxArrayString ServerUIConsole::OnServerSupportedCommands()
+{
+	return SplitString(wxT("EXIT"), wxT(" "));
 }
 
 void ServerUIConsole::OnServerStateChange()

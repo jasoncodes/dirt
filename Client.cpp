@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.33 2003-03-13 02:04:25 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.34 2003-03-15 08:19:04 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -48,6 +48,15 @@ Client::~Client()
 void Client::Debug(const wxString &context, const wxString &text)
 {
 	m_event_handler->OnClientDebug(context, text);
+}
+
+wxArrayString Client::GetSupportedCommands() const
+{
+	wxArrayString cmds;
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
+	cmds.Sort();
+	return cmds;
 }
 
 void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
@@ -154,7 +163,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{

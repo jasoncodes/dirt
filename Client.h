@@ -15,6 +15,7 @@ class ClientEventHandler
 
 public:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params) { return false; }
+	virtual wxArrayString OnClientSupportedCommands() { return wxArrayString(); }
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientError(const wxString &context, const wxString &type, const wxString &text) = 0;
@@ -67,13 +68,13 @@ public:
 	wxArrayString GetBindingList() const;
 	virtual wxString GetBinding(const wxString &name) const;
 	virtual bool SetBinding(const wxString &name, const wxString &value);
-
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname() const;
 	virtual wxString GetServerName() const;
 	virtual wxString GetDefaultNick() const;
 	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
 	virtual FileTransfers* GetFileTransfers() const { return m_file_transfers; }
+	virtual wxArrayString GetSupportedCommands() const;
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);

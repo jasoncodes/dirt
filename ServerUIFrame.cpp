@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.37 2003-03-12 07:51:31 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.38 2003-03-15 08:19:05 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -334,15 +334,15 @@ bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
 		Close();
 		return true;
 	}
-	else if (cmd == wxT("HELP"))
-	{
-		OnServerInformation(wxT("Supported commands: CLEAR EXIT"));
-		return false;
-	}
 	else
 	{
 		return false;
 	}
+}
+
+wxArrayString ServerUIFrame::OnServerSupportedCommands()
+{
+	return SplitString(wxT("CLEAR EXIT"), wxT(" "));
 }
 
 bool ServerUIFrame::ResetWindowPos()
