@@ -28,10 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.53 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.54 2004-06-08 09:10:38 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
+#include <wx/filename.h>
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -325,6 +326,12 @@ int DirtApp::OnExit()
 		::timeEndPeriod(1);
 	#endif
 
+	if (m_pid_filename.Length())
+	{
+		wxFileName fn(m_pid_filename);
+		wxRemoveFile(m_pid_filename);
+	}
+
 	delete m_console;
 	delete m_cmdline;
 	return wxApp::OnExit();
@@ -367,10 +374,26 @@ bool DirtApp::ProcessCommandLine()
 	m_cmdline->AddSwitch(wxEmptyString, wxT("lanlist"), wxT("LAN List (GUI only)"), 0);
 	m_cmdline->AddOption(wxEmptyString, wxT("config"), wxT("Alternate config filename"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 	m_cmdline->AddSwitch(wxEmptyString, wxT("server-dtach"), wxT("Server mode that will terminate if not listening. Implies --no-input, --server and --console"), 0);
+	m_cmdline->AddOption(wxEmptyString, wxT("pid-file"), wxT("Process ID file to be used by this instance"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
 	if (m_cmdline->Parse() != 0)
 	{
 		return false;
+	}
+
+	if (m_cmdline->Found(wxT("pid-file"), &m_pid_filename) && m_pid_filename.Length())
+	{
+		if (m_pid_file.Open(m_pid_filename, wxFile::write))
+		{
+			m_pid_file.Write(wxString() << wxGetProcessId() << wxT("\n"));
+			m_pid_file.Close();
+		}
+		else
+		{
+			wxFprintf(stderr, wxT("Cannot create pid file: %s\n"), m_pid_filename.c_str());
+			m_pid_filename.Empty();
+			return false;
+		}
 	}
 
 	if (m_cmdline->Found(wxT("server")))

@@ -28,6 +28,8 @@
 	#include <wx/msw/winundef.h>
 #endif
 
+#include <wx/file.h>
+
 class Console;
 class Client;
 
@@ -81,6 +83,8 @@ protected:
 	wxString m_config_filename;
 	wxString m_default_quit_message;
 	Client *m_client;
+	wxString m_pid_filename;
+	wxFile m_pid_file;
 
 	#ifdef __WXMSW__
 		static LRESULT CALLBACK MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam);
