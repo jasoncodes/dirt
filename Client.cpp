@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.84 2004-03-15 06:23:17 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.85 2004-03-22 18:14:44 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -325,7 +325,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT ECHO HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHO WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT ECHO HELP ME ME'S MSG MSGME MY NICK OPER TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHO WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_file_transfers->OnClientSupportedCommands());
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.51 2003-08-20 00:40:58 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.52 2004-03-22 18:14:45 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -605,4 +605,31 @@ void DirtApp::OnIdle(wxIdleEvent &event)
 		m_client->GetFileTransfers()->OnAppIdle(event);
 	}
 	event.Skip();
+}
+
+bool DirtApp::IsControlDown() const
+{
+#if defined(__WXMSW__) || defined(__WXMAC__)
+	return wxGetKeyState(WXK_CONTROL);
+#else
+	return m_control_down;
+#endif
+}
+
+bool DirtApp::IsAltDown() const
+{
+#if defined(__WXMSW__) || defined(__WXMAC__)
+	return wxGetKeyState(WXK_ALT);
+#else
+	return m_alt_down;
+#endif
+}
+
+bool DirtApp::IsShiftDown() const
+{
+#if defined(__WXMSW__) || defined(__WXMAC__)
+	return wxGetKeyState(WXK_SHIFT);
+#else
+	return m_shift_down;
+#endif
 }

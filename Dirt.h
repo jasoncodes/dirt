@@ -31,9 +31,9 @@ public:
 	bool IsConsole();
 	void RegisterDirtProtocol();
 
-	bool IsControlDown() const { return m_control_down; }
-	bool IsAltDown() const { return m_alt_down; }
-	bool IsShiftDown() const { return m_shift_down; }
+	bool IsControlDown() const;
+	bool IsAltDown() const;
+	bool IsShiftDown() const;
 
 	wxString GetConfigFilename() { return m_config_filename; }
 	wxString GetDefaultQuitMessage() { return m_default_quit_message; }
