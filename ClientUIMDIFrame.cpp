@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.132 2003-08-13 08:16:17 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.133 2003-08-13 09:47:50 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -876,7 +876,9 @@ bool ClientUIMDIFrame::SetHotKey(int keycode, wxUint8 mods)
 
 	if (keycode && mods)
 	{
-		if (::RegisterHotKey(GetHwnd(), 1, mods, keycode) != 0)
+		bool isVirtual;
+		int keycode_msw = wxCharCodeWXToMSW(keycode, &isVirtual);
+		if (::RegisterHotKey(GetHwnd(), 1, mods, keycode_msw) != 0)
 		{
 			m_hotkey_keycode = keycode;
 			m_hotkey_mods = mods;
