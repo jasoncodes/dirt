@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.7 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.8 2003-02-16 05:21:13 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -103,7 +103,7 @@ public:
 			while (!TestDestroy() && (x = wxGetc(stdin)) != -1)
 			{
 
-				char c = (wxChar)x;
+				wxChar c = (wxChar)x;
 
 				if (c == wxT('\n'))
 				{

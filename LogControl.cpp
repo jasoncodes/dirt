@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.18 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.19 2003-02-16 05:21:13 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -355,7 +355,7 @@ public:
 
 			if ( colour_pos > 0 && // is inside a colour code and
 				( (c == wxT(',') && had_comma) || // is either a 2nd comma
-				  (c != wxT(',') && !isdigit(c)) ) // or a non-valid character
+				  (c != wxT(',') && !wxIsdigit(c)) ) // or a non-valid character
 				)
 			{
 				EndOfColourCode();

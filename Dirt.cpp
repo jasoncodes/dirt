@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.17 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.18 2003-02-16 05:21:13 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -27,7 +27,7 @@ IMPLEMENT_APP(DirtApp)
 		return (ReadFile(hFile, buffer, size, &bytes, NULL) && size == bytes);
 	} 
 
-	WORD GetImageSubsystemType(char *filename)
+	WORD GetImageSubsystemType(wxChar *filename)
 	{ 
 
 		HANDLE hImage;
@@ -110,7 +110,7 @@ bool DirtApp::IsConsole()
 
 	#ifdef __WXMSW__
 
-		char filename[MAX_PATH];
+		wxChar filename[MAX_PATH];
 		::GetModuleFileName(NULL, filename, MAX_PATH);
 		int subsystem = GetImageSubsystemType(filename);
 		wxASSERT(subsystem == IMAGE_SUBSYSTEM_WINDOWS_CUI || subsystem == IMAGE_SUBSYSTEM_WINDOWS_GUI);
