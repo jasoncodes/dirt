@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.8 2003-03-08 03:53:29 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.9 2003-03-08 05:04:13 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -855,6 +855,7 @@ void HTTP::OnDNS(DNSEvent &event)
 			evt.m_event = wxSOCKET_CONNECTION;
 			AddPendingEvent(evt);
 		}
+		delete addr;
 	}
 	if (!ok)
 	{
