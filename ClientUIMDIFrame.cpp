@@ -79,30 +79,15 @@ ClientUIMDIFrame::~ClientUIMDIFrame()
 
 bool ClientUIMDIFrame::ResetWindowPos()
 {
-
-	#ifdef __WXMSW__
-		
-		RECT WorkArea;
-		::SystemParametersInfo(SPI_GETWORKAREA, 0, &WorkArea, 0);
-		RECT DefaultPos;
-		DefaultPos.bottom = WorkArea.bottom;
-		DefaultPos.left = WorkArea.left;
-		DefaultPos.right = WorkArea.right;
-		DefaultPos.top = DefaultPos.bottom - 326;//(WorkArea.bottom-WorkArea.top)/2.5;
-		SetSize(
-			DefaultPos.left,
-			DefaultPos.top,
-			DefaultPos.right - DefaultPos.left,
-			DefaultPos.bottom - DefaultPos.top);
-
-		return true;
-
-	#else
-
-		return false;
-
-	#endif
-
+	wxRect rtWorkArea = ::wxGetClientDisplayRect();
+	int height = 316;
+	wxRect rtDefaultPos(
+		rtWorkArea.x,
+		rtWorkArea.GetBottom() - height + 1,
+		rtWorkArea.width,
+		height);
+	SetSize(rtDefaultPos);
+	return true;
 }
 
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
