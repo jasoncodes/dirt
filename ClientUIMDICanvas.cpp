@@ -39,6 +39,8 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	wxIcon icon = wxNullIcon;
 
+	m_type = type;
+
 	switch (type)
 	{
 

@@ -18,13 +18,13 @@ enum
 {
 	ID_FILE_EXIT = 1,
 	ID_HELP_ABOUT,
-	ID_FOCUSINPUTCONTROLTIMER
+	ID_FOCUSTIMER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_HELP_ABOUT, ClientUIMDIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
-	EVT_TIMER(ID_FOCUSINPUTCONTROLTIMER, ClientUIMDIFrame::OnFocusInputControlTimer)
+	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -71,8 +71,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", ChannelCanvas);
 	NewWindow(canvas, true);
 
-	tmrFocusInputControl = new wxTimer(this, ID_FOCUSINPUTCONTROLTIMER);
-	tmrFocusInputControl->Start(100);
+	tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
+	tmrFocus->Start(100);
 
 	m_client = new ClientDefault(this);
 
@@ -80,12 +80,23 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
-	delete tmrFocusInputControl;
+	delete tmrFocus;
 	delete m_client;
 }
 
-void ClientUIMDIFrame::OnFocusInputControlTimer(wxTimerEvent& event)
+bool ClientUIMDIFrame::IsFocused()
 {
+	wxWindow *wnd = ::wxGetActiveWindow();
+	while (wnd && wnd->GetParent())
+	{
+		wnd = wnd->GetParent();
+	}
+	return wnd == this;
+}
+
+void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
+{
+	SetTitle(wxString() << IsFocused());
 	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 	if (child)
 	{

@@ -16,10 +16,12 @@ public:
 
 	Client* GetClient() { return m_client; }
 
+	bool IsFocused();
+
 protected:
 	void OnFileExit(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
-	void OnFocusInputControlTimer(wxTimerEvent &event);
+	void OnFocusTimer(wxTimerEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
@@ -30,7 +32,7 @@ protected:
 
 
 protected:
-	wxTimer *tmrFocusInputControl;
+	wxTimer *tmrFocus;
 	Client *m_client;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true);
