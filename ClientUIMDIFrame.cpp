@@ -6,10 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.143 2004-03-24 08:02:21 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.144 2004-04-25 17:06:01 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
-#include "SwitchBarChild.h"
+#include "SwitchBarMDI.h"
 #include "ClientUIMDICanvas.h"
 #include "ClientDefault.h"
 #include "util.h"
@@ -20,7 +20,6 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.143 2004-03-24 08:02:21 jason Exp $)
 #include "TrayIcon.h"
 #include "Dirt.h"
 #include "LogWriter.h"
-#include "SwitchBar.h"
 #include "LogControl.h"
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
@@ -120,7 +119,10 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	mnuTools->Append(ID_TOOLS_OPTIONS, wxT("&Options..."));
 	mnu->Append(mnuTools, wxT("&Tools"));
 
-	mnu->Append(GetWindowMenu(), wxT("&Window"));
+	if (GetWindowMenu())
+	{
+		mnu->Append(GetWindowMenu(), wxT("&Window"));
+	}
 
 	wxMenu *mnuHelp = new wxMenu;
 	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About"));

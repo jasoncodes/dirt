@@ -4,20 +4,18 @@
 class SwitchBarParent;
 class SwitchBarCanvas;
 
-class SwitchBarChild : public wxMDIChildFrame
+class SwitchBarChild : public wxPanel
 {
 
 public:
-	SwitchBarChild(SwitchBarParent *parent, const wxPoint& pos, const wxSize& size, const long style, SwitchBarCanvas *canvas);
+	SwitchBarChild(SwitchBarParent *parent);
 	virtual ~SwitchBarChild();
 
+	void SetCanvas(SwitchBarCanvas *canvas);
 	inline SwitchBarCanvas* GetCanvas() { return m_canvas; }
 
 protected:
-	void OnActivate(wxActivateEvent& event);
 	void OnSize(wxSizeEvent& event);
-	void OnMove(wxMoveEvent& event);
-	void OnClose(wxCloseEvent& event);
 
 protected:
 	SwitchBarParent *m_parent;

@@ -6,9 +6,9 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.14 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.15 2004-04-25 17:06:01 jason Exp $)
 
-#include "SwitchBar.h"
+#include "SwitchBarMDI.h"
 #include <wx/image.h>
 #include <wx/tooltip.h>
 #include "FileDropTarget.h"

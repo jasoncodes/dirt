@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.30 2003-08-14 06:52:35 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.31 2004-04-25 17:06:01 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -15,7 +15,7 @@ RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.30 2003-08-14 06:52:35 jason Exp $)
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
-#include "SwitchBar.h"
+#include "SwitchBarMDI.h"
 
 enum
 {

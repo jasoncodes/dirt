@@ -20,7 +20,7 @@ public:
 	virtual void SetIcon(const wxIcon &icon);
 
 	virtual bool IsClosable() { return true; }
-	virtual bool IsAttached() { return GetParent() != (wxWindow*)m_parent; }
+	virtual bool IsAttached();
 
 	virtual void OnAttach() {}
 	virtual void OnDetach() {}
@@ -42,5 +42,8 @@ private:
 	DECLARE_NO_COPY_CLASS(SwitchBarCanvas)
 
 };
+
+#include <wx/dynarray.h>
+WX_DEFINE_ARRAY_PTR(SwitchBarCanvas*, SwitchBarCanvasArray);
 
 #endif

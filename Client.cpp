@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.85 2004-03-22 18:14:44 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.86 2004-04-25 17:06:00 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1148,7 +1148,10 @@ void Client::CTCPReply(const wxString &context, const wxString &nick, const wxSt
 
 void Client::OnConnect()
 {
-	m_tmrPing->Start(2500);
+	if (!m_tmrPing->Start(2500))
+	{
+		m_event_handler->OnClientWarning(wxEmptyString, wxT("Error to start keep alive timer."));
+	}
 	m_ping_next = GetMillisecondTicks() + initial_ping_delay;
 	m_ping_data = wxEmptyString;
 	m_latency = -1;

@@ -1,7 +1,7 @@
 #ifndef ClientUIMDICanvas_H_
 #define ClientUIMDICanvas_H_
 
-#include "SwitchBarCanvas.h"
+#include "SwitchBarMDI.h"
 #include <wx/sashwin.h>
 
 class NickListControl;

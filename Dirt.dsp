@@ -633,11 +633,31 @@ SOURCE=.\SwitchBarChild.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SwitchBarChildGeneric.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SwitchBarChildGeneric.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SwitchBarMDI.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SwitchBarParent.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SwitchBarParent.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SwitchBarParentGeneric.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SwitchBarParentGeneric.h
 # End Source File
 # Begin Source File
 

@@ -1,15 +1,12 @@
-#ifndef SwitchBarParent_H_
-#define SwitchBarParent_H_
+#ifndef SwitchBarParentGeneric_H_
+#define SwitchBarParentGeneric_H_
 
-class SwitchBar;
 class SwitchBarChild;
-class SwitchBarCanvas;
 
-class SwitchBarParent : public wxMDIParentFrame
+class SwitchBarParent : public wxFrame
 {
 
 	friend class SwitchBarChild;
-	friend class SwitchBarCanvas;
 
 public:
 	SwitchBarParent(
@@ -20,9 +17,13 @@ public:
 	virtual ~SwitchBarParent();
 
 	inline SwitchBar* GetSwitchBar() { return m_switchbar; }
+	inline wxWindow* GetMDIChildWindow() { return m_client_area; }
 
 	void FocusCanvas(SwitchBarCanvas *canvas);
 
+	wxWindow* GetActiveChildWindow() const;
+	SwitchBarChild* GetActiveChild() const;
+	
 protected:
 	void OnSize(wxSizeEvent& event);
 	void OnSwitchBar(wxCommandEvent& event);
@@ -32,28 +33,23 @@ protected:
 
 	void OnWindowMinimize(wxCommandEvent& event);
 	void OnWindowClose(wxCommandEvent& event);
-	void OnWindowCascade(wxCommandEvent& event);
-	void OnWindowTile(wxCommandEvent& event);
 	void OnWindowNext(wxCommandEvent& event);
 	void OnWindowPrev(wxCommandEvent& event);
-	void OnWindowWindows(wxCommandEvent& event);
-
-	void OnUpdateWindowMenuTimer(wxTimerEvent &event);
-	void OnUpdateWindowMenuIdle(wxIdleEvent &event);
 
 protected:
 	SwitchBarChild* NewWindow(SwitchBarCanvas *canvas, bool focus);
 	void NextChild(bool bPrevious);
-	void DoUpdateWindowMenu();
-	void UpdateCheckMenuItem(int id, const wxString &label, bool enabled, bool checked);
 	SwitchBarCanvas *GetActiveCanvas() const;
 	void CloseCanvas(SwitchBarCanvas *canvas);
+	
 	size_t GetAcceleratorCount() const { return m_accelerator_count; }
 	wxAcceleratorEntry *GetAccelerators() const { return m_accelerators; }
 
-	void UpdateWindowMenu();
+	inline wxMenu *GetWindowMenu() { return NULL; }
 
-	inline wxMenu *GetWindowMenu() { return m_mnuWindow; }
+	void AddVisibleCanvas(SwitchBarCanvas *canvas);
+	void RemoveVisibleCanvas(SwitchBarCanvas *canvas);
+	void SelectLastVisibleWindow();
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -61,9 +57,8 @@ private:
 
 protected:
 	SwitchBar *m_switchbar;
-	wxTimer *m_tmrUpdateWindowMenu;
-	wxMenu *m_mnuWindow;
-	int m_num_window_menus;
+	wxPanel *m_client_area;
+	SwitchBarCanvasArray m_visible_windows;
 	int m_switchbar_popup_button_index;
 	SwitchBarCanvas *m_switchbar_popup_canvas;
 	wxAcceleratorEntry *m_accelerators;

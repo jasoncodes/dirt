@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.27 2003-08-11 02:26:29 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.28 2004-04-25 17:06:02 jason Exp $)
 
-#include "SwitchBar.h"
-#include "SwitchBarParent.h"
-#include "SwitchBarChild.h"
-#include "SwitchBarCanvas.h"
+#include "SwitchBarMDI.h"
+
+#if NATIVE_MDI
+
+#include "SwitchBarMDI.h"
 #include "util.h"
 
 #ifdef __WXMSW__
@@ -40,7 +41,6 @@ enum
 
 BEGIN_EVENT_TABLE(SwitchBarParent, wxMDIParentFrame)
 	EVT_MENU_RANGE(ID_WINDOW_WINDOWS + 0, ID_WINDOW_WINDOWS + 999, SwitchBarParent::OnWindowWindows)
-	EVT_CLOSE(SwitchBarParent::OnClose)
 	EVT_SIZE(SwitchBarParent::OnSize)
 	EVT_BUTTON(ID_SWITCHBAR, SwitchBarParent::OnSwitchBar)
 	EVT_MENU(ID_SWITCHBAR, SwitchBarParent::OnSwitchBarMenu)
@@ -103,11 +103,6 @@ SwitchBarParent::~SwitchBarParent()
 	delete m_tmrUpdateWindowMenu;
 	m_tmrUpdateWindowMenu = NULL;
 	delete[] m_accelerators;
-}
-
-void SwitchBarParent::OnClose(wxCloseEvent& event)
-{
-	event.Skip();
 }
 
 void SwitchBarParent::NextChild(bool bPrevious)
@@ -328,7 +323,10 @@ SwitchBarChild* SwitchBarParent::NewWindow(SwitchBarCanvas *canvas, bool focus)
 	if (focus)
 	{
 
-		SwitchBarChild *child = OnCreateNewChild(pos, size, bMaximized, canvas);
+		SwitchBarChild *child = new SwitchBarChild(
+			this, pos, size,
+			wxDEFAULT_FRAME_STYLE | (bMaximized?wxMAXIMIZE:0),
+			canvas);
 
 		child->Show(TRUE);
 
@@ -352,14 +350,6 @@ SwitchBarChild* SwitchBarParent::NewWindow(SwitchBarCanvas *canvas, bool focus)
 
 	}
 
-}
-
-SwitchBarChild* SwitchBarParent::OnCreateNewChild(wxPoint pos, wxSize size, bool bMaximized, SwitchBarCanvas *canvas)
-{
-	return new SwitchBarChild(
-		this, pos, size,
-		wxDEFAULT_FRAME_STYLE | (bMaximized?wxMAXIMIZE:0),
-		canvas);
 }
 
 void SwitchBarParent::OnSize(wxSizeEvent &WXUNUSED(event))
@@ -466,7 +456,7 @@ void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)
 	}
 }
 
-SwitchBarCanvas *SwitchBarParent::GetActiveCanvas()
+SwitchBarCanvas *SwitchBarParent::GetActiveCanvas() const
 {
 	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 	if (child)
@@ -585,3 +575,5 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 	UpdateWindowMenu();
 
 }
+
+#endif

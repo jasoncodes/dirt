@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.16 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.17 2004-04-25 17:06:01 jason Exp $)
 
-#include "SwitchBarChild.h"
-#include "SwitchBarParent.h"
-#include "SwitchBarCanvas.h"
-#include "SwitchBar.h"
+#include "SwitchBarMDI.h"
+
+#if NATIVE_MDI
+
+#include "SwitchBarMDI.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -133,3 +134,5 @@ void SwitchBarChild::OnClose(wxCloseEvent& event)
 		event.Skip();
 	}
 }
+
+#endif

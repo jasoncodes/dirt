@@ -112,3 +112,8 @@ URL.h
 util.cpp
 util.h
 version.h
+SwitchBarParentGeneric.cpp
+SwitchBarParentGeneric.h
+SwitchBarChildGeneric.cpp
+SwitchBarChildGeneric.h
+SwitchBarMDI.h

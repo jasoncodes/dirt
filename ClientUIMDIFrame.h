@@ -1,7 +1,7 @@
 #ifndef ClientUIMDIFrame_H_
 #define ClientUIMDIFrame_H_
 
-#include "SwitchBarParent.h"
+#include "SwitchBarMDI.h"
 #include "Client.h"
 #include <wx/datetime.h>
 #include <wx/sound.h>

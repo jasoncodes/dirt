@@ -6,11 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.58 2003-08-22 17:29:07 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.59 2004-04-25 17:06:00 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
-#include "SwitchBarChild.h"
-#include "SwitchBarParent.h"
+#include "SwitchBarMDI.h"
 #include "ClientUIMDIFrame.h"
 #include "util.h"
 #include "NickListControl.h"
@@ -18,7 +17,6 @@ RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.58 2003-08-22 17:29:07 jason Exp $)
 #include "LogControl.h"
 #include "LogWriter.h"
 #include "ClientUIMDITransferPanel.h"
-#include "SwitchBar.h"
 #include "FileDropTarget.h"
 
 #include "res/channel.xpm"
