@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.32 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.34 2003-03-05 01:12:30 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
 #include <wx/html/htmlwin.h>
 #include <math.h>
 #include "ByteBuffer.h"
+#include <wx/mimetype.h>
 
 const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 
@@ -613,9 +614,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 			wxString cmd;
 			bool ok = ft->GetOpenCommand(
-				&cmd,
-				wxFileType::MessageParameters(URL,
-				wxT("")));
+				&cmd, wxFileType::MessageParameters(URL, wxT("")));
 			delete ft;
 
 			if (!ok)
@@ -642,7 +641,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 				if (show_error)
 				{
 					wxMessageBox(
-						wxT("Unable to navigate to ") + event.GetString(),
+						wxT("Unable to navigate to ") + URL,
 						wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
 				}
 				return false;

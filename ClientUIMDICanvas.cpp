@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.34 2003-03-05 01:05:13 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.35 2003-03-05 01:11:04 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -14,7 +14,6 @@ RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.34 2003-03-05 01:05:13 jason Exp $)
 #include "ClientUIMDIFrame.h"
 #include "util.h"
 #include "NickListControl.h"
-#include <wx/mimetype.h>
 
 #include "res/channel.xpm"
 #include "res/query.xpm"

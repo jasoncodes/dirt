@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.12 2003-02-21 11:10:02 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.13 2003-03-05 01:05:14 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -21,14 +21,16 @@ RCS_ID($Id: Splash.cpp,v 1.12 2003-02-21 11:10:02 jason Exp $)
 enum
 {
 	ID_CLIENT = 1,
-	ID_SERVER
+	ID_SERVER,
+	ID_INTERNET
 };
 
 BEGIN_EVENT_TABLE(Splash, wxFrame)
 	EVT_ERASE_BACKGROUND(Splash::OnErase)
 	EVT_PAINT(Splash::OnPaint)
-	EVT_BUTTON(ID_CLIENT, Splash::OnClient)
-	EVT_BUTTON(ID_SERVER, Splash::OnServer)
+	EVT_BUTTON(ID_CLIENT, Splash::OnButton)
+	EVT_BUTTON(ID_SERVER, Splash::OnButton)
+	EVT_BUTTON(ID_INTERNET, Splash::OnButton)
 END_EVENT_TABLE()
 
 Splash::Splash()
@@ -41,11 +43,12 @@ Splash::Splash()
 	const int gap_x = 16;
 	const int gap_y = 16;
 
-	wxButton *btns[2];
-	const int btn_count = 2;
+	wxButton *btns[3];
+	const int btn_count = 3;
 
 	btns[0] = new wxButton(this, ID_CLIENT, wxT("&Client"));
 	btns[1] = new wxButton(this, ID_SERVER, wxT("&Server"));
+	btns[2] = new wxButton(this, ID_INTERNET, wxT("&Internet"));
 
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
@@ -92,18 +95,35 @@ void Splash::OnPaint(wxPaintEvent &event)
 	dc.DrawBitmap(*m_bmp, 0, 0);
 }
 
-void Splash::OnClient(wxCommandEvent &event)
+void Splash::OnButton(wxCommandEvent &event)
 {
+	
 	if (m_button_clicked) return;
 	m_button_clicked = true;
-	Destroy();
-	new ClientUIMDIFrame;
-}
+	
+	switch (event.GetId())
+	{
 
-void Splash::OnServer(wxCommandEvent &event)
-{
-	if (m_button_clicked) return;
-	m_button_clicked = true;
-	Destroy();
-	new ServerUIFrame;
+		case ID_CLIENT:
+			Destroy();
+			new ClientUIMDIFrame;
+			break;
+
+		case ID_SERVER:
+			Destroy();
+			new ServerUIFrame;
+			break;
+
+		case ID_INTERNET:
+			if (OpenBrowser(this, GetPublicListURL()))
+			{
+				Destroy();
+			}
+			break;
+
+		default:
+			m_button_clicked = false;
+
+	}
+
 }

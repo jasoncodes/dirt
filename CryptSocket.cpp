@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.16 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.17 2003-03-05 01:08:59 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -565,6 +565,21 @@ wxUint32 GetIPV4Address(wxSockAddress &addr)
 	return GAddress_INET_GetHostAddress(addr.GetAddress());
 }
 
+wxString GetIPV4AddressString(wxUint32 ip)
+{
+	
+	ip = wxUINT32_SWAP_ON_LE(ip);
+	
+	wxString result = wxString()
+		<< ((ip >> 24) & 0xff) << wxT(".")
+		<< ((ip >> 16) & 0xff) << wxT(".")
+		<< ((ip >> 8)  & 0xff) << wxT(".")
+		<< ((ip >> 0)  & 0xff);
+	
+	return result;
+	
+}
+
 wxString GetIPV4AddressString(wxSockAddress &addr)
 {
 	return GetIPV4AddressString(GetIPV4Address(addr));
@@ -599,6 +614,14 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 	return retval;
 }
 
+#ifndef __WXMSW__
+	#include <unistd.h>
+	#include <sys/socket.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+#endif
+
 wxArrayString GetIPAddresses()
 {
 
@@ -629,19 +652,4 @@ wxArrayString GetIPAddresses()
 	}
 
 	return IPs;
-}
-
-wxString GetIPV4AddressString(wxUint32 ip)
-{
-	
-	ip = wxUINT32_SWAP_ON_LE(ip);
-	
-	wxString result = wxString()
-		<< ((ip >> 24) & 0xff) << wxT(".")
-		<< ((ip >> 16) & 0xff) << wxT(".")
-		<< ((ip >> 8)  & 0xff) << wxT(".")
-		<< ((ip >> 0)  & 0xff);
-	
-	return result;
-	
 }

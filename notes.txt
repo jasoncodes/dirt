@@ -32,13 +32,15 @@
 
 * gtk: cannot type into main canvas text box after using nicklist right click menu sometimes
 
-* file transfers
-* support for public listing -- sending of ip listing is all that's left
-* tray icon support
-* tab completion
-* /bind
-* /alias
+* make dns requests non-blocking
 
 * hide /oper password when being typed or at least make sure doesn't go into history
 
 * hold ctrl to copy w/o formatting
+
+* tray icon support
+* tab completion
+* dirt:// registration on Win32 (mozilla/konq would be nice also)
+* file transfers
+* /bind
+* /alias

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.23 2003-03-04 13:15:26 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.24 2003-03-05 01:05:14 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -294,7 +294,7 @@ void ServerUIFrameConfig::OnOK(wxCommandEvent &event)
 {
 	if (SaveSettings())
 	{
-		m_server->ResetPublicListUpdate(5);
+		m_server->ResetPublicListUpdate(5, true);
 		event.Skip();
 	}
 }

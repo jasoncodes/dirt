@@ -17,6 +17,7 @@ struct HeadTail
 };
 
 wxArrayString SplitString(const wxString &text, const wxString &sep);
+wxString JoinArray(const wxArrayString &array, const wxString &sep, const wxString &prefix = wxEmptyString, const wxString &postfix = wxEmptyString);
 bool LeftEq(const wxString &text, const wxString &to_match);
 bool RightEq(const wxString &text, const wxString &to_match);
 void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = wxT(" "));
@@ -51,5 +52,7 @@ ByteBuffer PackHashMap(const StringHashMap &hashmap);
 StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap);
 const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, size_t lookfor_len);
 wxLongLong_t GetMillisecondTicks();
+wxString GetPublicListURL();
+bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
 
 #endif

@@ -162,7 +162,7 @@ public:
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual ByteBuffer GetNickList() const;
 	virtual wxString GetServerNickname() const { return s_server_nickname; }
-	virtual void ResetPublicListUpdate(int num_secs_till_next_update) = 0;
+	virtual void ResetPublicListUpdate(int num_secs_till_next_update, bool force_show) = 0;
 	virtual wxLongLong_t GetNextPublicListUpdateTick() const = 0;
 	virtual size_t GetUserCount() const;
 	virtual size_t GetAwayCount() const;

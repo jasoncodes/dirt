@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.33 2003-03-04 13:19:03 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.34 2003-03-05 01:05:14 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -14,7 +14,6 @@ const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
 const long ping_timer_interval = 2500;
-const wxString dirt_pl = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 const long http_update_good = 5*60;
 const long http_update_bad1 = 30;
 const long http_update_bad2 = 15*60;
@@ -84,9 +83,12 @@ void ServerDefault::Start()
 		m_event_handler->OnServerStateChange();
 		m_peak_users = 0;
 		m_start_tick = GetMillisecondTicks();
+		m_ip_list.Empty();
 		m_tmrPing->Start(ping_timer_interval);
 		m_last_failed = false;
-		ResetPublicListUpdate(3);
+		ResetPublicListUpdate(3, true);
+		wxTimerEvent evt;
+		OnTimerPing(evt);
 	}
 	else
 	{
@@ -180,6 +182,10 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					}
 					delete conn;
 					m_event_handler->OnServerConnectionChange();
+					if (GetUserCount() < 3)
+					{
+						ResetPublicListUpdate(10, false);
+					}
 				}
 				break;
 
@@ -248,6 +254,19 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			}
 		}
 	}
+	wxArrayString ip_list = GetIPAddresses();
+	if (m_ip_list != ip_list)
+	{
+		m_ip_list = ip_list;
+		if (m_ip_list.GetCount() == 1)
+		{
+			Information(wxT("Your IP addresses is: ") + m_ip_list.Item(0));
+		}
+		else
+		{
+			Information(wxT("Your IP addresses are: ") + JoinArray(m_ip_list, wxT(", ")));
+		}
+	}
 	if (m_public_server && m_next_list_update <= now && !m_list_updating)
 	{
 		m_list_updating = true;
@@ -266,7 +285,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			proxy.SetPassword(m_config->GetHTTPProxyPassword(true));
 			m_http.SetProxy(proxy);
 		}
-		m_http.Connect(dirt_pl);
+		m_http.Connect(GetPublicListURL());
 	}
 }
 
@@ -278,14 +297,13 @@ void ServerDefault::HTTPError(const wxString &errmsg)
 	}
 	if (m_last_failed)
 	{
-		ResetPublicListUpdate(http_update_bad2);
+		ResetPublicListUpdate(http_update_bad2, false);
 	}
 	else
 	{
-		ResetPublicListUpdate(http_update_bad1);
+		ResetPublicListUpdate(http_update_bad1, false);
 	}
 	m_last_failed = true;
-	m_show_http_result = false;
 }
 
 void ServerDefault::HTTPSuccess()
@@ -294,17 +312,16 @@ void ServerDefault::HTTPSuccess()
 	{
 		Information(wxT("Public server list successfully updated"));
 	}
-	ResetPublicListUpdate(http_update_good);
+	ResetPublicListUpdate(http_update_good, false);
 	m_last_failed = false;
-	m_show_http_result = false;
 }
 
-void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update)
+void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update, bool force_show)
 {
 	m_public_server = m_config->GetPublicListEnabled();
 	m_next_list_update = GetMillisecondTicks() + num_secs_till_next_update*1000;
 	m_list_updating = false;
-	m_show_http_result = true;
+	m_show_http_result = force_show;
 	m_last_failed = false;
 	m_http.Close();
 	m_http_data.Empty();
@@ -396,7 +413,9 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 		}
 		post_data[wxT("auth")] = auth;
     }
-	post_data[wxT("iplist")] = wxT("not_implemented"); // not implemented yet
+	wxString colon_port;
+	colon_port << wxT(':') << m_config->GetListenPort();
+	post_data[wxT("iplist")] = JoinArray(GetIPAddresses(), wxT(' '), wxEmptyString, colon_port);
 	post_data[wxT("usercount")] = wxString() << GetUserCount();
 	post_data[wxT("maxusers")] = wxString() << m_config->GetMaxUsers();
 	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
@@ -404,7 +423,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
 	post_data[wxT("uptime")] = wxString() << (long)((GetMillisecondTicks() - m_start_tick) / 1000);
 	post_data[wxT("idletime")] = wxString() << GetLowestIdleTime();
-	post_data[wxT("hostname")] = wxString() << m_config->GetHostname() << wxT(':') << m_config->GetListenPort();
+	post_data[wxT("hostname")] = m_config->GetHostname() + colon_port;
 	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config->GetPublicListComment();
     

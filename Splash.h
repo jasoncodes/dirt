@@ -11,8 +11,7 @@ public:
 protected:
 	void OnErase(wxEraseEvent &event);
 	void OnPaint(wxPaintEvent &event);
-	void OnClient(wxCommandEvent &event);
-	void OnServer(wxCommandEvent &event);
+	void OnButton(wxCommandEvent &event);
 
 protected:
 	wxBitmap *m_bmp;

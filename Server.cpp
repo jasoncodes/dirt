@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.28 2003-03-04 13:08:14 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.29 2003-03-05 01:05:14 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -799,7 +799,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					Information(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
-					m_peak_users = wxMax(m_peak_users, GetUserCount());
+					size_t m_user_count = GetUserCount();
+					m_peak_users = wxMax(m_peak_users, m_user_count);
+					if (m_user_count < 3)
+					{
+						ResetPublicListUpdate(10, false);
+					}
 					for (size_t i = 0; i < GetConnectionCount(); ++i)
 					{
 						ServerConnection *conn2 = GetConnection(i);
