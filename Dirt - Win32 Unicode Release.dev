@@ -7,9 +7,9 @@ Type=0
 Compiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -D_UNICODE -DUNICODE_@@_
 CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -D_UNICODE -DUNICODE_@@_
 Includes=
-Linker=-lwxmswu -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib_@@_
+Linker=-lwxmswu -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
 Libs=crypto\Release\
-UnitCount=83
+UnitCount=87
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Unicode_Release_private.rc
@@ -867,6 +867,46 @@ BuildCmd=
 
 [Unit83]
 FileName=ConfigFile.h
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit84]
+FileName=BroadcastSocket.cpp
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit85]
+FileName=BroadcastSocket.h
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit86]
+FileName=IPInfo.cpp
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit87]
+FileName=IPInfo.h
 CompileCpp=1
 Folder=Dirt
 Compile=1
