@@ -7,6 +7,7 @@
 #include "ByteBuffer.h"
 class wxHtmlWinParser;
 class wxDateTime;
+class wxConfigBase;
 
 #include "wx/hashmap.h"
 WX_DECLARE_STRING_HASH_MAP(wxString, StringHashMap);
@@ -59,5 +60,9 @@ wxLongLong_t GetMillisecondTicks();
 wxString GetPublicListURL();
 bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
 void ForceForegroundWindow(wxFrame *frm);
+void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized);
+void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized);
+void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString);
+void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString);
 
 #endif

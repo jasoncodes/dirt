@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.40 2003-03-21 12:29:05 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.41 2003-03-29 01:54:45 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -744,5 +744,125 @@ void ForceForegroundWindow(wxFrame *frm)
 		frm->SetFocus();
 
 	#endif
+
+}
+
+void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized)
+{
+	
+	maximized = frm->IsMaximized();
+
+	#ifdef __WIN32__
+
+		HWND hWnd = (HWND)frm->GetHandle();
+		WINDOWPLACEMENT wp;
+		memset(&wp, 0, sizeof(wp));
+		wp.length = sizeof(WINDOWPLACEMENT);
+
+		if (GetWindowPlacement(hWnd, &wp))
+		{
+
+			RECT& wr = wp.rcNormalPosition;
+
+			r.x = wr.left;
+			r.y = wr.top;
+			r.width = wr.right - wr.left;
+			r.height = wr.bottom - wr.top;
+
+			maximized = (IsZoomed(hWnd) != FALSE);
+
+		}
+
+	#else
+
+		r = frm->GetRect();
+
+	#endif
+
+}
+
+void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized)
+{
+
+	#ifdef __WIN32__
+
+		HWND hwnd = (HWND) frm->GetHandle();
+		WINDOWPLACEMENT wp;
+		memset(&wp, 0, sizeof(wp));
+		wp.length = sizeof(WINDOWPLACEMENT);
+		wp.showCmd = maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
+
+		RECT& rc = wp.rcNormalPosition;
+
+		rc.left = r.x;
+		rc.top = r.y;
+		rc.right = r.x + r.width;
+		rc.bottom = r.y + r.height;
+
+		SetWindowPlacement(hwnd, &wp);
+
+	#else
+
+		frm->SetSize(r);
+		frm->Maximize(maximized);
+
+	#endif
+
+}
+
+void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name)
+{
+
+	wxString path;
+	if (name.Length())
+	{
+		path = wxT("/") + name;
+	}
+	path += wxT("/WindowState");
+
+	wxString old_path = cfg->GetPath();
+	cfg->SetPath(path);
+
+	wxRect r;
+	bool maximized;
+	GetWindowState(frm, r, maximized);
+
+	cfg->Write(wxT("X"), long(r.x));
+	cfg->Write(wxT("Y"), long(r.y));
+	cfg->Write(wxT("Width"), long(r.width));
+	cfg->Write(wxT("Height"), long(r.height));
+	cfg->Write(wxT("Maximized"), maximized);
+	cfg->Flush();
+
+	cfg->SetPath(old_path);
+
+}
+
+void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name)
+{
+
+	wxString path;
+	if (name.Length())
+	{
+		path = wxT("/") + name;
+	}
+	path += wxT("/WindowState");
+
+	wxString old_path = cfg->GetPath();
+	cfg->SetPath(path);
+
+	wxRect r;
+	bool maximized;
+	GetWindowState(frm, r, maximized);
+
+	cfg->Read(wxT("X"), &r.x, r.x);
+	cfg->Read(wxT("Y"), &r.y, r.y);
+	cfg->Read(wxT("Width"), &r.width, r.width);
+	cfg->Read(wxT("Height"), &r.height, r.height);
+	cfg->Read(wxT("Maximized"), &maximized, maximized);
+
+	SetWindowState(frm, r, maximized);
+
+	cfg->SetPath(old_path);
 
 }

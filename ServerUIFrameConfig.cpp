@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.31 2003-03-12 00:59:22 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.32 2003-03-29 01:54:45 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 #include <wx/filename.h>
@@ -340,8 +340,8 @@ void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
 {
 	if (wxMessageBox(wxT("Warning: This will reset the server configuration to default values. This operation is not undoable.\n\nAre you sure you want to reset to defaults?"), wxT("Reset Confirmation"), wxOK|wxCANCEL|wxICON_QUESTION, this) == wxOK)
 	{
-		ServerConfig *config = m_server->GetConfig();
-		if (config->ResetToDefaults())
+		ServerConfig &config = m_server->GetConfig();
+		if (config.ResetToDefaults())
 		{
 			LoadSettings();
 		}
@@ -405,24 +405,24 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 
 void ServerUIFrameConfig::LoadSettings()
 {
-	ServerConfig *config = m_server->GetConfig();
-	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
-	m_txtUserPassword->SetValue(config->GetUserPassword(false));
-	m_txtAdminPassword->SetValue(config->GetAdminPassword(false));
-	m_txtMaxUsers->SetValue(wxString()<<config->GetMaxUsers());
-	m_txtMaxUsersIP->SetValue(wxString()<<config->GetMaxUsersIP());
-	m_txtSoundConnection->SetValue(config->GetSoundConnection());
-	m_txtSoundJoin->SetValue(config->GetSoundJoin());
-	m_txtServerName->SetValue(config->GetServerName());
-	m_txtHostname->SetValue(config->GetHostname());
-	m_chkPublicListEnabled->SetValue(config->GetPublicListEnabled());
-	m_txtPublicListAuthentication->SetValue(config->GetPublicListAuthentication(false));
-	m_txtPublicListComment->SetValue(config->GetPublicListComment());
-	m_chkHTTPProxyEnabled->SetValue(config->GetHTTPProxyEnabled());
-	m_txtHTTPProxyHostname->SetValue(config->GetHTTPProxyHostname());
-	m_txtHTTPProxyPort->SetValue(wxString()<<config->GetHTTPProxyPort());
-	m_txtHTTPProxyUsername->SetValue(config->GetHTTPProxyUsername());
-	m_txtHTTPProxyPassword->SetValue(config->GetHTTPProxyPassword(false));
+	ServerConfig &config = m_server->GetConfig();
+	m_txtListenPort->SetValue(wxString()<<config.GetListenPort());
+	m_txtUserPassword->SetValue(config.GetUserPassword(false));
+	m_txtAdminPassword->SetValue(config.GetAdminPassword(false));
+	m_txtMaxUsers->SetValue(wxString()<<config.GetMaxUsers());
+	m_txtMaxUsersIP->SetValue(wxString()<<config.GetMaxUsersIP());
+	m_txtSoundConnection->SetValue(config.GetSoundConnection());
+	m_txtSoundJoin->SetValue(config.GetSoundJoin());
+	m_txtServerName->SetValue(config.GetServerName());
+	m_txtHostname->SetValue(config.GetHostname());
+	m_chkPublicListEnabled->SetValue(config.GetPublicListEnabled());
+	m_txtPublicListAuthentication->SetValue(config.GetPublicListAuthentication(false));
+	m_txtPublicListComment->SetValue(config.GetPublicListComment());
+	m_chkHTTPProxyEnabled->SetValue(config.GetHTTPProxyEnabled());
+	m_txtHTTPProxyHostname->SetValue(config.GetHTTPProxyHostname());
+	m_txtHTTPProxyPort->SetValue(wxString()<<config.GetHTTPProxyPort());
+	m_txtHTTPProxyUsername->SetValue(config.GetHTTPProxyUsername());
+	m_txtHTTPProxyPassword->SetValue(config.GetHTTPProxyPassword(false));
 	wxCommandEvent evt;
 	OnChangeCheck(evt);
 	m_cmdApply->Enable(false);
@@ -443,94 +443,94 @@ void ServerUIFrameConfig::ReportError(const wxString &error_message, wxCheckBox 
 
 bool ServerUIFrameConfig::SaveSettings()
 {
-	ServerConfig *config = m_server->GetConfig();
+	ServerConfig &config = m_server->GetConfig();
 	long x;
-	if (!m_txtListenPort->GetValue().ToLong(&x) || !config->SetListenPort(x))
+	if (!m_txtListenPort->GetValue().ToLong(&x) || !config.SetListenPort(x))
 	{
 		ReportError(wxT("Invalid listen port"), m_txtListenPort);
 		return false;
 	}
-	if (!config->SetUserPassword(m_txtUserPassword->GetValue()))
+	if (!config.SetUserPassword(m_txtUserPassword->GetValue()))
 	{
 		ReportError(wxT("Invalid user password"), m_txtUserPassword);
 		return false;
 	}
-	if (!config->SetAdminPassword(m_txtAdminPassword->GetValue()))
+	if (!config.SetAdminPassword(m_txtAdminPassword->GetValue()))
 	{
 		ReportError(wxT("Invalid admin password"), m_txtAdminPassword);
 		return false;
 	}
-	if (!m_txtMaxUsers->GetValue().ToLong(&x) || !config->SetMaxUsers(x))
+	if (!m_txtMaxUsers->GetValue().ToLong(&x) || !config.SetMaxUsers(x))
 	{
 		ReportError(wxT("Invalid max users"), m_txtMaxUsers);
 		return false;
 	}
-	if (!m_txtMaxUsersIP->GetValue().ToLong(&x) || !config->SetMaxUsersIP(x))
+	if (!m_txtMaxUsersIP->GetValue().ToLong(&x) || !config.SetMaxUsersIP(x))
 	{
 		ReportError(wxT("Invalid max users per IP"), m_txtMaxUsersIP);
 		return false;
 	}
-	if (!config->SetServerName(m_txtServerName->GetValue()))
+	if (!config.SetServerName(m_txtServerName->GetValue()))
 	{
 		ReportError(wxT("Invalid server name"), m_txtServerName);
 		return false;
 	}
-	if (!config->SetHostname(m_txtHostname->GetValue()))
+	if (!config.SetHostname(m_txtHostname->GetValue()))
 	{
 		ReportError(wxT("Invalid hostname"), m_txtHostname);
 		return false;
 	}
-	if (!config->SetSoundConnection(m_txtSoundConnection->GetValue()))
+	if (!config.SetSoundConnection(m_txtSoundConnection->GetValue()))
 	{
 		ReportError(wxT("Invalid connection sound"), m_txtSoundConnection);
 		return false;
 	}
-	if (!config->SetSoundJoin(m_txtSoundJoin->GetValue()))
+	if (!config.SetSoundJoin(m_txtSoundJoin->GetValue()))
 	{
 		ReportError(wxT("Invalid join sound"), m_txtSoundJoin);
 		return false;
 	}
-	if (!config->SetPublicListEnabled(m_chkPublicListEnabled->GetValue()))
+	if (!config.SetPublicListEnabled(m_chkPublicListEnabled->GetValue()))
 	{
 		ReportError(wxT("Invalid public list enabled"), m_chkPublicListEnabled);
 		return false;
 	}
-	if (!config->SetPublicListAuthentication(m_txtPublicListAuthentication->GetValue()))
+	if (!config.SetPublicListAuthentication(m_txtPublicListAuthentication->GetValue()))
 	{
 		ReportError(wxT("Invalid public list authentication"), m_txtPublicListAuthentication);
 		return false;
 	}
-	if (!config->SetPublicListComment(m_txtPublicListComment->GetValue()))
+	if (!config.SetPublicListComment(m_txtPublicListComment->GetValue()))
 	{
 		ReportError(wxT("Invalid public list comment"), m_txtPublicListComment);
 		return false;
 	}
-	if (!config->SetHTTPProxyEnabled(m_chkHTTPProxyEnabled->GetValue()))
+	if (!config.SetHTTPProxyEnabled(m_chkHTTPProxyEnabled->GetValue()))
 	{
 		ReportError(wxT("Invalid HTTP proxy enabled"), m_chkHTTPProxyEnabled);
 		return false;
 	}
-	if (!config->SetHTTPProxyHostname(m_txtHTTPProxyHostname->GetValue()))
+	if (!config.SetHTTPProxyHostname(m_txtHTTPProxyHostname->GetValue()))
 	{
 		ReportError(wxT("Invalid XXX"), m_txtHTTPProxyHostname);
 		return false;
 	}
-	if (!m_txtHTTPProxyPort->GetValue().ToLong(&x) || !config->SetHTTPProxyPort(x))
+	if (!m_txtHTTPProxyPort->GetValue().ToLong(&x) || !config.SetHTTPProxyPort(x))
 	{
 		ReportError(wxT("Invalid HTTP proxy port"), m_txtHTTPProxyPort);
 		return false;
 	}
-	if (!config->SetHTTPProxyUsername(m_txtHTTPProxyUsername->GetValue()))
+	if (!config.SetHTTPProxyUsername(m_txtHTTPProxyUsername->GetValue()))
 	{
 		ReportError(wxT("Invalid HTTP proxy username"), m_txtHTTPProxyUsername);
 		return false;
 	}
-	if (!config->SetHTTPProxyPassword(m_txtHTTPProxyPassword->GetValue()))
+	if (!config.SetHTTPProxyPassword(m_txtHTTPProxyPassword->GetValue()))
 	{
 		ReportError(wxT("Invalid HTTP proxy password"), m_txtHTTPProxyPassword);
 		return false;
 	}
-	config->Flush();
+	config.Flush();
 	m_cmdApply->Enable(false);
 	return true;
 }

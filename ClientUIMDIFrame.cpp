@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.82 2003-03-27 06:13:32 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.83 2003-03-29 01:54:44 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -61,6 +61,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_TIMER(ID_TRAYTIMER, ClientUIMDIFrame::OnTrayTimer)
 	EVT_MENU(ID_CTRL_F, ClientUIMDIFrame::OnCtrlF)
 	EVT_MENU_RANGE(ID_BINDING_F1, ID_BINDING_F12, ClientUIMDIFrame::OnBinding)
+	EVT_CLOSE(ClientUIMDIFrame::OnClose)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -93,20 +94,21 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	SetMenuBar(mnu);
 
-	ResetWindowPos();
-
-	Show();
-
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxT("[Main]"), ChannelCanvas);
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
+
+	m_client = new ClientDefault(this);
+
+	ResetWindowPos();
+	RestoreWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
+
+	Show();
 
 	m_tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
 	m_tmrFocus->Start(100);
 
 	m_tmrTray = new wxTimer(this, ID_TRAYTIMER);
-
-	m_client = new ClientDefault(this);
 
 	size_t num_bindings = 12;
 	size_t num_accel = 1;
@@ -930,4 +932,10 @@ wxDateTime ClientUIMDIFrame::GetLogDate()
 		m_log_date_okay = true;
 	}
 	return m_log_date;
+}
+
+void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
+{
+	SaveWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
+	event.Skip();
 }

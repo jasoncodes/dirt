@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.42 2003-03-21 12:29:05 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.43 2003-03-29 01:54:44 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -389,14 +389,12 @@ Server::Server(ServerEventHandler *event_handler)
 	m_log(LogWriter::GenerateFilename(wxT("Server"), LogWriter::GenerateNewLogDate(wxT("Server")))), m_log_warning_given(false)
 {
 	m_connections.Alloc(10);
-	m_config = new ServerConfig;
 	m_peak_users = 0;
 }
 
 Server::~Server()
 {
 	CloseAllConnections();
-	delete m_config;
 }
 
 void Server::Information(const wxString &line)
@@ -923,7 +921,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					size_t m_user_count = GetUserCount();
 					m_peak_users = wxMax(m_peak_users, m_user_count);
 					#if wxUSE_WAVE
-						wxString filename = m_config->GetSoundJoin();
+						wxString filename = m_config.GetSoundJoin();
 						if (filename.Length() && wxFileName(filename).FileExists())
 						{
 							m_wave.Create(filename, false);

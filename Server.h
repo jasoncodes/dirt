@@ -95,6 +95,7 @@ public:
 	ServerConfig();
 	~ServerConfig();
 
+	wxConfigBase* GetConfig() const { return m_config; }
 	bool Flush();
 	bool ResetToDefaults();
 
@@ -165,7 +166,7 @@ public:
 	virtual void Stop() = 0;
 	virtual bool IsRunning() const = 0;
 	virtual long GetListenPort() const = 0;
-	virtual ServerConfig* GetConfig() { return m_config; }
+	virtual ServerConfig& GetConfig() { return m_config; }
 	virtual size_t GetConnectionCount() const { return m_connections.GetCount(); }
 	virtual ServerConnection* GetConnection(size_t index) const { return m_connections.Item(index); }
 	virtual ServerConnection* GetConnection(const wxString &nickname) const;
@@ -192,7 +193,7 @@ protected:
 protected:
 	ServerEventHandler *m_event_handler;
 	ServerConnectionArray m_connections;
-	ServerConfig *m_config;
+	ServerConfig m_config;
 	static const wxString s_server_nickname;
 	size_t m_peak_users;
 	wxArrayString m_ip_list;

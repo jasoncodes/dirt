@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.41 2003-03-23 04:48:57 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.42 2003-03-29 01:54:44 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -82,6 +82,7 @@ enum
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_SIZE(ServerUIFrame::OnSize)
+	EVT_CLOSE(ServerUIFrame::OnClose)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
 	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
@@ -197,6 +198,7 @@ ServerUIFrame::ServerUIFrame()
 	m_server->Start();
 
 	ResetWindowPos();
+	RestoreWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
 
 	if (!m_server->IsRunning() || !m_tray->Ok())
 	{
@@ -231,6 +233,12 @@ ServerUIFrame::~ServerUIFrame()
 void ServerUIFrame::OnSize(wxSizeEvent &event)
 {
 	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
+	event.Skip();
+}
+
+void ServerUIFrame::OnClose(wxCloseEvent &event)
+{
+	SaveWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
 	event.Skip();
 }
 
@@ -387,7 +395,7 @@ void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 	if (m_server)
 	{
 		ServerUIFrameConfig dlg(this, m_server);
-		if (m_server && m_server->IsRunning() && m_server->GetConfig()->GetListenPort() != m_server->GetListenPort())
+		if (m_server && m_server->IsRunning() && m_server->GetConfig().GetListenPort() != m_server->GetListenPort())
 		{
 			if (wxMessageBox(wxT("For the listen port change to take effect you need to restart the server.\n\nWould you like to restart the server now?"), wxT("Listen Port Changed"), wxOK|wxCANCEL|wxICON_INFORMATION, this) == wxOK)
 			{

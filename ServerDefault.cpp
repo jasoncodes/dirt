@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.44 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.45 2003-03-29 01:54:44 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -86,7 +86,7 @@ void ServerDefault::Start()
 	wxCHECK_RET(!IsRunning(), wxT("Cannot start server. Server is already running."));
 	wxIPV4address addr;
 	addr.AnyAddress();
-	addr.Service(GetConfig()->GetListenPort());
+	addr.Service(GetConfig().GetListenPort());
 	if (m_sckListen->Listen(addr))
 	{
 		m_sckListen->GetLocal(addr);
@@ -97,7 +97,7 @@ void ServerDefault::Start()
 		m_ip_list.Empty();
 		m_tmrPing->Start(ping_timer_interval);
 		m_last_failed = false;
-		m_last_server_name = m_config->GetServerName();
+		m_last_server_name = m_config.GetServerName();
 		ResetPublicListUpdate(3, true);
 		wxTimerEvent evt;
 		OnTimerPing(evt);
@@ -162,21 +162,21 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 						wxString() << conn->m_remotehost << wxT(':') << (int)addr.Service();
 					conn->m_remoteipstring = ::GetIPV4AddressString(addr);
 					Information(wxT("Incoming connection from ") + conn->GetId());
-					if (GetConnectionCount() > (size_t)m_config->GetMaxUsers())
+					if (GetConnectionCount() > (size_t)m_config.GetMaxUsers())
 					{
 						conn->m_quitmsg = wxT("Too many connections");
 						conn->m_sck->CloseWithEvent();
 						return;
 					}
-					if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config->GetMaxUsersIP())
+					if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config.GetMaxUsersIP())
 					{
 						conn->m_quitmsg = wxT("Too many connections from this IP");
 						conn->m_sck->CloseWithEvent();
 						return;
 					}
-					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName());
+					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName());
 					#if wxUSE_WAVE
-						wxString filename = m_config->GetSoundConnection();
+						wxString filename = m_config.GetSoundConnection();
 						if (filename.Length() && wxFileName(filename).FileExists())
 						{
 							m_wave.Create(filename, false);
@@ -225,13 +225,13 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 			case CRYPTSOCKET_OUTPUT:
 				{
 					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
-					if (m_config->GetPublicListComment().Length())
+					if (m_config.GetPublicListComment().Length())
 					{
-						conn->Send(wxEmptyString, wxT("INFO"), wxT("Server comment: ") + m_config->GetPublicListComment());
+						conn->Send(wxEmptyString, wxT("INFO"), wxT("Server comment: ") + m_config.GetPublicListComment());
 					}
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);
-					conn->m_authenticated = (m_config->GetUserPassword(true).Length() == 0);
+					conn->m_authenticated = (m_config.GetUserPassword(true).Length() == 0);
 					conn->m_nextping = 0;
 					if (conn->m_authenticated)
 					{
@@ -285,10 +285,10 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			}
 		}
 	}
-	if (m_last_server_name != m_config->GetServerName())
+	if (m_last_server_name != m_config.GetServerName())
 	{
-		m_last_server_name = m_config->GetServerName();
-		SendToAll(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName(), false);
+		m_last_server_name = m_config.GetServerName();
+		SendToAll(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName(), false);
 	}
 	if (!(m_list_updating && !m_http.IsActive())) // don't want multiple DNS lookups at the same time
 	{
@@ -314,14 +314,14 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 		m_http.Close();
 		m_http.ResetURLSettings();
 		m_http.SetPostData(GetPublicPostData(true));
-		if (m_config->GetHTTPProxyEnabled())
+		if (m_config.GetHTTPProxyEnabled())
 		{
 			URL proxy;
 			proxy.SetProtocol(wxT("http"));
-			proxy.SetHostname(m_config->GetHTTPProxyHostname());
-			proxy.SetPort(m_config->GetHTTPProxyPort());
-			proxy.SetUsername(m_config->GetHTTPProxyUsername());
-			proxy.SetPassword(m_config->GetHTTPProxyPassword(true));
+			proxy.SetHostname(m_config.GetHTTPProxyHostname());
+			proxy.SetPort(m_config.GetHTTPProxyPort());
+			proxy.SetUsername(m_config.GetHTTPProxyUsername());
+			proxy.SetPassword(m_config.GetHTTPProxyPassword(true));
 			m_http.SetProxy(proxy);
 		}
 		m_http.Connect(GetPublicListURL());
@@ -357,7 +357,7 @@ void ServerDefault::HTTPSuccess()
 
 void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update, bool force_show)
 {
-	m_public_server = m_config->GetPublicListEnabled();
+	m_public_server = m_config.GetPublicListEnabled();
 	m_next_list_update = GetMillisecondTicks() + num_secs_till_next_update*1000;
 	m_list_updating = false;
 	m_show_http_result = force_show;
@@ -448,11 +448,11 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
     
     StringHashMap post_data;
     
-	post_data[wxT("name")] = m_config->GetServerName();
+	post_data[wxT("name")] = m_config.GetServerName();
     if (include_auth)
 	{
         wxString auth;
-		auth = m_config->GetPublicListAuthentication(true);
+		auth = m_config.GetPublicListAuthentication(true);
 		if (auth.Length())
 		{
 			auth = Crypt::MD5(auth).GetHexDump(false, false);
@@ -460,18 +460,18 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 		post_data[wxT("auth")] = auth;
     }
 	wxString colon_port;
-	colon_port << wxT(':') << m_config->GetListenPort();
+	colon_port << wxT(':') << m_config.GetListenPort();
 	post_data[wxT("iplist")] = JoinArray(GetIPAddresses(), wxT(' '), wxEmptyString, colon_port);
 	post_data[wxT("usercount")] = wxString() << GetUserCount();
-	post_data[wxT("maxusers")] = wxString() << m_config->GetMaxUsers();
+	post_data[wxT("maxusers")] = wxString() << m_config.GetMaxUsers();
 	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
 	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
 	post_data[wxT("uptime")] = wxString() << (long)((GetMillisecondTicks() - m_start_tick) / 1000);
 	post_data[wxT("idletime")] = wxString() << GetLowestIdleTime();
-	post_data[wxT("hostname")] = m_config->GetHostname() + colon_port;
+	post_data[wxT("hostname")] = m_config.GetHostname() + colon_port;
 	post_data[wxT("away")] = wxString() << GetAwayCount();
-	post_data[wxT("comment")] = m_config->GetPublicListComment();
+	post_data[wxT("comment")] = m_config.GetPublicListComment();
     
 	return post_data;
 
@@ -511,7 +511,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 			bool success;
 			try
 			{
-				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(m_config->GetUserPassword(true)), data);
+				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(m_config.GetUserPassword(true)), data);
 			}
 			catch (...)
 			{
@@ -543,7 +543,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 		}
 		else if (cmd == wxT("OPER"))
 		{
-			ByteBuffer pass = m_config->GetAdminPassword(true);
+			ByteBuffer pass = m_config.GetAdminPassword(true);
 			if (pass.Length() > 0)
 			{
 				bool success;

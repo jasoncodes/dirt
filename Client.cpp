@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.37 2003-03-21 12:29:04 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.38 2003-03-29 01:54:44 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -17,6 +17,17 @@ RCS_ID($Id: Client.cpp,v 1.37 2003-03-21 12:29:04 jason Exp $)
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
+
+ClientConfig::ClientConfig()
+{
+ 	m_config = new wxFileConfig(wxT("dirt"));
+	m_config->SetUmask(0077);
+}
+
+ClientConfig::~ClientConfig()
+{
+	delete m_config;
+}
 
 enum
 {
@@ -34,13 +45,10 @@ Client::Client(ClientEventHandler *event_handler)
 	m_nickname = wxEmptyString;
 	m_server_name = wxEmptyString;
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
-	m_config = new wxFileConfig(wxT("dirt"));
-	m_config->SetUmask(0077);
 }
 
 Client::~Client()
 {
-	delete m_config;
 	delete m_tmrPing;
 	delete m_file_transfers;
 }
@@ -620,37 +628,37 @@ void Client::ProcessAlias(const wxString &context, const wxString &cmds, const w
 wxArrayString Client::GetAliasList() const
 {
 	wxArrayString list;
-	wxString old_path = m_config->GetPath();
-	m_config->SetPath(wxT("Client/Aliases"));
-	list.Alloc(m_config->GetNumberOfEntries(false));
+	wxString old_path = m_config.GetConfig()->GetPath();
+	m_config.GetConfig()->SetPath(wxT("Client/Aliases"));
+	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
 	wxString val;
 	long i;
-	if (m_config->GetFirstEntry(val, i))
+	if (m_config.GetConfig()->GetFirstEntry(val, i))
 	{
 		do
 		{
 			list.Add(val);
 		}
-		while (m_config->GetNextEntry(val, i));
+		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
-	m_config->SetPath(old_path);
+	m_config.GetConfig()->SetPath(old_path);
 	return list;
 }
 
 wxString Client::GetAlias(const wxString &name) const
 {
-	return m_config->Read(wxT("Client/Aliases/")+name, wxEmptyString);
+	return m_config.GetConfig()->Read(wxT("Client/Aliases/")+name, wxEmptyString);
 }
 
 bool Client::SetAlias(const wxString &name, const wxString &value)
 {
 	if (value.Length())
 	{
-		return m_config->Write(wxT("Client/Aliases/")+name, value) && m_config->Flush();
+		return m_config.GetConfig()->Write(wxT("Client/Aliases/")+name, value) && m_config.GetConfig()->Flush();
 	}
 	else if (GetAlias(name).Length())
 	{
-		return m_config->DeleteEntry(wxT("Client/Aliases/")+name) && m_config->Flush();
+		return m_config.GetConfig()->DeleteEntry(wxT("Client/Aliases/")+name) && m_config.GetConfig()->Flush();
 	}
 	else
 	{
@@ -661,37 +669,37 @@ bool Client::SetAlias(const wxString &name, const wxString &value)
 wxArrayString Client::GetBindingList() const
 {
 	wxArrayString list;
-	wxString old_path = m_config->GetPath();
-	m_config->SetPath(wxT("Client/Bindings"));
-	list.Alloc(m_config->GetNumberOfEntries(false));
+	wxString old_path = m_config.GetConfig()->GetPath();
+	m_config.GetConfig()->SetPath(wxT("Client/Bindings"));
+	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
 	wxString val;
 	long i;
-	if (m_config->GetFirstEntry(val, i))
+	if (m_config.GetConfig()->GetFirstEntry(val, i))
 	{
 		do
 		{
 			list.Add(val);
 		}
-		while (m_config->GetNextEntry(val, i));
+		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
-	m_config->SetPath(old_path);
+	m_config.GetConfig()->SetPath(old_path);
 	return list;
 }
 
 wxString Client::GetBinding(const wxString &name) const
 {
-	return m_config->Read(wxT("Client/Bindings/")+name, wxEmptyString);
+	return m_config.GetConfig()->Read(wxT("Client/Bindings/")+name, wxEmptyString);
 }
 
 bool Client::SetBinding(const wxString &name, const wxString &value)
 {
 	if (value.Length())
 	{
-		return m_config->Write(wxT("Client/Bindings/")+name, value) && m_config->Flush();
+		return m_config.GetConfig()->Write(wxT("Client/Bindings/")+name, value) && m_config.GetConfig()->Flush();
 	}
 	else if (GetBinding(name).Length())
 	{
-		return m_config->DeleteEntry(wxT("Client/Bindings/")+name) && m_config->Flush();
+		return m_config.GetConfig()->DeleteEntry(wxT("Client/Bindings/")+name) && m_config.GetConfig()->Flush();
 	}
 	else
 	{

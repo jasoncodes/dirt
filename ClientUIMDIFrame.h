@@ -38,6 +38,7 @@ protected:
 	void OnTrayTimer(wxTimerEvent &event);
 	void OnBinding(wxCommandEvent &event);
 	void OnCtrlF(wxCommandEvent &event);
+	void OnClose(wxCloseEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual wxArrayString OnClientSupportedCommands();

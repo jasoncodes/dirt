@@ -40,6 +40,20 @@ public:
 
 };
 
+class ClientConfig
+{
+
+public:
+	ClientConfig();
+	~ClientConfig();
+
+	virtual wxConfigBase *GetConfig() const { return m_config; }
+
+protected:
+	wxFileConfig *m_config;
+
+};
+
 class Client : public wxEvtHandler
 {
 
@@ -76,6 +90,7 @@ public:
 	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
 	virtual FileTransfers* GetFileTransfers() const { return m_file_transfers; }
 	virtual wxArrayString GetSupportedCommands() const;
+	virtual ClientConfig& GetConfig() { return m_config; }
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);
@@ -97,7 +112,7 @@ protected:
 	wxString m_ping_data;
 	wxLongLong_t m_ping_timeout_tick;
 	long m_latency;
-	wxFileConfig *m_config;
+	ClientConfig m_config;
 
 private:
 	DECLARE_EVENT_TABLE()
