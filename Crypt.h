@@ -18,6 +18,8 @@ public:
 	static ByteBuffer RSAEncrypt(const ByteBuffer &public_key, const ByteBuffer &plain_text);
 	static ByteBuffer RSADecrypt(const ByteBuffer &private_key, const ByteBuffer &cither_text);
 
+	static ByteBuffer CRC32(const ByteBuffer &data);
+
 	static ByteBuffer MD5(const ByteBuffer &data);
 
 	static ByteBuffer MD5MACDigest(const ByteBuffer &key, const ByteBuffer &data);
