@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.42 2003-03-19 14:31:42 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.43 2003-03-31 06:31:36 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -49,7 +49,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_MENU(ID_NICKLIST_WHOIS, ClientUIMDICanvas::OnNickListMenuItem)
 END_EVENT_TABLE()
 
-ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
+ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &title, CanvasType type)
 	: SwitchBarCanvas(parent, wxDefaultPosition, wxDefaultSize)
 {
 

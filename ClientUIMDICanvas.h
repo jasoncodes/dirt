@@ -10,6 +10,7 @@
 
 class NickListControl;
 class Client;
+class ClientUIMDIFrame;
 
 enum CanvasType
 {
@@ -24,7 +25,7 @@ class ClientUIMDICanvas : public SwitchBarCanvas
 
 public:
 
-	ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type);
+	ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &title, CanvasType type);
 	virtual ~ClientUIMDICanvas();
 
 	virtual bool IsClosable() { return m_type != ChannelCanvas; }
@@ -42,6 +43,7 @@ public:
 	bool GetLogWriterWarningShown() const { return m_log_warning_shown; }
 	void SetLogWriterWarningShown(bool log_warning_shown) { m_log_warning_shown = log_warning_shown; }
 
+	void ResizeChildren();
 	void LogControlTest();
 
 protected:
@@ -60,7 +62,6 @@ protected:
 	virtual void OnActivate();
 	virtual void OnClose();
 
-	void ResizeChildren();
 	void DoGotFocus();
 
 protected:

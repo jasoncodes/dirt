@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.85 2003-03-29 05:45:43 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.86 2003-03-31 06:31:36 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -103,6 +103,12 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_lstNickList = canvas->GetNickList();
 
 	m_client = new ClientDefault(this);
+
+	int nicklist_width = canvas->GetNickList()->GetParent()->GetSize().x;
+	wxConfigBase *config = GetClient()->GetConfig().GetConfig();
+	config->Read(wxT("/Client/WindowState/NickList"), &nicklist_width, nicklist_width);
+	canvas->GetNickList()->GetParent()->SetSize(nicklist_width, -1);
+	canvas->ResizeChildren();
 
 	ResetWindowPos();
 	RestoreWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
@@ -943,6 +949,14 @@ wxDateTime ClientUIMDIFrame::GetLogDate()
 
 void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 {
+
 	SaveWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
+
+	ClientUIMDICanvas *canvas = GetContext(wxEmptyString);
+	int nicklist_width = canvas->GetNickList()->GetParent()->GetSize().x;
+	wxConfigBase *config = GetClient()->GetConfig().GetConfig();
+	config->Write(wxT("/Client/WindowState/NickList"), nicklist_width);
+
 	event.Skip();
+
 }
