@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.25 2003-03-03 00:35:54 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.26 2003-03-10 08:26:07 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -722,7 +722,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 			wxPen old_pen = dcBack.GetPen();
 			dcBack.SetPen(*wxRED_PEN);
 			wxRect red_rect = GetCellRect(m_red_line);
-			dcBack.DrawLine(0, red_rect.y, red_rect.width, red_rect.y);
+			dcBack.DrawLine(0, red_rect.y, GetClientSize().x, red_rect.y);
 			dcBack.SetPen(old_pen);
 		}
 

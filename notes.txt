@@ -38,6 +38,12 @@
 
 * dirt:// protocol registration for mozilla on X11
 
+* replace server log window w/ logcontrol
+
+* < and > around URLs not working
+
+* filter local ips from avg ping
+
 * tray icon support
 * client side ping
 * /bind
