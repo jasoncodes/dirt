@@ -143,6 +143,7 @@ protected:
 	long m_latency;
 	ClientConfig m_config;
 	wxArrayString m_server_ip_list;
+	wxString m_ipself;
 
 private:
 	DECLARE_EVENT_TABLE()

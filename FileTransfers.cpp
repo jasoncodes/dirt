@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.12 2003-05-06 05:36:36 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.13 2003-05-07 01:59:56 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -269,7 +269,7 @@ bool FileTransfers::OnClientPreprocess(const wxString &context, const wxString &
 {
 	if (cmd == wxT("DCC"))
 	{
-		HeadTail ht = SplitHeadTail(params);
+		HeadTail ht = SplitQuotedHeadTail(params);
 		ht.head.MakeUpper();
 		ProcessConsoleInput(context, ht.head, ht.tail);
 		return true;

@@ -4,6 +4,7 @@
 #include "CPSCalc.h"
 
 class FileTransfers;
+class CryptSocketBase;
 
 enum FileTransferState
 {
@@ -45,19 +46,22 @@ public:
 	off_t filesent;
 	wxString status;
 
+protected:
+	FileTransfer(FileTransfers *transfers);
+
 public:
+	virtual ~FileTransfer();
 	wxString GetPrefixString() const;
 	wxString GetStateString() const;
 	operator wxString() const;
 
 protected:
-	FileTransfer(FileTransfers *transfers);
-
 	bool OnTimer();
 
 protected:
 	FileTransfers *m_transfers;
 	CPSCalc m_cps;
+	CryptSocketBase *sck;
 
 };
 

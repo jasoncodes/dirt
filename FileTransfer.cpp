@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.8 2003-05-06 05:14:18 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.9 2003-05-07 01:59:56 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "CPSCalc.h"
 #include "Client.h"
+#include "CryptSocket.h"
 
 #include <wx/filename.h>
 
@@ -22,6 +23,12 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 		filesize(0), time(0), timeleft(-1), cps(-1),
 		filesent(0), status(wxEmptyString), m_transfers(transfers)
 {
+	sck = NULL;
+}
+
+FileTransfer::~FileTransfer()
+{
+	delete sck;
 }
 
 bool FileTransfer::OnTimer()

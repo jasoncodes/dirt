@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.104 2003-05-06 06:58:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.105 2003-05-07 01:59:55 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -542,6 +542,33 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		argv[2] = NULL;
 		::wxExecute((wxChar**)argv);
 		return true;
+	}
+	else if (cmd == wxT("DCC"))
+	{
+		HeadTail ht = SplitQuotedHeadTail(params);
+		ht.head.MakeUpper();
+		if (ht.head == wxT("SEND"))
+		{
+			ht = SplitQuotedHeadTail(ht.tail);
+			if (ht.head.Length() && ht.tail.Length() == 0)
+			{
+				wxFileDialog dlg(
+					this, wxT("Send files to ") + ht.head,
+					wxT(""), wxT(""), wxFileSelectorDefaultWildcardStr,
+					wxOPEN | wxMULTIPLE);
+				if (dlg.ShowModal() == wxID_OK)
+				{
+					wxArrayString paths;
+					dlg.GetPaths(paths);
+					for (size_t i = 0; i < paths.GetCount(); ++i)
+					{
+						m_client->ProcessConsoleInput(context, wxT("/dcc send \"") + ht.head + wxT("\" \"") + paths[i] + wxT("\""));
+					}
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 	else
 	{

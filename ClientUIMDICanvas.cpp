@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.46 2003-05-06 06:58:11 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.47 2003-05-07 02:04:10 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -35,6 +35,7 @@ enum
 	ID_NICKLIST,
 	ID_NICKLIST_NICK,
 	ID_NICKLIST_MESSAGE,
+	ID_NICKLIST_SEND,
 	ID_NICKLIST_QUERY,
 	ID_NICKLIST_WHOIS,
 	ID_NICKLIST_PING
@@ -50,10 +51,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_SASH_DRAGGED(ID_SASH, ClientUIMDICanvas::OnSashDragged)
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
-	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMenuItem)
-	EVT_MENU(ID_NICKLIST_QUERY, ClientUIMDICanvas::OnNickListMenuItem)
-	EVT_MENU(ID_NICKLIST_WHOIS, ClientUIMDICanvas::OnNickListMenuItem)
-	EVT_MENU(ID_NICKLIST_PING, ClientUIMDICanvas::OnNickListMenuItem)
+	EVT_MENU(wxID_ANY, ClientUIMDICanvas::OnNickListMenuItem)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &title, CanvasType type)
@@ -373,6 +371,7 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Enable(ID_NICKLIST_NICK, false);
 	menu.AppendSeparator();
 	menu.Append(ID_NICKLIST_MESSAGE, wxT("Send &Message"));
+	menu.Append(ID_NICKLIST_SEND, wxT("Send &File"));
 	menu.Append(ID_NICKLIST_QUERY, wxT("&Query"));
 	menu.Append(ID_NICKLIST_WHOIS, wxT("&Who Is"));
 	menu.Append(ID_NICKLIST_PING, wxT("&Ping"));
@@ -408,10 +407,18 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 		}
 		break;
 
+		case ID_NICKLIST_SEND:
+		{
+			wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
+			evt.SetString(wxT("/dcc send \"") + nick + wxT("\""));
+			AddPendingEvent(evt);
+		}
+		break;
+
 		case ID_NICKLIST_QUERY:
 		{
 			wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
-			evt.SetString(wxT("/query ") + nick);
+			evt.SetString(wxT("/query \"") + nick + wxT("\""));
 			AddPendingEvent(evt);
 		}
 		break;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.56 2003-05-06 06:58:11 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.57 2003-05-07 01:59:55 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -770,6 +770,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	else if (cmd == wxT("IPLIST"))
 	{
 		m_server_ip_list = ByteBufferArrayToArrayString(Unpack(data));
+	}
+	else if (cmd == wxT("IPSELF"))
+	{
+		m_ipself = data;
 	}
 	else if (cmd == wxT("SERVERNAME"))
 	{
