@@ -10,6 +10,8 @@ public:
 	virtual bool OnInit();
 	virtual int OnExit();
 
+	bool IsConsole();
+
 protected:
 	ClientUIConsole *m_console;
 
