@@ -20,16 +20,10 @@ class ServerConnection
 {
 
 protected:
-	ServerConnection()
-		: m_jointime(wxDateTime::Now())
-	{
-		ResetIdleTime();
-	}
+	ServerConnection();
 
 public:
-	virtual ~ServerConnection()
-	{
-	}
+	virtual ~ServerConnection();
 
 public:
 	virtual wxString GetNickname() const { return wxEmptyString; } // not implemented
@@ -37,12 +31,13 @@ public:
 	virtual wxString GetUserDetails() const { return wxEmptyString; } // not implemented
 	virtual wxString GetAwayMessage() const { return wxEmptyString; } // not implemented
 	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }
-	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : "N/A"; }
+	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : wxT("N/A"); }
 	virtual time_t GetLatency() const { return -1; } // not implemented
-	virtual wxString GetLatencyString() const { return GetLatency() > -1 ? AddCommas((off_t)GetLatency()) + " ms" : "N/A"; }
+	virtual wxString GetLatencyString() const { return GetLatency() > -1 ? AddCommas((off_t)GetLatency()) + wxT(" ms") : wxT("N/A"); }
 	virtual wxString GetUserAgent() const { return wxEmptyString; } // not implemented
 	virtual wxDateTime GetJoinTime() const { return m_jointime; }
 	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
+	virtual operator wxString() const;
 
 protected:
 	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }

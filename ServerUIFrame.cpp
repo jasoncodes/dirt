@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.16 2003-02-15 12:38:25 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.17 2003-02-16 05:09:03 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -46,7 +46,7 @@ END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
 	: wxFrame(
-		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
+		NULL, -1, AppTitle(wxT("Server")),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL)
 {
 
@@ -56,16 +56,16 @@ ServerUIFrame::ServerUIFrame()
 
 	m_lstConnections = new wxListCtrl(panel, ID_CONNECTIONS, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 	FixBorder(m_lstConnections);
-	m_lstConnections->InsertColumn(0, "Nickname",     wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(1, "Host",         wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(2, "User Details", wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(3, "Away Message", wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(4, "Idle Time",    wxLIST_FORMAT_LEFT, 60);
-	m_lstConnections->InsertColumn(5, "Latency",      wxLIST_FORMAT_LEFT, 60);
-	m_lstConnections->InsertColumn(6, "User Agent",   wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(7, "Join Time",    wxLIST_FORMAT_LEFT, 128);
+	m_lstConnections->InsertColumn(0, wxT("Nickname"),     wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(1, wxT("Host"),         wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(2, wxT("User Details"), wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(3, wxT("Away Message"), wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(4, wxT("Idle Time"),    wxLIST_FORMAT_LEFT, 60);
+	m_lstConnections->InsertColumn(5, wxT("Latency"),      wxLIST_FORMAT_LEFT, 60);
+	m_lstConnections->InsertColumn(6, wxT("User Agent"),   wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(7, wxT("Join Time"),    wxLIST_FORMAT_LEFT, 128);
 
-	wxStaticBox *boxConnections = new wxStaticBox(panel, -1, "Connections");
+	wxStaticBox *boxConnections = new wxStaticBox(panel, -1, wxT("Connections"));
 	wxBoxSizer *szrConnections = new wxStaticBoxSizer(boxConnections, wxVERTICAL);
 	{
 		szrConnections->Add(m_lstConnections, 1, wxEXPAND);
@@ -76,17 +76,17 @@ ServerUIFrame::ServerUIFrame()
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
 
-	wxStaticBox *boxConsole = new wxStaticBox(panel, -1, "Console");
+	wxStaticBox *boxConsole = new wxStaticBox(panel, -1, wxT("Console"));
 	wxBoxSizer *szrConsole = new wxStaticBoxSizer(boxConsole, wxVERTICAL);
 	{
 		szrConsole->Add(m_txtLog, 1, wxEXPAND);
 		szrConsole->Add(m_txtInput, 0, wxEXPAND);
 	}
 
-	m_cmdStartStop = new wxButton(panel, ID_STARTSTOP, "&Start");
-	m_cmdConfiguration = new wxButton(panel, ID_CONFIGURATION, "&Configuration");
-	m_cmdClient = new wxButton(panel, ID_CLIENT, "&Launch Client");
-	m_cmdClear = new wxButton(panel, ID_CLEAR, "Clear Lo&g");
+	m_cmdStartStop = new wxButton(panel, ID_STARTSTOP, wxT("&Start"));
+	m_cmdConfiguration = new wxButton(panel, ID_CONFIGURATION, wxT("&Configuration"));
+	m_cmdClient = new wxButton(panel, ID_CLIENT, wxT("&Launch Client"));
+	m_cmdClear = new wxButton(panel, ID_CLEAR, wxT("Clear Lo&g"));
 
 	wxBoxSizer *szrButtons = new wxBoxSizer(wxVERTICAL);
 	{
@@ -111,12 +111,12 @@ ServerUIFrame::ServerUIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, "E&xit\tAlt-F4", "Quit the program");
-	mnu->Append(mnuFile, "&File");
+	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"), wxT("Quit the program"));
+	mnu->Append(mnuFile, wxT("&File"));
 
 	wxMenu *mnuHelp = new wxMenu;
-	mnuHelp->Append(ID_HELP_ABOUT, "&About\tF1");
-	mnu->Append(mnuHelp, "&Help");
+	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About\tF1"));
+	mnu->Append(mnuHelp, wxT("&Help"));
 
 	SetMenuBar(mnu);
 
@@ -169,7 +169,7 @@ void ServerUIFrame::Output(const wxString &line)
 	wxString tmp = GetLongTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true);
 	if (m_txtLog->GetValue().Length() > 0)
 	{
-		m_txtLog->AppendText("\n" + tmp);
+		m_txtLog->AppendText(wxT("\n") + tmp);
 	}
 	else
 	{
@@ -184,19 +184,19 @@ void ServerUIFrame::Output(const wxString &line)
 
 bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
 {
-	if (cmd == "CLEAR")
+	if (cmd == wxT("CLEAR"))
 	{
 		m_txtLog->Clear();
 		return true;
 	}
-	else if (cmd == "EXIT")
+	else if (cmd == wxT("EXIT"))
 	{
 		Close();
 		return true;
 	}
-	else if (cmd == "HELP")
+	else if (cmd == wxT("HELP"))
 	{
-		OnServerInformation("Supported commands: CLEAR EXIT");
+		OnServerInformation(wxT("Supported commands: CLEAR EXIT"));
 		return false;
 	}
 	else
@@ -226,14 +226,7 @@ void ServerUIFrame::OnFileExit(wxCommandEvent& event)
 
 void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	wxMessageBox(wxString()
-		<< wxT("Dirt Secure Chat 3.0.0 Alpha 0\n")
-		<< wxT("\n")
-		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
-		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
-		<< wxT("\n")
-		<< wxT("http://dirtchat.sourceforge.net/"),
-		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
+	ShowAbout();
 }
 
 void ServerUIFrame::OnStartStop(wxCommandEvent& event)
@@ -282,7 +275,7 @@ void ServerUIFrame::OnServerConnectionChange()
 {
 	while (m_lstConnections->GetItemCount() < (int)m_server->GetConnectionCount())
 	{
-		m_lstConnections->InsertItem(m_lstConnections->GetItemCount(), "<NULL>");
+		m_lstConnections->InsertItem(m_lstConnections->GetItemCount(), wxT("<NULL>"));
 	}
 	while (m_lstConnections->GetItemCount() > (int)m_server->GetConnectionCount())
 	{

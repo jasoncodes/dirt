@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.18 2003-02-15 11:50:38 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.19 2003-02-16 05:09:04 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -63,7 +63,7 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const w
 	else
 	{
 		head = text;
-		tail = "";
+		tail = wxT("");
 	}
 }
 
@@ -76,17 +76,17 @@ HeadTail SplitHeadTail(const wxString &text, const wxString &sep)
 
 wxString GetShortTimestamp()
 {
-	return wxDateTime::Now().Format("[%H:%M] ");
+	return wxDateTime::Now().Format(wxT("[%H:%M] "));
 }
 
 wxString GetLongTimestamp()
 {
-	return wxDateTime::Now().Format("%Y/%m/%d %H:%M:%S ");
+	return wxDateTime::Now().Format(wxT("%Y/%m/%d %H:%M:%S "));
 }
 
 wxString FormatISODateTime(const wxDateTime &datetime)
 {
-	return datetime.Format("%Y/%m/%d %H:%M:%S");
+	return datetime.Format(wxT("%Y/%m/%d %H:%M:%S"));
 }
 
 void FixBorder(wxWindow *wnd)
@@ -118,7 +118,7 @@ void SetHtmlParserFonts(wxHtmlWinParser *parser)
 	#endif
 
 	#ifdef __WXMSW__
-		parser->SetFonts(wxEmptyString, "Fixedsys", default_sizes);
+		parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
 	#endif
 
 }
@@ -129,8 +129,8 @@ wxString AddCommas(off_t size)
 	wxString buff;
 	while (size >= 1000)
 	{
-		buff = wxString::Format("%03d", size % 1000) + buff;
-		buff = ',' + buff;
+		buff = wxString::Format(wxT("%03d"), size % 1000) + buff;
+		buff = wxT(',') + buff;
 		size /= 1000;
 	}
 	return wxString() << (int)size << buff;
@@ -141,9 +141,9 @@ wxString AddCommas(double size)
 
 	off_t size2 = (off_t)size;
 	
-	wxString remainder = wxString::Format("%04.2lf", fmod(size, 1));
-	wxASSERT(remainder.Left(2) == "0." || remainder.Left(2) == "1.");
-	if (remainder.Left(2) == "1.")
+	wxString remainder = wxString::Format(wxT("%04.2lf"), fmod(size, 1));
+	wxASSERT(remainder.Left(2) == wxT("0.") || remainder.Left(2) == wxT("1."));
+	if (remainder.Left(2) == wxT("1."))
 	{
 		size2++;
 	}
@@ -160,23 +160,23 @@ wxString SizeToString(off_t size)
 	wxASSERT(size >= 0);
 	if (size < 1000)
 	{
-		return wxString() << (int)size << " bytes";
+		return wxString() << (int)size << wxT(" bytes");
 	}
 	else if (size < 524288)
 	{
-		return wxString() << AddCommas(size / pow(1024, 1)) << " KB";
+		return wxString() << AddCommas(size / pow(1024, 1)) << wxT(" KB");
 	}
 	else if (size < 1073741824)
 	{
-		return wxString() << AddCommas(size / pow(1024, 2)) << " MB";
+		return wxString() << AddCommas(size / pow(1024, 2)) << wxT(" MB");
 	}
 	else if (size < 1099511627776)
 	{
-		return wxString() << AddCommas(size / pow(1024, 3)) << " GB";
+		return wxString() << AddCommas(size / pow(1024, 3)) << wxT(" GB");
 	}
 	else
 	{
-		return wxString() << AddCommas(size / pow(1024, 4)) << " TB";
+		return wxString() << AddCommas(size / pow(1024, 4)) << wxT(" TB");
 	}
 }
 
@@ -186,7 +186,7 @@ wxString SizeToLongString(off_t size, wxString suffix)
 	result << SizeToString(size) << suffix;
 	if (size >= 1000)
 	{	
-		result << " (" << AddCommas(size) << " bytes" << suffix << ")";
+		result << wxT(" (") << AddCommas(size) << wxT(" bytes") << suffix << wxT(")");
 	}
 	return result;
 }
@@ -220,16 +220,16 @@ wxString SecondsToMMSS(long seconds)
 
 	if (hour)
 	{
-		result = wxString::Format("%02d:%02d:%02d", hour, min, sec);
+		result = wxString::Format(wxT("%02d:%02d:%02d"), hour, min, sec);
 	}
 	else
 	{
-		result = wxString::Format("%02d:%02d", min, sec);
+		result = wxString::Format(wxT("%02d:%02d"), min, sec);
 	}
 
 	if (neg)
 	{
-		result = "-" + result;
+		result = wxT("-") + result;
 	}
 
 	return result;
@@ -274,4 +274,24 @@ wxUint16 BytesToUint16(const byte *data, int len)
 	return
 		(data[0] << 8) +
 		(data[1] << 0);
+}
+
+wxString AppTitle(const wxString &suffix)
+{
+	return
+		wxT("Dirt Secure Chat") +
+		(suffix.Length() ? (wxT(" ") + suffix + wxT(" ")) : wxT(" ")) +
+		GetProductVersion();
+}
+
+void ShowAbout()
+{
+	wxMessageBox(wxString()
+		<< wxT("Dirt Secure Chat 3.0.0 Alpha 0\n")
+		<< wxT("\n")
+		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
+		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
+		<< wxT("\n")
+		<< wxT("http://dirtchat.sourceforge.net/"),
+		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
 }

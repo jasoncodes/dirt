@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.25 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.26 2003-02-16 05:09:02 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -74,7 +74,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 			break;
 
 		default:
-			wxFAIL_MSG("Invalid CanvasType");
+			wxFAIL_MSG(wxT("Invalid CanvasType"));
 
 	}
 
@@ -309,7 +309,7 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 			bool ok = ft->GetOpenCommand(
 				&cmd,
 				wxFileType::MessageParameters(event.GetString(),
-				_T("")));
+				wxT("")));
 			delete ft;
 
 			if (!ok)
@@ -357,8 +357,8 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Append(ID_NICKLIST_NICK, nick);
 	menu.Enable(ID_NICKLIST_NICK, false);
 	menu.AppendSeparator();
-	menu.Append(ID_NICKLIST_MESSAGE, "Send &Message");
-	menu.Append(ID_NICKLIST_QUERY, "&Query");
+	menu.Append(ID_NICKLIST_MESSAGE, wxT("Send &Message"));
+	menu.Append(ID_NICKLIST_QUERY, wxT("&Query"));
 
 	wxPoint pos = ScreenToClient(wxGetMousePosition());
 	PopupMenu(&menu, pos);
@@ -379,7 +379,7 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 			if (nick.Length() > 0)
 			{
 
-				wxString msg = ::wxGetTextFromUser("Message to send to " + nick + ":", "Dirt Secure Chat");
+				wxString msg = ::wxGetTextFromUser(wxT("Message to send to ") + nick + wxT(":"), wxT("Dirt Secure Chat"));
 				
 				if (msg.Length() > 0)
 				{
@@ -393,12 +393,12 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 
 		case ID_NICKLIST_QUERY:
 		{
-			GetClient()->ProcessInput(wxEmptyString, "/query " + nick);
+			GetClient()->ProcessInput(wxEmptyString, wxT("/query ") + nick);
 		}
 		break;
 
 		default:
-			wxFAIL_MSG("Unknown event ID");
+			wxFAIL_MSG(wxT("Unknown event ID"));
 
 	}
 
@@ -409,25 +409,25 @@ void ClientUIMDICanvas::LogControlTest()
 	for (int i = 0; i < 10; i++)
 	{
 		wxString tmp;
-		tmp << "Line " << i << " ";
+		tmp << wxT("Line ") << i << wxT(" ");
 		tmp = tmp + tmp + tmp + tmp + tmp + tmp + tmp;
 		tmp.Trim();
 		m_txtLog->AddTextLine(tmp);
 	}
-	m_txtLog->AddTextLine("Testing 1 2 3. http://www.test.com/ is a test.");
-	char ctrl_b = '\x002';
-	char ctrl_c = '\x003';
-	char ctrl_r = '\x016';
-	char ctrl_u = '\x01f';
-	m_txtLog->AddTextLine(wxString() << "this " << ctrl_b << "is" << ctrl_b << " " << ctrl_u << "a " << ctrl_c << "9,1test" << ctrl_c << " line");
-	m_txtLog->AddHtmlLine("alpha <font color=green>beta</font> <span style='background: yellow;'>delta</span> gamma -- green white black yellow");
-	m_txtLog->AddHtmlLine("alpha <span style='background: yellow'>beta</span> <font color=green>delta</font></span> gamma -- black yellow green white");
-	m_txtLog->AddHtmlLine("alpha <font color=green>beta <span style='background: yellow'>delta</span></font></span> gamma -- green white green yellow");
-	m_txtLog->AddHtmlLine("<span style='background: #e0e0e0'><font color='#000080'>these words should be on a single line</font></span>");
-	m_txtLog->AddTextLine(wxString() << ctrl_c << "9,1green black " << ctrl_c << "4red black");
-	m_txtLog->AddTextLine(wxString() << ctrl_c << "9,1green black" << ctrl_c << " black white");
-	m_txtLog->AddTextLine(wxString() << ctrl_c << "3,green");
-	m_txtLog->AddHtmlLine("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line");
-	m_txtLog->AddHtmlLine("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--");
-	m_txtLog->AddTextLine(wxString() << ctrl_c << "2,15blue-grey " << ctrl_r << "reverse" << ctrl_r << " blue-grey " << ctrl_c << "4red-grey " << ctrl_r << "rev" << ctrl_c << ctrl_c << "2erse" << ctrl_r << " blue-white " << ctrl_c << "black-white " << ctrl_r << "reverse");
+	m_txtLog->AddTextLine(wxT("Testing 1 2 3. http://www.test.com/ is a test."));
+	wxChar ctrl_b = wxT('\x002');
+	wxChar ctrl_c = wxT('\x003');
+	wxChar ctrl_r = wxT('\x016');
+	wxChar ctrl_u = wxT('\x01f');
+	m_txtLog->AddTextLine(wxString() << wxT("this ") << ctrl_b << wxT("is") << ctrl_b << wxT(" ") << ctrl_u << wxT("a ") << ctrl_c << wxT("9,1test") << ctrl_c << wxT(" line"));
+	m_txtLog->AddHtmlLine(wxT("alpha <font color=green>beta</font> <span style='background: yellow;'>delta</span> gamma -- green white black yellow"));
+	m_txtLog->AddHtmlLine(wxT("alpha <span style='background: yellow'>beta</span> <font color=green>delta</font></span> gamma -- black yellow green white"));
+	m_txtLog->AddHtmlLine(wxT("alpha <font color=green>beta <span style='background: yellow'>delta</span></font></span> gamma -- green white green yellow"));
+	m_txtLog->AddHtmlLine(wxT("<span style='background: #e0e0e0'><font color='#000080'>these words should be on a single line</font></span>"));
+	m_txtLog->AddTextLine(wxString() << ctrl_c << wxT("9,1green black ") << ctrl_c << wxT("4red black"));
+	m_txtLog->AddTextLine(wxString() << ctrl_c << wxT("9,1green black") << ctrl_c << wxT(" black white"));
+	m_txtLog->AddTextLine(wxString() << ctrl_c << wxT("3,green"));
+	m_txtLog->AddHtmlLine(wxT("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line"));
+	m_txtLog->AddHtmlLine(wxT("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--"));
+	m_txtLog->AddTextLine(wxString() << ctrl_c << wxT("2,15blue-grey ") << ctrl_r << wxT("reverse") << ctrl_r << wxT(" blue-grey ") << ctrl_c << wxT("4red-grey ") << ctrl_r << wxT("rev") << ctrl_c << ctrl_c << wxT("2erse") << ctrl_r << wxT(" blue-white ") << ctrl_c << wxT("black-white ") << ctrl_r << wxT("reverse"));
 }

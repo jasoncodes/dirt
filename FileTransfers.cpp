@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.5 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.6 2003-02-16 05:09:02 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -66,14 +66,14 @@ void FileTransfers::Test()
 	t.transferid = GetNewId();
 	t.issend = true;
 	t.state = ftsSendTransfer;
-	t.nickname = "Jason";
-	t.filename = "D:\\Archive\\Stuff\\Dirt.exe";
+	t.nickname = wxT("Jason");
+	t.filename = wxT("D:\\Archive\\Stuff\\Dirt.exe");
 	t.filesize = 363520;
 	t.time = 133;
 	t.timeleft = -1;
 	t.cps = -1;
 	t.filesent = 363520/3*2;
-	t.status = "Sending...";
+	t.status = wxT("Sending...");
 
 	m_transfers.Add(t);
 	

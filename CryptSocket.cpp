@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.8 2003-02-15 12:28:52 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.9 2003-02-16 05:09:02 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -98,8 +98,8 @@ void CryptSocketBase::InitSocketEvents()
 
 void CryptSocketBase::SetKey(const ByteBuffer &public_key, const ByteBuffer &private_key)
 {
-	wxCHECK_RET(public_key.Length() > 0, "public key is empty");
-	wxCHECK_RET(private_key.Length() > 0, "private key is empty");
+	wxCHECK_RET(public_key.Length() > 0, wxT("public key is empty"));
+	wxCHECK_RET(private_key.Length() > 0, wxT("private key is empty"));
 	m_keyLocalPrivate = private_key;
 	m_keyLocalPublic = public_key;
 	AddToSendQueue(Uint16ToBytes(0) + Uint16ToBytes(mtNewPublicKey) + m_keyLocalPublic);
@@ -146,7 +146,7 @@ void CryptSocketBase::OnSocket(wxSocketEvent &event)
 			break;
 		
 		default:
-			wxFAIL_MSG("Unknown wxSocket event type in CryptSocketBase::OnSocket");
+			wxFAIL_MSG(wxT("Unknown wxSocket event type in CryptSocketBase::OnSocket"));
 			break;
 
 	}
@@ -159,7 +159,7 @@ void CryptSocketBase::OnSocketInput()
 	ByteBuffer buff(4096);
 	m_sck->Read(buff.Lock(), buff.Length());
 	buff.Unlock();
-	CRYPTSOCKET_CHECK_RET(!m_sck->Error(), "Socket error has occured");
+	CRYPTSOCKET_CHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 	
 	if (m_sck->LastCount())
 	{
@@ -180,7 +180,7 @@ void CryptSocketBase::OnSocketInput()
 void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 {
 
-	CRYPTSOCKET_CHECK_RET(len > 2, "Packet length must be greater than 2 bytes long");
+	CRYPTSOCKET_CHECK_RET(len > 2, wxT("Packet length must be greater than 2 bytes long"));
 	size_t data_len = BytesToUint16(ptr, 2);
 	ptr += 2;
 	len -= 2;
@@ -188,7 +188,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	if (data_len > 0)
 	{
 		
-		CRYPTSOCKET_CHECK_RET(m_keyRemote.Length() > 0, "No remote public key");
+		CRYPTSOCKET_CHECK_RET(m_keyRemote.Length() > 0, wxT("No remote public key"));
 		ByteBuffer enc(ptr, len);
 		ByteBuffer dec = m_crypt.AESDecrypt(enc);
 		ByteBuffer plain(dec.Lock(), data_len);
@@ -200,7 +200,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	else
 	{
 		
-		CRYPTSOCKET_CHECK_RET(len >= 2, "Message length must be at least 2 bytes long");
+		CRYPTSOCKET_CHECK_RET(len >= 2, wxT("Message length must be at least 2 bytes long"));
 		MessageTypes type = (MessageTypes)BytesToUint16(ptr, 2);
 		ptr += 2;
 		len -= 2;
@@ -218,7 +218,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 				break;
 
 			default:
-				CRYPTSOCKET_CHECK_RET(true, "Unknown message type");
+				CRYPTSOCKET_CHECK_RET(true, wxT("Unknown message type"));
 				break;
 
 		}
@@ -293,7 +293,7 @@ void CryptSocketBase::OnSocketOutput()
 void CryptSocketBase::MaybeSendData()
 {
 
-	wxCHECK_RET(m_sck && m_sck->IsConnected(), "Socket not connected");
+	wxCHECK_RET(m_sck && m_sck->IsConnected(), wxT("Socket not connected"));
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
@@ -312,7 +312,7 @@ void CryptSocketBase::MaybeSendData()
 		}
 		else
 		{
-			CRYPTSOCKET_CHECK_RET(!m_sck->Error(), "Socket error has occured");
+			CRYPTSOCKET_CHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 			iSendLen = m_sck->LastCount();
 			ptr += iSendLen;
 			len -= iSendLen;
@@ -340,7 +340,7 @@ bool CryptSocketBase::IsSendBufferFull() const
 
 void CryptSocketBase::Send(const ByteBuffer &data)
 {
-	CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, "No local block key");
+	CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, wxT("No local block key"));
 	if ((m_currentBlockKeyAgeBytes >= s_maxBlockKeyAgeBytes) ||
 		(Now() >= m_nextBlockKeyChangeTime))
 	{
@@ -417,7 +417,7 @@ void CryptSocketClient::OnSocketConnection()
 	InitBuffers();
 	if (m_keyLocalPrivate.Length() == 0 || m_keyLocalPublic.Length() == 0)
 	{
-		wxCHECK2_MSG(m_keyLocalPrivate.Length() == 0 && m_keyLocalPublic.Length() == 0, {}, "One of the local public or private keys is empty");
+		wxCHECK2_MSG(m_keyLocalPrivate.Length() == 0 && m_keyLocalPublic.Length() == 0, {}, wxT("One of the local public or private keys is empty"));
 		GenerateNewPublicKey();
 	}
 	GenerateNewBlockKey();
@@ -454,7 +454,7 @@ bool CryptSocketServer::Listen(wxSockAddress& address)
 CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType id)
 {
 	CryptSocketClient *sck = new CryptSocketClient;
-	wxCHECK_MSG(!sck->m_sck, NULL, "Socket is not initialised");
+	wxCHECK_MSG(!sck->m_sck, NULL, wxT("Socket is not initialised"));
 	sck->Destroy();
 	sck->m_sck = new wxSocketClient;
 	sck->InitBuffers();
@@ -468,7 +468,7 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	}
 	else
 	{
-		wxFAIL_MSG("CryptSocketServer::Accept failed");
+		wxFAIL_MSG(wxT("CryptSocketServer::Accept failed"));
 		sck->Destroy();
 		return NULL;
 	}
@@ -491,7 +491,7 @@ const wxEventType wxEVT_CRYPTSOCKET = wxNewEventType();
 
 wxUint32 GetIPV4Address(wxSockAddress &addr)
 {
-	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, 0, "Not an IPV4 address");
+	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, 0, wxT("Not an IPV4 address"));
 	return GAddress_INET_GetHostAddress(addr.GetAddress());
 }
 
@@ -503,9 +503,9 @@ wxString GetIPV4AddressString(wxSockAddress &addr)
 	ip = wxUINT32_SWAP_ON_LE(ip);
 		
 	wxString result = wxString()
-		<< ((ip >> 24) & 0xff) << "."
-		<< ((ip >> 16) & 0xff) << "."
-		<< ((ip >> 8)  & 0xff) << "."
+		<< ((ip >> 24) & 0xff) << wxT(".")
+		<< ((ip >> 16) & 0xff) << wxT(".")
+		<< ((ip >> 8)  & 0xff) << wxT(".")
 		<< ((ip >> 0)  & 0xff);
 	
 	return result;
@@ -514,19 +514,19 @@ wxString GetIPV4AddressString(wxSockAddress &addr)
 
 wxString GetIPV4String(wxSockAddress &addr)
 {
-	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, wxEmptyString, "Not an IPV4 address");
+	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, wxEmptyString, wxT("Not an IPV4 address"));
 	wxIPV4address *ipv4 = static_cast<wxIPV4address*>(&addr);
 	wxString retval;
 	wxString ip = GetIPV4AddressString(*ipv4);
-	if (ip == "127.0.0.1")
+	if (ip == wxT("127.0.0.1"))
 	{
-		retval << "localhost";
+		retval << wxT("localhost");
 	}
-	else if (ip == "0.0.0.0")
+	else if (ip == wxT("0.0.0.0"))
 	{
-		retval << "*";
+		retval << wxT("*");
 	}
-	else if (LeftEq(ip,"127."))
+	else if (LeftEq(ip, wxT("127.")))
 	{
 		retval << ip;
 	}
@@ -534,6 +534,6 @@ wxString GetIPV4String(wxSockAddress &addr)
 	{
 		retval << ipv4->Hostname();
 	}
-	retval << ":" << ipv4->Service();
+	retval << wxT(":") << ipv4->Service();
 	return retval;
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.24 2003-02-14 03:56:59 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.25 2003-02-16 05:09:02 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -36,19 +36,19 @@ void ClientUIConsole::OnInput(const wxString &line)
 
 void ClientUIConsole::OnEOF()
 {
-	m_client->ProcessInput(wxEmptyString, "/exit");
+	m_client->ProcessInput(wxEmptyString, wxT("/exit"));
 }
 
 bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
 {
-	if (cmd == "EXIT")
+	if (cmd == wxT("EXIT"))
 	{
 		ExitMainLoop();
 		return true;
 	}
-	else if (cmd == "HELP")
+	else if (cmd == wxT("HELP"))
 	{
-		OnClientInformation(context, "Supported commands: EXIT");
+		OnClientInformation(context, wxT("Supported commands: EXIT"));
 		return false;
 	}
 	else
@@ -59,17 +59,17 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 
 void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "Debug: " << text);
+	Output(wxString() << wxT("Debug: ") << text);
 }
 
 void ClientUIConsole::OnClientWarning(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "* " << text);
+	Output(wxString() << wxT("* ") << text);
 }
 
 void ClientUIConsole::OnClientInformation(const wxString &context, const wxString &text)
 {
-	Output(wxString() << "* " << text);
+	Output(wxString() << wxT("* ") << text);
 }
 
 void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &text)
@@ -77,11 +77,11 @@ void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &t
 	bool is_private = (nick.Length() > 0);
 	if (is_private)
 	{
-		Output(wxString() << "-> *" + nick + "* " + text);
+		Output(wxString() << wxT("-> *") + nick + wxT("* ") + text);
 	}
 	else
 	{
-		Output(wxString() << "<" + m_client->GetNickname() + "> " + text);
+		Output(wxString() << wxT("<") + m_client->GetNickname() + wxT("> ") + text);
 	}
 }
 
@@ -89,31 +89,31 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 {
 	if (is_private)
 	{
-		Output(wxString() << "*" + nick + "* " + text);
+		Output(wxString() << wxT("*") + nick + wxT("* ") + text);
 	}
 	else
 	{
-		Output(wxString() << "<" + nick + "> " + text);
+		Output(wxString() << wxT("<") + nick + wxT("> ") + text);
 	}
 }
 
 void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)
 {
-	wxString msg = "* Chatting with: ";
+	wxString msg = wxT("* Chatting with: ");
 	if (nicklist.GetCount() > 0)
 	{
 		for (size_t i = 0; i < nicklist.GetCount(); ++i)
 		{
 			if (i > 0)
 			{
-				msg += ", ";
+				msg += wxT(", ");
 			}
 			msg += nicklist[i];
 		}
 	}
 	else
 	{
-		msg += "(Nobody)";
+		msg += wxT("(Nobody)");
 	}
 	Output(msg);
 }
@@ -121,27 +121,27 @@ void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)
 void ClientUIConsole::OnClientUserJoin(const wxString &nick, const wxString &details)
 {
 	wxString msg;
-	msg << "* " << nick;
+	msg << wxT("* ") << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << ")";
+		msg << wxT(" (") << details << wxT(")");
 	}
-	msg << " has joined the chat";
+	msg << wxT(" has joined the chat");
 	Output(msg);
 }
 
 void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message)
 {
 	wxString msg;
-	msg << "* " << nick;
+	msg << wxT("* ") << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << ")";
+		msg << wxT(" (") << details << wxT(")");
 	}
-	msg << " has left the chat";
+	msg << wxT(" has left the chat");
 	if (message.Length() > 0)
 	{
-		msg << " (" << message << ")";
+		msg << wxT(" (" << message << ")");
 	}
 	Output(msg);
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.41 2003-02-14 06:21:54 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.42 2003-02-16 05:09:02 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -35,7 +35,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
-	: SwitchBarParent(NULL, -1, "Dirt Secure Chat Client " + GetProductVersion(),
+	: SwitchBarParent(NULL, -1, AppTitle(wxT("Client")),
 		wxPoint(-1, -1), wxSize(500, 400),
 		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL)
 {
@@ -47,14 +47,14 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, "E&xit\tAlt-F4", "Quit the program");
-	mnu->Append(mnuFile, "&File");
+	mnuFile->Append(ID_FILE_EXIT, wxT("E&xit\tAlt-F4"), wxT("Quit the program"));
+	mnu->Append(mnuFile, wxT("&File"));
 
-	mnu->Append(GetWindowMenu(), "&Window");
+	mnu->Append(GetWindowMenu(), wxT("&Window"));
 
 	wxMenu *mnuHelp = new wxMenu;
-	mnuHelp->Append(ID_HELP_ABOUT, "&About\tF1");
-	mnu->Append(mnuHelp, "&Help");
+	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About\tF1"));
+	mnu->Append(mnuHelp, wxT("&Help"));
 
 	SetMenuBar(mnu);
 
@@ -62,7 +62,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	Show();
 
-	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", ChannelCanvas);
+	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxT("[Main]"), ChannelCanvas);
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
 
@@ -135,14 +135,7 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	wxMessageBox(wxString()
-		<< "Dirt Secure Chat 3.0.0 Alpha 0\n"
-		<< "\n"
-		<< "Last revision date: " << GetRCSDate() << " UTC\n"
-		<< "Last revision author: " << GetRCSAuthor() << "\n"
-		<< "\n"
-		<< "http://dirtchat.sourceforge.net/",
-		"About Dirt Secure Chat", wxICON_INFORMATION);
+	ShowAbout();
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)
@@ -225,47 +218,47 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
 {
-	if (cmd == "CLEAR")
+	if (cmd == wxT("CLEAR"))
 	{
 		GetContext(context)->GetLog()->Clear();
 		return true;
 	}
-	else if (cmd == "EXIT")
+	else if (cmd == wxT("EXIT"))
 	{
 		Close();
 		return true;
 	}
-	else if (cmd == "TEST")
+	else if (cmd == wxT("TEST"))
 	{
 		GetContext(context)->LogControlTest();
 		return true;
 	}
-	else if (cmd == "QUERY")
+	else if (cmd == wxT("QUERY"))
 	{
 		HeadTail ht = SplitHeadTail(params);
 		if (ht.head.Length() > 0)
 		{
 			FocusCanvas(GetContext(ht.head));
 		}
-		cmd = "MSG";
+		cmd = wxT("MSG");
 		return false;
 	}
-	else if (cmd == "RESETWINDOWPOS")
+	else if (cmd == wxT("RESETWINDOWPOS"))
 	{
 		if (!ResetWindowPos())
 		{
-			OnClientWarning(context, "/resetwindowpos: Unavailable on this platform");
+			OnClientWarning(context, wxT("/resetwindowpos: Unavailable on this platform"));
 		}
 		return true;
 	}
-	else if (cmd == "TEST2")
+	else if (cmd == wxT("TEST2"))
 	{
 		m_client->GetFileTransfers()->Test();
 		return true;
 	}
-	else if (cmd == "HELP")
+	else if (cmd == wxT("HELP"))
 	{
-		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS");
+		OnClientInformation(context, wxT("Supported commands: CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS"));
 		return false;
 	}
 	else
@@ -276,35 +269,35 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 
 void ClientUIMDIFrame::OnClientDebug(const wxString &context, const wxString &text)
 {
-	AddLine(context, "Debug: " + text, wxColour(128,128,128));
+	AddLine(context, wxT("Debug: ") + text, wxColour(128,128,128));
 }
 
 void ClientUIMDIFrame::OnClientWarning(const wxString &context, const wxString &text)
 {
-	AddLine(context, "* " + text, *wxRED);
+	AddLine(context, wxT("* ") + text, *wxRED);
 }
 
 void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxString &text)
 {
-	AddLine(context, "* " + text, wxColour(0,0,128));
+	AddLine(context, wxT("* ") + text, wxColour(0,0,128));
 }
 
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
 	if (nick.Length() == 0 || GetContext(nick, false) != GetContext(wxEmptyString))
 	{
-		AddLine(nick, "<" + m_client->GetNickname() + "> " + text, *wxBLACK, true, true);
+		AddLine(nick, wxT("<") + m_client->GetNickname() + wxT("> ") + text, *wxBLACK, true, true);
 	}
 	else
 	{
-		AddLine(wxEmptyString, "-> *" + nick + "* " + text, *wxBLACK, true, true);
+		AddLine(wxEmptyString, wxT("-> *") + nick + wxT("* ") + text, *wxBLACK, true, true);
 	}
 }
 
 void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)
 {
 	wxString context = is_private ? nick : (const wxString)wxEmptyString;
-	AddLine(context, "<" + nick + "> " + text);
+	AddLine(context, wxT("<") + nick + wxT("> ") + text);
 }
 
 void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
@@ -320,12 +313,12 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 {
 
 	wxString msg;
-	msg << "* " << nick;
+	msg << wxT("* ") << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << (char)OriginalModifier << ")";
+		msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
 	}
-	msg << " has joined the chat";
+	msg << wxT(" has joined the chat");
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Add(nick);
@@ -336,15 +329,15 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 {
 
 	wxString msg;
-	msg << "* " << nick;
+	msg << wxT("* ") << nick;
 	if (details.Length() > 0)
 	{
-		msg << " (" << details << (char)OriginalModifier << ")";
+		msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
 	}
-	msg << " has left the chat";
+	msg << wxT(" has left the chat");
 	if (message.Length() > 0)
 	{
-		msg << " (" << message << (char)OriginalModifier << ")";
+		msg << wxT(" (") << message << (wxChar)OriginalModifier << wxT(")");
 	}
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
@@ -367,7 +360,7 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer)
 	if (pnl)
 	{
 		pnl->SetTransferId(-1);
-		pnl->SetStatus(pnl->GetStatus() + " -- OnClientTransferDelete()");
+		pnl->SetStatus(pnl->GetStatus() + wxT(" -- OnClientTransferDelete()"));
 	}
 }
 

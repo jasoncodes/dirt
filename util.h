@@ -13,8 +13,8 @@ struct HeadTail
 wxArrayString SplitString(const wxString &text, const wxString &sep);
 bool LeftEq(const wxString &text, const wxString &to_match);
 bool RightEq(const wxString &text, const wxString &to_match);
-void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = " ");
-HeadTail SplitHeadTail(const wxString &text, const wxString &sep = " ");
+void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = wxT(" "));
+HeadTail SplitHeadTail(const wxString &text, const wxString &sep = wxT(" "));
 wxString GetLongTimestamp();
 wxString GetShortTimestamp();
 wxString FormatISODateTime(const wxDateTime &datetime);
@@ -29,5 +29,7 @@ ByteBuffer Uint32ToBytes(wxUint32 num);
 wxUint32 BytesToUint32(const byte *data, int len);
 ByteBuffer Uint16ToBytes(wxUint16 num);
 wxUint16 BytesToUint16(const byte *data, int len);
+wxString AppTitle(const wxString &suffix = wxEmptyString);
+void ShowAbout();
 
 #endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.14 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.15 2003-02-16 05:09:02 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -33,7 +33,7 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 
 	m_lblType = new wxStaticText(
 		this, wxID_ANY,
-		wxString() << "DCC " << GetTypeString() << " Session",
+		wxString() << wxT("DCC ") << GetTypeString() << wxT(" Session"),
 		wxPoint(8,8));
 
 	m_pnlLeft = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
@@ -42,20 +42,20 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_szrLeft = new wxBoxSizer( wxVERTICAL );
 	m_szrRight = new wxBoxSizer( wxVERTICAL );
 
-	AddRow("");
+	AddRow(wxT(""));
 
-	m_lblNickname = AddRow("Nickname:");
-	m_lblFilename = AddRow("Filename:");
-	m_lblSize = AddRow("Size:");
+	m_lblNickname = AddRow(wxT("Nickname:"));
+	m_lblFilename = AddRow(wxT("Filename:"));
+	m_lblSize = AddRow(wxT("Size:"));
 
-	AddRow("");
+	AddRow(wxT(""));
 
-	m_lblTime = AddRow("Time:");
-	m_lblLeft = AddRow("Left:");
-	m_lblCPS = AddRow("CPS:");
-	m_lblSent = AddRow("Sent:");
+	m_lblTime = AddRow(wxT("Time:"));
+	m_lblLeft = AddRow(wxT("Left:"));
+	m_lblCPS = AddRow(wxT("CPS:"));
+	m_lblSent = AddRow(wxT("Sent:"));
 
-	AddRow("");
+	AddRow(wxT(""));
 
 	m_pnlLeft->SetAutoLayout( TRUE );
 	m_pnlLeft->SetSizer( m_szrLeft );
@@ -141,7 +141,7 @@ bool ClientUIMDITransferPanel::IsSend()
 		case TransferReceiveCanvas:
 			return false;
 		default:
-			wxFAIL_MSG("Unrecognized Canvas Type");
+			wxFAIL_MSG(wxT("Unrecognized Canvas Type"));
 			return false;
 	}
 }
@@ -149,7 +149,7 @@ bool ClientUIMDITransferPanel::IsSend()
 void ClientUIMDITransferPanel::UpdateCaption()
 {
 	wxString caption;
-	caption << GetTypeString() << ' ' << m_nickname << ' ' << GetShortFilename();
+	caption << GetTypeString() << wxT(' ') << m_nickname << wxT(' ') << GetShortFilename();
 	m_canvas->SetTitle(caption);
 }
 
@@ -175,7 +175,7 @@ wxString ClientUIMDITransferPanel::GetShortFilename()
 	wxString result = fn.GetName();
 	if (fn.HasExt())
 	{
-		result << '.' << fn.GetExt();
+		result << wxT('.') << fn.GetExt();
 	}
 	return result;
 }
@@ -266,7 +266,7 @@ void ClientUIMDITransferPanel::SetTimeleft(long seconds)
 	}
 	else
 	{
-		m_lblLeft->SetLabel("??:??");
+		m_lblLeft->SetLabel(wxT("??:??"));
 	}
 }
 
@@ -275,11 +275,11 @@ void ClientUIMDITransferPanel::SetCPS(long cps)
 	m_cps = cps;
 	if (cps > -1)
 	{
-		m_lblCPS->SetLabel(SizeToLongString(cps, "/sec"));
+		m_lblCPS->SetLabel(SizeToLongString(cps, wxT("/sec")));
 	}
 	else
 	{
-		m_lblCPS->SetLabel("??? bytes/sec");
+		m_lblCPS->SetLabel(wxT("??? bytes/sec"));
 	}
 }
 

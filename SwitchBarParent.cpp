@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.10 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
 
 #include "SwitchBarParent.h"
 #include "SwitchBarChild.h"
@@ -66,14 +66,14 @@ SwitchBarParent::SwitchBarParent(
 	tmrUpdateWindowMenu = new wxTimer(this, ID_UPDATEWINDOWMENUTIMER);
 
 	mnuWindow = new wxMenu;
-	mnuWindow->Append(ID_WINDOW_MINIMIZE, "Mi&nimize\tEsc");
-	mnuWindow->Append(ID_WINDOW_CLOSE, "Cl&ose\tCtrl-F4");
+	mnuWindow->Append(ID_WINDOW_MINIMIZE, wxT("Mi&nimize\tEsc"));
+	mnuWindow->Append(ID_WINDOW_CLOSE, wxT("Cl&ose\tCtrl-F4"));
 	mnuWindow->AppendSeparator();
-	mnuWindow->Append(ID_WINDOW_CASCADE, "&Cascade");
-	mnuWindow->Append(ID_WINDOW_TILE, "&Tile");
+	mnuWindow->Append(ID_WINDOW_CASCADE, wxT("&Cascade"));
+	mnuWindow->Append(ID_WINDOW_TILE, wxT("&Tile"));
 	mnuWindow->AppendSeparator();
-	mnuWindow->Append(ID_WINDOW_NEXT, "&Next");
-	mnuWindow->Append(ID_WINDOW_PREV, "&Previous");
+	mnuWindow->Append(ID_WINDOW_NEXT, wxT("&Next"));
+	mnuWindow->Append(ID_WINDOW_PREV, wxT("&Previous"));
 	mnuWindow->AppendSeparator();
 	num_window_menus = 0;
 
@@ -190,7 +190,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 
 	while (num_window_menus < iNumDesired)
 	{
-		mnuWindow->AppendCheckItem(ID_WINDOW_WINDOWS + num_window_menus, "XYZ");
+		mnuWindow->AppendCheckItem(ID_WINDOW_WINDOWS + num_window_menus, wxT("XYZ"));
 		num_window_menus++;
 	}
 
@@ -222,7 +222,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 			if (i < 9)
 			{
 				caption = wxString()
-					<< '&' << i+1 << ' '
+					<< wxT('&') << i+1 << wxT(' ')
 					<< caption;
 			}
 
@@ -242,7 +242,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 
 		UpdateCheckMenuItem(
 			ID_WINDOW_WINDOWS,
-			"(None)",
+			wxT("(None)"),
 			false,
 			false);
 
@@ -382,10 +382,10 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 
 	wxMenu menu;
 
-	menu.Append(ID_SWITCHBAR_RESTORE, "&Restore");
-	menu.Append(ID_SWITCHBAR_MINIMIZE, "Mi&nimize");
+	menu.Append(ID_SWITCHBAR_RESTORE, wxT("&Restore"));
+	menu.Append(ID_SWITCHBAR_MINIMIZE, wxT("Mi&nimize"));
 	menu.AppendSeparator();
-	menu.Append(ID_SWITCHBAR_CLOSE, "&Close");
+	menu.Append(ID_SWITCHBAR_CLOSE, wxT("&Close"));
 
 	menu.Enable(ID_SWITCHBAR_RESTORE, m_switchbar->GetSelectedIndex() != switchbar_popup_button_index);
 	menu.Enable(ID_SWITCHBAR_MINIMIZE, switchbar_popup_canvas->IsAttached());

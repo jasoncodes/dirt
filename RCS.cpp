@@ -4,35 +4,35 @@
 #include "wx/wxprec.h"
 
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.7 2003-02-14 02:05:12 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.8 2003-02-16 05:09:03 jason Exp $)
 
 static wxString m_latest_rcs_date = wxEmptyString;
 static wxString m_latest_rcs_author = wxEmptyString;
 static bool m_init_done = false;
 
-#define VERSION "3.0.0 Alpha 0"
+#define VERSION wxT("3.0.0 Alpha 0")
 
-static wxString extract_date(const char *x, const char *y)
+static wxString extract_date(const wxChar *x, const wxChar *y)
 {
-	wxASSERT(x[0] == '$' && x[1] == 'I' && x[2] == 'd');
-	wxASSERT(y[0] == 'v' && y[1] == ' ');
+	wxASSERT(x[0] == wxT('$') && x[1] == wxT('I') && x[2] == wxT('d'));
+	wxASSERT(y[0] == wxT('v') && y[1] == wxT(' '));
 	wxString tmp(y+2);
-	size_t i = tmp.Index(' ');
+	size_t i = tmp.Index(wxT(' '));
 	wxASSERT(i > 0);
 	tmp = tmp.Mid(i + 1, 19);
 	return tmp;
 }
 
-static wxString extract_author(const char *x, const char *y)
+static wxString extract_author(const wxChar *x, const wxChar *y)
 {
-	wxASSERT(x[0] == '$' && x[1] == 'I' && x[2] == 'd');
-	wxASSERT(y[0] == 'v' && y[1] == ' ');
-	wxASSERT(wxString(y).Right(5) == "Exp $");
-	wxString tmp(y, strlen(y)-6);
-	return tmp.AfterLast(' ');
+	wxASSERT(x[0] == wxT('$') && x[1] == wxT('I') && x[2] == wxT('d'));
+	wxASSERT(y[0] == wxT('v') && y[1] == wxT(' '));
+	wxASSERT(wxString(y).Right(5) == wxT("Exp $"));
+	wxString tmp(y, wxString(y).Length()-6);
+	return tmp.AfterLast(wxT(' '));
 }
 
-int add_rcs_id(const char *x, const char *y)
+int add_rcs_id(const wxChar *x, const wxChar *y)
 {
 	static wxString s_latest_rcs_date = wxEmptyString;
 	static wxString s_latest_rcs_author = wxEmptyString;

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.4 2003-02-15 11:50:38 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.5 2003-02-16 05:09:03 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -11,6 +11,38 @@ RCS_ID($Id: Server.cpp,v 1.4 2003-02-15 11:50:38 jason Exp $)
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ServerConnectionArray);
+
+ServerConnection::ServerConnection()
+	: m_jointime(wxDateTime::Now())
+{
+	ResetIdleTime();
+}
+
+ServerConnection::~ServerConnection()
+{
+}
+
+ServerConnection::operator wxString() const
+{
+	wxString retval;
+	retval << (GetNickname().Length()?GetNickname():wxT("N/A"));
+	retval << wxT("@") << (GetRemoteHost().Length()?GetRemoteHost():wxT("N/A"));
+	retval << wxT("(") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
+	retval << wxT(") (");
+	if (GetAwayMessage().Length())
+	{
+		retval << wxT("Away: ") << GetAwayMessage() << wxT("; ");
+	}
+	retval << wxT("Idle: ") << GetIdleTimeString() << wxT("; ");
+	retval << wxT("Lag: ") << GetLatencyString() << wxT("; ");
+	if (GetUserAgent().Length())
+	{
+		retval << wxT("Agent: ") << GetUserAgent() << wxT("; ");
+	}
+	retval << wxT("Joined: ") << GetJoinTimeString();
+	retval << wxT(")");
+	return retval;
+}
 
 BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
@@ -31,7 +63,7 @@ void Server::ProcessInput(const wxString &input)
 	wxString cmd, params;
 	
 	SplitHeadTail(input, cmd, params);
-	if (input[0] == '/')
+	if (input[0] == wxT('/'))
 	{
 		cmd = cmd.Mid(1);
 	}
@@ -46,18 +78,18 @@ void Server::ProcessInput(const wxString &input)
 		return;
 	}
 
-	if (cmd == "START")
+	if (cmd == wxT("START"))
 	{
 		if (IsRunning())
 		{
-			m_event_handler->OnServerWarning("Server is already running");
+			m_event_handler->OnServerWarning(wxT("Server is already running"));
 		}
 		else
 		{
 			Start();
 		}
 	}
-	else if (cmd == "STOP")
+	else if (cmd == wxT("STOP"))
 	{
 		if (IsRunning())
 		{
@@ -65,16 +97,31 @@ void Server::ProcessInput(const wxString &input)
 		}
 		else
 		{
-			m_event_handler->OnServerWarning("Server is not running");
+			m_event_handler->OnServerWarning(wxT("Server is not running"));
 		}
 	}
-	else if (cmd == "HELP")
+	else if (cmd == wxT("USERS"))
 	{
-		m_event_handler->OnServerInformation("Supported commands: HELP START STOP");
+		if (IsRunning())
+		{
+			m_event_handler->OnServerInformation(wxString() << wxT("There are currently ") << GetConnectionCount() << wxT(" connections"));
+			for (size_t i = 0; i < GetConnectionCount(); ++i)
+			{
+				m_event_handler->OnServerInformation(wxT("    ") + GetConnection(i));
+			}
+		}
+		else
+		{
+			m_event_handler->OnServerWarning(wxT("Server is not running"));
+		}
+	}
+	else if (cmd == wxT("HELP"))
+	{
+		m_event_handler->OnServerInformation(wxT("Supported commands: HELP START STOP USERS"));
 	}
 	else
 	{
-		m_event_handler->OnServerWarning("Unrecognized command: " + cmd);
+		m_event_handler->OnServerWarning(wxT("Unrecognized command: ") + cmd);
 	}
 
 }

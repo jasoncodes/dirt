@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.17 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.18 2003-02-16 05:09:03 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -66,7 +66,7 @@ public:
 
 	ModifierParserTagEntry Pop()
 	{
-		wxASSERT_MSG(!m_entries.IsEmpty(), "Stack is empty");
+		wxASSERT_MSG(!m_entries.IsEmpty(), wxT("Stack is empty"));
 		ModifierParserTagEntry item = m_entries.Last();
 		m_entries.RemoveAt(m_entries.GetCount() - 1);
 		return item;
@@ -90,7 +90,7 @@ protected:
 static wxString ColourToString(const wxColour &clr)
 {
 	return wxString::Format(
-		"#%02x%02x%02x",
+		wxT("#%02x%02x%02x"),
 		clr.Red(), clr.Green(), clr.Blue());
 }
 
@@ -106,7 +106,7 @@ class ModifierParser
 
 public:
 	ModifierParser()
-		: tagFont("font"), tagSpan("span"), tagBold("b"), tagUnderline("u")
+		: tagFont(wxT("font")), tagSpan(wxT("span")), tagBold(wxT("b")), tagUnderline(wxT("u"))
 	{
 		strip_mode = false;
 		ResetAllState();
@@ -164,11 +164,11 @@ protected:
 		{
 			if (debug_tags)
 			{
-				result << "&lt;/" << t.name << "&gt;";
+				result << wxT("&lt;/") << t.name << wxT("&gt;");
 			}
 			else
 			{
-				result << "</" << t.name << ">";
+				result << wxT("</") << t.name << wxT(">");
 			}
 		}
 	}
@@ -179,11 +179,11 @@ protected:
 		{
 			if (debug_tags)
 			{
-				result << "&lt;" << t.name << " " << attribs << "&gt;";
+				result << wxT("&lt;") << t.name << wxT(" ") << attribs << wxT("&gt;");
 			}
 			else
 			{
-				result << "<" << t.name << " " << attribs << ">";
+				result << wxT("<") << t.name << wxT(" ") << attribs << wxT(">");
 			}
 		}
 	}
@@ -217,7 +217,7 @@ protected:
 		return last_attribs;
 	}
 
-	wxString start_tag(ModifierParserTag &t, const wxString attribs = "")
+	wxString start_tag(ModifierParserTag &t, const wxString attribs = wxEmptyString)
 	{
 		wxString last_attribs = end_tag(t);
 		t.active = true;
@@ -264,7 +264,7 @@ protected:
 	{
 		if (reverse_mode)
 		{
-			reverse_tags.Add(ModifierParserTagEntry(t, ""));
+			reverse_tags.Add(ModifierParserTagEntry(t, wxT("")));
 		}
 		else
 		{
@@ -281,10 +281,10 @@ protected:
 		}
 		else if (colour_number_valid[0])
 		{
-			start_colour_tag(tagFont, "color=\"" + ColourToString(colour_number[0]) + "\"");
+			start_colour_tag(tagFont, wxT("color=\"") + ColourToString(colour_number[0]) + wxT("\""));
 			if (colour_number_valid[1])
 			{
-				start_colour_tag(tagSpan, "style=\"background: " + ColourToString(colour_number[1]) + "\"");
+				start_colour_tag(tagSpan, wxT("style=\"background: ") + ColourToString(colour_number[1]) + wxT("\""));
 			}
 		}
 		colour_number_valid[0] = false;
@@ -298,8 +298,8 @@ protected:
 		if (reverse_mode)
 		{
 			
-			wxString font_attribs = start_tag(tagFont, "color=white");
-			wxString span_attribs = start_tag(tagSpan, "style='background: black'");
+			wxString font_attribs = start_tag(tagFont, wxT("color=white"));
+			wxString span_attribs = start_tag(tagSpan, wxT("style='background: black'"));
 
 			reverse_tags.Empty();
 
@@ -354,15 +354,15 @@ public:
 			char c = text[i];
 
 			if ( colour_pos > 0 && // is inside a colour code and
-				( (c == ',' && had_comma) || // is either a 2nd comma
-				  (c != ',' && !isdigit(c)) ) // or a non-valid character
+				( (c == wxT(',') && had_comma) || // is either a 2nd comma
+				  (c != wxT(',') && !isdigit(c)) ) // or a non-valid character
 				)
 			{
 				EndOfColourCode();
 				had_comma = false;
 				if (last_was_comma)
 				{
-					result << ',';
+					result << wxT(',');
 				}
 			}
 
@@ -394,10 +394,10 @@ public:
 					colour_pos = 1;
 					break;
 
-				case '1': case '2': case '3':
-				case '4': case '5': case '6':
-				case '7': case '8': case '9':
-				case '0': // isdigit()
+				case wxT('1'): case wxT('2'): case wxT('3'):
+				case wxT('4'): case wxT('5'): case wxT('6'):
+				case wxT('7'): case wxT('8'): case wxT('9'):
+				case wxT('0'): // isdigit()
 					if (colour_pos > 0)
 					{
 						colour_pos++;
@@ -414,7 +414,7 @@ public:
 								colour_number_valid[x] = true;
 							}
 							colour_number[x] *= 10;
-							colour_number[x] += (c - '0');
+							colour_number[x] += (c - wxT('0'));
 						}
 					}
 					if (colour_pos == 0)
@@ -423,7 +423,7 @@ public:
 					}
 					break;
 
-				case ',':
+				case wxT(','):
 					if (colour_pos > 0)
 					{
 						if (had_comma)
@@ -450,7 +450,7 @@ public:
 
 			}
 
-			last_was_comma = (c == ',');
+			last_was_comma = (c == wxT(','));
 
 		}
 
@@ -578,7 +578,7 @@ void LogControl::ClearRect(wxDC& dc, wxRect &rect)
 	wxPen old_pen = dc.GetPen();
 	wxBrush old_brush = dc.GetBrush();
 	dc.SetPen(*wxWHITE_PEN);
-	dc.DrawRectangle(rect.GetLeft(),rect.GetTop(),rect.GetWidth(),rect.GetHeight());
+	dc.DrawRectangle(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
 	dc.SetBrush(old_brush);
 	dc.SetPen(old_pen);
 }
@@ -878,9 +878,9 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 			wxString text = GetCellText(cell);
 			if (text.Length() > 0)
 			{
-				if (text == "    ")
+				if (text == wxT("    "))
 				{
-					buffer += '\t';
+					buffer += wxT('\t');
 				}
 				else
 				{
@@ -893,7 +893,7 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 		{
 			if (!last_was_new_line)
 			{
-				buffer += "\r\n";
+				buffer += wxT("\r\n");
 				last_was_new_line = true;
 			}
 		}
@@ -1145,7 +1145,7 @@ void LogControl::OnIdle(wxIdleEvent& event)
 	if (m_cur_hand == NULL)
 	{
 		#ifdef __WXMSW__
-			m_cur_hand = new wxCursor("hand");
+			m_cur_hand = new wxCursor(wxT("hand"));
 		#else
 			m_cur_hand = new wxCursor(wxCURSOR_HAND);
 		#endif
@@ -1204,14 +1204,14 @@ void LogControl::ScrollToBottom()
 
 void LogControl::Clear()
 {
-	SetPage("");
+	SetPage(wxT(""));
 	ScrollToBottom();
 }
 
 void LogControl::AddHtmlLine(const wxString &line)
 {
 
-	wxString source = "<br><code>" + line + "</code>";
+	wxString source = wxT("<br><code>") + line + wxT("</code>");
 
 	wxClientDC *dc = new wxClientDC(this);
 	dc->SetMapMode(wxMM_TEXT);
@@ -1266,7 +1266,7 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 			break;
 
 		default:
-			wxFAIL_MSG("Invalid TextModifierMode for AddTextLine");
+			wxFAIL_MSG(wxT("Invalid TextModifierMode for AddTextLine"));
 			break;
 
 	}
@@ -1276,7 +1276,7 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 		html = ConvertUrlsToLinks(html);
 	}
 
-	html = "<font color='" + ColourToString(line_colour) + "'>" + html + "</font>";
+	html = wxT("<font color='") + ColourToString(line_colour) + wxT("'>") + html + wxT("</font>");
 
 	AddHtmlLine(html);
 
@@ -1287,20 +1287,20 @@ wxString LogControl::FormatTextAsHtml(const wxString &text)
 
 	wxString html = text;
 
-	html.Replace("&","&amp;");
-	html.Replace("<","&lt;");
-	html.Replace(">","&gt;");
+	html.Replace(wxT("&"),wxT("&amp;"));
+	html.Replace(wxT("<"),wxT("&lt;"));
+	html.Replace(wxT(">"),wxT("&gt;"));
 
-	html.Replace("\r\n","<br>");
-	html.Replace("\r","<br>");
-	html.Replace("\n","<br>");
+	html.Replace(wxT("\r\n"),wxT("<br>"));
+	html.Replace(wxT("\r"),wxT("<br>"));
+	html.Replace(wxT("\n"),wxT("<br>"));
 
-	if (html[0] == ' ')
+	if (html[0] == wxT(' '))
 	{
-		html = "&nbsp;" + html.Mid(1);
+		html = wxT("&nbsp;") + html.Mid(1);
 	}
-	html.Replace("\t", "&nbsp;&nbsp;&nbsp; ");
-	html.Replace("  ", " &nbsp;");
+	html.Replace(wxT("\t"), wxT("&nbsp;&nbsp;&nbsp; "));
+	html.Replace(wxT("  "), wxT(" &nbsp;"));
 
 	return html;
 
@@ -1311,13 +1311,13 @@ wxString LogControl::FormatTextAsHtml(const wxString &text)
 bool LogControl::IsEmail(const wxString &token)
 {
 	wxString buff = token;
-	long a = buff.Find('@');
+	long a = buff.Find(wxT('@'));
 	if (a > -1)
 	{
 		buff = token.Mid(a);
-		if (buff.Find('.') > -1)
+		if (buff.Find(wxT('.')) > -1)
 		{
-			if ((buff.Find(':') == -1) && (buff.Find('/') == -1))
+			if ((buff.Find(wxT(':')) == -1) && (buff.Find(wxT('/')) == -1))
 			{
 				return true;
 			}
@@ -1328,7 +1328,7 @@ bool LogControl::IsEmail(const wxString &token)
 
 wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 {
-	static const wxString delims = "\t\r\n '\"<>()";
+	static const wxString delims = wxT("\t\r\n '\"<>()");
 	wxStringTokenizer st(text, delims, wxTOKEN_RET_DELIMS);
 
 	wxString output;
@@ -1352,38 +1352,38 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 			wxString token_lower = token.Lower();
 
-			if (token_lower.Left(5) == "news:")
+			if (token_lower.Left(5) == wxT("news:"))
 			{
 				url = token;
 			}
-			else if (token.Left(2) == "\\\\" && token.Length() > 2)
+			else if (token.Left(2) == wxT("\\\\") && token.Length() > 2)
 			{
 				url = token;
 			}
-			else if ((token_lower.Left(7) == "mailto:") || (token.Find("://") > -1))
+			else if ((token_lower.Left(7) == wxT("mailto:")) || (token.Find(wxT("://")) > -1))
 			{
 				url = token;
 			}
-			else if ((token_lower.Left(3) == "www") && (token.Find('.') > -1))
+			else if ((token_lower.Left(3) == wxT("www")) && (token.Find(wxT('.')) > -1))
 			{
-				url = "http://" + token;
+				url = wxT("http://") + token;
 			}
-			else if ((token_lower.Left(4) == "ftp.") && (token.Mid(4).Find('.') > 0))
+			else if ((token_lower.Left(4) == wxT("ftp.")) && (token.Mid(4).Find(wxT('.')) > 0))
 			{
-				url = "ftp://" + token;
+				url = wxT("ftp://") + token;
 			}
 			else if (IsEmail(token))
 			{
-				url = "mailto:" + token;
+				url = wxT("mailto:") + token;
 			}
-			else if ((token_lower.Find(".com") > -1) || (token_lower.Find(".net") > -1) || (token_lower.Find(".org") > -1))
+			else if ((token_lower.Find(wxT(".com")) > -1) || (token_lower.Find(wxT(".net")) > -1) || (token_lower.Find(wxT(".org")) > -1))
 			{
-				url = "http://" + token;
+				url = wxT("http://") + token;
 			}
 
 			if (url.Length() > 0)
 			{
-				token = "<a href=\"" + url + "\">" + token + "</a>";
+				token = wxT("<a href=\"") + url + wxT("\">") + token + wxT("</a>");
 			}
 
 			output += token;

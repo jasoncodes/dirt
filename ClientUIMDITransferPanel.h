@@ -48,7 +48,7 @@ protected:
 protected:
 	wxStaticText *AddRow(const wxString &caption, const wxString &value = wxEmptyString);
 	bool IsSend();
-	wxString GetTypeString() { return IsSend() ? "Send" : "Get"; }
+	wxString GetTypeString() { return IsSend() ? wxT("Send") : wxT("Get"); }
 	void UpdateCaption();
 	void UpdateProgress();
 

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.2 2003-02-13 13:16:49 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.3 2003-02-16 05:09:01 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -221,9 +221,9 @@ wxString ByteBuffer::GetHexDump() const
 	{
 		if (i > 0)
 		{
-			hex += ' ';
+			hex += wxT(' ');
 		}
-		hex += wxString::Format("%02x", m_data->buffer[i]).Upper();
+		hex += wxString::Format(wxT("%02x"), m_data->buffer[i]).Upper();
 	}
 
 	return hex;

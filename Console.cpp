@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.6 2003-02-14 04:57:06 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.7 2003-02-16 05:09:02 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -69,7 +69,7 @@ public:
 						case WAIT_ABANDONED:
 						case WAIT_FAILED:
 						default:
-							wxFAIL_MSG("Unexpected return value from WaitForSingleObject()");
+							wxFAIL_MSG(wxT("Unexpected return value from WaitForSingleObject()"));
 							break;
 					}
 
@@ -89,7 +89,7 @@ public:
 
 					if (retval < 0)
 					{
-						wxFAIL_MSG("Unexpected return value from select()");
+						wxFAIL_MSG(wxT("Unexpected return value from select()"));
 					}
 					else if (retval > 0)
 					{
@@ -100,12 +100,12 @@ public:
 
 			}
 
-			while (!TestDestroy() && (x = getc(stdin)) != -1)
+			while (!TestDestroy() && (x = wxGetc(stdin)) != -1)
 			{
 
-				char c = (char)x;
+				char c = (wxChar)x;
 
-				if (c == '\n')
+				if (c == wxT('\n'))
 				{
 					break;
 				}
@@ -138,7 +138,7 @@ public:
 		event.SetString(input);
 		m_console->AddPendingEvent(event);
 		#if defined(__WXMSW__) || defined(__WXMAC__)
-			wxWakeUpMainThread();
+			::wxWakeUpMainThread();
 		#endif
 	}
 
@@ -252,4 +252,3 @@ void Console::Output(const wxString &line)
 	puts(line);
 	fflush(stdout);
 }
-

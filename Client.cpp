@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.11 2003-02-14 04:39:57 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.12 2003-02-16 05:09:02 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -37,7 +37,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 	
 	wxString cmd, params;
 	
-	if (input[0] == '/')
+	if (input[0] == wxT('/'))
 	{
 		SplitHeadTail(input, cmd, params);
 		cmd = cmd.Mid(1);
@@ -45,94 +45,94 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 	}
 	else
 	{
-		cmd = "SAY";
+		cmd = wxT("SAY");
 		params = input;
 	}
 	cmd.Trim(true);
 	cmd.Trim(false);
-	if (cmd != "SAY")
+	if (cmd != wxT("SAY"))
 	{
 		params.Trim(true);
 		params.Trim(false);
 	}
 
-	//Debug(context, wxString() << "Command: \"" << cmd << "\", Params: \"" << params << (char)OriginalModifier << "\"");
+	//Debug(context, wxString() << wxT("Command: \"") << cmd << wxT("\", Params: \"") << params << (wxChar)OriginalModifier << wxT("\""));
 
 	if (m_event_handler->OnClientPreprocess(context, cmd, params))
 	{
 		return;
 	}
 
-	if (cmd == "SAY")
+	if (cmd == wxT("SAY"))
 	{
 		SendMessage(context, params);
 	}
-	else if (cmd == "MSG")
+	else if (cmd == wxT("MSG"))
 	{
 		wxString nick, msg;
 		SplitHeadTail(params, nick, msg);
 		if (nick.Length() == 0)
 		{
-			m_event_handler->OnClientInformation(context, "/msg: insufficient parameters");
+			m_event_handler->OnClientInformation(context, wxT("/msg: insufficient parameters"));
 		}
 		else if (msg.Length() > 0)
 		{
 			SendMessage(nick, msg);
 		}
 	}
-	/*else if (cmd == "CONNECT")
+	/*else if (cmd == wxT("CONNECT"))
 	{
 		if (!CheckNick()) return;
-		wxArrayString paramarray = SplitString(params, " ");
+		wxArrayString paramarray = SplitString(params, wxT(" "));
 		if (paramarray.Count() != 2)
 		{
-			Output("*** You need to specify a destination hostname/ip and port");
-			Output(wxString("DEBUG: ") << "You specified " << paramarray.Count() << " params");
+			Output(wxT("*** You need to specify a destination hostname/ip and port"));
+			Output(wxString(wxT("DEBUG: ")) << wxT("You specified ") << paramarray.Count() << wxT(" params"));
 			return;
 		}
 		wxIPV4address addr;
 		addr.Hostname(paramarray.Item(0));
 		addr.Service(paramarray.Item(1));
 		wxString output;
-		output << "*** Connecting to " << addr.Hostname() << ":" << addr.Service() << "...";
+		output << wxT("*** Connecting to ") << addr.Hostname() << wxT(":") << addr.Service() << wxT("...");
 		Output(output);
 		connecting = true;
 		socket->Connect(addr, false);
 	}
-	else if (cmd == "DISCONNECT")
+	else if (cmd == wxT("DISCONNECT"))
 	{
 		socket->Close();
 	}
-	else if (cmd == "NICK")
+	else if (cmd == wxT("NICK"))
 	{
 		if (params.Length() == 0)
 		{
-			Output("*** Your nickname is " + nickname);
+			Output(wxT("*** Your nickname is ") + nickname);
 		}
 		else
 		{
 			if (socket->IsConnected())
 			{
-				SendData("*** " + nickname + " is now known as " + params);
+				SendData(wxT("*** ") + nickname + wxT(" is now known as ") + params);
 			}
 			else
 			{
-				Output("*** Your nickname is now " + params);
+				Output(wxT("*** Your nickname is now ") + params);
 			}
 			nickname = params;
 		}
 	}*/
-	else if (cmd == "HELP")
+	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, "Supported commands: SAY HELP MSG");
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: SAY HELP MSG"));
 	}
-	else if (cmd == "LIZARD")
+	else if (cmd == wxT("LIZARD"))
 	{
-		m_event_handler->OnClientInformation(context, "Support for Lizard technology is not available at this time");
+		m_event_handler->OnClientInformation(context, wxT("Support for Lizard technology is not available at this time"));
 	}
 	else
 	{
-		m_event_handler->OnClientWarning(context, "Unrecognized command: " + cmd);
+		m_event_handler->OnClientWarning(context, wxT("Unrecognized command: ") + cmd);
 	}
 
 }

@@ -5,7 +5,7 @@
 
 class InputControlColourPopup;
 
-static const wxString CtrlEnterPrefix = "/say ";
+static const wxString CtrlEnterPrefix = wxT("/say ");
 
 class InputControl : public wxTextCtrl
 {

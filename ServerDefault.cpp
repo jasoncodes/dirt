@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.10 2003-02-15 11:50:38 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -42,28 +42,28 @@ ServerDefault::~ServerDefault()
 
 void ServerDefault::Start()
 {
-	wxCHECK_RET(!IsRunning(), "Cannot start server. Server is already running.");
+	wxCHECK_RET(!IsRunning(), wxT("Cannot start server. Server is already running."));
 	wxIPV4address addr;
 	addr.AnyAddress();
 	addr.Service(11626);
 	if (m_sckListen->Listen(addr))
 	{
 		m_sckListen->GetLocal(addr);
-		m_event_handler->OnServerInformation("Server started on " + GetIPV4String(addr));
+		m_event_handler->OnServerInformation(wxT("Server started on ") + GetIPV4String(addr));
 		m_event_handler->OnServerStateChange();
 	}
 	else
 	{
-		m_event_handler->OnServerWarning("Error starting server. Maybe a server is already running on " + GetIPV4String(addr));
+		m_event_handler->OnServerWarning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr));
 	}
 }
 
 void ServerDefault::Stop()
 {
-	wxCHECK_RET(IsRunning(), "Cannot stop server. Server not running.");
+	wxCHECK_RET(IsRunning(), wxT("Cannot stop server. Server not running."));
 	m_sckListen->Close();
 	m_connections.Empty();
-	m_event_handler->OnServerInformation("Server stopped");
+	m_event_handler->OnServerInformation(wxT("Server stopped"));
 	m_event_handler->OnServerStateChange();
 }
 
@@ -88,7 +88,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 		}
 		else
 		{
-			wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+			wxFAIL_MSG(wxT("Unexpected message in ServerDefault::OnSocket"));
 		}
 
 	}
@@ -104,7 +104,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				{
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
-					m_event_handler->OnServerInformation("Incoming connection from " + ::GetIPV4String(addr));
+					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + ::GetIPV4String(addr));
 				}
 				break;
 
@@ -120,25 +120,25 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					size_t new_count = m_connections.GetCount();
 					wxASSERT(old_count - 1 == new_count);
 					delete conn;
-					m_event_handler->OnServerInformation("Connection to " + ::GetIPV4String(addr) + " lost");
+					m_event_handler->OnServerInformation(wxT("Connection to ") + ::GetIPV4String(addr) + wxT(" lost"));
 					m_event_handler->OnServerConnectionChange();
 				}
 				break;
 
 			case CRYPTSOCKET_INPUT:
 				{
-					m_event_handler->OnServerInformation("Input on socket");
+					m_event_handler->OnServerInformation(wxT("Input on socket"));
 				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
 				{
-					m_event_handler->OnServerInformation("Ready to output");
+					m_event_handler->OnServerInformation(wxT("Ready to output"));
 				}
 				break;
 
 			default:
-				wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+				wxFAIL_MSG(wxT("Unexpected message in ServerDefault::OnSocket"));
 
 		}
 

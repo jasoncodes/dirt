@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.9 2003-02-14 06:21:55 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.10 2003-02-16 05:09:03 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -34,7 +34,7 @@ END_EVENT_TABLE()
 #define for if(true)for
 
 Splash::Splash()
-	: wxFrame(NULL, -1, "Dirt Secure Chat " + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
+	: wxFrame(NULL, -1, AppTitle(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL)
 {
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -46,8 +46,8 @@ Splash::Splash()
 	wxButton *btns[2];
 	const int btn_count = 2;
 
-	btns[0] = new wxButton(this, ID_CLIENT, "&Client");
-	btns[1] = new wxButton(this, ID_SERVER, "&Server");
+	btns[0] = new wxButton(this, ID_CLIENT, wxT("&Client"));
+	btns[1] = new wxButton(this, ID_SERVER, wxT("&Server"));
 
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);

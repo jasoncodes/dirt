@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.6 2003-02-14 06:04:59 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.7 2003-02-16 05:09:02 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -62,7 +62,7 @@ class InputControlColourPopup : public wxMiniFrame
 {
 
 public:
-	InputControlColourPopup(InputControl* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = "frame")
+	InputControlColourPopup(InputControl* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr)
 		: wxMiniFrame(parent, id, title, pos, size, wxCAPTION | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT, name)
 	{
 		
@@ -210,7 +210,7 @@ END_EVENT_TABLE()
 InputControl::InputControl(
 	wxWindow* parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size)
-	: wxTextCtrl(parent, id, "", pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
+	: wxTextCtrl(parent, id, wxT(""), pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
 	history(),
 	history_pos(0), m_ctrl_down(false),
 	popup(NULL)
@@ -267,7 +267,7 @@ void InputControl::ShowPopup()
 	if (popup == NULL)
 	{
 
-		popup = new InputControlColourPopup(this, -1, "Colour Index");
+		popup = new InputControlColourPopup(this, -1, wxT("Colour Index"));
 		popup->Show(true);
 
 		wxWindow *wnd = GetParent();
@@ -326,7 +326,7 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 		{
 			if (GetValue().Length() > 0)
 			{
-				SetValue("");
+				SetValue(wxT(""));
 			}
 			else
 			{
@@ -353,11 +353,11 @@ void InputControl::DisplayHistory()
 
 void InputControl::MaybeClosePopup(wxKeyEvent& event)
 {
-	if (event.GetKeyCode() == ',')
+	if (event.GetKeyCode() == (int)',')
 	{
 		// comma
 	}
-	else if (event.GetKeyCode() >= '0' && event.GetKeyCode() <= '9')
+	else if (event.GetKeyCode() >= (int)'0' && event.GetKeyCode() <= (int)'9')
 	{
 		// normal numbers
 	}
@@ -498,7 +498,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 
 void InputControl::OnChange(wxCommandEvent &event)
 {
-	if (GetValue().Find("\n") > -1)
+	if (GetValue().Find(wxT("\n")) > -1)
 	{
 		ProcessInput();
 	}
@@ -519,16 +519,16 @@ void InputControl::ProcessInput()
 {
 
 	wxString text(GetValue());
-	SetValue("");
+	SetValue(wxT(""));
 
-	text.Replace("\r\n", "\n");
-	text.Replace("\r", "\n");
+	text.Replace(wxT("\r\n"), wxT("\n"));
+	text.Replace(wxT("\r"), wxT("\n"));
 
-	while ((text.Length() > 0) && (text[0] == '\n'))
+	while ((text.Length() > 0) && (text[0] == wxT('\n')))
 	{
 		text.Remove(0,1);
 	}
-	while ((text.Length() > 0) && (text.Last() == '\n'))
+	while ((text.Length() > 0) && (text.Last() == wxT('\n')))
 	{
 		text.Remove(text.Length()-1,1);
 	}
@@ -537,7 +537,7 @@ void InputControl::ProcessInput()
 	{
 
 		int i;
-		while ((i = text.Find("\n")) > -1)
+		while ((i = text.Find(wxT("\n"))) > -1)
 		{
 			RaiseEvent(text.Mid(0, i));
 			text = text.Mid(i+1);

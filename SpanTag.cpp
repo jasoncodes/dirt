@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SpanTag.cpp,v 1.4 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: SpanTag.cpp,v 1.5 2003-02-16 05:09:03 jason Exp $)
 
 #include "SpanTag.h"
 
@@ -55,7 +55,7 @@ public:
 
 				wxASSERT_MSG(
 					cell->GetParent() == GetParent(),
-					"Children cells within <span> not supported");
+					wxT("Children cells within <span> not supported"));
 
 				dc.DrawRectangle(
 					x + cell->GetPosX(), y + cell->GetPosY(),
@@ -105,7 +105,7 @@ SpanTagHandler::~SpanTagHandler()
 
 wxString SpanTagHandler::GetSupportedTags()
 {
-	return "SPAN";
+	return wxT("SPAN");
 }
 
 // the following is essentially wxTag::GetParamAsColour()
@@ -155,7 +155,7 @@ bool SpanTagHandler::ParseColour(const wxString& str, wxColour *clr)
 wxString SpanTagHandler::ExtractStyle(const wxString &style_tag, const wxString &style)
 {
 
-	wxStringTokenizer pairs(style_tag, ";");
+	wxStringTokenizer pairs(style_tag, wxT(";"));
 
 	while (pairs.HasMoreTokens())
 	{
@@ -164,11 +164,11 @@ wxString SpanTagHandler::ExtractStyle(const wxString &style_tag, const wxString 
 
 		wxString name, value;
 
-		int sep_index = pair.Find(':');
+		int sep_index = pair.Find(wxT(':'));
 		if (sep_index < 0)
 		{
 			name = pair;
-			value = "";
+			value = wxT("");
 		}
 		else
 		{
@@ -192,9 +192,9 @@ wxString SpanTagHandler::ExtractStyle(const wxString &style_tag, const wxString 
 bool SpanTagHandler::HandleTag(const wxHtmlTag& tag)
 {
 
-	wxString style_tag = tag.GetParam("STYLE");
+	wxString style_tag = tag.GetParam(wxT("STYLE"));
 
-	wxString bgcolor = ExtractStyle(style_tag, "BACKGROUND");
+	wxString bgcolor = ExtractStyle(style_tag, wxT("BACKGROUND"));
 
 	wxHtmlContainerCell *c;
 	c = m_WParser->GetContainer();

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.9 2003-02-15 03:39:34 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.10 2003-02-16 05:09:02 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -27,15 +27,15 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 	tmrTest = new wxTimer(this, ID_TIMER_TEST);
 	//tmrTest->Start(5000);
 
-	Debug(wxEmptyString, "ClientDefault Ready");
+	Debug(wxEmptyString, wxT("ClientDefault Ready"));
 
 	wxArrayString users(true);
-	users.Add("First");
-	users.Add("Third");
-	users.Add("Second");
+	users.Add(wxT("First"));
+	users.Add(wxT("Third"));
+	users.Add(wxT("Second"));
 	m_event_handler->OnClientUserList(users);
-	m_event_handler->OnClientUserJoin("Fourth", "fourth@dev.null");
-	m_event_handler->OnClientUserPart("Fourth", "fourth@dev.null", "Quit message goes here");
+	m_event_handler->OnClientUserJoin(wxT("Fourth"), wxT("fourth@dev.null"));
+	m_event_handler->OnClientUserPart(wxT("Fourth"), wxT("fourth@dev.null"), wxT("Quit message goes here"));
 
 }
 
@@ -49,22 +49,22 @@ void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 	bool is_private = (nick.Length() > 0);
 	m_event_handler->OnClientMessageOut(nick, message);
 	m_event_handler->OnClientMessageIn(
-		is_private?nick:"EVERYONE", 
-		wxString() << "You sent me \"" << message << (char)OriginalModifier << "\"",
+		is_private?nick:wxT("EVERYONE"), 
+		wxString() << wxT("You sent me \"") << message << (wxChar)OriginalModifier << wxT("\""),
 		is_private);
 }
 
 wxString ClientDefault::GetNickname()
 {
-	return "LOCALHOST";
+	return wxT("LOCALHOST");
 }
 
 void ClientDefault::OnTestTimer(wxTimerEvent &event)
 {
-	m_event_handler->OnClientDebug(wxEmptyString, "This is a test timer");
+	m_event_handler->OnClientDebug(wxEmptyString, wxT("This is a test timer"));
 }
 
 void ClientDefault::Connect(const wxString &url)
 {
-	m_event_handler->OnClientDebug(wxEmptyString, "Connect not implemented yet");
+	m_event_handler->OnClientDebug(wxEmptyString, wxT("Connect not implemented yet"));
 }

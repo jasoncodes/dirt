@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.10 2003-02-14 04:57:06 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
@@ -75,7 +75,7 @@ int NickListControl::GetSelectedIndex()
 wxString NickListControl::GetSelectedNick()
 {
 	int index = GetSelectedIndex();
-	return (index > -1) ? GetNick(index) : "";
+	return (index > -1) ? GetNick(index) : wxT("");
 }
 
 int NickListControl::GetCount()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.5 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.6 2003-02-16 05:09:03 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -218,10 +218,10 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			do
 			{
 				tmp = tmp.Left(tmp.Length() - 1);
-				dc.GetTextExtent(tmp + "...", &x, &y);
+				dc.GetTextExtent(tmp + wxT("..."), &x, &y);
 			}
 			while (x >= rct.GetWidth());
-			tmp += "...";
+			tmp += wxT("...");
 		}
 
 		if (button.highlight)
@@ -334,7 +334,7 @@ wxIcon SwitchBar::PrepareIcon(const wxIcon &icon)
 	wxIcon new_icon = icon;
 	if (new_icon.Ok() && (new_icon.GetWidth() != 16 || new_icon.GetHeight() != 16))
 	{
-		wxFAIL_MSG("Icon must be 16x16");
+		wxFAIL_MSG(wxT("Icon must be 16x16"));
 	}
 	return new_icon;
 }
@@ -445,4 +445,3 @@ int SwitchBar::GetSelectedIndex()
 {
 	return m_selected;
 }
-

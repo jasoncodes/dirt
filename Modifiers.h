@@ -5,30 +5,30 @@ struct ModifierMapping
 {
 	bool ctrl, alt, shift;
 	int key_code;
-	char modifier_char;
-	char *alternate_modifier;
+	wxChar modifier_char;
+	wxChar *alternate_modifier;
 	bool is_colour_popup;
 };
 
 enum Modifiers
 {
 //  name                hex         oct dec binary
-	BoldModifier      = '\x002', // 002   2 00010
-	ColourModifier    = '\x003', // 003   3 00011
-	OriginalModifier  = '\x00f', // 017  15 01111
-	ReverseModifier   = '\x016', // 026  22 10110
-	UnderlineModifier = '\x01f'  // 037  31 11111
+	BoldModifier      = wxT('\x002'), // 002   2 00010
+	ColourModifier    = wxT('\x003'), // 003   3 00011
+	OriginalModifier  = wxT('\x00f'), // 017  15 01111
+	ReverseModifier   = wxT('\x016'), // 026  22 10110
+	UnderlineModifier = wxT('\x01f')  // 037  31 11111
 };
 
 const ModifierMapping modifier_mappings[] =
 {
 	// ctrl  alt    shift  key  modifier_char      alt      ctrl-k
-	{ true,  false, false, 'B', BoldModifier,      "\244b", false },
-	{ true,  false, false, 'O', OriginalModifier,  "\244c", false },
-	{ true,  false, false, 'R', ReverseModifier,   "\244r", false },
-	{ true,  false, false, 'U', UnderlineModifier, "\244u", false },
-//	{ true,  false, false, 'I', ItalicModifier,    "\244i", false },
-	{ true,  false, false, 'K', ColourModifier,    "\244",  true  }
+	{ true,  false, false, 'B', BoldModifier,      wxT("\244b"), false },
+	{ true,  false, false, 'O', OriginalModifier,  wxT("\244c"), false },
+	{ true,  false, false, 'R', ReverseModifier,   wxT("\244r"), false },
+	{ true,  false, false, 'U', UnderlineModifier, wxT("\244u"), false },
+//	{ true,  false, false, 'I', ItalicModifier,    wxT("\244i"), false },
+	{ true,  false, false, 'K', ColourModifier,    wxT("\244"),  true  }
 };
 
 const size_t modifier_count = ((sizeof modifier_mappings) / (sizeof modifier_mappings[0]));
@@ -85,7 +85,7 @@ const wxColour colour_backgrounds[] =
 
 const size_t colour_count = ((sizeof colours) / (sizeof colours[0]));
 
-static inline int GetModifierIndex(char c)
+static inline int GetModifierIndex(wxChar c)
 {
 	for (int i = 0; i < modifier_count; ++i)
 	{
@@ -97,7 +97,7 @@ static inline int GetModifierIndex(char c)
 	return -1;
 }
 
-static inline bool IsModifier(char c)
+static inline bool IsModifier(wxChar c)
 {
 	return (GetModifierIndex(c) > -1);
 }
