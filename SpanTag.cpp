@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SpanTag.cpp,v 1.8 2003-06-12 10:42:47 jason Exp $)
+RCS_ID($Id: SpanTag.cpp,v 1.9 2003-06-30 03:59:08 jason Exp $)
 
 #include "SpanTag.h"
 
@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-#if wxCHECK_VERSION(2,4,1)
+#if wxCHECK_VERSION(2,4,2)
 	virtual void Draw(wxDC& dc, int x, int y, int WXUNUSED(view_y1), int WXUNUSED(view_y2), wxHtmlRenderingInfo& WXUNUSED(info))
 #else
 	virtual void Draw(wxDC& dc, int x, int y, int WXUNUSED(view_y1), int WXUNUSED(view_y2))
@@ -35,7 +35,7 @@ public:
 		Draw(dc, x, y);
 	}
 
-#if wxCHECK_VERSION(2,4,1)
+#if wxCHECK_VERSION(2,4,2)
 	virtual void DrawInvisible(wxDC& dc, int x, int y, wxHtmlRenderingInfo& WXUNUSED(info))
 #else
 	virtual void DrawInvisible(wxDC& dc, int x, int y)
