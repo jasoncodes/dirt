@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.20 2003-02-22 10:25:45 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.21 2003-02-26 05:48:26 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -122,50 +122,54 @@ static const wxString EncodedPrefix = wxT("Encoded:");
 
 static wxString DecodePassword(const wxString &value, bool decrypt)
 {
+
 	if (!decrypt || value.Length() == 0 || !LeftEq(value, EncodedPrefix))
 	{
 		return value;
 	}
-	else
+
+	ByteBuffer data = Crypt::Base64Decode(value.Mid(EncodedPrefix.Length()));
+	
+	if (data.Length() < 40)
 	{
-		ByteBuffer data = Crypt::Base64Decode(value.Mid(EncodedPrefix.Length()));
-		if (data.Length() < 40)
-		{
-			return wxEmptyString;
-		}
-		if (((data.Length() - 40) % 16) != 0)
-		{
-			return wxEmptyString;
-		}
-		const byte *ptr = data.Lock();
-		ByteBuffer crc32(ptr, 4);
-		ByteBuffer len_buff(ptr+4, 4);
-		size_t len = BytesToUint32(len_buff.Lock(), len_buff.Length());
-		len_buff.Unlock();
-		ByteBuffer AESKey(ptr+8, 32);
-		ByteBuffer enc(ptr+40, data.Length()-40);
-		data.Unlock();
-		Crypt crypt;
-		try
-		{
-			crypt.SetAESDecryptKey(AESKey);
-			data = crypt.AESDecrypt(enc);
-		}
-		catch (...)
-		{
-			return wxEmptyString;
-		}
-		ByteBuffer dec(data.Lock(), len);
-		data.Unlock();
-		if (crc32 == Crypt::CRC32(AESKey + dec))
-		{
-			return dec;
-		}
-		else
-		{
-			return wxEmptyString;
-		}
+		return wxEmptyString;
 	}
+	
+	if (((data.Length() - 40) % 16) != 0)
+	{
+		return wxEmptyString;
+	}
+
+	const byte *ptr = data.Lock();
+	ByteBuffer crc32(ptr, 4);
+	ByteBuffer len_buff(ptr+4, 4);
+	size_t len = BytesToUint32(len_buff.Lock(), len_buff.Length());
+	len_buff.Unlock();
+	ByteBuffer AESKey(ptr+8, 32);
+	ByteBuffer enc(ptr+40, data.Length()-40);
+	data.Unlock();	
+	
+	try
+	{
+		Crypt crypt;
+		crypt.SetAESDecryptKey(AESKey);
+		data = crypt.AESDecrypt(enc);
+	}
+	catch (...)
+	{
+		return wxEmptyString;
+	}
+	
+	ByteBuffer dec(data.Lock(), len);
+	data.Unlock();
+	
+	if (crc32 == Crypt::CRC32(AESKey + dec))
+	{
+		return dec;
+	}
+
+	return wxEmptyString;
+
 }
 
 wxString ServerConfig::GetPassword(const wxString &key, bool decrypt) const
