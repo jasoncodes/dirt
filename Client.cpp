@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.78 2003-08-13 08:16:16 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.79 2003-08-20 02:01:15 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -39,7 +39,7 @@ wxString ClientConfig::GetNickname() const
 bool ClientConfig::SetNickname(const wxString &nickname)
 {
 	return
-		Server::IsValidNickname(nickname) &&
+		(!nickname.Length() || Server::IsValidNickname(nickname)) &&
 		m_config->Write(wxT("/Client/Nickname"), nickname);
 }
 
