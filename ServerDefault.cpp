@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.1 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.2 2003-02-14 04:39:57 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -16,7 +16,7 @@ END_EVENT_TABLE()
 ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 	: Server(event_handler)
 {
-	m_event_handler->OnServerLog("ServerDefault Ready");
+	m_event_handler->OnServerInformation("ServerDefault Ready");
 }
 
 ServerDefault::~ServerDefault()

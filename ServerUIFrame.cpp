@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.3 2003-02-14 04:12:59 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.4 2003-02-14 04:39:57 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -36,6 +36,7 @@ ServerUIFrame::ServerUIFrame()
 	m_txtInput = new InputControl(this, ID_INPUT);
 	m_txtLog = new wxTextCtrl(this, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
+	m_txtLog->SetFont(m_txtInput->GetFont());
 	m_server = new ServerDefault(this);
 	CenterOnScreen();
 	Show();
@@ -75,7 +76,17 @@ void ServerUIFrame::OnInput(wxCommandEvent &event)
 	m_server->ProcessInput(event.GetString());
 }
 
-void ServerUIFrame::OnServerLog(const wxString &line)
+void ServerUIFrame::OnServerInformation(const wxString &line)
+{
+	Output(line);
+}
+
+void ServerUIFrame::OnServerWarning(const wxString &line)
+{
+	Output(line);
+}
+
+void ServerUIFrame::Output(const wxString &line)
 {
 	if (m_txtLog->GetValue().Length() > 16000)
 	{
@@ -94,5 +105,23 @@ void ServerUIFrame::OnServerLog(const wxString &line)
 	else
 	{
 		m_txtLog->AppendText(tmp);
+	}
+}
+
+bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
+{
+	if (cmd == "EXIT")
+	{
+		Close();
+		return true;
+	}
+	else if (cmd == "HELP")
+	{
+		OnServerInformation("Supported commands: EXIT");
+		return false;
+	}
+	else
+	{
+		return false;
 	}
 }

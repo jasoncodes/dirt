@@ -12,8 +12,12 @@ public:
 	ServerUIFrame();
 	virtual ~ServerUIFrame();
 
+	virtual void Output(const wxString &line);
+
 protected:
-	virtual void OnServerLog(const wxString &line);
+	virtual bool OnServerPreprocess(wxString &cmd, wxString &params);
+	virtual void OnServerInformation(const wxString &line);
+	virtual void OnServerWarning(const wxString &line);
 
 protected:
 	void OnSize(wxSizeEvent &event);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.10 2003-02-13 13:16:49 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.11 2003-02-14 04:39:57 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -32,21 +32,21 @@ void Client::Debug(const wxString &context, const wxString &text)
 	m_event_handler->OnClientDebug(context, text);
 }
 
-void Client::ProcessInput(const wxString &context, const wxString &text)
+void Client::ProcessInput(const wxString &context, const wxString &input)
 {
 	
 	wxString cmd, params;
 	
-	if (text[0] == '/')
+	if (input[0] == '/')
 	{
-		SplitHeadTail(text, cmd, params);
+		SplitHeadTail(input, cmd, params);
 		cmd = cmd.Mid(1);
 		cmd.MakeUpper();
 	}
 	else
 	{
 		cmd = "SAY";
-		params = text;
+		params = input;
 	}
 	cmd.Trim(true);
 	cmd.Trim(false);

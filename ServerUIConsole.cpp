@@ -3,12 +3,12 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.1 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.3 2003-02-14 04:39:57 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
-#include "Util.h"
+#include "util.h"
 
 ServerUIConsole::ServerUIConsole()
 {
@@ -25,7 +25,12 @@ void ServerUIConsole::Output(const wxString &line)
 	Console::Output(GetLongTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
 }
 
-void ServerUIConsole::OnServerLog(const wxString &line)
+void ServerUIConsole::OnServerInformation(const wxString &line)
+{
+	Output(line);
+}
+
+void ServerUIConsole::OnServerWarning(const wxString &line)
 {
 	Output(line);
 }
@@ -37,5 +42,23 @@ void ServerUIConsole::OnInput(const wxString &line)
 
 void ServerUIConsole::OnEOF()
 {
-	ExitMainLoop();
+	m_server->ProcessInput("/exit");
+}
+
+bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &params)
+{
+	if (cmd == "EXIT")
+	{
+		ExitMainLoop();
+		return true;
+	}
+	else if (cmd == "HELP")
+	{
+		OnServerInformation("Supported commands: EXIT");
+		return false;
+	}
+	else
+	{
+		return false;
+	}
 }
