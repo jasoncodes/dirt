@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.46 2003-04-03 04:48:02 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.47 2003-04-03 04:50:24 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -384,7 +384,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					return;
 				}
 
-				wxLongLong_t interval_msecs = interval_secs * 1000;
+				wxLongLong_t interval_msecs = (wxLongLong_t)(interval_secs * 1000);
 
 				wxString commands = ht.tail;
 
