@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.12 2003-02-16 07:21:16 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.13 2003-02-16 11:01:17 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -21,18 +21,18 @@ ServerDefaultConnection::~ServerDefaultConnection()
 
 enum
 {
-	ID_SOCK = 1
+	ID_SOCKET = 1
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
-	EVT_CRYPTSOCKET(ID_SOCK, ServerDefault::OnSocket)
+	EVT_CRYPTSOCKET(ID_SOCKET, ServerDefault::OnSocket)
 END_EVENT_TABLE()
 
 ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 	: Server(event_handler)
 {
 	m_sckListen = new CryptSocketServer;
-	m_sckListen->SetEventHandler(this, ID_SOCK);
+	m_sckListen->SetEventHandler(this, ID_SOCKET);
 }
 
 ServerDefault::~ServerDefault()
@@ -81,7 +81,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 		if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION)
 		{
 			ServerDefaultConnection *conn = new ServerDefaultConnection;
-			conn->m_sck = m_sckListen->Accept(this, ID_SOCK, conn);
+			conn->m_sck = m_sckListen->Accept(this, ID_SOCKET, conn);
 			m_connections.Add(conn);
 			m_event_handler->OnServerConnectionChange();
 		}
@@ -127,13 +127,15 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_INPUT:
 				{
-					m_event_handler->OnServerInformation(wxT("Input on socket"));
+					m_event_handler->OnServerInformation(wxT("Input on socket: ") + event.GetData());
+					conn->m_sck->Send(event.GetData());
 				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
 				{
 					m_event_handler->OnServerInformation(wxT("Ready to output"));
+					conn->m_sck->Send(wxString(wxT("Welcome!")));
 				}
 				break;
 

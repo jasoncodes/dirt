@@ -35,5 +35,3 @@
 * win32: click mdi minimize button on maximized mdi child, child doesnt disappear
 
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
-
-* Should catch any that are raised by Crypt.cpp in crypt socket and call CRYPTSOCKET_CHECK_RET()
