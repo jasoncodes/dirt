@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.3 2003-05-14 07:53:14 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.4 2003-05-14 16:25:28 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -177,7 +177,8 @@ wxString Config::GetActualLogDir() const
 			{
 				wxFileName fn(GetLogDirPath(), wxEmptyString);
 				wxFileName cfg(GetConfigFilename());
-				fn.MakeAbsolute(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+				fn.Normalize(wxPATH_NORM_DOTS|wxPATH_NORM_ABSOLUTE|wxPATH_NORM_TILDE,
+					cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 				return fn.GetFullPath();
 			}
 
