@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.16 2003-05-28 11:54:11 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.17 2003-07-08 05:46:15 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -553,7 +553,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 			
 			wxArrayString possibles;
 			int current_index = -1;
-			for (size_t i = 0; i < m_tab_completion_list->GetCount(); ++i)
+			for (size_t i = 0; m_tab_completion_list && i < m_tab_completion_list->GetCount(); ++i)
 			{
 				if (LeftEq(m_tab_completion_list->Item(i).Lower(), m_tab_completion_prefix.Lower()))
 				{
