@@ -40,13 +40,25 @@ class DNSEvent : public wxEvent
 
 public:
 	DNSEvent(int id, DNS *src, bool success, const wxString &hostname, const wxIPV4address &addr, wxUint32 ip)
-		: wxEvent(id, wxEVT_DNS), m_success(success), m_hostname(hostname), m_addr(addr), m_ip(ip)
+		: wxEvent(id, wxEVT_DNS), m_success(success), m_hostname(hostname), m_addr((wxIPV4address*)addr.Clone()), m_ip(ip)
 	{
 		SetEventObject(src);
 	}
 
+	DNSEvent(const DNSEvent &evt)
+		: wxEvent(evt.GetId(), wxEVT_DNS)
+	{
+		SetEventObject(evt.GetDNS());
+		m_success = evt.m_success;
+		m_hostname = evt.m_hostname;
+		m_addr = (wxIPV4address*)evt.m_addr->Clone();
+		m_ip = evt.m_ip;
+		m_userdata = evt.m_userdata;
+	}
+
 	virtual ~DNSEvent()
 	{
+		delete m_addr;
 	}
 
 	virtual DNS *GetDNS() const
@@ -66,7 +78,7 @@ public:
 
 	virtual const wxIPV4address& GetAddress() const
 	{
-		return m_addr;
+		return *m_addr;
 	}
 
 	virtual wxUint32 GetIP() const
@@ -82,7 +94,7 @@ public:
 protected:
 	bool m_success;
 	wxString m_hostname;
-	wxIPV4address m_addr;
+	wxIPV4address *m_addr;
 	wxUint32 m_ip;
 	void *m_userdata;
 
