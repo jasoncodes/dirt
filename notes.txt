@@ -1,3 +1,6 @@
+* if other side of file transfer is on same subnet as any of local subnets then
+  set block size to 8192 KB else 2048 KB
+
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
 	make sure recursive safe (int m_depth;)
@@ -58,6 +61,8 @@
 			ReInit();
 		}
 		m_mutex->Unlock();
+	* some notification system to call PopulateFilteredWords() when config
+	  file is changed remotely.
 
 * SOCKS 4/5 BIND support for DCC Listen
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.58 2003-06-27 00:19:18 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.59 2003-07-08 05:57:20 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -537,11 +537,13 @@ static void SetItemText(wxListCtrl *ctl, int index, int col, wxString value)
 
 void ServerUIFrame::UpdateConnectionList()
 {
+	bool null_right_click_conn = (m_right_click_conn != NULL);
 	if (m_server)
 	{
 		for (int i = 0; i < m_lstConnections->GetItemCount(); ++i)
 		{
 			const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);	
+			null_right_click_conn &= (conn != m_right_click_conn);
 			SetItemText(m_lstConnections, i, 0, conn->GetNickname());
 			SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
 			SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
@@ -552,6 +554,10 @@ void ServerUIFrame::UpdateConnectionList()
 			SetItemText(m_lstConnections, i, 7, conn->GetUserAgent());
 			SetItemText(m_lstConnections, i, 8, conn->GetJoinTimeString());
 		}
+	}
+	if (null_right_click_conn)
+	{
+		m_right_click_conn = NULL;
 	}
 }
 
@@ -584,16 +590,23 @@ void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
 	wxTextEntryDialog dialog(this, wxT("Kick message for ") + m_right_click_conn->GetId() + wxT(":"), wxT("Dirt Secure Chat"));
 	if (dialog.ShowModal() == wxID_OK)
 	{
-		wxString msg = dialog.GetValue();
-		if (msg.Length())
+		if (m_right_click_conn)
 		{
-			msg = wxT("Kicked: ") + msg;
+			wxString msg = dialog.GetValue();
+			if (msg.Length())
+			{
+				msg = wxT("Kicked: ") + msg;
+			}
+			else
+			{
+				msg = wxT("Kicked");
+			}
+			m_right_click_conn->Terminate(msg);
 		}
 		else
 		{
-			msg = wxT("Kicked");
+			wxMessageBox(wxT("The user no longer exists"), wxT("Error"), wxICON_ERROR);
 		}
-		m_right_click_conn->Terminate(msg);
 	}
 }
 
