@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.64 2004-03-13 04:02:59 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.65 2004-03-14 09:26:10 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -940,6 +940,9 @@ wxHtmlCell *LogControl::FindCell(const wxPoint &start_pos)
 
 static wxHtmlCell *FindNext(wxHtmlCell *cell)
 {
+
+	if (!cell) return NULL;
+
 	if (!cell->IsTerminalCell())
 	{
 		wxHtmlContainerCell *container = (wxHtmlContainerCell*)cell;
@@ -1404,12 +1407,18 @@ void LogControl::Clear()
 	m_find_pos2 = m_Cell;
 	m_find_show_sel = false;
 	m_first_line = true;
+	if (m_find_dlg)
+	{
+		m_find_dlg->Close(true);
+		delete m_find_dlg;
+		m_find_dlg = NULL;
+	}
 	delete m_Cell;
 	wxHtmlWinParser parser(m_dummy_html_wnd);
-    wxClientDC *dc = new wxClientDC(this);
-    dc->SetMapMode(wxMM_TEXT);
-    SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
-    parser.SetDC(dc);
+	wxClientDC *dc = new wxClientDC(this);
+	dc->SetMapMode(wxMM_TEXT);
+	SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
+	parser.SetDC(dc);
 	m_Cell = (wxHtmlContainerCell*)parser.Parse(wxT(""));
 	delete dc;
 	CreateLayout();

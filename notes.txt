@@ -94,9 +94,6 @@ ip field
 
 a warning if a large ctrl-v is about to happen?
 
-find in /logs, click on another log (without closing find dialog) hit find again
-watch death
-
 Some sorta ServerIRC server layer (as well as the existing ServerDefault and
 to be made ServerPeer2Peer) to faciliate using an existing IRC server for
 secure chat.. probably make it a backend for the p2p server
