@@ -1,3 +1,7 @@
+* change all dirt.ini code to use utf-8 for file storage
+
+* add checks to /bind to not allow invalid keynames
+
 * highlight part of url and mouse pointer should reset back to hand after release
 
 * win32: scrolling, keeping any menu open, resizing/moving window, etc
