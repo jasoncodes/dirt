@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.68 2004-02-14 02:56:20 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.69 2004-03-15 07:16:05 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -38,9 +38,9 @@ ServerConnection::~ServerConnection()
 ServerConnection::operator wxString() const
 {
 	wxString retval;
-	retval << (GetNickname().Length()?GetNickname():wxT("N/A"));
-	retval << wxT("@") << (GetRemoteHostAndPort().Length()?GetRemoteHostAndPort():wxT("N/A"));
-	retval << wxT(" (") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
+	retval << (GetNickname().Length()?GetNickname():wxString(wxT("N/A")));
+	retval << wxT("@") << (GetRemoteHostAndPort().Length()?GetRemoteHostAndPort():wxString(wxT("N/A")));
+	retval << wxT(" (") << (GetUserDetails().Length()?GetUserDetails():wxString(wxT("N/A")));
 	retval << wxT(") (");
 	if (IsAdmin())
 	{
@@ -64,7 +64,7 @@ ServerConnection::operator wxString() const
 wxString ServerConnection::GetId() const
 {
 	return wxString()
-		<< ((GetNickname().Length()) ? GetNickname() : wxT("*"))
+		<< ((GetNickname().Length()) ? GetNickname() : wxString(wxT("*")))
 		<< wxT("@") + GetRemoteHostAndPort();
 }
 
