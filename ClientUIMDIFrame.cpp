@@ -164,9 +164,19 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		GetContext(context)->LogControlTest();
 		return true;
 	}
+	else if (cmd == "QUERY")
+	{
+		HeadTail ht = SplitHeadTail(params);
+		if (ht.head.Length() > 0)
+		{
+			FocusCanvas(GetContext(ht.head));
+		}
+		cmd = "MSG";
+		return false;
+	}
 	else if (cmd == "HELP")
 	{
-		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST");
+		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST QUERY");
 		return false;
 	}
 	else
@@ -192,7 +202,7 @@ void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxStri
 
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
-	AddLine(nick, "<" + m_client->GetNickname() + "> " + text);
+	AddLine(nick, "<" + m_client->GetNickname() + "> " + text, *wxBLACK, true, true);
 }
 
 void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)

@@ -62,6 +62,13 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail)
 	}
 }
 
+HeadTail SplitHeadTail(const wxString &text)
+{
+	HeadTail result;
+	SplitHeadTail(text, result.head, result.tail);
+	return result;
+}
+
 wxString Timestamp()
 {
 	return wxDateTime::Now().Format("[%H:%M] ");

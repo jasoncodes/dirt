@@ -23,3 +23,5 @@
 * dcc send/recv dialog
 
 * highlight/beep when app isn't focused (ClientUIMDIFrame::AddLine)
+
+* set window pos to bottom of screen, full width

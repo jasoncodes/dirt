@@ -56,13 +56,23 @@ void Client::ProcessInput(const wxString &context, const wxString &text)
 
 	if (cmd == "SAY")
 	{
-		SendMessage(context, params);
+		if (params.Length() > 0)
+		{
+			SendMessage(context, params);
+		}
 	}
 	else if (cmd == "MSG")
 	{
 		wxString nick, msg;
 		SplitHeadTail(params, nick, msg);
-		SendMessage(nick, msg);
+		if (nick.Length() == 0)
+		{
+			m_event_handler->OnClientInformation(context, "/msg: insufficient parameters");
+		}
+		else if (msg.Length() > 0)
+		{
+			SendMessage(nick, msg);
+		}
 	}
 	/*else if (cmd == "CONNECT")
 	{

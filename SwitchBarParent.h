@@ -19,6 +19,8 @@ public:
 
 	inline SwitchBar* GetSwitchBar() { return m_switchbar; }
 
+	void FocusCanvas(SwitchBarCanvas *canvas);
+
 protected:
 	void OnSize(wxSizeEvent& event);
 	void OnClose(wxCloseEvent& event);
