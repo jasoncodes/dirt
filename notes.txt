@@ -21,11 +21,9 @@
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
 * multiple instances using one config file will cause data loss if both write
-	* make ConfigFile extend wxConfigBase and forward to internal wx
 	* the whole of any forwarding method should have the mutex locked
 	* before forwarding anything, call EnsureLatestLoaded()
-	* if (m_mutex->GetLockDepth() == 1) call Flush() after any modification
-	  forwarding
+	* call MaybeFlush(); after any modification forwarding (but before unlock)
 	* int m_batch_depth = 0;
 	  wxDateTime m_last_file_mod;
 	  wxString m_filename;
@@ -59,7 +57,7 @@
 			}
 			m_mutex_lock--;
 		}
-	* Flush(bool);
+	* bool Flush();
 		MutexLock();
 		wxASSERT_MSG(lock_ok, wxT("Error locking config mutex"));
 		wxASSERT(IsLatestLoaded());
@@ -70,9 +68,15 @@
 		}
 		MutexUnlock();
 		return ok;
+	* bool MaybeFlush()
+		if (m_mutex->GetLockDepth() == 1)
+		{
+			return Flush();
+		}
+		return false;
 	* protected wxDateTime GetLastFileModified() const
 		return m_last_file_mod;
-	* bool BeginBatch();
+	* bool BeginBatch()
 		bool ok = MutexLock();
 		if (ok)
 		{
@@ -80,7 +84,7 @@
 		}
 		EnsureLatestLoaded();
 		return ok;
-	* void EndBatch();
+	* void EndBatch()
 		wxASSERT_MSG(m_batch_depth, wxT("EndBatch() without BeginBatch()"));
 		Flush();
 		if (m_batch_depth)
@@ -88,7 +92,7 @@
 			MutexUnlock();
 			m_batch_depth--;
 		}
-	* bool IsLatestLoaded() const;
+	* bool IsLatestLoaded() const
 		MutexLock();
 		bool latest = (m_last_file_mod == GetLastFileModified());
 		MutexUnlock();
@@ -100,7 +104,7 @@
 		m_config->SetUmask(0077);
 		m_last_file_mod = GetLastFileModified();
 		MutexUnlock();
-	* EnsureLatestLoaded
+	* void EnsureLatestLoaded()
 		MutexLock();
 		if (!IsLatestLoaded())
 		{
