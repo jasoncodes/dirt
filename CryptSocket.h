@@ -41,6 +41,7 @@ protected:
 	virtual void GenerateNewPublicKey();
 	virtual void GenerateNewBlockKey();
 	virtual void CloseWithEvent();
+	virtual void EncryptPendingSends();
 
 protected:
 	void OnSocket(wxSocketEvent &event);
@@ -56,7 +57,9 @@ protected:
 	wxSocketBase *m_sck;
 	ByteBuffer m_buffIn;
 	ByteBuffer m_buffOut;
+	ByteBufferArray m_buffOutUnencrypted;
 	bool m_bOutputOkay;
+	bool m_bInitialOutputEventSent;
 	size_t m_currentBlockKeyAgeBytes;
 	static const size_t s_maxBlockKeyAgeBytes;
 	time_t m_nextBlockKeyChangeTime;

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.10 2003-02-16 07:21:59 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.11 2003-02-16 11:11:17 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -44,6 +44,7 @@ CryptSocketBase::CryptSocketBase()
 	m_sck = NULL;
 	m_userdata = NULL;
 	m_bOutputOkay = false;
+	m_bInitialOutputEventSent = false;
 }
 
 CryptSocketBase::~CryptSocketBase()
@@ -83,7 +84,9 @@ void CryptSocketBase::InitBuffers()
 {
 	m_buffIn = ByteBuffer();
 	m_buffOut = ByteBuffer();
+	m_buffOutUnencrypted.Empty();
 	m_bOutputOkay = false;
+	m_bInitialOutputEventSent = false;
 	m_keyLocal = ByteBuffer();
 	m_keyRemote = ByteBuffer();
 }
@@ -107,18 +110,34 @@ void CryptSocketBase::SetKey(const ByteBuffer &public_key, const ByteBuffer &pri
 
 void CryptSocketBase::GenerateNewPublicKey()
 {
-	ByteBuffer public_key, private_key;
-	Crypt::RSAGenerateKey(1024, public_key, private_key);
-	SetKey(public_key, private_key);
+	try
+	{
+		ByteBuffer public_key, private_key;
+		Crypt::RSAGenerateKey(1024, public_key, private_key);
+		SetKey(public_key, private_key);
+	}
+	catch (...)
+	{
+		CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error generating public key"));
+	}
 }
 
 void CryptSocketBase::GenerateNewBlockKey()
 {
-	m_keyLocal = Crypt::Random(32);
-	m_crypt.SetAESEncryptKey(m_keyLocal);
-	AddToSendQueue(Uint16ToBytes(0) + Uint16ToBytes(mtNewBlockKey) + m_keyLocal);
-	m_currentBlockKeyAgeBytes = 0;
-	m_nextBlockKeyChangeTime = Now() + s_maxBlockKeyAgeSeconds;
+	CRYPTSOCKET_CHECK_RET(m_keyRemotePublic.Length() > 0, wxT("Cannot generate block key without remote's public key"));
+	try
+	{
+		m_keyLocal = Crypt::Random(32);
+		m_crypt.SetAESEncryptKey(m_keyLocal);
+		ByteBuffer tmp = m_crypt.RSAEncrypt(m_keyRemotePublic, m_keyLocal);
+		AddToSendQueue(Uint16ToBytes(0) + Uint16ToBytes(mtNewBlockKey) + tmp);
+		m_currentBlockKeyAgeBytes = 0;
+		m_nextBlockKeyChangeTime = Now() + s_maxBlockKeyAgeSeconds;
+	}
+	catch (...)
+	{
+		CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error generating block key"));
+	}
 }
 
 void CryptSocketBase::OnSocket(wxSocketEvent &event)
@@ -190,7 +209,15 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 		
 		CRYPTSOCKET_CHECK_RET(m_keyRemote.Length() > 0, wxT("No remote public key"));
 		ByteBuffer enc(ptr, len);
-		ByteBuffer dec = m_crypt.AESDecrypt(enc);
+		ByteBuffer dec;
+		try
+		{
+			dec = m_crypt.AESDecrypt(enc);
+		}
+		catch (...)
+		{
+			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decryping message"));
+		}
 		ByteBuffer plain(dec.Lock(), data_len);
 		dec.Unlock();
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_INPUT, this, plain);
@@ -210,15 +237,28 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 
 			case mtNewPublicKey:
 				m_keyRemotePublic = ByteBuffer(ptr, len);
+				EncryptPendingSends();
+				if (!m_bInitialOutputEventSent && m_bOutputOkay)
+				{
+					OnSocketOutput();
+				}
 				break;
 
 			case mtNewBlockKey:
-				m_keyRemote = ByteBuffer(ptr, len);
-				m_crypt.SetAESDecryptKey(m_keyRemote);
+				try
+				{
+					ByteBuffer tmp(ptr, len);
+					m_keyRemote = m_crypt.RSADecrypt(m_keyLocalPrivate, tmp);
+					m_crypt.SetAESDecryptKey(m_keyRemote);
+				}
+				catch (...)
+				{
+					CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decrypting block key"));
+				}
 				break;
 
 			default:
-				CRYPTSOCKET_CHECK_RET(true, wxT("Unknown message type"));
+				CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Unknown message type"));
 				break;
 
 		}
@@ -277,17 +317,30 @@ void CryptSocketBase::OnSocketOutput()
 
 	m_bOutputOkay = true;
 
+	if (!m_sck || !m_sck->IsConnected()) return;
+
 	MaybeSendData();
 
-	if (m_bOutputOkay)
+	if (m_bOutputOkay && m_keyRemotePublic.Length() > 0)
 	{
 		if (m_handler)
 		{
 			CryptSocketEvent evt(m_id, CRYPTSOCKET_OUTPUT, this);
 			m_handler->AddPendingEvent(evt);
+			m_bInitialOutputEventSent = true;
 		}
 	}
 
+}
+
+void CryptSocketBase::EncryptPendingSends()
+{
+	CRYPTSOCKET_CHECK_RET(m_keyRemotePublic.Length() > 0, wxT("EncryptPendingSends() called when no remote public key"));
+	for (size_t i = 0; i < m_buffOutUnencrypted.GetCount(); ++i)
+	{
+		Send(m_buffOutUnencrypted.Item(i));
+	}
+	m_buffOutUnencrypted.Clear();
 }
 
 void CryptSocketBase::MaybeSendData()
@@ -340,14 +393,29 @@ bool CryptSocketBase::IsSendBufferFull() const
 
 void CryptSocketBase::Send(const ByteBuffer &data)
 {
-	CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, wxT("No local block key"));
-	if ((m_currentBlockKeyAgeBytes >= s_maxBlockKeyAgeBytes) ||
-		(Now() >= m_nextBlockKeyChangeTime))
+	if (m_keyRemotePublic.Length() > 0)
 	{
-		GenerateNewBlockKey();
+		if ((m_keyLocal.Length() == 0) ||
+			(m_currentBlockKeyAgeBytes >= s_maxBlockKeyAgeBytes) ||
+			(Now() >= m_nextBlockKeyChangeTime))
+		{
+			GenerateNewBlockKey();
+		}
+		CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, wxT("No local block key"));
+		try
+		{
+			AddToSendQueue(Uint16ToBytes(data.Length()) + m_crypt.AESEncrypt(data));
+		}
+		catch (...)
+		{
+			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error encrypting message"));
+		}
+		m_currentBlockKeyAgeBytes += data.Length();
 	}
-	AddToSendQueue(Uint16ToBytes(data.Length()) + m_crypt.AESEncrypt(data));
-	m_currentBlockKeyAgeBytes += data.Length();
+	else
+	{
+		m_buffOutUnencrypted.Add(data);
+	}
 }
 
 void CryptSocketBase::AddToSendQueue(const ByteBuffer &data)
@@ -415,12 +483,15 @@ void CryptSocketClient::OnSocketConnection()
 {
 
 	InitBuffers();
-	if (m_keyLocalPrivate.Length() == 0 || m_keyLocalPublic.Length() == 0)
+	if (m_keyLocalPublic.Length() == 0 || m_keyLocalPrivate.Length() == 0)
 	{
-		wxCHECK2_MSG(m_keyLocalPrivate.Length() == 0 && m_keyLocalPublic.Length() == 0, {}, wxT("One of the local public or private keys is empty"));
+		wxCHECK2_MSG(m_keyLocalPublic.Length() == 0 && m_keyLocalPrivate.Length() == 0, {}, wxT("One of the local public or private keys is empty"));
 		GenerateNewPublicKey();
 	}
-	GenerateNewBlockKey();
+	else
+	{
+		SetKey(m_keyLocalPublic, m_keyLocalPrivate);
+	}
 
 	if (m_handler)
 	{
