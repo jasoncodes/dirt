@@ -6,11 +6,16 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.2 2003-03-11 05:56:24 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.3 2003-03-12 06:05:18 jason Exp $)
 
 #include "TrayIcon.h"
 
 #if defined(WIN32)
+
+// Why is it that people don't run late versions of Platform SDK? :)
+#ifndef NOTIFYICONDATA_V1_SIZE
+	#define NOTIFYICONDATA_V1_SIZE 88
+#endif
 
 class TrayIconPrivate : public wxFrame
 {
