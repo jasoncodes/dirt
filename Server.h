@@ -158,6 +158,7 @@ public:
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual ByteBuffer GetNickList();
 	virtual wxString GetServerNickname() const { return s_server_nickname; }
+	virtual void ResetPublicListUpdate(int num_secs_till_next_update) = 0;
 
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);

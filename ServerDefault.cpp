@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.30 2003-03-03 14:00:30 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.31 2003-03-04 08:54:10 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -14,6 +14,8 @@ const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
 const long ping_timer_interval = 2500;
+//const wxString dirt_pl = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
+const wxString dirt_pl = wxT("http://jason.darktech.org/cgi-bin/dirt.pl");
 
 ServerDefaultConnection::ServerDefaultConnection()
 {
@@ -42,12 +44,14 @@ void ServerDefaultConnection::Terminate(const wxString &reason)
 enum
 {
 	ID_SOCKET = 1,
-	ID_TIMER_PING
+	ID_TIMER_PING,
+	ID_HTTP
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
 	EVT_CRYPTSOCKET(ID_SOCKET, ServerDefault::OnSocket)
 	EVT_TIMER(ID_TIMER_PING, ServerDefault::OnTimerPing)
+	EVT_HTTP(ID_HTTP, ServerDefault::OnHTTP)
 END_EVENT_TABLE()
 
 ServerDefault::ServerDefault(ServerEventHandler *event_handler)
@@ -56,6 +60,7 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 	m_sckListen = new CryptSocketServer;
 	m_sckListen->SetEventHandler(this, ID_SOCKET);
 	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
+	m_http.SetEventHandler(this, ID_HTTP);
 }
 
 ServerDefault::~ServerDefault()
@@ -76,6 +81,7 @@ void ServerDefault::Start()
 		Information(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
 		m_tmrPing->Start(ping_timer_interval);
+		ResetPublicListUpdate(3);
 	}
 	else
 	{
@@ -91,6 +97,8 @@ void ServerDefault::Stop()
 	Information(wxT("Server stopped"));
 	m_event_handler->OnServerStateChange();
 	m_tmrPing->Stop();
+	m_http.Close();
+	m_list_updating = false;
 }
 
 bool ServerDefault::IsRunning()
@@ -225,6 +233,140 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 			}
 		}
 	}
+	if (m_public_server && m_next_list_update <= now && !m_list_updating)
+	{
+		m_list_updating = true;
+		m_list_connect_ok = false;
+		m_http_data.Empty();
+		m_http.Close();
+		m_http.ResetURLSettings();
+		m_http.SetPostData(GetPublicPostData(true));
+		m_http.Connect(dirt_pl);
+	}
+}
+
+void ServerDefault::HTTPError(const wxString &errmsg)
+{
+	Warning(wxT("Error updating public server list: ") + errmsg);
+	ResetPublicListUpdate(5*60);
+}
+
+void ServerDefault::HTTPSuccess()
+{
+	Warning(wxT("Public server list successfully updated"));
+	ResetPublicListUpdate(1*60);
+}
+
+void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update)
+{
+	m_public_server = m_config->GetPublicListEnabled();
+	m_next_list_update = GetMillisecondTicks() + num_secs_till_next_update*1000;
+	m_list_updating = false;
+	m_http.Close();
+	m_http_data.Empty();
+}
+
+void ServerDefault::OnHTTP(HTTPEvent &event)
+{
+
+	switch (event.GetHTTPEvent())
+	{
+
+		case HTTP_CONNECTION:
+			m_list_connect_ok = true;
+			m_http_data.Empty();
+			break;
+
+		case HTTP_LOST:
+			if (m_list_connect_ok)
+			{
+				HTTPError(wxT("Transfer incomplete"));
+			}
+			else
+			{
+				HTTPError(wxT("Cannot connect to ") + m_http.GetURL().GetHostname());
+			}
+			Information(wxT("HTTP_LOST"));
+			break;
+
+		case HTTP_COMPLETE:
+			{
+				int i = m_http_data.Lower().Find(wxT("<pre>"));
+				int j = m_http_data.Lower().Find(wxT("</pre>"));
+				if (i > -1 && j > i+5)
+				{
+					m_http_data = m_http_data.Mid(i+5, j-i-5);
+					if (LeftEq(m_http_data, wxT("OK")))
+					{
+						HTTPSuccess();
+					}
+					else
+					{
+						HTTPError(m_http_data);
+					}
+				}
+				else
+				{
+					HTTPError(wxT("Error parsing response"));
+				}
+			}
+			break;
+
+		case HTTP_HEADER:
+			{
+				const HTTPHeader &header = event.GetHeader();
+				if (header.IsFinal())
+				{
+					if (header.IsError())
+					{
+						HTTPError(header.GetStatusLine());
+					}
+				}
+			}
+			break;
+
+		case HTTP_DATA:
+			m_http_data += event.GetData();
+			break;
+
+		default:
+			HTTPError(wxT("Unexpected event type in ServerDefault::OnHTTP"));
+			break;
+
+	}
+
+}
+
+StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
+{
+    
+    StringHashMap post_data;
+    
+	post_data[wxT("name")] = m_config->GetServerName();
+    if (include_auth)
+	{
+        wxString auth;
+		auth = m_config->GetPublicListAuthentication(true);
+		if (auth.Length())
+		{
+			auth = Crypt::MD5(auth);
+		}
+		post_data[wxT("auth")] = auth;
+    }
+	post_data[wxT("iplist")] = wxT("blah:11626"); // not implemented yet
+	post_data[wxT("usercount")] = wxString() << GetConnectionCount();
+	post_data[wxT("maxusers")] = wxString() << 999; // not implemented yet
+	post_data[wxT("avgping")] = wxString() << 999; // not implemented yet
+	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
+	post_data[wxT("peakusers")] = wxString() << 999; // not implemented yet
+	post_data[wxT("uptime")] = wxString() << 999; // not implemented yet
+	post_data[wxT("idletime")] = wxString() << 999; // not implemented yet
+	post_data[wxT("hostname")] = wxString() << m_config->GetHostname() << wxT(':') << m_config->GetListenPort();
+	post_data[wxT("away")] = wxString() << 999; // not implemented yet
+	post_data[wxT("comment")] = m_config->GetPublicListComment();
+    
+	return post_data;
+
 }
 
 long ServerDefault::GetListenPort()
