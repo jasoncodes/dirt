@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.8 2003-03-05 13:36:13 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.9 2003-03-05 13:43:51 jason Exp $)
 
 #include "DNS.h"
 
@@ -38,11 +38,14 @@ protected:
 		s_section_lookup.Enter();
 		bool success = addr.Hostname(hostname);
 		s_section_lookup.Leave();
-		wxUint32 ip = GetIPV4Address(addr);
-		if (!m_no_event)
+		if (!TestDestroy())
 		{
-			DNSEvent evt(m_dns->m_id, m_dns, success, hostname, addr, ip);
-			m_dns->m_handler->AddPendingEvent(evt);
+			wxUint32 ip = GetIPV4Address(addr);
+			if (!m_no_event)
+			{
+				DNSEvent evt(m_dns->m_id, m_dns, success, hostname, addr, ip);
+				m_dns->m_handler->AddPendingEvent(evt);
+			}
 		}
 		return NULL;
 	}
@@ -75,6 +78,7 @@ void DNS::CleanUp()
 	m_section.Enter();
 	if (IsBusy())
 	{
+		// Kill() has issues even on Win32 (s_section_lookup not leaving)
 		//#ifdef __WXMSW__
 		//	m_worker->Kill();
 		//#else

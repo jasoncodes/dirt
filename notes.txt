@@ -34,7 +34,7 @@
 
 * hide /oper password when being typed
 
-* is there a way to tell gethostbyname() to cancel?
+* is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
 
 * dirt:// protocol registration on mozilla and/or KDE
 
