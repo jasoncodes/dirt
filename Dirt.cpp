@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.43 2003-05-09 13:44:48 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.44 2003-05-14 08:13:15 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -417,6 +417,8 @@ bool DirtApp::ProcessCommandLine()
 
 }
 
+#include <wx/filename.h>
+
 #ifdef __WXMSW__
 
 	#include <wx/msw/registry.h>
@@ -450,7 +452,6 @@ bool DirtApp::ProcessCommandLine()
 
 #else
 
-	#include <wx/filename.h>
 	#include <wx/wfstream.h>
 	#include <wx/txtstrm.h>
 
@@ -488,6 +489,9 @@ void DirtApp::RegisterDirtProtocol()
 		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile\\shell\\open\\command"));
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --log=\"%1\""));
+		reg.SetName(wxRegKey::HKLM, wxT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\") + wxFileName(exe).GetFullName());
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, exe);
 
 		if (num_actions)
 		{

@@ -68,6 +68,8 @@ LogViewerFrame::LogViewerFrame()
 	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(720, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL)
 {
 
+	m_is_busy = false;
+
 	SetIcon(wxIcon(dirt_xpm));
 
 	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL);
@@ -200,6 +202,8 @@ void LogViewerFrame::OnDirSelChange(wxTreeEvent &event)
 void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &event)
 {
 
+	if (m_is_busy) return;
+
 	m_log->Clear();
 	
 	wxString filename = GetItemFilename(m_tree->GetSelection());
@@ -275,7 +279,11 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 	if (reader.Ok())
 	{
 
-		last_filename = filename;
+		wxFileName fn(filename);
+		
+		last_filename = fn.GetFullPath();
+
+		m_is_busy = true;
 
 		wxString filepath = wxFileName(filename).GetPath(wxPATH_GET_VOLUME);
 		if (m_dir->GetPath() != filepath)
@@ -283,15 +291,17 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 			m_dir->ExpandPath(filepath);
 		}
 
-		last_filename = filename;
+		last_filename = fn.GetFullPath();
 
 		EnsureItemSelected(m_tree->GetRootItem(), wxFileName(filename).GetFullName());
+
+		m_is_busy = false;
 
 		m_log->Freeze();
 
 		wxLongLong_t next_update = 0;
 
-		wxProgressDialog dlg(wxT("Loading..."), filename, reader.GetLength(), this, wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME);
+		wxProgressDialog dlg(wxT("Loading..."), wxFileName(filename).GetFullName(), reader.GetLength(), this, wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME);
 
 		bool had_text = false;
 		
@@ -332,7 +342,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 	}
 	else
 	{
-		last_filename = wxEmptyString;
+		last_filename.Empty();
 		wxMessageBox(wxT("Unable to open log file"), wxT("Dirt Secure Chat"), wxOK|wxICON_ERROR, this);
 	}
 
@@ -370,7 +380,7 @@ wxArrayString LogViewerFrame::GetLogFilenames(const wxString &dirname)
 void LogViewerFrame::PopulateTree(const wxString &dirname)
 {
 
-	last_filename = wxEmptyString;
+	last_filename.Empty();
 
 	wxBusyCursor busy;
 
@@ -540,7 +550,7 @@ void LogViewerFrame::OnDelete(wxCommandEvent &event)
 		{
 		
 			m_log->Clear();
-			last_filename = wxEmptyString;
+			last_filename.Empty();
 
 			if (m_tree->GetChildrenCount(id))
 			{

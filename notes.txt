@@ -56,7 +56,7 @@
 
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* use Arial Unicode MS to display chars such as Chinese if current font doesn't support
+* use Arial Unicode MS to display CJK characters if current font doesn't support
 
 * research that log control gdi thing in 9x
 

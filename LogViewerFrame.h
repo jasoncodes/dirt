@@ -47,6 +47,7 @@ protected:
 	wxString last_filename;
 
 	ConfigFile m_config;
+	bool m_is_busy;
 
 private:
 	DECLARE_EVENT_TABLE()
