@@ -19,6 +19,8 @@ enum CryptSocketType
 class CryptSocketBase : public wxEvtHandler
 {
 
+	friend class CryptSocketProxySettings;
+
 public:
 	CryptSocketBase();
 	virtual ~CryptSocketBase();
@@ -56,14 +58,19 @@ protected:
 	virtual void GenerateNewPublicKey();
 	virtual void GenerateNewBlockKey();
 	virtual void EncryptPendingSends();
+	virtual void InitProxyConnect(wxString &dest_ip, wxUint16 dest_port);
+	virtual void InitProxyListen();
 
 protected:
 	void OnSocket(wxSocketEvent &event);
 	virtual void OnSocketInput();
 	virtual void OnSocketOutput();
 	virtual void OnSocketConnection() = 0;
-	virtual void OnSocketConnectionLost();
-	virtual void OnSocketConnectionError();
+	virtual void OnSocketConnectionLost(const wxString &msg = wxEmptyString);
+	virtual void OnSocketConnectionError(const wxString &msg = wxEmptyString);
+
+protected:
+////	virtual void OnProxyInput(const ByteBuffer &data);
 
 protected:
 	wxEvtHandler *m_handler;
@@ -176,7 +183,10 @@ public:
 	CryptSocketEvent(int id, CryptSocketNotify event, CryptSocketBase *src, const ByteBuffer &data)
 		: wxEvent(id, wxEVT_CRYPTSOCKET), m_data(data), m_userdata(src->GetUserData())
 	{
-		wxASSERT(event == CRYPTSOCKET_INPUT);
+		wxASSERT(
+			event == CRYPTSOCKET_INPUT ||
+			event == CRYPTSOCKET_CONNECTION_LOST ||
+			event == CRYPTSOCKET_CONNECTION_ERROR);
 		m_event = event;
 		SetEventObject(src);
 	}

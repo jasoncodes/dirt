@@ -5,12 +5,13 @@
 #include "ConfigFile.h"
 
 class CryptSocketBase;
+class CryptSocketProxy;
 
 enum CryptSocketProxyProtocol
 {
 	ppUnknown = -1,
-	ppSOCKS4 = 0,
-	ppSOCKS5,
+//	ppSOCKS4,
+//	ppSOCKS5,
 	ppHTTP
 };
 
@@ -47,6 +48,10 @@ public:
 
 	bool DoesDestDestIPMatch(const wxString &dest_ip) const;
 	bool DoesDestPortMatch(wxUint16 port) const;
+	bool DoesConnectionTypeMatch(CryptSocketProxyConnectionTypes type) const;
+
+	CryptSocketProxy* NewProxyConnect(CryptSocketBase *sck, const wxString &ip, const wxUint16 port) const;
+	CryptSocketProxy* NewProxyListen(CryptSocketBase *sck) const;
 
 	bool GetEnabled() const;
 	CryptSocketProxyProtocol GetProtocol() const;
@@ -176,31 +181,21 @@ protected:
 class CryptSocketProxy
 {
 
+	friend class CryptSocketProxySettings;
+
 public:
 	CryptSocketProxy(CryptSocketBase *sck);
 	virtual ~CryptSocketProxy();
 
+////	virtual void OnConnect() = 0;
+////	virtual void OnInput(const ByteBuffer &data) = 0;
+////	virtual bool IsConnectedToRemote() const = 0;
+
 protected:
+	wxString m_dest_ip;
+	wxUint16 m_dest_port;
 	CryptSocketBase *m_sck;
 
 };
-
-/*
-class CryptSocketProxyNull : public CryptSocketProxy
-{
-};
-
-class CryptSocketProxySOCKS4 : public CryptSocketProxy
-{
-};
-
-class CryptSocketProxySOCKS5 : public CryptSocketProxy
-{
-};
-
-class CryptSocketProxyHTTP : public CryptSocketProxy
-{
-};
-*/
 
 #endif

@@ -6,13 +6,32 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.10 2003-06-03 05:51:01 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.11 2003-06-04 05:56:25 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
 
+//////// CryptSocketProxyHTTP ////////
+
+class CryptSocketProxyHTTP : public CryptSocketProxy
+{
+
+public:
+	CryptSocketProxyHTTP(CryptSocketBase *sck)
+		: CryptSocketProxy(sck)
+	{
+	}
+
+////	virtual void OnConnect();
+////	virtual void OnInput(const ByteBuffer &data);
+////	virtual bool IsConnectedToRemote() const;
+
+};
+
+//////// CryptSocketProxySettings ////////
+
 static const wxString protocol_names[] =
-	{ wxT("SOCKS 4"), wxT("SOCKS 5"), wxT("HTTP CONNECT") };
+	{ /*wxT("SOCKS 4"), wxT("SOCKS 5"),*/ wxT("HTTP CONNECT") };
 
 static const wxString dest_modes[] =
 	{ wxT("any"), wxT("allow"), wxT("deny") };
@@ -26,7 +45,7 @@ CryptSocketProxySettings::CryptSocketProxySettings(Config &config)
 void CryptSocketProxySettings::LoadDefaults()
 {
 	m_enabled = false;
-	m_protocol = ppSOCKS4;
+	m_protocol = ppHTTP;//ppSOCKS4;
 	m_hostname.Empty();
 	m_port = 1080;
 	m_username = wxEmptyString;
@@ -108,11 +127,11 @@ bool CryptSocketProxySettings::DoesProtocolSupportAuthentication(CryptSocketProx
 	switch (protocol)
 	{
 
-		case ppSOCKS4:
-			return false;
+//		case ppSOCKS4:
+//			return false;
 
-		case ppSOCKS5:
-			return true;
+//		case ppSOCKS5:
+//			return true;
 
 		case ppHTTP:
 			return true;
@@ -149,9 +168,9 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 	switch (protocol)
 	{
 
-		case ppSOCKS4:
-		case ppSOCKS5:
-			return true;
+//		case ppSOCKS4:
+//		case ppSOCKS5:
+//			return (type == pctServer); //true; // DCC connections not supported yet
 
 		case ppHTTP:
 			return (type == pctServer);
@@ -255,6 +274,11 @@ bool CryptSocketProxySettings::DoesDestPortMatch(wxUint16 port) const
 
 	return !is_allow_only;
 
+}
+
+bool CryptSocketProxySettings::DoesConnectionTypeMatch(CryptSocketProxyConnectionTypes type) const
+{
+	return GetConnectionType(type) && DoesProtocolSupportConnectionType(GetProtocol(), type);
 }
 
 bool CryptSocketProxySettings::GetEnabled() const
@@ -507,4 +531,51 @@ bool CryptSocketProxySettings::SetDestPortRanges(const wxString &port_ranges)
 	m_dest_port_ranges_high = high_values;
 	wxASSERT(m_dest_port_ranges_low.GetCount() == m_dest_port_ranges_high.GetCount());
 	return true;
+}
+
+CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck, const wxString &ip, const wxUint16 port) const
+{
+	wxASSERT(ip.Length() && port > 0);
+	CryptSocketProxy *proxy = NewProxyListen(sck);
+	proxy->m_dest_ip = ip;
+	proxy->m_dest_port = port;
+	return proxy;
+}
+
+CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck) const
+{
+
+	wxASSERT(sck);
+
+	switch (GetProtocol())
+	{
+
+//		case ppSOCKS4:
+//			return new CryptSocketProxySOCKS4(sck);
+
+//		case ppSOCKS5:
+//			return new CryptSocketProxySOCKS5(sck);
+
+		case ppHTTP:
+			return new CryptSocketProxyHTTP(sck);
+
+		default:
+			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxy"));
+			return NULL;
+
+	}
+
+}
+
+//////// CryptSocketProxy ////////
+
+CryptSocketProxy::CryptSocketProxy(CryptSocketBase *sck)
+	: m_sck(sck)
+{
+	m_dest_ip = wxEmptyString;
+	m_dest_port = 0u;
+}
+
+CryptSocketProxy::~CryptSocketProxy()
+{
 }

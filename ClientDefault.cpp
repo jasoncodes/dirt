@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.35 2003-06-03 06:51:31 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.36 2003-06-04 05:56:25 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -46,7 +46,7 @@ ClientDefault::~ClientDefault()
 void ClientDefault::NewProxySettings()
 {
 	CryptSocketProxySettings proxy_settings(m_config);
-	if (proxy_settings.GetConnectionType(pctServer))
+	if (proxy_settings.DoesConnectionTypeMatch(pctServer))
 	{
 		m_sck->SetProxySettings(&proxy_settings);
 	}
@@ -212,11 +212,30 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 			break;
 
 		case CRYPTSOCKET_CONNECTION_LOST:
-			Disconnect(wxT("Connection lost"));
-			break;
-
 		case CRYPTSOCKET_CONNECTION_ERROR:
-			Disconnect(wxT("Error connecting to ") + GetLastURLString());
+			{
+				wxString msg;
+				if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION_LOST)
+				{
+					msg << wxT("Connection lost");
+				}
+				else if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION_ERROR)
+				{
+					msg << wxT("Error connecting to ") << GetLastURLString();
+				}
+				if (event.GetData().Length())
+				{
+					if (msg.Length())
+					{
+						msg << wxT(" (") << event.GetData() << wxT(")");
+					}
+					else
+					{
+						msg << event.GetData();
+					}
+				}
+				Disconnect(msg);
+			}
 			break;
 
 		case CRYPTSOCKET_INPUT:

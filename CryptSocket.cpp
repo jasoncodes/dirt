@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.30 2003-06-03 06:51:31 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.31 2003-06-04 05:56:25 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -463,20 +463,20 @@ void CryptSocketBase::CloseWithEvent()
 	}
 }
 
-void CryptSocketBase::OnSocketConnectionLost()
+void CryptSocketBase::OnSocketConnectionLost(const wxString &msg)
 {
 	if (m_handler)
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_LOST, this);
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_LOST, this, msg);
 		m_handler->AddPendingEvent(evt);
 	}
 }
 
-void CryptSocketBase::OnSocketConnectionError()
+void CryptSocketBase::OnSocketConnectionError(const wxString &msg)
 {
 	if (m_handler)
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_ERROR, this);
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_ERROR, this, msg);
 		m_handler->AddPendingEvent(evt);
 	}
 }
@@ -497,6 +497,28 @@ void CryptSocketBase::SetProxySettings(const CryptSocketProxySettings *settings)
 const CryptSocketProxySettings* CryptSocketBase::GetProxySettings() const
 {
 	return m_proxy_settings;
+}
+
+void CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
+{
+	delete m_proxy;
+	m_proxy = NULL;
+	if (m_proxy_settings &&
+		m_proxy_settings->DoesDestDestIPMatch(dest_ip) &&
+		m_proxy_settings->DoesDestPortMatch(dest_port))
+	{
+		m_proxy = m_proxy_settings->NewProxyConnect(this, dest_ip, dest_port);
+	}
+}
+
+void CryptSocketBase::InitProxyListen()
+{
+	delete m_proxy;
+	m_proxy = NULL;
+	if (m_proxy_settings)
+	{
+		m_proxy = m_proxy_settings->NewProxyListen(this);
+	}
 }
 
 //////// CryptSocketClient ////////
@@ -520,6 +542,7 @@ void CryptSocketClient::Connect(wxSockAddress& addr)
 	m_sck = new wxSocketClient;
 	InitBuffers();
 	InitSocketEvents();
+	//InitProxyConnect();
 
 	if (((wxSocketClient*)m_sck)->Connect(addr, false))
 	{
@@ -592,6 +615,7 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	bool success = ((wxSocketServer*)m_sck)->AcceptWith(*sck->m_sck);
 	if (success)
 	{
+		sck->m_has_connected = true;
 		sck->OnSocketConnection();
 		return sck;
 	}

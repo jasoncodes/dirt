@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.41 2003-06-03 06:51:31 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.42 2003-06-04 05:56:25 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -132,8 +132,8 @@ void FileTransfers::SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) cons
 	const CryptSocketProxySettings *proxy_settings = m_client->GetProxySettings();
 	if (proxy_settings)
 	{
-		if ((is_connect && proxy_settings->GetConnectionType(pctDCCConnect)) ||
-			(!is_connect && proxy_settings->GetConnectionType(pctDCCListen)))
+		if ((is_connect && proxy_settings->DoesConnectionTypeMatch(pctDCCConnect)) ||
+			(!is_connect && proxy_settings->DoesConnectionTypeMatch(pctDCCListen)))
 		{
 			sck->SetProxySettings(proxy_settings);
 		}
