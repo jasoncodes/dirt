@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.49 2003-05-07 04:56:02 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.50 2003-05-07 23:59:05 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -409,4 +409,9 @@ void ClientUIConsole::OnClientTransferState(const FileTransfer &transfer)
 
 void ClientUIConsole::OnClientTransferTimer(const FileTransfer &transfer)
 {
+}
+
+ResumeState ClientUIConsole::OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume)
+{
+	return can_resume ? rsResume : rsOverwrite;
 }

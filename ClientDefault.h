@@ -24,6 +24,8 @@ public:
 	virtual const URL& GetLastURL() const;
 	virtual void Authenticate(const ByteBuffer &auth);
 	virtual void Oper(const wxString &context, const wxString &pass);
+	virtual ByteBuffer GetKeyLocalPublic() const;
+	virtual ByteBuffer GetKeyLocalPrivate() const;
 
 protected:
 	virtual void SendToServer(const ByteBuffer &msg);

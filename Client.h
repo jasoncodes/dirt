@@ -16,6 +16,13 @@ class ClientContact;
 #include <wx/dynarray.h>
 WX_DEFINE_ARRAY(ClientContact*, ClientContactArray);
 
+enum ResumeState
+{
+	rsResume = wxID_YES,
+	rsOverwrite = wxID_NO,
+	rsCancel = wxID_CANCEL
+};
+
 class ClientEventHandler
 {
 
@@ -47,6 +54,7 @@ public:
 	virtual void OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated) = 0;
 	virtual void OnClientTransferState(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferTimer(const FileTransfer &transfer) = 0;
+	virtual ResumeState OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume) = 0;
 
 };
 
@@ -112,6 +120,8 @@ public:
 	virtual ClientContact* GetContact(size_t index) const;
 	virtual ClientContact* GetContact(const wxString &nick) const;
 	virtual ClientContact* GetContactSelf() const { return m_contact_self; }
+	virtual ByteBuffer GetKeyLocalPublic() const = 0;
+	virtual ByteBuffer GetKeyLocalPrivate() const = 0;
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);

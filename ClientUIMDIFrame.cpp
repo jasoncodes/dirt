@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.108 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.109 2003-05-07 23:59:05 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -24,6 +24,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.108 2003-05-07 12:23:00 jason Exp $)
 #include "LogControl.h"
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
+#include "ClientUIMDITransferResumeDialog.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -1059,6 +1060,12 @@ void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)
 	ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
 	wxASSERT(pnl);
 	pnl->Update(transfer);
+}
+
+ResumeState ClientUIMDIFrame::OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume)
+{
+	ClientUIMDITransferResumeDialog dlg(this, transfer.nickname, transfer.filename, new_filename, can_resume);
+	return (ResumeState)dlg.ShowModal();
 }
 
 void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)

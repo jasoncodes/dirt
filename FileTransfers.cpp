@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.19 2003-05-07 12:57:39 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.20 2003-05-07 23:59:05 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "Client.h"
 #include "CryptSocket.h"
 #include "IPInfo.h"
+#include "URL.h"
 
 #include <wx/filename.h>
 
@@ -26,7 +27,8 @@ WX_DEFINE_OBJARRAY(FileTransferArray);
 
 enum
 {
-	ID_TIMER = 1
+	ID_TIMER = 1,
+	ID_SOCKET
 };
 
 BEGIN_EVENT_TABLE(FileTransfers, wxEvtHandler)
@@ -105,13 +107,15 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->m_cps.Reset(t->filesent);
 	t->status = wxT("Waiting for accept...");
 
-	if (!t->file.Open(t->filename, wxFile::read))
+	if (!t->m_file.Open(t->filename, wxFile::read))
 	{
 		delete t;
 		return -1;
 	}
 
 	CryptSocketServer *sck = new CryptSocketServer;
+	sck->SetEventHandler(this, ID_SOCKET);
+	sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 	wxIPV4address addr;
 	addr.AnyAddress();
 	addr.Service(0);
@@ -121,7 +125,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 		return -1;
 	}
 	sck->GetLocal(addr);
-	t->sck = sck;
+	t->m_sck = sck;
 
 	m_transfers.Add(t);
 
@@ -272,6 +276,13 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 					return false;
 				}
 
+				wxString last_server_hostname = m_client->GetLastURL().GetHostname();
+				if (last_server_hostname.Length() &&
+					m_client->m_server_ip_list.Index(ip) > -1)
+				{
+					ip = last_server_hostname;
+				}
+
 				FileTransfer *t = new FileTransfer(this);
 				t->transferid = GetNewId();
 				t->remoteid = id;
@@ -285,6 +296,8 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				t->cps = -1;
 				t->filesent = 0;
 				t->status = wxT("Accept pending...");
+				t->m_ip = ip;
+				t->m_port = port;
 
 				m_transfers.Add(t);
 				m_client->m_event_handler->OnClientTransferNew(*t);
@@ -324,7 +337,7 @@ bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString
 
 wxArrayString FileTransfers::GetSupportedCommands()
 {
-	return SplitString(wxT("CANCEL HELP SEND"), wxT(" "));
+	return SplitString(wxT("ACCEPT CANCEL HELP SEND"), wxT(" "));
 }
 
 void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
@@ -369,6 +382,32 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 		else
 		{
 			Warning(context, wxT("No such nick: ") + ht.head);
+		}
+	}
+	else if (cmd == wxT("ACCEPT"))
+	{
+		ASSERT_CONNECTED();
+		HeadTail ht = SplitQuotedHeadTail(params);
+		long x;
+		int i;
+		if (ht.head.ToLong(&x) && (i = FindTransfer(x)) > -1)
+		{
+			ht.tail = StripQuotes(ht.tail);
+			const FileTransfer &t = GetTransferByIndex(i);
+			ResumeState resume = rsOverwrite;
+			if (wxFileName(ht.tail).FileExists())
+			{
+				off_t size = GetFileLength(ht.tail);
+				resume = m_client->m_event_handler->OnClientTransferResumePrompt(t, ht.tail, size < t.filesize);
+			}
+			if ((resume != rsCancel) && AcceptTransfer(x, ht.tail, resume == rsResume))
+			{
+				Warning(context, wxT("Error accepting transfer ") + ht.head);
+			}
+		}
+		else
+		{
+			Warning(context, wxT("No such transfer: ") + ht.head);
 		}
 	}
 	else if (cmd == wxT("STATUS") || cmd == wxT(""))
@@ -479,4 +518,30 @@ void FileTransfers::Information(const wxString &context, const wxString &text)
 void FileTransfers::Warning(const wxString &context, const wxString &text)
 {
 	m_client->m_event_handler->OnClientWarning(context, text);
+}
+
+bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, bool resume)
+{
+	int index = FindTransfer(transferid);
+	wxFileName fn(filename);
+	if (index > -1 && fn.FileExists())
+	{
+		FileTransfer &t = m_transfers[index];
+		t.filename = fn.GetFullPath();
+		t.state = ftsGetConnecting;
+		t.filesent = resume ? GetFileLength(t.filename) : 0;
+		t.status = wxT("Connecting...");
+		CryptSocketClient *sck = new CryptSocketClient;
+		sck->SetEventHandler(this, ID_SOCKET);
+		sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+		wxIPV4address addr;
+		addr.Hostname(t.m_ip);
+		addr.Service(t.m_port);
+		sck->Connect(addr);
+		// need code here
+		m_client->m_event_handler->OnClientTransferState(t);
+		// and here
+		return true;
+	}
+	return false;
 }

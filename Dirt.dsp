@@ -293,6 +293,14 @@ SOURCE=.\ClientUIMDITransferPanel.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIMDITransferResumeDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDITransferResumeDialog.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ConfigFile.cpp
 # End Source File
 # Begin Source File

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.23 2003-04-27 07:02:42 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.24 2003-05-07 23:59:05 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -108,7 +108,10 @@ void CryptSocketBase::SetKey(const ByteBuffer &public_key, const ByteBuffer &pri
 	wxCHECK_RET(private_key.Length() > 0, wxT("private key is empty"));
 	m_keyLocalPrivate = private_key;
 	m_keyLocalPublic = public_key;
-	AddToSendQueue(Uint16ToBytes(0) + Uint16ToBytes(mtNewPublicKey) + m_keyLocalPublic);
+	if (Ok())
+	{
+		AddToSendQueue(Uint16ToBytes(0) + Uint16ToBytes(mtNewPublicKey) + m_keyLocalPublic);
+	}
 }
 
 void CryptSocketBase::GenerateNewPublicKey()

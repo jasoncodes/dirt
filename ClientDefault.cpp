@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.30 2003-04-28 08:12:50 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.31 2003-05-07 23:59:04 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -28,14 +28,10 @@ END_EVENT_TABLE()
 ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 	: Client(event_handler)
 {
-
 	m_sck = new CryptSocketClient;
 	m_sck->SetEventHandler(this, ID_SOCKET);
 	m_dns = new DNS;
 	m_dns->SetEventHandler(this, ID_DNS);
-
-	Debug(wxEmptyString, AppTitle());
-
 }
 
 ClientDefault::~ClientDefault()
@@ -240,4 +236,22 @@ bool ClientDefault::ProcessServerInputExtra(bool preprocess, const wxString &con
 	{
 		return false;
 	}
+}
+
+ByteBuffer ClientDefault::GetKeyLocalPublic() const
+{
+	if (m_sck)
+	{
+		return m_sck->GetKeyLocalPublic();
+	}
+	return ByteBuffer();
+}
+
+ByteBuffer ClientDefault::GetKeyLocalPrivate() const
+{
+	if (m_sck)
+	{
+		return m_sck->GetKeyLocalPrivate();
+	}
+	return ByteBuffer();
 }

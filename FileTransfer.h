@@ -61,9 +61,11 @@ protected:
 
 protected:
 	FileTransfers *m_transfers;
-	wxFile file;
+	wxFile m_file;
 	CPSCalc m_cps;
-	CryptSocketBase *sck;
+	CryptSocketBase *m_sck;
+	wxString m_ip;
+	unsigned short m_port;
 
 };
 

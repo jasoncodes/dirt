@@ -72,6 +72,7 @@ protected:
 	virtual void OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated);
 	virtual void OnClientTransferState(const FileTransfer &transfer);
 	virtual void OnClientTransferTimer(const FileTransfer &transfer);
+	virtual ResumeState OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume);
 
 protected:
 	wxTimer *m_tmrFocus;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.12 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.13 2003-05-07 23:59:05 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -23,12 +23,12 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 		filesize(0), time(0), timeleft(-1), cps(-1),
 		filesent(0), status(wxEmptyString), m_transfers(transfers)
 {
-	sck = NULL;
+	m_sck = NULL;
 }
 
 FileTransfer::~FileTransfer()
 {
-	delete sck;
+	delete m_sck;
 }
 
 bool FileTransfer::OnTimer()
