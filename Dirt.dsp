@@ -52,7 +52,7 @@ RSC=rc.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG"
+# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -83,7 +83,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "Release\Dirt
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG"
+# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -111,7 +111,7 @@ LINK32=link.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG" /d "_CONSOLE"
+# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG" /d "_CONSOLE" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -142,7 +142,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "ConsoleRelea
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG" /d "_CONSOLE"
+# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG" /d "_CONSOLE" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -169,7 +169,7 @@ LINK32=link.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG" /d "_UNICODE"
+# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG" /d "_UNICODE" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -200,7 +200,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "UnicodeRelea
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
-# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG" /d "_UNICODE"
+# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG" /d "_UNICODE" /d "EXTRA_VER_INFO"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
