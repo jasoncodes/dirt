@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.44 2003-03-31 06:04:07 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.45 2003-04-01 07:56:34 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -781,7 +781,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	{
 		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
 	}
-	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION"))
+	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION") || cmd == wxT("CTCP") || cmd == wxT("CTCPREPLY"))
 	{
 		ByteBuffer nick;
 		ByteBuffer msg;
