@@ -1,3 +1,8 @@
+* add a user database to Client
+  Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache
+
+* suppress wxBell when /away?
+
 * change all config file code to use utf-8 for file storage
 
 * file transfers
@@ -38,8 +43,6 @@
 * hotkey for minimize to tray
 
 * prefix caption with number in brackets showing how many msgs are waiting?
-
-* suppress wxBell when /away?
 
 * research that log control gdi thing in 9x
 
