@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.19 2003-08-01 07:48:01 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.20 2003-08-05 05:05:56 jason Exp $)
 
 #include "InputControl.h"
+#include "LogControl.h"
 #include "Modifiers.h"
 #include <wx/minifram.h>
 #include "util.h"
@@ -16,7 +17,6 @@ RCS_ID($Id: InputControl.cpp,v 1.19 2003-08-01 07:48:01 jason Exp $)
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
 #endif
-
 
 
 class InputControlColourPanel : public wxPanel
@@ -203,7 +203,6 @@ END_EVENT_TABLE()
 
 
 #include <wx/html/htmlwin.h>
-#include <wx/html/winpars.h>
 
 BEGIN_EVENT_TABLE(InputControl, wxTextCtrl)
 	EVT_TEXT(wxID_ANY, InputControl::OnChange)
@@ -229,7 +228,7 @@ InputControl::InputControl(
 	{
 		wxHtmlWindow *html = new wxHtmlWindow(GetParent());
 		wxHtmlWinParser *parser = html->GetParser();
-		SetHtmlParserFonts(parser);
+		LogControl::SetHtmlParserFonts(parser);
 		wxClientDC *pDC = new wxClientDC(html);
 		parser->SetFontFixed(TRUE);
 		parser->SetDC(pDC);

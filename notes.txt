@@ -2,7 +2,7 @@
 
 * /reconnect should retry last auth and nickname and /away again if was away
 
-* no auth data should be kept in cleartext. use a random generated AES key
+* no auth data should be kept in cleartext (use a random generated AES key)
 
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
@@ -24,9 +24,9 @@
 
 /mintotray
 
-[15:11] *** Get Greek Orthodox Byzantine Chant - Angelopoulos odes.mp3 from Andrew: Cancelled by remote (Remote error: Transfer cancelled)
-[15:11] *** Get ogl.rar from Blacksage: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
-Blacksage cancelling a transfer aborted transfer with Andrew
+[15:11] *** Get xxx from User1: Cancelled by remote (Remote error: Transfer cancelled)
+[15:11] *** Get yyy from User2: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
+User2 cancelling a send caused my client to abort get from User1
 
 * some way to limit number of unACK'd bytes
 
@@ -100,7 +100,11 @@ Blacksage cancelling a transfer aborted transfer with Andrew
 	* some notification system to call PopulateFilteredWords() when config
 	  file is changed remotely.
 
+* UPnP IGD support for socket binds (transfers and server)
+
 * SOCKS 4/5 BIND support for DCC Listen
+  Seems the SOCKS protocol is too restrictive for our needs.
+  This probably won't be possible to implement.
 
 * lock for exclusive write any files opened by FileTransfers.cpp
   (make sure reading is still allowed)
@@ -213,8 +217,10 @@ Blacksage cancelling a transfer aborted transfer with Andrew
 * remove msvcp60.dll dependency?
 
 * research that log control gdi thing in 9x
-  Perhaps you should if 9x, if messagelog.length > x, (use gdi resource free% api?)
-  SAY Warning: 9x about to run out of dgi resources
+  seems to be caused by LOTS of wxFont instances
+  Perhaps you should if 9x, if messagelog.length > x
+  SAY Warning: 9x about to run out of GDI resources
+  Win9x Resource Meter uses GetFreeSystemResources (16 bit only)
 
 * non-wrapping lines have row of blank pixels underneath (related to font?)
 

@@ -7,6 +7,7 @@
 
 #include "wx/html/htmlcell.h"
 #include <wx/fdrepdlg.h>
+#include <wx/html/winpars.h>
 
 #include <wx/dynarray.h>
 WX_DEFINE_ARRAY_NO_PTR(wxHtmlCell*, HtmlCellPointerArray);
@@ -43,6 +44,7 @@ public:
 	static wxString GetCellText(wxHtmlCell *cell);
 	static bool IsEmail(const wxString &token);
 	static void ClearRect(wxDC& dc, const wxRect &rect);
+	static void SetHtmlParserFonts(wxHtmlWinParser *parser);
 
 protected:
 	void OnSize(wxSizeEvent& event);

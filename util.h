@@ -37,7 +37,6 @@ wxString GetLongTimestamp();
 wxString GetShortTimestamp();
 wxString FormatISODateTime(const wxDateTime &datetime);
 void FixBorder(wxWindow *wnd);
-void SetHtmlParserFonts(wxHtmlWinParser *parser);
 wxString AddCommas(wxLongLong_t size);
 wxString AddCommas(double size);
 wxString SizeToString(wxLongLong_t size);

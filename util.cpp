@@ -6,14 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.74 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.75 2003-08-05 05:05:57 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
-#include <wx/html/htmlwin.h>
 #include <math.h>
 #include "ByteBuffer.h"
 #include <wx/mimetype.h>
+#include <wx/confbase.h>
+#include <wx/filename.h>
 
 #if defined(__WXMSW__)
 	#include <windows.h>
@@ -195,28 +196,6 @@ void FixBorder(wxWindow *wnd)
 			SWP_NOMOVE | SWP_NOOWNERZORDER |
 			SWP_NOSIZE | SWP_NOZORDER);
 	#endif
-}
-
-void SetHtmlParserFonts(wxHtmlWinParser *parser)
-{
-
-	// The following is copied from wxHtmlWinParser::wxHtmlWinParser()
-	// as it is not exposed anywhere and NULL isn't allowed
-	#ifdef __WXMSW__
-			static int default_sizes[7] = {7, 8, 10, 12, 16, 22, 30};
-	#elif defined(__WXMAC__)
-			static int default_sizes[7] = {9, 12, 14, 18, 24, 30, 36};
-	#else
-			static int default_sizes[7] = {10, 12, 14, 16, 19, 24, 32};
-	#endif
-
-	#ifdef __WXMSW__
-		//parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
-		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
-	#else
-		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
-	#endif
-
 }
 
 wxString AddCommas(wxLongLong_t size)

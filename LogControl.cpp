@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.55 2003-08-03 12:23:55 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.56 2003-08-05 05:05:57 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -492,6 +492,32 @@ BEGIN_EVENT_TABLE(LogControl, wxScrolledWindow)
 	EVT_FIND_CLOSE(wxID_ANY, LogControl::OnFindDialog)
 	EVT_SCROLLWIN(LogControl::OnScroll)
 END_EVENT_TABLE()
+
+void LogControl::SetHtmlParserFonts(wxHtmlWinParser *parser)
+{
+
+	#if wxCHECK_VERSION(2,5,0)
+		static int *default_sizes = NULL;
+	#else
+		// The following is copied from wxHtmlWinParser::wxHtmlWinParser()
+		// as it is not exposed anywhere and NULL isn't allowed in 2.4.0
+		#ifdef __WXMSW__
+				static int default_sizes[7] = {7, 8, 10, 12, 16, 22, 30};
+		#elif defined(__WXMAC__)
+				static int default_sizes[7] = {9, 12, 14, 18, 24, 30, 36};
+		#else
+				static int default_sizes[7] = {10, 12, 14, 16, 19, 24, 32};
+		#endif
+	#endif
+
+	#ifdef __WXMSW__
+		//parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
+		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
+	#else
+		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
+	#endif
+
+}
 
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
