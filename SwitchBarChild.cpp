@@ -29,6 +29,7 @@ SwitchBarChild::SwitchBarChild(
 	m_canvas = canvas;
 
 	SetIcon(canvas->GetIcon());
+	canvas->SetSize(GetClientSize());
 	canvas->Reparent(this);
 	canvas->OnAttach();
 

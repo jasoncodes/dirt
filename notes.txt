@@ -1,5 +1,3 @@
-* logcontrol: flickering when resizing
-
 * inputcontrol: when colour popup shows on GTK (and possibly other
   non-win32s) we seem to not be able to programmically give focus back to
   main window. Presently if an error occurs focusing the main window, the
@@ -14,17 +12,11 @@
 
 * dcc send/recv dialog
 
-* only scroll to bottom if scrollpos was already at bottom?
-
-* when u query a user multiple times it minimises or restores
+* only scroll to bottom if scrollpos was already at bottom (and/or no sel)?
 
 * research that log control gdi thing in 9x
 
 * ideas for server: banning, motd
-
-* type /lizard and it says (Lizard support is not available at this time)
-
-* tooltips for switchbar (maybe nick list too)
 
 * single lines (ones that don't wrap) have a line of blank pixels
   after the line (when highlighting and using background colour)
@@ -33,5 +25,3 @@
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
 * gtk: focus problem on right click, query (get a beep and no focus to input)
-
-* win32: move mouse slowly over splitter to nick list, cursor stays as sizer

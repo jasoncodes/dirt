@@ -8,6 +8,7 @@
 
 #include "SwitchBar.h"
 #include <wx/image.h>
+#include <wx/tooltip.h>
 
 struct SwitchBarButton
 {
@@ -28,6 +29,15 @@ struct SwitchBarButton
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(SwitchBarButtonArray);
 
+BEGIN_EVENT_TABLE(SwitchBar, wxPanel)
+	EVT_ERASE_BACKGROUND(SwitchBar::OnErase)
+	EVT_PAINT(SwitchBar::OnPaint)
+	EVT_LEFT_DOWN(SwitchBar::OnMouse)
+	EVT_LEFT_DCLICK(SwitchBar::OnMouse)
+	EVT_RIGHT_UP(SwitchBar::OnMouse)
+	EVT_MOTION(SwitchBar::OnMouse)
+END_EVENT_TABLE()
+
 SwitchBar::SwitchBar(
 	wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
@@ -38,11 +48,6 @@ SwitchBar::SwitchBar(
 	{
 		SetSize(100,25);
 	} 
-	Connect(wxID_ANY, wxID_ANY, wxEVT_ERASE_BACKGROUND, (wxObjectEventFunction)(wxEraseEventFunction)&SwitchBar::OnErase);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_PAINT, (wxObjectEventFunction)(wxPaintEventFunction)&SwitchBar::OnPaint);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_LEFT_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&SwitchBar::OnMouse);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_LEFT_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&SwitchBar::OnMouse);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_RIGHT_UP, (wxObjectEventFunction)(wxMouseEventFunction)&SwitchBar::OnMouse);
 }
 
 SwitchBar::~SwitchBar()
@@ -274,7 +279,17 @@ int SwitchBar::HitTest(const wxPoint& pt)
 
 void SwitchBar::OnMouse(wxMouseEvent &event)
 {
-	if (event.GetEventType() == wxEVT_RIGHT_UP)
+	if (event.GetEventType() == wxEVT_MOTION)
+	{
+		int button_index = HitTest(event.GetPosition());
+		wxString tooltip = wxEmptyString;
+		if (button_index > -1)
+		{
+			tooltip = GetButtonCaption(button_index);
+		}
+		SetToolTip(new wxToolTip(tooltip)); 
+	}
+	else if (event.GetEventType() == wxEVT_RIGHT_UP)
 	{
 		int button_index = HitTest(event.GetPosition());
 		if (button_index > -1)

@@ -22,6 +22,7 @@ NickListControl::NickListControl(wxWindow *parent, int id)
 		wxLB_SINGLE | wxLB_SORT | wxLB_HSCROLL | wxLB_NEEDED_SB)
 {
 	FixBorder(this);
+    SetCursor(*wxSTANDARD_CURSOR);
 }
 
 NickListControl::~NickListControl()

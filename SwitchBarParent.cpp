@@ -378,9 +378,6 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 	wxPoint pos = m_switchbar->ScreenToClient(wxGetMousePosition());
 	m_switchbar->PopupMenu(&menu, pos);
 
-	//wxRect button_rect = m_switchbar->GetButtonRect(switchbar_popup_button_index);
-	//m_switchbar->PopupMenu(&menu, button_rect.x, button_rect.y);
-
 }
 
 void SwitchBarParent::OnSwitchBarRestore(wxCommandEvent& event)
@@ -391,7 +388,7 @@ void SwitchBarParent::OnSwitchBarRestore(wxCommandEvent& event)
 void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)
 {
 	int button_index = m_switchbar->GetIndexFromUserData(canvas);
-	if (button_index > -1)
+	if (button_index > -1 && button_index != m_switchbar->GetSelectedIndex())
 	{
 		m_switchbar->SimulateClick(button_index);
 	}

@@ -66,6 +66,9 @@ protected:
 	SwitchBarButtonArray m_buttons;
 	int m_selected;
 
+private:
+	DECLARE_EVENT_TABLE()
+
 };
 
 #endif

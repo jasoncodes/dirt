@@ -121,6 +121,10 @@ void Client::ProcessInput(const wxString &context, const wxString &text)
 	{
 		m_event_handler->OnClientInformation(context, "Supported commands: SAY HELP MSG");
 	}
+	else if (cmd == "LIZARD")
+	{
+		m_event_handler->OnClientInformation(context, "Support for Lizard technology is not available at this time");
+	}
 	else
 	{
 		m_event_handler->OnClientWarning(context, "Unrecognized command: " + cmd);
