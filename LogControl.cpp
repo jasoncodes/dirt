@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.19 2003-02-16 05:21:13 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.20 2003-02-24 07:57:28 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1208,7 +1208,7 @@ void LogControl::Clear()
 	ScrollToBottom();
 }
 
-void LogControl::AddHtmlLine(const wxString &line)
+void LogControl::AddHtmlLine(const wxString &line, bool split_long_words)
 {
 
 	wxString source = wxT("<br><code>") + line + wxT("</code>");
@@ -1223,6 +1223,45 @@ void LogControl::AddHtmlLine(const wxString &line)
 	p2->AddTagHandler(new SpanTagHandler());
 	SetHtmlParserFonts(p2);
 	wxHtmlContainerCell *c2 = (wxHtmlContainerCell*)p2->Parse(source);
+
+	if (split_long_words)
+	{
+		wxHtmlCell *cell = c2->GetFirstCell();
+		cell = ((wxHtmlContainerCell*)cell->GetNext())->GetFirstCell();
+		wxASSERT(cell);
+		wxHtmlCell *last = NULL;
+		while (cell)
+		{
+			cell->DrawInvisible(*dc, 0, 0);
+			wxString text = GetCellText(cell);
+			if (text.Length() > 8 && last)
+			{
+				wxASSERT(last->GetNext() == cell);
+				wxHtmlCell *first = new wxHtmlWordCell(text.Left(8), *dc);
+				first->SetParent(cell->GetParent());
+				wxHtmlCell *last_new = first;
+				for (size_t i = 8; i < text.Length(); i += 8)
+				{
+					wxHtmlCell *next_new = new wxHtmlWordCell(text.Mid(i, 8), *dc);
+					next_new->SetParent(cell->GetParent());
+					last_new->SetNext(next_new);
+					last_new = next_new;
+				}
+
+				wxHtmlCell *next = cell->GetNext();
+				
+				last->SetNext(first);
+				last_new->SetNext(next);
+				
+				cell->SetNext(NULL);
+				delete cell;
+				cell = first;
+
+			}
+			last = cell;
+			cell = cell->GetNext();
+		}
+	}
 
 	m_Cell->InsertCell(c2);
 
@@ -1245,7 +1284,7 @@ wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_m
 	return parser.Parse(text);
 }
 
-void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode, bool convert_urls)
+void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode, bool convert_urls, bool split_long_words)
 {
 
 	wxString html = FormatTextAsHtml(line);
@@ -1278,7 +1317,7 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 
 	html = wxT("<font color='") + ColourToString(line_colour) + wxT("'>") + html + wxT("</font>");
 
-	AddHtmlLine(html);
+	AddHtmlLine(html, split_long_words);
 
 }
 

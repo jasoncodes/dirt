@@ -37,3 +37,10 @@
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
 
 * gtk: cannot type into main canvas text box after using nicklist right click menu sometimes
+
+* file transfers
+* support for public listing
+* tray icon support
+* /away
+
+* red bar that shows the last place you were in the convo when you minimized

@@ -27,8 +27,8 @@ public:
 	void ScrollToBottom();
 	void Clear();
 
-	void AddHtmlLine(const wxString &line);
-	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true);
+	void AddHtmlLine(const wxString &line, bool split_long_words = false);
+	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true);
 	static wxString FormatTextAsHtml(const wxString &text);
 	static wxString ConvertUrlsToLinks(const wxString &text);
 	static wxString ConvertModifiersIntoHtml(const wxString &text, bool strip_mode);
