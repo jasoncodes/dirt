@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.60 2003-08-22 19:34:51 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.61 2003-08-24 14:30:06 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1451,10 +1451,13 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 		m_first_line = false;
 	}
 
-	if ((double)m_buff.capacity() < m_buff.size() * 1.25)
-	{
-		m_buff.reserve(m_buff.size() * 2);
-	}
+	#if wxCHECK_VERSION(2,5,0)
+		if ((double)m_buff.capacity() < m_buff.size() * 1.25)
+		{
+			m_buff.reserve(m_buff.size() * 2);
+		}
+	#endif
+
 	m_buff << source;
 
 	wxClientDC *dc = new wxClientDC(this);
