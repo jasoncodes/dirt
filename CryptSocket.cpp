@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.7 2003-02-15 03:39:34 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.8 2003-02-15 12:28:52 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -218,7 +218,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 				break;
 
 			default:
-				wxFAIL_MSG("Unknown message type");
+				CRYPTSOCKET_CHECK_RET(true, "Unknown message type");
 				break;
 
 		}
