@@ -262,7 +262,14 @@ void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxStri
 
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
-	AddLine(nick, "<" + m_client->GetNickname() + "> " + text, *wxBLACK, true, true);
+	if (GetContext(nick, false) != GetContext(wxEmptyString))
+	{
+		AddLine(nick, "<" + m_client->GetNickname() + "> " + text, *wxBLACK, true, true);
+	}
+	else
+	{
+		AddLine(wxEmptyString, "-> *" + nick + "* " + text, *wxBLACK, true, true);
+	}
 }
 
 void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)

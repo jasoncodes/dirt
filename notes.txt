@@ -19,7 +19,6 @@
 * ideas for server: banning, motd
 
 * single lines (ones that don't wrap) have a line of blank pixels
-  after the line (when highlighting and using background colour)
-  inducing wrapping (making window not as wide eliminates the problem)
+  underneath the line (visible when highlighting and using background colour)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
