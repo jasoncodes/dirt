@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.1 2003-08-05 11:34:59 jason Exp $)
+RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.2 2003-08-05 11:59:58 jason Exp $)
 
 #include "ClientUIMDIPasswordManagerDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -26,6 +26,8 @@ public:
 		m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
 		wxStaticText *lblPassword = new wxStaticText(panel, wxID_ANY, wxT("Password:"));
 		m_txtPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(128, -1), wxTE_PASSWORD);
+		wxStaticText *lblConfirm = new wxStaticText(panel, wxID_ANY, wxT("Confirm:"));
+		m_txtConfirm = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(128, -1), wxTE_PASSWORD);
 
 		m_cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 		m_cmdOK->Enable(false);
@@ -41,6 +43,8 @@ public:
 				szrMain->Add(m_txtServerName, 0, wxEXPAND);
 				szrMain->Add(lblPassword, 0, wxALIGN_CENTER_VERTICAL);
 				szrMain->Add(m_txtPassword, 0, wxEXPAND);
+				szrMain->Add(lblConfirm, 0, wxALIGN_CENTER_VERTICAL);
+				szrMain->Add(m_txtConfirm, 0, wxEXPAND);
 			}
 			szrAll->Add(szrMain, 1, wxALL | wxEXPAND, 8);
 
@@ -85,7 +89,8 @@ protected:
 	{
 		m_cmdOK->Enable(
 			m_txtServerName->GetValue().Length() &&
-			m_txtPassword->GetValue().Length());
+			m_txtPassword->GetValue().Length() &&
+			m_txtPassword->GetValue() == m_txtConfirm->GetValue());
 	}
 
 	bool AddPassword()
@@ -130,6 +135,7 @@ protected:
 
 	wxTextCtrl *m_txtServerName;
 	wxTextCtrl *m_txtPassword;
+	wxTextCtrl *m_txtConfirm;
 
 	wxButton *m_cmdOK;
 
