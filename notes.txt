@@ -31,3 +31,5 @@
   inducing wrapping (making window not as wide eliminates the problem)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
+
+* gtk: focus problem on right click, query (get a beep and no focus to input)

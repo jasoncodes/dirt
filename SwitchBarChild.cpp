@@ -84,7 +84,10 @@ void SwitchBarChild::OnMove(wxMoveEvent& event)
 void SwitchBarChild::OnSize(wxSizeEvent& event)
 {
 	m_parent->UpdateWindowMenu();
-	event.Skip();
+	if (GetSize().x > 1 && GetSize().y > 1)
+	{
+		event.Skip();
+	}
 }
 
 void SwitchBarChild::OnClose(wxCloseEvent& event)
