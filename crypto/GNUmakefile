@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -DNDEBUG
+CXXFLAGS = -O1 -DNDEBUG
 LDFLAGS =
 ARFLAGS = -cr	# ar needs the dash on OpenBSD
 RANLIB = ranlib
