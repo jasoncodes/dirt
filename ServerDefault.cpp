@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.7 2003-02-15 01:37:31 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.8 2003-02-15 02:46:18 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -19,10 +19,7 @@ ServerDefaultConnection::ServerDefaultConnection()
 
 ServerDefaultConnection::~ServerDefaultConnection()
 {
-	if (m_sck)
-	{
-		m_sck->Destroy();
-	}
+	delete m_sck;
 }
 
 enum
@@ -39,6 +36,7 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 {
 	m_sckListen = new CryptSocketServer;
 	m_sckListen->SetEventHandler(this, ID_SOCK);
+	m_connections.Alloc(10);
 }
 
 ServerDefault::~ServerDefault()
@@ -68,6 +66,7 @@ void ServerDefault::Stop()
 {
 	wxCHECK_RET(IsRunning(), "Cannot stop server. Server not running.");
 	m_sckListen->Close();
+	m_connections.Empty();
 	m_event_handler->OnServerInformation("Server stopped");
 	m_event_handler->OnServerStateChange();
 }
@@ -115,7 +114,15 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_event_handler->OnServerInformation("Connection to " + ::GetIPV4String(addr) + " lost");
-					m_connections.Remove((ServerDefaultConnection*)event.GetUserData());
+					ServerDefaultConnection *conn = (ServerDefaultConnection*)event.GetUserData();
+					wxASSERT(conn->m_sck == event.GetSocket());
+					size_t old_count = m_connections.GetCount();
+					int index = m_connections.Index(*conn);
+					wxASSERT(index > -1);
+					m_connections.Detach(index);
+					size_t new_count = m_connections.GetCount();
+					wxASSERT(old_count - 1 == new_count);
+					delete conn;
 				}
 				break;
 

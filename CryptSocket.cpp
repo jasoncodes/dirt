@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.5 2003-02-15 02:02:55 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.6 2003-02-15 02:46:17 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -358,8 +358,16 @@ void CryptSocketBase::AddToSendQueue(const ByteBuffer &data)
 
 void CryptSocketBase::CloseWithEvent()
 {
-	Close();
-	OnSocketLost();
+	if (m_sck->IsConnected())
+	{
+		if (m_sck)
+		{
+			m_sck->Close();
+		}
+		wxSocketEvent evt(ID_SOCKET);
+		evt.m_event = wxSOCKET_LOST;
+		AddPendingEvent(evt);
+	}
 }
 
 void CryptSocketBase::OnSocketLost()
