@@ -1,4 +1,5 @@
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
+  reproduces in unmodified controls sample
 
 * wxBug: each line read with wxTextInputStream has a null char on the end
 
