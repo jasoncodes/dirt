@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.67 2004-05-22 17:08:49 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.68 2004-05-23 01:38:00 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -873,8 +873,9 @@ wxPoint LogControl::GetVirtualMousePosition()
 
 }
 
-struct LogControlWordCell : public wxHtmlCell
+class LogControlWordCell : public wxHtmlCell
 {
+public:
 	LogControlWordCell(const wxString& word, wxDC& dc);
 	virtual void Draw(wxDC& dc, int x, int y, int view_y1, int view_y2);
 	wxString m_Word;
@@ -889,7 +890,7 @@ wxString LogControl::GetCellText(wxHtmlCell *cell)
 
 	if (cell->IsTerminalCell() && cell->GetWidth() > 0 && cell->GetHeight() > 0)
 	{
-		wxASSERT(sizeof LogControlWordCell == sizeof wxHtmlWordCell);
+		wxASSERT(sizeof (class LogControlWordCell) == sizeof (class wxHtmlWordCell));
 		LogControlWordCell *word_cell = (LogControlWordCell*)cell;
 		return wxString(word_cell->m_Word.c_str());
 	}
