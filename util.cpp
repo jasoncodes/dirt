@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.71 2003-05-31 04:25:33 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.72 2003-06-19 08:59:01 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -448,6 +448,8 @@ void ShowAbout()
 {
 	wxMessageBox(wxString()
 		<< wxT("Dirt Secure Chat ") << GetProductVersion() << wxT("\n")
+		<< wxT("\n")
+		<< wxT("Compiled with ") << wxVERSION_STRING << wxT("\n")
 		<< wxT("\n")
 		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
 		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
