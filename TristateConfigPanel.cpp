@@ -6,54 +6,63 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.1 2003-05-19 13:27:11 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.2 2003-05-30 10:38:05 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
+#include "res/sound.xpm"
+#include "res/sound_disabled.xpm"
+#include "res/dirt.xpm"
 
 enum
 {
-	ID_RADIO = 1,
-	ID_TEXT,
-	ID_BROWSE
+	ID_TEXT = 1,
+	ID_BROWSE,
+	ID_WAVE_PREVIEW
 };
 
-BEGIN_EVENT_TABLE(TristateConfigPanel, wxPanel)
-	EVT_SIZE(TristateConfigPanel::OnSize)
-	EVT_RADIOBOX(ID_RADIO, TristateConfigPanel::OnRadio)
+BEGIN_EVENT_TABLE(TristateConfigPanel, RadioBoxPanel)
 	EVT_TEXT(ID_TEXT, TristateConfigPanel::OnText)
 	EVT_BUTTON(ID_BROWSE, TristateConfigPanel::OnBrowse)
 END_EVENT_TABLE()
 
-TristateConfigPanel::TristateConfigPanel(wxWindow *parent, wxWindowID id,
-	const wxString &caption, const wxString &filespec,
-	const wxPoint& pos)
-	: wxPanel(parent, id, pos, wxDefaultSize),
-		m_filespec(filespec)
+wxString choices[3] = { wxT("None"), wxT("Default"), wxT("Custom") }; 
+
+TristateConfigPanel::TristateConfigPanel(
+	wxWindow *parent, wxWindowID id, const wxString &caption,
+	const wxString &filespec, bool wave_preview, const wxPoint& pos)
+	: RadioBoxPanel(parent, id, caption, pos, WXSIZEOF(choices), choices),
+		m_filespec(filespec), m_wave_preview(wave_preview)
 {
 
-	wxString choices[3] = { wxT("None"), wxT("Default"), wxT("Custom") }; 
-	m_boxRadio = new wxRadioBox(this, ID_RADIO, caption, wxPoint(0,0), wxDefaultSize, 3, choices, 0, wxRA_SPECIFY_COLS);
+	wxPanel *pnl = GetPanel();
 
-	m_pnlPath = new wxPanel(this, wxID_ANY);
 	wxSizer *szrPanel = new wxBoxSizer(wxHORIZONTAL);
 	{
-		m_txt = new wxTextCtrl(m_pnlPath, ID_TEXT);
+		m_txt = new wxTextCtrl(pnl, ID_TEXT);
 		m_txt->Enable(false);
 		szrPanel->Add(m_txt, 1, wxEXPAND, 0);
-		m_cmdBrowse = new wxButton(m_pnlPath, ID_BROWSE, wxT("..."), wxDefaultPosition, wxSize(m_txt->GetBestSize().y, m_txt->GetBestSize().y));
+		wxSize size_button = wxSize(m_txt->GetBestSize().y, m_txt->GetBestSize().y);
+		m_cmdBrowse = new wxButton(pnl, ID_BROWSE, wxT("..."), wxDefaultPosition, size_button);
 		m_cmdBrowse->Enable(false);
 		szrPanel->Add(m_cmdBrowse, 0, wxEXPAND, 0);
+		wxASSERT(!m_wave_preview || (m_wave_preview == (m_filespec.Length() > 0)));
+		if (m_wave_preview)
+		{
+			wxBitmap bmpSound(sound_xpm);
+			m_cmdWavePreview = new wxBitmapButton(pnl, ID_WAVE_PREVIEW, bmpSound, wxDefaultPosition, size_button);
+			m_cmdWavePreview->SetBitmapDisabled(wxBitmap(sound_disabled_xpm));
+			m_cmdWavePreview->Enable(false);
+			szrPanel->Add(m_cmdWavePreview, 0, wxEXPAND, 0);
+		}
+		else
+		{
+			m_cmdWavePreview = NULL;
+		}
 	}
-	wxSize size;
-	m_boxRadio->GetSize(&size.x, &size.y);
-	m_pnlPath->SetSizer(szrPanel);
-	m_pnlPath->Fit();
-	m_pnlPath->Move(4, size.y);
-	m_pnlPath->SetSize(size.x - 8, -1);
-	size.y += m_pnlPath->GetSize().y + 8;
-	m_boxRadio->SetSize(size);
-	SetSize(size);
+	pnl->SetSizer(szrPanel);
+
+	SetSizes();
 
 }
 
@@ -61,18 +70,15 @@ TristateConfigPanel::~TristateConfigPanel()
 {
 }
 
-void TristateConfigPanel::OnSize(wxSizeEvent &event)
+void TristateConfigPanel::OnSelectionChanged(int n)
 {
-	m_boxRadio->SetSize(GetClientSize());
-	m_pnlPath->SetSize(GetClientSize().x - 8, -1);
-}
-
-void TristateConfigPanel::OnRadio(wxCommandEvent &event)
-{
-	bool b = (event.GetInt() == 2);
+	bool b = (n == 2);
 	m_txt->Enable(b);
 	m_cmdBrowse->Enable(b);
-	SendChangeEvent();
+	if (m_cmdWavePreview)
+	{
+		m_cmdWavePreview->Enable(b);
+	}
 }
 
 void TristateConfigPanel::OnText(wxCommandEvent &event)
@@ -94,6 +100,7 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &event)
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			m_txt->SetValue(dlg.GetPath());
+			SendChangeEvent();
 		}
 	}
 	else
@@ -102,13 +109,14 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &event)
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			m_txt->SetValue(dlg.GetPath());
+			SendChangeEvent();
 		}
 	}
 }
 
 Config::TristateMode TristateConfigPanel::GetMode() const
 {
-	return (Config::TristateMode)m_boxRadio->GetSelection();
+	return (Config::TristateMode)GetSelection();
 }
 
 wxString TristateConfigPanel::GetPath() const
@@ -118,10 +126,7 @@ wxString TristateConfigPanel::GetPath() const
 
 void TristateConfigPanel::SetMode(Config::TristateMode mode)
 {
-	m_boxRadio->SetSelection(mode);
-	bool b = (mode == Config::tsmCustom);
-	m_txt->Enable(b);
-	m_cmdBrowse->Enable(b);
+	SetSelection(mode);
 }
 
 void TristateConfigPanel::SetPath(const wxString &path)
@@ -129,20 +134,12 @@ void TristateConfigPanel::SetPath(const wxString &path)
 	m_txt->SetValue(path);
 }
 
-void TristateConfigPanel::SendChangeEvent()
-{
-	wxCommandEvent evt(wxEVT_COMMAND_TEXT_UPDATED, GetId());
-	evt.SetInt(m_boxRadio->GetSelection());
-	evt.SetString(m_txt->GetValue());
-	GetParent()->AddPendingEvent(evt);
-}
-
 bool TristateConfigPanel::Enable(bool enabled)
 {
-	return wxPanel::Enable(enabled);
+	return RadioBoxPanel::Enable(enabled);
 }
 
 void TristateConfigPanel::Enable(Config::TristateMode mode, bool enabled)
 {
-	m_boxRadio->Enable(mode, enabled);
+	RadioBoxPanel::Enable(mode, enabled);
 }

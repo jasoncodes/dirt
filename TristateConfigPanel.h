@@ -2,13 +2,16 @@
 #define TristateConfigPanel_H_
 
 #include "ConfigFile.h"
+#include "RadioBoxPanel.h"
 
-class TristateConfigPanel : public wxPanel
+class TristateConfigPanel : public RadioBoxPanel
 {
 
 public:
 	TristateConfigPanel(wxWindow *parent, wxWindowID id = -1,
-		const wxString &caption = wxT("Tristate Config Panel"), const wxString &filespec = wxT(""),
+		const wxString &caption = wxT("Tristate Config Panel"),
+		const wxString &filespec = wxT(""),
+		const bool wave_preview = false,
 		const wxPoint& pos = wxDefaultPosition);
 	virtual ~TristateConfigPanel();
 
@@ -22,20 +25,18 @@ public:
 	virtual void Enable(Config::TristateMode mode, bool enabled);
 
 protected:
-	void OnSize(wxSizeEvent &event);
-	void OnRadio(wxCommandEvent &event);
 	void OnText(wxCommandEvent &event);
 	void OnBrowse(wxCommandEvent &event);
 
 protected:
-	virtual void SendChangeEvent();
+	virtual void OnSelectionChanged(int n);
 
 protected:
-	wxRadioBox *m_boxRadio;
-	wxPanel *m_pnlPath;
 	wxTextCtrl *m_txt;
 	wxButton *m_cmdBrowse;
+	wxBitmapButton *m_cmdWavePreview;
 	wxString m_filespec;
+	bool m_wave_preview;
 
 private:
 	DECLARE_EVENT_TABLE()
