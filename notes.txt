@@ -1,3 +1,22 @@
+[00:13] *** Looking up 198.142.235.68
+[00:13] *** Connecting to 198.142.235.68
+[00:13] *** Ping timeout
+[00:13] *** Looking up 198.142.235.68
+[00:13] *** Connecting to 198.142.235.68
+[00:13] *** Ping timeout
+
+* set default height to say 40% of primary display or 300px (which ever is more)
+
+* set default width as current, but make sure not more that width of primary display
+
+* configfile: access denied on checking last mod,
+  "Entry Y appears more than once in Client"
+  Is something in ConfigFile not mutex protected?
+
+* do dupe nick check after content enhancing
+
+* win32: only setfocus in timer if getfroegroundwindow is mdi frame
+
 * ability to search logs
 	* how load the log search frame?
 	* critera at top, listview with matched lines in the middle
