@@ -1,5 +1,3 @@
-* turn "bool Listen(...)" into "void Listen(...)" + events
-
 * SOCKS 4/5 BIND support for DCC Listen
 
 * Mutex (win32 + unix)

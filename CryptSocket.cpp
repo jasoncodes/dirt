@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.37 2003-06-16 08:39:02 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.38 2003-06-19 07:14:36 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -737,25 +737,34 @@ CryptSocketServer::~CryptSocketServer()
 {
 }
 
-bool CryptSocketServer::Listen(const wxString &host, wxUint16 port)
+void CryptSocketServer::Listen(const wxString &host, wxUint16 port)
 {
 	Destroy();
 	wxIPV4address addr;
+	bool ok = true;
 	if (host.Length())
 	{
 		if (!addr.Hostname(host))
 		{
-			return false;
+			ok = false;
 		}
 	}
 	else
 	{
 		addr.AnyAddress();
 	}
-	addr.Service(port);
-	m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
-	InitSocketEvents();
-	return m_sck->Ok();
+	if (ok)
+	{
+		addr.Service(port);
+		m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
+		InitSocketEvents();
+		ok = m_sck->Ok();
+	}
+	if (m_handler)
+	{
+		CryptSocketEvent evt(m_id, ok?CRYPTSOCKET_LISTEN:CRYPTSOCKET_ERROR, this);
+		m_handler->AddPendingEvent(evt);
+	}
 }
 
 CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType id, void *userdata)
@@ -786,6 +795,12 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 		sck->Destroy();
 		return NULL;
 	}
+}
+
+wxUint16 CryptSocketServer::GetListenPort() const
+{
+	wxIPV4address addr;
+	return (Ok() && GetLocal(addr)) ? addr.Service() : 0;
 }
 
 void CryptSocketServer::OnSocketConnection()

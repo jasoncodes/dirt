@@ -8,6 +8,7 @@ class FileTransfer;
 class ByteBuffer;
 class CryptSocketBase;
 class CryptSocketEvent;
+class CryptSocketServer;
 class DirtApp;
 class Uint16Array;
 
@@ -55,6 +56,7 @@ protected:
 	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
 	void AppendMyIPs(ByteBufferArray &data, wxUint16 port) const;
 	void SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const;
+	void SendCTCPAccept(FileTransfer &t, CryptSocketServer *sckServer);
 
 protected:
 	void OnGetConnection(FileTransfer &t);

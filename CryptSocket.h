@@ -155,8 +155,10 @@ public:
 	CryptSocketServer();
 	virtual ~CryptSocketServer();
 
-	virtual bool Listen(const wxString &host = wxEmptyString, wxUint16 port = 0);
+	virtual void Listen(const wxString &host = wxEmptyString, wxUint16 port = 0);
 	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY, void *userdata = NULL);
+
+	virtual wxUint16 GetListenPort() const;
 
 	virtual CryptSocketType GetType() const { return cstServer; }
 
@@ -178,7 +180,8 @@ enum CryptSocketNotify
 	CRYPTSOCKET_OUTPUT,
 	CRYPTSOCKET_CONNECTION,
 	CRYPTSOCKET_LOST,
-	CRYPTSOCKET_ERROR
+	CRYPTSOCKET_ERROR,
+	CRYPTSOCKET_LISTEN
 };
 
 class CryptSocketEvent : public wxEvent

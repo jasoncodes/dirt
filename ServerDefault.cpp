@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.63 2003-06-16 03:10:33 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.64 2003-06-19 07:14:36 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -93,31 +93,7 @@ void ServerDefault::Start()
 {
 	wxCHECK_RET(!IsRunning(), wxT("Cannot start server. Server is already running."));
 	wxUint16 port = GetConfig().GetListenPort();
-	if (m_sckListen->Listen(wxEmptyString, port))
-	{
-		wxIPV4address addr;
-		m_sckListen->GetLocal(addr);
-		Information(wxT("Server started on ") + GetIPV4String(addr, true));
-		m_event_handler->OnServerStateChange();
-		m_peak_users = 0;
-		m_start_tick = ::wxGetUTCTime();
-		m_last_active = m_start_tick;
-		m_ip_list.Empty();
-		m_tmrPing->Start(ping_timer_interval);
-		m_last_failed = false;
-		m_last_server_name = m_config.GetServerName();
-		ResetPublicListUpdate(3, true);
-		wxTimerEvent evt;
-		OnTimerPing(evt);
-		m_bcast = new BroadcastSocket(GetConfig().GetListenPort());
-		m_bcast->SetEventHandler(this, ID_BROADCAST);
-	}
-	else
-	{
-		wxString str;
-		str << wxT("Error starting server. Maybe a server is already running on port ") << port;
-		Warning(str);
-	}
+	m_sckListen->Listen(wxEmptyString, port);
 }
 
 void ServerDefault::Stop()
@@ -145,16 +121,62 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 	if (event.GetSocket() == m_sckListen)
 	{
 
-		if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION)
+		switch (event.GetSocketEvent())
 		{
-			ServerDefaultConnection *conn = new ServerDefaultConnection;
-			conn->m_sck = m_sckListen->Accept(this, ID_SOCKET, conn);
-			m_connections.Add(conn);
-			m_event_handler->OnServerConnectionChange();
-		}
-		else
-		{
-			wxFAIL_MSG(wxT("Unexpected message in ServerDefault::OnSocket"));
+
+			case CRYPTSOCKET_CONNECTION:
+			{
+				ServerDefaultConnection *conn = new ServerDefaultConnection;
+				conn->m_sck = m_sckListen->Accept(this, ID_SOCKET, conn);
+				m_connections.Add(conn);
+				m_event_handler->OnServerConnectionChange();
+			}
+			break;
+		
+			case CRYPTSOCKET_LISTEN:
+			{
+				wxIPV4address addr;
+				m_sckListen->GetLocal(addr);
+				Information(wxT("Server started on ") + GetIPV4String(addr, true));
+				m_event_handler->OnServerStateChange();
+				m_peak_users = 0;
+				m_start_tick = ::wxGetUTCTime();
+				m_last_active = m_start_tick;
+				m_ip_list.Empty();
+				m_tmrPing->Start(ping_timer_interval);
+				m_last_failed = false;
+				m_last_server_name = m_config.GetServerName();
+				ResetPublicListUpdate(3, true);
+				wxTimerEvent evt;
+				OnTimerPing(evt);
+				delete m_bcast;
+				m_bcast = new BroadcastSocket(GetConfig().GetListenPort());
+				m_bcast->SetEventHandler(this, ID_BROADCAST);
+			}
+			break;
+		
+			case CRYPTSOCKET_ERROR:
+			{
+				wxString str;
+				str << wxT("Error starting server (");
+				if (event.GetData().Length())
+				{
+					str << event.GetData();
+				}
+				else
+				{
+					wxUint16 port = GetConfig().GetListenPort();
+					str << wxT("Maybe a server is already running on port ") << (int)port << wxT("?");
+				}
+				str << wxT(")");
+				Warning(str);
+			}
+			break;
+
+			default:
+				wxFAIL_MSG(wxT("Unexpected message in ServerDefault::OnSocket"));
+				break;
+
 		}
 
 	}

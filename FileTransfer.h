@@ -74,6 +74,7 @@ protected:
 	//  get only
 	wxArrayString m_IPs;
 	Uint16Array m_ports;
+	bool m_accept_sent;
 
 	// send only
 	bool m_got_accept;

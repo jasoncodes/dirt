@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.47 2003-06-17 08:21:15 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.48 2003-06-19 07:14:36 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -166,7 +166,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->m_cps.Reset();
 	t->m_last_tick = GetMillisecondTicks();
 	t->OnTimer(t->m_last_tick);
-	t->status = wxT("Waiting for accept...");
+	t->status = wxT("Opening listen socket...");
 
 	if (!t->m_file.Open(t->filename, File::read))
 	{
@@ -179,26 +179,10 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	SetProxyOnSocket(sck, false);
 	sck->SetUserData(t);
 	sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-	if (!sck->Listen())
-	{
-		delete t;
-		return -1;
-	}
-	wxIPV4address addr;
-	sck->GetLocal(addr);
 	t->m_scks.Add(sck);
-
 	m_transfers.Add(t);
+	sck->Listen();
 
-	ByteBufferArray data;
-	data.Add(wxString(wxT("SEND")));
-	data.Add(wxFileName(t->filename).GetFullName());
-	data.Add(wxLongLong(t->filesize).ToString());
-	data.Add(wxLongLong(t->transferid).ToString());
-	data.Add(ByteBuffer());
-	AppendMyIPs(data, addr.Service());
-	m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
-	
 	m_client->m_event_handler->OnClientTransferNew(*t);
 	m_client->m_event_handler->OnClientTransferState(*t);
 
@@ -883,7 +867,6 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		t.state = ftsGetConnecting;
 		t.filesent = resume ? File::Length(t.filename) : 0;
 		t.resume = t.filesent;
-		t.status = wxT("Connecting...");
 		t.m_last_tick = GetMillisecondTicks();
 		
 		for (size_t i = 0; i < t.m_IPs.GetCount(); ++i)
@@ -897,32 +880,17 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 			sckClient->Connect(t.m_IPs[i], t.m_ports[i]);
 		}
 
+		t.status = wxT("Connecting...");
 		m_client->m_event_handler->OnClientTransferState(t);
-
-		ByteBufferArray data;
-		data.Add(wxString(wxT("ACCEPT")));
-		data.Add(wxString() << t.remoteid);
-		data.Add(wxLongLong(t.filesent).ToString());
-		data.Add(ByteBuffer());
 
 		CryptSocketServer *sckServer = new CryptSocketServer;
 		sckServer->SetEventHandler(this, ID_SOCKET_SERVER);
 		SetProxyOnSocket(sckServer, false);
 		sckServer->SetUserData(&t);
 		sckServer->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-		if (sckServer->Listen())
-		{
-			t.m_scks.Add(sckServer);
-			wxIPV4address addr;
-			sckServer->GetLocal(addr);
-			AppendMyIPs(data, addr.Service());
-		}
-		else
-		{
-			delete sckServer;
-		}
-	
-		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
+		t.m_scks.Add(sckServer);
+
+		sckServer->Listen();
 
 		return true;
 
@@ -930,6 +898,24 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 
 	return false;
 
+}
+
+void FileTransfers::SendCTCPAccept(FileTransfer &t, CryptSocketServer *sckServer)
+{
+	if (!t.m_accept_sent)
+	{
+		ByteBufferArray data;
+		data.Add(wxString(wxT("ACCEPT")));
+		data.Add(wxString() << t.remoteid);
+		data.Add(wxLongLong(t.filesent).ToString());
+		data.Add(ByteBuffer());
+		if (sckServer && sckServer->GetListenPort())
+		{
+			AppendMyIPs(data, sckServer->GetListenPort());
+		}
+		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
+		t.m_accept_sent = true;
+	}
 }
 
 int FileTransfers::FindTransferBySocket(CryptSocketBase *sck)
@@ -1021,26 +1007,72 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 						OnGetConnection(*t);
 					}
 				}
+				if (!t->issend)
+				{
+					SendCTCPAccept(*t, NULL);
+				}
+				break;
+
+			case CRYPTSOCKET_LISTEN:
+				{
+					wxASSERT(event.GetSocket()->GetType() == cstServer);
+					CryptSocketServer *sck = (CryptSocketServer*)event.GetSocket();
+					if (t->issend)
+					{
+						ByteBufferArray data;
+						data.Add(wxString(wxT("SEND")));
+						data.Add(wxFileName(t->filename).GetFullName());
+						data.Add(wxLongLong(t->filesize).ToString());
+						data.Add(wxLongLong(t->transferid).ToString());
+						data.Add(ByteBuffer());
+						AppendMyIPs(data, sck->GetListenPort());
+						m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
+						t->status = wxT("Waiting for accept...");
+						m_client->m_event_handler->OnClientTransferState(*t);
+					}
+					else
+					{
+						SendCTCPAccept(*t, sck);
+					}
+	
+				}
 				break;
 
 			case CRYPTSOCKET_LOST:
 			case CRYPTSOCKET_ERROR:
-				if (t->m_scks.GetCount() > 1)
+				if (event.GetSocket()->GetType() == cstServer)
 				{
-					delete event.GetSocket();
-					t->m_scks.Remove(event.GetSocket());
-					if (t->GetConnectCount() == 0)
+					if (t->issend)
 					{
-						t->m_cant_connect = true;
-						ByteBufferArray data;
-						data.Add(wxString() << wxT("NOCONNECT") << (t->issend?wxT("SEND"):wxT("GET")));
-						data.Add(wxString() << (t->issend?t->transferid:t->remoteid));
-						m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
+						t->state = ftsSendFail;
+						t->status = wxT("Error opening listen socket");
+						m_client->m_event_handler->OnClientTransferState(*t);
+						DeleteTransfer(t->transferid, false);
+					}
+					else
+					{
+						SendCTCPAccept(*t, NULL);
 					}
 				}
 				else
 				{
-					OnClose(*t);
+					if (t->m_scks.GetCount() > 1)
+					{
+						delete event.GetSocket();
+						t->m_scks.Remove(event.GetSocket());
+						if (t->GetConnectCount() == 0)
+						{
+							t->m_cant_connect = true;
+							ByteBufferArray data;
+							data.Add(wxString() << wxT("NOCONNECT") << (t->issend?wxT("SEND"):wxT("GET")));
+							data.Add(wxString() << (t->issend?t->transferid:t->remoteid));
+							m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
+						}
+					}
+					else
+					{
+						OnClose(*t);
+					}
 				}
 				break;
 
