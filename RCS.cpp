@@ -4,7 +4,7 @@
 #include "wx/wxprec.h"
 
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.5 2003-02-13 13:19:17 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.3 2003-02-13 13:16:50 jason Exp $)
 
 static wxString latest_ver;
 
