@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.15 2003-06-05 14:09:48 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.16 2003-06-05 14:13:10 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -755,8 +755,8 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 
 	wxASSERT(sck);
 
-	switch (GetProtocol())
-	{
+//	switch (GetProtocol())
+//	{
 
 //		case ppSOCKS4:
 //			return new CryptSocketProxySOCKS4Listen(sck);
@@ -764,11 +764,11 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 //		case ppSOCKS5:
 //			return new CryptSocketProxySOCKS5Listen(sck);
 
-		default:
+//		default:
 			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyListen"));
 			return NULL;
 
-	}
+//	}
 
 }
 
