@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.13 2003-08-01 07:48:01 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.14 2004-03-02 10:03:16 jason Exp $)
 
 #include "DNS.h"
 
@@ -84,12 +84,8 @@ void DNS::CleanUp()
 	wxLogNull supress_log;
 	if (IsBusy())
 	{
-		// Kill() has issues even on Win32 (s_section_lookup not leaving)
-		//#ifdef __WXMSW__
-		//	m_worker->Kill();
-		//#else
-			m_worker->Delete();
-		//#endif
+		// if the worker is busy, this will block until complete
+		m_worker->Delete();
 	}
 	else
 	{
@@ -118,12 +114,14 @@ bool DNS::Cancel()
 	return x;
 }
 
-bool DNS::Lookup(const wxString &hostname)
+bool DNS::Lookup(const wxString &hostname, bool block_if_busy)
 {
 	
 	m_section.Enter();
 	
-	if (IsBusy())
+	// cleanup call below blocks if busy
+	// if we don't want to block, need to check now
+	if (!block_if_busy && IsBusy())
 	{
 		m_section.Leave();
 		return false;

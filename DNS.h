@@ -15,7 +15,7 @@ public:
 	DNS();
 	virtual ~DNS();
 
-	virtual bool Lookup(const wxString &hostname);
+	virtual bool Lookup(const wxString &hostname, bool block_if_busy = true);
 	virtual bool Cancel();
 	virtual bool IsBusy() const;
 

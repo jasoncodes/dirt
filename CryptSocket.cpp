@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.40 2003-06-27 11:34:44 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.41 2004-03-02 10:03:15 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -702,7 +702,7 @@ void CryptSocketClient::OnDNS(DNSEvent &event)
 
 				if (!m_DNS->Lookup(m_proxy_settings->GetHostname()))
 				{
-					OnSocketConnectionError(wxT("Cannot start DNS"));
+					OnSocketConnectionError(wxT("Cannot start DNS (2)"));
 				}
 
 				return;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.82 2004-02-15 08:05:21 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.83 2004-03-02 10:03:16 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1251,5 +1251,15 @@ wxString GetOSDescription()
 	return str;
 #else
 	return wxGetOsDescription();
+#endif
+}
+
+void DebugMsg(const wxString &msg)
+{
+	wxString line = GetLongTimestamp() + msg + wxT("\n");
+#ifdef __WXMSW__
+	OutputDebugString(line);
+#else
+	wxFputs(line.c_str(), stderr);
 #endif
 }
