@@ -215,7 +215,7 @@ CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=1
-BuildCmd=$(CPP) -c Crypt.cpp -o Release/Crypt.o $(CXXFLAGS) -Wno-comment -Wno-unused
+BuildCmd=$(CPP) -c Crypt.cpp -o UnicodeRelease/Crypt.o $(CXXFLAGS) -Wno-comment -Wno-unused
 
 [Unit20]
 FileName=Crypt.h
