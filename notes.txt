@@ -1,3 +1,5 @@
+@home.my shouldnt be URL'd
+
 GTK: hotkey support
 
 GTK2: clipboard seems to be not performing a UTF8 conversion somewhere
