@@ -32,11 +32,11 @@ wxCheckBox *m_chkPublicListEnabled;
 wxTextCtrl *m_txtPublicListAuthentication;
 wxTextCtrl *m_txtPublicListComment;
 
-//wxCheckBox *m_chkHTTPProxyEnabled;
-//wxTextCtrl *m_txtHTTPProxyHostname;
-//wxTextCtrl *m_txtHTTPProxyPort;
-//wxTextCtrl *m_txtHTTPProxyUsername;
-//wxTextCtrl *m_txtHTTPProxyPassword;
+wxCheckBox *m_chkHTTPProxyEnabled;
+wxTextCtrl *m_txtHTTPProxyHostname;
+wxTextCtrl *m_txtHTTPProxyPort;
+wxTextCtrl *m_txtHTTPProxyUsername;
+wxTextCtrl *m_txtHTTPProxyPassword;
 
 	wxButton *m_cmdApply;
 

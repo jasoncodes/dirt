@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.13 2003-03-04 06:12:43 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.14 2003-03-04 06:15:09 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -194,7 +194,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			}
 			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxString(wxT(' '), 23));
+			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxString(wxT(' '), 20));
 			wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
 			{
 
@@ -215,7 +215,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			}
 			szrLeft->Add(szrLeftPublic, 0, wxEXPAND | wxBOTTOM, 8);
 
-			wxStaticBox *fraLeftProxy = new wxStaticBox(panel, -1, wxString(wxT(' '), 23));
+			wxStaticBox *fraLeftProxy = new wxStaticBox(panel, -1, wxString(wxT(' '), 25));
 			wxBoxSizer *szrLeftProxy = new StaticCheckBoxSizer(fraLeftProxy, m_chkHTTPProxyEnabled, wxVERTICAL);
 			{
 
