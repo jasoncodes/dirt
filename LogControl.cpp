@@ -465,6 +465,13 @@ public:
 
 bool LogControl::s_bInitDone = false;
 
+BEGIN_EVENT_TABLE(LogControl, wxPanel)
+	EVT_SIZE(LogControl::OnSize)
+	EVT_ERASE_BACKGROUND(LogControl::OnErase)
+	EVT_IDLE(LogControl::OnIdle)
+	EVT_MOUSE_EVENTS(LogControl::OnMouseEvent)
+END_EVENT_TABLE()
+
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
 	bool align_bottom)
@@ -497,25 +504,6 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 
 	m_Resizing = false;
 	m_iYOffset = 0;
-
-	Connect(GetId(), wxEVT_SIZE, (wxObjectEventFunction)(wxSizeEventFunction)&LogControl::OnSize);
-	Connect(GetId(), wxEVT_ERASE_BACKGROUND, (wxObjectEventFunction)(wxEraseEventFunction)&LogControl::OnErase);
-	
-	Connect(wxID_ANY, wxEVT_IDLE, (wxObjectEventFunction)(wxIdleEventFunction)&LogControl::OnIdle);
-
-	Connect(GetId(), wxEVT_LEFT_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_LEFT_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_MIDDLE_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_MIDDLE_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_RIGHT_DOWN, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_RIGHT_UP, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_MOTION, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_LEFT_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_MIDDLE_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_RIGHT_DCLICK, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_ENTER_WINDOW, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_LEAVE_WINDOW, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
-	Connect(GetId(), wxEVT_MOUSEWHEEL, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
 
 	FixBorder(this);
 	SetBorders(1);

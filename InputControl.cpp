@@ -21,7 +21,6 @@ public:
 	InputControlColourPanel(wxWindow *parent, wxWindowID id, const wxString &text, const wxPoint& pos, const wxSize size)
 		: wxPanel(parent, id, pos, size, wxBORDER_SUNKEN), m_text(text)
 	{
-		Connect(GetId(), GetId(), wxEVT_PAINT, (wxObjectEventFunction)(wxPaintEventFunction)&InputControlColourPanel::OnPaint);
 	}
 
 protected:
@@ -46,7 +45,14 @@ protected:
 protected:
 	wxString m_text;
 
+private:
+	DECLARE_EVENT_TABLE()
+
 };
+
+BEGIN_EVENT_TABLE(InputControlColourPanel, wxPanel)
+	EVT_PAINT(InputControlColourPanel::OnPaint)
+END_EVENT_TABLE()
 
 
 
@@ -58,8 +64,6 @@ public:
 		: wxMiniFrame(parent, id, title, pos, size, wxCAPTION | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT, name)
 	{
 		
-		ConnectEvents();
-
 		wxSize static_size(20,20);
 		wxPoint static_pos(0,0);
 
@@ -93,13 +97,6 @@ public:
 	~InputControlColourPopup()
 	{
 		delete tmr;
-	}
-
-
-	void ConnectEvents()
-	{
-		Connect(GetId(), GetId(), wxEVT_CLOSE_WINDOW, (wxObjectEventFunction)&InputControlColourPopup::OnCloseWindow);
-		Connect(wxID_ANY, wxID_ANY, wxEVT_TIMER, (wxObjectEventFunction)(wxTimerEventFunction)&InputControlColourPopup::OnTimer);
 	}
 
 	InputControl *GetControl()
@@ -185,13 +182,28 @@ public:
 protected:
 	wxTimer *tmr;
 
+private:
+	DECLARE_EVENT_TABLE()
+
 };
 
+BEGIN_EVENT_TABLE(InputControlColourPopup, wxMiniFrame)
+	EVT_CLOSE(InputControlColourPopup::OnCloseWindow)
+	EVT_TIMER(wxID_ANY, InputControlColourPopup::OnTimer)
+END_EVENT_TABLE()
 
 
 
 #include <wx/html/htmlwin.h>
 #include <wx/html/winpars.h>
+
+BEGIN_EVENT_TABLE(InputControl, wxTextCtrl)
+	EVT_TEXT(wxID_ANY, InputControl::OnChange)
+	EVT_TEXT_ENTER(wxID_ANY, InputControl::OnEnterPress)
+	EVT_KEY_DOWN(InputControl::OnKeyDown)
+	EVT_KEY_UP(InputControl::OnKeyUp)
+	EVT_CHAR(InputControl::OnChar)
+END_EVENT_TABLE()
 
 InputControl::InputControl(
 	wxWindow* parent, wxWindowID id,
@@ -219,7 +231,6 @@ InputControl::InputControl(
 	txtBestSize = new wxTextCtrl(GetParent(), -1);
 	txtBestSize->Show(false);
 	txtBestSize->SetFont(GetFont());
-	ConnectEvents();
 
 	#ifdef __WXMSW__
 	{
@@ -265,15 +276,6 @@ void InputControl::ShowPopup()
 		GetParent()->SetFocus();
 
 	}
-}
-
-void InputControl::ConnectEvents()
-{
-	Connect(wxID_ANY, wxID_ANY, wxEVT_COMMAND_TEXT_UPDATED, (wxObjectEventFunction)&InputControl::OnChange);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_COMMAND_TEXT_ENTER, (wxObjectEventFunction)&InputControl::OnEnterPress);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_KEY_DOWN, (wxObjectEventFunction)&InputControl::OnKeyDown);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_KEY_UP, (wxObjectEventFunction)&InputControl::OnKeyUp);
-	Connect(wxID_ANY, wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&InputControl::OnChar);
 }
 
 void InputControl::AddToHistory(const wxString &line)

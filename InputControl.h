@@ -33,7 +33,6 @@ protected:
 	wxTextCtrl *txtBestSize;
 	bool m_ctrl_down;
 
-	void ConnectEvents();
 	void AddToHistory(const wxString &line);
 	bool ModifierCheck(wxKeyEvent& event);
 	void AddModifier(const wxString &modifier, bool alternate_caret_pos);
@@ -43,6 +42,9 @@ protected:
 	void ShowPopup();
 	void MaybeClosePopup(wxKeyEvent& event);
 	bool IsPrintable(const wxString &text);
+
+private:
+	DECLARE_EVENT_TABLE()
 
 };
 

@@ -81,6 +81,9 @@ protected:
 	wxHtmlCell *last_end_cell;
 	bool last_start_end_valid;
 
+private:
+	DECLARE_EVENT_TABLE()
+
 };
 
 #endif
