@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.35 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.36 2003-03-25 08:19:04 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -204,7 +204,7 @@ bool DirtApp::OnInit()
 
 			case appLog:
 				m_cmdline->Usage();
-				break;
+				return false;
 
 			default:
 				wxFAIL_MSG(wxT("Unknown AppMode"));

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.9 2003-03-21 11:56:59 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.10 2003-03-25 08:17:46 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -208,7 +208,24 @@ ByteBuffer::operator wxString() const
 
 	size_t actual_len = wxConvUTF8.MB2WC(unicode, utf8, m_data->length);
 
-	wxString result(unicode, wxConvLocal, actual_len);
+	actual_len = wxMin(actual_len, wxSTRING_MAXLEN);
+
+	#if wxUSE_UNICODE
+		wxString result(unicode, *wxConvCurrent, actual_len);
+	#else
+		char *buff = new char[actual_len*2];
+		size_t buff_len = wxConvLocal.WC2MB(buff, unicode, actual_len*2);
+		if (buff_len == (size_t)-1)
+		{
+			buff_len = actual_len;
+			for (size_t i = 0; i < actual_len; ++i)
+			{
+				buff[i] = (unicode[i] > 0xff) ? wxT('?') : (wxChar)unicode[i];
+			}
+		}
+		wxString result(buff, buff_len);
+		delete buff;
+	#endif
 
 	delete unicode;
 	delete utf8;

@@ -1,7 +1,5 @@
 * add --config=... to change the config file used by dirt
 
-* if convert err when wxString::wxString(unicode), '?' should be used vs empty string
-
 * option to delete log files (to recycle bin on win32) (right click popup and delete key)
 
 * when colour popup shows on GTK cannot programmically focus back to main window
@@ -39,3 +37,4 @@
 * file transfers
 
 * flashing tray icon stops being orange sometimes. after a short delay it seems.
+  it'll be the updating of the frame caption for sure...
