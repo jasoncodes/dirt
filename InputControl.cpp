@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.14 2003-05-23 13:18:54 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.15 2003-05-28 11:44:23 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -222,6 +222,8 @@ InputControl::InputControl(
 {
 
 	// a whole lot of messing around to get the same font as wxHtmlWindow uses
+	// this is currently broken on GTK 2.x (but works fine on Win32 & GTK 1.x)
+	#ifndef __WXGTK20__
 	{
 		wxHtmlWindow *html = new wxHtmlWindow(GetParent());
 		wxHtmlWinParser *parser = html->GetParser();
@@ -234,6 +236,7 @@ InputControl::InputControl(
 		delete pDC;
 		html->Destroy();
 	}
+	#endif
 
 	m_txtBestSize = new wxTextCtrl(GetParent(), -1);
 	m_txtBestSize->Show(false);
