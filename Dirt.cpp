@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.25 2003-03-05 10:30:53 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.26 2003-03-08 01:27:32 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -336,6 +336,12 @@ bool DirtApp::ProcessCommandLine()
 		return false;
 	}
 
+#else
+
+	#include <wx/filename.h>
+	#include <wx/wfstream.h>
+	#include <wx/txtstrm.h>
+
 #endif
 
 void DirtApp::RegisterDirtProtocol()
@@ -365,8 +371,29 @@ void DirtApp::RegisterDirtProtocol()
 
 	#else
 
-		// only available on Win32
-
+	wxFileName kde_dirt_protocol(wxFileName::GetHomeDir() + wxT("/.kde/share/services/"));
+	if (kde_dirt_protocol.DirExists())
+	{
+		kde_dirt_protocol.SetFullName(wxT("dirt.protocol"));
+		wxChar self[4096];
+		if (realpath(argv[0], self))
+		{
+			wxFileOutputStream file(kde_dirt_protocol.GetFullPath());
+			wxTextOutputStream text(file);
+			text << wxT("[Protocol]\n");
+			text << wxT("exec=") << self << wxT(" --host=%u\n");
+			text << wxT("protocol=dirt\n");
+			text << wxT("input=none\n");
+			text << wxT("output=none\n");
+			text << wxT("helper=true\n");
+			text << wxT("listing=false\n");
+			text << wxT("reading=false\n");
+			text << wxT("writing=false\n");
+			text << wxT("makedir=false\n");
+			text << wxT("deleting=false\n");
+		}
+	}
+	
 	#endif
 
 }

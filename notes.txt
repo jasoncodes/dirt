@@ -36,9 +36,9 @@
 
 * is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
 
-* dirt:// protocol registration on mozilla and/or KDE
+* dirt:// protocol registration for mozilla on X11
 
 * tray icon support
-* file transfers
 * /bind
 * /alias
+* file transfers
