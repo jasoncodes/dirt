@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.83 2003-11-24 07:01:46 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.84 2004-03-15 06:23:17 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -543,7 +543,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 					wxString msg;
 					
 					msg.Empty();
-					msg << wxT("    Context:     ") << (tmr->GetContext().Length() ? tmr->GetContext() : wxT("(None)"));
+					msg << wxT("    Context:     ") << (tmr->GetContext().Length() ? tmr->GetContext() : wxString(wxT("(None)")));
 					m_event_handler->OnClientInformation(context, msg);
 
 					msg.Empty();

@@ -47,9 +47,9 @@ public:
 	virtual long GetAwayTime() const { return m_awaytime; }
 	virtual ByteBuffer GetAwayMessage() const { return m_awaymessage; }
 	virtual long GetIdleTime() const { return wxGetUTCTime() - m_last_active; }
-	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : wxT("N/A"); }
+	virtual wxString GetIdleTimeString() const { return (GetIdleTime() > -1) ? SecondsToMMSS(GetIdleTime()) : wxString(wxT("N/A")); }
 	virtual time_t GetLatency() const { return m_latency; }
-	virtual wxString GetLatencyString() const { return GetLatency() > -1 ? AddCommas((wxLongLong_t)GetLatency()) + wxT(" ms") : wxT("N/A"); }
+	virtual wxString GetLatencyString() const { return (GetLatency() > -1) ? AddCommas((wxLongLong_t)GetLatency()) + wxT(" ms") : wxString(wxT("N/A")); }
 	virtual wxString GetUserAgent() const { return m_useragent; }
 	virtual wxDateTime GetJoinTime() const { return m_jointime; }
 	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
