@@ -26,50 +26,87 @@
 	* before forwarding anything, call EnsureLatestLoaded()
 	* if (m_mutex->GetLockDepth() == 1) call Flush() after any modification
 	  forwarding
+	* int m_batch_depth = 0;
+	  wxDateTime m_last_file_mod;
+	  wxString m_filename;
+	  Mutex *m_mutex;
+	  int m_mutex_lock = 0;
 	* constructor
 		m_filename = GetConfigFilename();
 		m_mutex = new Mutex(m_filename + wxT(".lock"));
 		ReInit();
 	* destructor
-		wxASSERT_MSG(!m_mutex->IsLocked(), wxT("EndBatch() not called before
-		  destroying ConfigFile"));	
+		wxASSERT_MSG(!m_batch_depth, wxT("EndBatch() not called before destroying ConfigFile"));
+		wxASSERT_MSG(!m_mutex_lock, wxT("Config mutex locked in destructor"));
+		wxASSERT_MSG(!m_mutex->IsLocked(), wxT("Mutex locked in destructor"));
+		delete m_mutex;
+	* bool MutexLock()
+		wxASSERT(m_mutex_lock == m_mutex->GetLockDepth());
+		bool ok = m_mutex->Lock();
+		wxASSERT_MSG(ok, wxT("Error locking config mutex"));
+		if (ok)
+		{
+			m_mutex_lock++;
+		}
+		return ok;
+	* MutexUnlock()
+		wxASSERT(m_mutex_lock == m_mutex->GetLockDepth());
+		if (m_mutex_lock)
+		{
+			if (m_mutex->IsLocked())
+			{
+				m_mutex->Unlock();
+			}
+			m_mutex_lock--;
+		}
 	* Flush(bool);
-		m_mutex->Lock();
+		MutexLock();
+		wxASSERT_MSG(lock_ok, wxT("Error locking config mutex"));
 		wxASSERT(IsLatestLoaded());
 		bool ok = wxFileConfig::Flush();
 		if (ok)
 		{
 			m_last_file_mod = GetLastFileModified();
 		}
-		m_mutex->Unlock();
+		MutexUnlock();
 		return ok;
-	* protected wxDateTime GetLastFileModified() const;
-	* void BeginBatch();
-		m_mutex->Lock();
+	* protected wxDateTime GetLastFileModified() const
+		return m_last_file_mod;
+	* bool BeginBatch();
+		bool ok = MutexLock();
+		if (ok)
+		{
+			m_batch_depth++;
+		}
 		EnsureLatestLoaded();
+		return ok;
 	* void EndBatch();
-		wxASSERT_MSG(m_mutex->IsLocked(), wxT("EndBatch() without BeginBatch()"));
+		wxASSERT_MSG(m_batch_depth, wxT("EndBatch() without BeginBatch()"));
 		Flush();
-		m_mutex->Unlock();
+		if (m_batch_depth)
+		{
+			MutexUnlock();
+			m_batch_depth--;
+		}
 	* bool IsLatestLoaded() const;
-		m_mutex->Lock();
+		MutexLock();
 		bool latest = (m_last_file_mod == GetLastFileModified());
-		m_mutex->Unlock();
+		MutexUnlock();
 		return latest;
 	* ReInit()
-		m_mutex->Lock();
+		MutexLock();
 		delete m_config;
 		m_config = new wxFileConfig(wxT("dirt"), wxT(""), m_filename);
 		m_config->SetUmask(0077);
 		m_last_file_mod = GetLastFileModified();
-		m_mutex->Unlock();
+		MutexUnlock();
 	* EnsureLatestLoaded
-		m_mutex->Lock();
+		MutexLock();
 		if (!IsLatestLoaded())
 		{
 			ReInit();
 		}
-		m_mutex->Unlock();
+		MutexUnlock();
 	* some notification system to call PopulateFilteredWords() when config
 	  file is changed remotely.
 
