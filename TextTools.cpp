@@ -28,7 +28,7 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.4 2004-07-21 07:59:21 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.5 2004-08-09 07:14:33 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
@@ -580,7 +580,10 @@ wxString ConvertUrlsToLinks(const wxString &text)
 			{
 				url = wxT("mailto:") + token;
 			}
-			else if ((token_lower.Find(wxT(".com")) > 0) || (token_lower.Find(wxT(".net")) > 0) || (token_lower.Find(wxT(".org")) > 0))
+			else if ((token_lower.Find(wxT(".com")) > 0) ||
+			         (token_lower.Find(wxT(".net")) > 0) ||
+			         (token_lower.Find(wxT(".org")) > 0) ||
+			         (token_lower.Find(wxT(".gov")) > 0))
 			{
 				url = wxT("http://") + token;
 			}
