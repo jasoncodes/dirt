@@ -1,3 +1,5 @@
+MinGW+NT4: Pressing Alt+T followed by space results in crash
+
 GTK: startup with --host=jason.darktech.org results in it thinking
 that it didn't have focus and a red line appears at the top
 with multiple taskbar flashes
@@ -252,8 +254,6 @@ option to disable red and beep for a mdi child (for server console)
 
 * option to auto /back if talk in main window or talk in any window
   ("don't do it if been away for less than x seconds" option too)
-
-* "Show user is typing cue", "Send user is typing cue"
 
 * can't delete dir last sent from / recv to.
 
