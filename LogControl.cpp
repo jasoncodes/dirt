@@ -485,8 +485,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	}
 
 	m_tmpMouseMoved = FALSE;
-	s_cur_hand = NULL;
-	s_cur_arrow = NULL;
+	m_cur_hand = NULL;
+	m_cur_arrow = NULL;
 	m_tmpLastLink = NULL;
 	m_tmpLastCell = NULL;
 
@@ -526,8 +526,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 
 LogControl::~LogControl()
 {
-	delete s_cur_hand;
-	delete s_cur_arrow;
+	delete m_cur_hand;
+	delete m_cur_arrow;
 }
 
 void LogControl::OnSize(wxSizeEvent& event)
@@ -1149,14 +1149,14 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 void LogControl::OnIdle(wxIdleEvent& event)
 {
 
-	if (s_cur_hand == NULL)
+	if (m_cur_hand == NULL)
 	{
 		#ifdef __WXMSW__
-			s_cur_hand = new wxCursor("hand");
+			m_cur_hand = new wxCursor("hand");
 		#else
-			s_cur_hand = new wxCursor(wxCURSOR_HAND);
+			m_cur_hand = new wxCursor(wxCURSOR_HAND);
 		#endif
-		s_cur_arrow = new wxCursor(wxCURSOR_ARROW);
+		m_cur_arrow = new wxCursor(wxCURSOR_ARROW);
 	}
 
 	if (m_tmpMouseMoved && (m_Cell != NULL))
@@ -1165,6 +1165,12 @@ void LogControl::OnIdle(wxIdleEvent& event)
 		wxPoint pos = GetVirtualMousePosition();
 
 		wxHtmlCell *cell = m_Cell->FindCellByPos(pos.x, pos.y);
+
+		if (last_start_end_valid)
+		{
+			SetCursor(*m_cur_arrow);
+		}
+
 		if ( cell != m_tmpLastCell )
 		{
 			wxHtmlLinkInfo *lnk = cell ? cell->GetLink(pos.x, pos.y) : NULL;
@@ -1173,15 +1179,11 @@ void LogControl::OnIdle(wxIdleEvent& event)
 			{
 				if (lnk == NULL || last_start_end_valid)
 				{
-					SetCursor(*s_cur_arrow);
-					if (m_RelatedStatusBar != -1)
-						m_RelatedFrame->SetStatusText(wxEmptyString, m_RelatedStatusBar);
+					SetCursor(*m_cur_arrow);
 				}
 				else
 				{
-					SetCursor(*s_cur_hand);
-					if (m_RelatedStatusBar != -1)
-						m_RelatedFrame->SetStatusText(lnk->GetHref(), m_RelatedStatusBar);
+					SetCursor(*m_cur_hand);
 				}
 				m_tmpLastLink = lnk;
 			}
