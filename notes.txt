@@ -1,15 +1,20 @@
-* don't show the server details in titlebar until connected (currently shows in connecting)
-
 * win32: scrolling, keeping any menu open, resizing/moving window, etc
   stops all network traffic from being processed (seems to be a win32 message pump problem)
   this problem reproduces in the socket sample
   CVS HEAD as of 2003/04/05 has the same problem (with 2.4 compat)
+
+* <test.com> is broken > it detected as part of url
+
+* don't show the server details in titlebar until connected (currently shows in connecting)
 
 * file transfers
 
 * firewall traversal: try connecting both ways at same time, close alt route if main succeeds
 
 * dcc send/recv dialog
+
+* add automated version tab and change dirt homepage to extract details from exe
+  and show latest ver number + last update date
 
 * dirt:// protocol registration for mozilla on X11
 
