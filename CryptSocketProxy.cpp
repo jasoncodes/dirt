@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.13 2003-06-05 13:09:13 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.14 2003-06-05 14:05:51 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -102,10 +102,82 @@ protected:
 
 };
 
+//////// CryptSocketProxySOCKS4 ////////
+
+class CryptSocketProxySOCKS4 : public CryptSocketProxy
+{
+
+public:
+	CryptSocketProxySOCKS4(CryptSocketBase *sck)
+		: CryptSocketProxy(sck)
+	{
+		m_connected_to_remote = false;
+	}
+
+	virtual void OnConnect()
+	{
+		ByteBuffer request;
+		request += ByteBuffer(1, 4); // SOCKS 4
+		request += ByteBuffer(1, 1); // CONNECT
+		request += Uint16ToBytes(m_dest_port); // PORT
+		request += Uint32ToBytes(wxUINT32_SWAP_ALWAYS(GetIPV4Address(m_dest_ip))); // IP
+		request += m_settings.GetUsername(); // USERID
+		request += ByteBuffer(1, 0); // NULL
+		ProxySendData(request);
+	}
+
+	virtual void OnInput(const ByteBuffer &data)
+	{
+		m_buff += data;
+		if (m_buff.Length() >= 8)
+		{
+			if (m_buff[0] == 0)
+			{
+				switch (m_buff[1])
+				{
+					case 90:
+						m_connected_to_remote = true;
+						ForwardInputToClient(m_buff.Mid(8));
+						m_buff = ByteBuffer();
+						break;
+					case 91: 
+						ConnectionError(wxT("Request rejected or failed"));
+						break;
+					case 92:
+						ConnectionError(wxT("SOCKS server cannot connect to identd on the client"));
+						break;
+					case 93:
+						ConnectionError(wxT("Client and identd report different user-ids"));
+						break;
+					default:
+						ConnectionError(wxT("Unknown SOCKS4 reply code"));
+						break;
+				}
+			}
+			else
+			{
+				ConnectionError(wxT("Invalid SOCKS4 response"));
+			}
+		}
+	}
+
+	virtual bool IsConnectedToRemote() const
+	{
+		return m_connected_to_remote;
+	}
+
+protected:
+	bool m_connected_to_remote;
+	ByteBuffer m_buff;
+
+};
+
+//////// CryptSocketProxySOCKS5 ////////
+
 //////// CryptSocketProxySettings ////////
 
 static const wxString protocol_names[] =
-	{ /*wxT("SOCKS 4"), wxT("SOCKS 5"),*/ wxT("HTTP CONNECT") };
+	{ wxT("SOCKS 4"), /*wxT("SOCKS 5"),*/ wxT("HTTP CONNECT") };
 
 static const wxString dest_modes[] =
 	{ wxT("any"), wxT("allow"), wxT("deny") };
@@ -119,7 +191,7 @@ CryptSocketProxySettings::CryptSocketProxySettings(Config &config)
 void CryptSocketProxySettings::LoadDefaults()
 {
 	m_enabled = false;
-	m_protocol = ppHTTP;//ppSOCKS4;
+	m_protocol = ppSOCKS4;
 	m_hostname.Empty();
 	m_port = 1080;
 	m_username = wxEmptyString;
@@ -195,14 +267,14 @@ size_t CryptSocketProxySettings::GetProtocolCount()
 	return WXSIZEOF(protocol_names);
 }
 
-bool CryptSocketProxySettings::DoesProtocolSupportAuthentication(CryptSocketProxyProtocol protocol)
+bool CryptSocketProxySettings::DoesProtocolSupportUsername(CryptSocketProxyProtocol protocol)
 {
 
 	switch (protocol)
 	{
 
-//		case ppSOCKS4:
-//			return false;
+		case ppSOCKS4:
+			return true;
 
 //		case ppSOCKS5:
 //			return true;
@@ -211,7 +283,30 @@ bool CryptSocketProxySettings::DoesProtocolSupportAuthentication(CryptSocketProx
 			return true;
 
 		default:
-			wxFAIL_MSG(wxT("Unknown protocol in CryptSocketProxySettings::DoesProtocolSupportAuthentication"));
+			wxFAIL_MSG(wxT("Unknown protocol in CryptSocketProxySettings::DoesProtocolSupportUsername"));
+			return false;
+
+	}
+
+}
+
+bool CryptSocketProxySettings::DoesProtocolSupportPassword(CryptSocketProxyProtocol protocol)
+{
+
+	switch (protocol)
+	{
+
+		case ppSOCKS4:
+			return false;
+
+//		case ppSOCKS5:
+//			return true;
+
+		case ppHTTP:
+			return true;
+
+		default:
+			wxFAIL_MSG(wxT("Unknown protocol in CryptSocketProxySettings::DoesProtocolSupportPassword"));
 			return false;
 
 	}
@@ -242,9 +337,9 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 	switch (protocol)
 	{
 
-//		case ppSOCKS4:
+		case ppSOCKS4:
 //		case ppSOCKS5:
-//			return (type == pctServer); //true; // DCC connections not supported yet
+			return (type != pctDCCListen); //true; // DCC listens not supported yet
 
 		case ppHTTP:
 			return (type == pctServer);
@@ -627,8 +722,8 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 	switch (GetProtocol())
 	{
 
-//		case ppSOCKS4:
-//			return new CryptSocketProxySOCKS4(sck);
+		case ppSOCKS4:
+			return new CryptSocketProxySOCKS4(sck);
 
 //		case ppSOCKS5:
 //			return new CryptSocketProxySOCKS5(sck);
@@ -669,5 +764,5 @@ void CryptSocketProxy::ProxySendData(const ByteBuffer &data)
 
 void CryptSocketProxy::ConnectionError(const wxString &msg)
 {
-	m_sck->OnSocketConnectionError(msg);
+	m_sck->OnSocketConnectionError(wxT("Proxy error: ") + msg);
 }
