@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.44 2003-03-31 05:19:51 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.45 2003-03-31 05:36:25 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -791,6 +791,12 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool sh
 {
 
 	#ifdef __WIN32__
+
+		if (show && !frm->IsShown())
+		{
+			frm->Move(10000,10000);
+			frm->Show();
+		}
 
 		HWND hwnd = (HWND) frm->GetHandle();
 		WINDOWPLACEMENT wp;
