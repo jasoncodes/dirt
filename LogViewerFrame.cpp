@@ -53,7 +53,7 @@ BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
 END_EVENT_TABLE()
 
 LogViewerFrame::LogViewerFrame()
-	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(640, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN)
+	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(720, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN)
 {
 
 	SetIcon(wxIcon(dirt_xpm));

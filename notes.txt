@@ -10,8 +10,6 @@
 
 * suppress wxBell when /away?
 
-* logging
-
 * separators for log control
 
 * scripting (/exec and /eval)
