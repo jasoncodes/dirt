@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.8 2003-06-02 05:57:48 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.9 2003-06-02 08:32:36 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -331,37 +331,32 @@ void ClientUIMDIConfigDialog::LoadSettings()
 		}
 	#endif
 
-	if (m_proxy_settings->LoadSettings())
-	{
+	m_proxy_settings->LoadSettings();
 
-		m_chkProxy->SetValue(m_proxy_settings->GetEnabled());
+	m_chkProxy->SetValue(m_proxy_settings->GetEnabled());
 
-		m_cmbProtocol->SetValue(
-			CryptSocketProxySettings::ProtocolToString(
-			m_proxy_settings->GetProtocol()));
+	m_cmbProtocol->SetValue(
+		CryptSocketProxySettings::ProtocolToString(
+		m_proxy_settings->GetProtocol()));
 
-		m_txtHostname->SetValue(m_proxy_settings->GetHostname());
-		m_txtPort->SetValue(wxString() << (int)m_proxy_settings->GetPort());
-		m_txtUsername->SetValue(m_proxy_settings->GetUsername());
-		m_txtPassword->SetValue(m_proxy_settings->GetPassword(false));
+	m_txtHostname->SetValue(m_proxy_settings->GetHostname());
+	m_txtPort->SetValue(wxString() << (int)m_proxy_settings->GetPort());
+	m_txtUsername->SetValue(m_proxy_settings->GetUsername());
+	m_txtPassword->SetValue(m_proxy_settings->GetPassword(false));
 
-		m_chkTypeServer->SetValue(m_proxy_settings->GetConnectionType(pctServer));
-		m_chkTypeDCCConnect->SetValue(m_proxy_settings->GetConnectionType(pctDCCConnect));
-		m_chkTypeDCCListen->SetValue(m_proxy_settings->GetConnectionType(pctDCCListen));
+	m_chkTypeServer->SetValue(m_proxy_settings->GetConnectionType(pctServer));
+	m_chkTypeDCCConnect->SetValue(m_proxy_settings->GetConnectionType(pctDCCConnect));
+	m_chkTypeDCCListen->SetValue(m_proxy_settings->GetConnectionType(pctDCCListen));
 
-		m_pnlDestNetwork->SetSelection(m_proxy_settings->GetDestNetworkMode());
-		m_pnlDestNetwork->SetNetwork(m_proxy_settings->GetDestNetworkNetwork());
-		m_pnlDestNetwork->SetSubnet(m_proxy_settings->GetDestNetworkSubnet());
+	m_pnlDestNetwork->SetSelection(m_proxy_settings->GetDestNetworkMode());
+	m_pnlDestNetwork->SetNetwork(m_proxy_settings->GetDestNetworkNetwork());
+	m_pnlDestNetwork->SetSubnet(m_proxy_settings->GetDestNetworkSubnet());
 
-		m_pnlDestPorts->SetSelection(m_proxy_settings->GetDestPortsMode());
-		m_pnlDestPorts->SetString(m_proxy_settings->GetDestPortRanges());
+	m_pnlDestPorts->SetSelection(m_proxy_settings->GetDestPortsMode());
+	m_pnlDestPorts->SetString(m_proxy_settings->GetDestPortRanges());
 
-	}
-	else
-	{
-		m_chkProxy->Enable(false);
-		m_chkProxy->SetValue(false);
-	}
+	//m_chkProxy->Enable(false);
+	//m_chkProxy->SetValue(false);
 
 	wxCommandEvent evt;
 	OnProxy(evt);
