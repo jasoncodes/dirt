@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.10 2003-03-04 05:42:13 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.11 2003-03-04 05:56:10 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -19,6 +19,7 @@ public:
 		: wxEvtHandler(), m_box(box), m_chk(chk)
 	{
 		Connect(wxID_ANY, wxID_ANY, wxEVT_PAINT, (wxObjectEventFunction)(wxEventFunction)(wxPaintEventFunction)&StaticCheckBoxSizerEventHandler::OnPaint);
+		Connect(wxID_ANY, wxID_ANY, wxEVT_IDLE, (wxObjectEventFunction)(wxEventFunction)(wxIdleEventFunction)&StaticCheckBoxSizerEventHandler::OnIdle);
 	}
 
 	virtual ~StaticCheckBoxSizerEventHandler()
@@ -29,6 +30,13 @@ protected:
 	void OnPaint(wxPaintEvent &event)
 	{
 		m_chk->Refresh();
+		event.Skip();
+	}
+
+	void OnIdle(wxIdleEvent &event)
+	{
+//		m_chk->Raise();
+//		m_chk->Refresh();
 		event.Skip();
 	}
 
@@ -62,10 +70,24 @@ public:
 		if (m_chk)
 		{
 			wxPoint pos = m_box->GetPosition();
-			pos.x += 12;
+			#ifdef __WXGTK__
+				if (m_box->GetLabel().Length())
+				{
+					pos.y -= 8;
+				}
+				else
+				{
+					pos.y -= 12;
+				}
+			#endif
+			#ifdef __WXMSW__
+				pos.x += 12;
+			#else
+				pos.x += 8;
+			#endif
 			m_chk->Move(pos);
-			//m_box->Lower();
-			//m_chk->Raise();
+			m_box->Lower();
+			m_chk->Raise();
 			m_chk->SetSize(m_chk->GetBestSize());
 		}
 	}
@@ -159,7 +181,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			}
 			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxT(" "));
+			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxT("                       "));
 			wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
 			{
 
