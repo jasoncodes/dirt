@@ -1,5 +1,3 @@
-* preview sound button next to any sound browse buttons
-
 * proxy support for client
 
 * Mutex (win32 + unix)

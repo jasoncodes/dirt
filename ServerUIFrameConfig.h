@@ -5,6 +5,8 @@ class ServerUIFrame;
 class Server;
 class TristateConfigPanel;
 
+#include <wx/wave.h>
+
 class ServerUIFrameConfig : public wxDialog
 {
 
@@ -18,7 +20,9 @@ protected:
 	void OnChangeText(wxCommandEvent &event);
 	void OnChangeCheck(wxCommandEvent &event);
 	void OnTimer(wxTimerEvent &event);
+	void OnSoundText(wxCommandEvent &event);
 	void OnBrowse(wxCommandEvent &event);
+	void OnPreview(wxCommandEvent &event);
 
 protected:
 	virtual void LoadSettings();
@@ -29,6 +33,10 @@ protected:
 protected:
 	Server *m_server;
 
+	#if wxUSE_WAVE
+		wxWave m_wave;
+	#endif
+
 	wxTextCtrl *m_txtListenPort;
 	wxTextCtrl *m_txtUserPassword;
 	wxTextCtrl *m_txtAdminPassword;
@@ -38,6 +46,8 @@ protected:
 	wxTextCtrl *m_txtHostname;
 	wxTextCtrl *m_txtSoundConnection;
 	wxTextCtrl *m_txtSoundJoin;
+
+	wxBitmapButton *m_cmdSoundConnectionPreview, *m_cmdSoundJoinPreview;
 
 	TristateConfigPanel *m_pnlLog;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.41 2003-05-27 16:24:21 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.42 2003-05-30 11:27:44 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -14,24 +14,35 @@ RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.41 2003-05-27 16:24:21 jason Exp $)
 #include <wx/filename.h>
 #include "StaticCheckBoxSizer.h"
 
+#include "res/sound.xpm"
+#include "res/sound_disabled.xpm"
+
 enum
 {
 	ID_RESET = 1,
 	ID_TIMER,
 	ID_LOG,
+	ID_SOUND_CONNECTION,
+	ID_SOUND_JOIN,
 	ID_BROWSE_SOUND_CONNECTION,
-	ID_BROWSE_SOUND_JOIN
+	ID_BROWSE_SOUND_JOIN,
+	ID_PREVIEW_SOUND_CONNECTION,
+	ID_PREVIEW_SOUND_JOIN
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(wxID_OK, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
-	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChangeText)
-	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChangeCheck)
 	EVT_TIMER(ID_TIMER, ServerUIFrameConfig::OnTimer)
+	EVT_TEXT(ID_SOUND_CONNECTION, ServerUIFrameConfig::OnSoundText)
+	EVT_TEXT(ID_SOUND_JOIN, ServerUIFrameConfig::OnSoundText)
 	EVT_BUTTON(ID_BROWSE_SOUND_CONNECTION, ServerUIFrameConfig::OnBrowse)
 	EVT_BUTTON(ID_BROWSE_SOUND_JOIN, ServerUIFrameConfig::OnBrowse)
+	EVT_BUTTON(ID_PREVIEW_SOUND_CONNECTION, ServerUIFrameConfig::OnPreview)
+	EVT_BUTTON(ID_PREVIEW_SOUND_JOIN, ServerUIFrameConfig::OnPreview)
+	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChangeText)
+	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChangeCheck)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -52,29 +63,45 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
 	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtServerName);
+
 	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHostname);
+
 	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
 	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtUserPassword);
+	
 	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
 	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtAdminPassword);
+	
+	wxBitmap bmpSound(sound_xpm);
+	wxBitmap bmpSoundDisabled (sound_disabled_xpm);
+	wxSize size_button = wxSize(m_txtAdminPassword->GetBestSize().y, m_txtAdminPassword->GetBestSize().y);
+
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
-	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_txtSoundConnection = new wxTextCtrl(panel, ID_SOUND_CONNECTION, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
-	wxButton *cmdSoundConnection = new wxButton(panel, ID_BROWSE_SOUND_CONNECTION, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetBestSize().y, m_txtSoundConnection->GetBestSize().y));
+	wxButton *cmdSoundConnection = new wxButton(panel, ID_BROWSE_SOUND_CONNECTION, wxT("..."), wxDefaultPosition, size_button);
+	m_cmdSoundConnectionPreview = new wxBitmapButton(panel, ID_PREVIEW_SOUND_CONNECTION, bmpSound, wxDefaultPosition, size_button);
+	m_cmdSoundConnectionPreview->SetBitmapDisabled(sound_disabled_xpm);
+	
 	wxStaticText *lblSoundJoin = new wxStaticText(panel, -1, wxT("&Join Sound:"));
-	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_txtSoundJoin = new wxTextCtrl(panel, ID_SOUND_JOIN, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
-	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
+	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, size_button);
+	m_cmdSoundJoinPreview = new wxBitmapButton(panel, ID_PREVIEW_SOUND_JOIN, bmpSound, wxDefaultPosition, size_button);
+	m_cmdSoundJoinPreview->SetBitmapDisabled(sound_disabled_xpm);
+
 	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
 	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtListenPort);
+
 	wxStaticText *lblMaxUsers = new wxStaticText(panel, -1, wxT("Max &Users:"));
 	m_txtMaxUsers = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtMaxUsers);
+
 	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
 	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtMaxUsersIP);
@@ -86,9 +113,11 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 		lblSoundConnection->Enable(false);
 		m_txtSoundConnection->Enable(false);
 		cmdSoundConnection->Enable(false);
+		m_cmdSoundConnectionPreview->Enable(false);
 		lblSoundJoin->Enable(false);
 		m_txtSoundJoin->Enable(false);
 		cmdSoundJoin->Enable(false);
+		m_cmdSoundJoinPreview->Enable(false);
 	#endif
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
@@ -143,6 +172,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					{
 						szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
 						szrSoundConnection->Add(cmdSoundConnection, 0, 0, 0);
+						szrSoundConnection->Add(m_cmdSoundConnectionPreview, 0, 0, 0);
 					}
 					szrLeftTopLeft->Add(szrSoundConnection, 0, wxEXPAND);
 
@@ -151,6 +181,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					{
 						szrSoundJoin->Add(m_txtSoundJoin, 1, wxEXPAND, 0);
 						szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
+						szrSoundJoin->Add(m_cmdSoundJoinPreview, 0, 0, 0);
 					}
 					szrLeftTopLeft->Add(szrSoundJoin, 0, wxEXPAND);
 				
@@ -345,6 +376,29 @@ void ServerUIFrameConfig::OnTimer(wxTimerEvent &event)
 	}
 }
 
+void ServerUIFrameConfig::OnSoundText(wxCommandEvent &event)
+{
+	
+	wxTextCtrl *txt;
+	wxBitmapButton *cmd;
+	
+	if (event.GetId() == ID_SOUND_CONNECTION)
+	{
+		txt = m_txtSoundConnection;
+		cmd = m_cmdSoundConnectionPreview;
+	}
+	else
+	{
+		txt = m_txtSoundJoin;
+		cmd = m_cmdSoundJoinPreview;
+	}
+
+	cmd->Enable(txt->IsEnabled() && txt->GetValue().Length());
+
+	OnChangeText(event);
+
+}
+
 void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 {
 	wxTextCtrl *txt =
@@ -356,6 +410,36 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 	{
 		txt->SetValue(dlg.GetPath());
 	}
+}
+
+void ServerUIFrameConfig::OnPreview(wxCommandEvent &event)
+{
+
+	#if wxUSE_WAVE
+
+		wxTextCtrl *txt =
+			(event.GetId()==ID_PREVIEW_SOUND_CONNECTION) ?
+			m_txtSoundConnection : m_txtSoundJoin;
+
+		wxString filename = txt->GetValue();
+
+		if (wxFileName(filename).FileExists())
+		{
+			m_wave.Create(filename, false);
+			if (m_wave.IsOk() && m_wave.Play())
+			{
+				return;
+			}
+		}
+
+		wxMessageBox(wxT("Error playing wave file: ") + filename, wxT("Unable to play wave file"), wxICON_ERROR);
+
+	#else
+
+		wxMessageBox(wxT("Wave file support not available"), wxT("Unable to play wave file"), wxICON_ERROR);
+
+	#endif
+
 }
 
 void ServerUIFrameConfig::LoadSettings()
