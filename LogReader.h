@@ -32,14 +32,12 @@ public:
 	virtual wxString GetText();
 
 protected:
-	virtual void Init(const wxString &filename);
 	virtual ByteBuffer Read();
 
 protected:
 	wxFile m_file;
 	Crypt m_crypt;
 	ByteBuffer m_private_key;
-	ByteBuffer m_block_key;
 	ByteBufferHashMap m_properties;
 	ByteBuffer m_entry;
 	bool m_first_pass;

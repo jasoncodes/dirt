@@ -307,11 +307,23 @@ SOURCE=.\KDE.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Log.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\LogControl.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\LogControl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LogReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LogWriter.h
 # End Source File
 # Begin Source File
 
