@@ -1,5 +1,4 @@
-CXXFLAGS = -O2 -DNDEBUG -ffunction-sections -fdata-sections
-LDFLAGS = -Wl,--gc-sections
+CXXFLAGS = -O2
 ARFLAGS = -cr	# ar needs the dash on OpenBSD
 RANLIB = ranlib
 UNAME = $(shell uname)

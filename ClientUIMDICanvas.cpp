@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.28 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.29 2003-02-21 03:04:58 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -392,7 +392,7 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 {
-	event.SetId(ID_NICKLIST_MESSAGE);
+	event.SetId(ID_NICKLIST_QUERY);
 	OnNickListMenuItem(event);
 }
 
