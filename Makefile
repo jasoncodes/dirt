@@ -43,10 +43,10 @@ else
 endif
 
 ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
-	COMPILE_FLAGS = -g -DDEBUG
+	COMPILE_FLAGS = -g -DDEBUG -Werror
 	STRIP = true||strip
 else
-	COMPILE_FLAGS = -DNDEBUG
+	COMPILE_FLAGS = -DNDEBUG -Werror
 	STRIP = strip
 endif
 
@@ -54,7 +54,7 @@ CXXFLAGS = \
 	$(strip \
 		$(COMPILE_FLAGS) `$(WXCONFIG) --cxxflags` \
 		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
-	) -Werror
+	)
 LINK_FLAGS_GUI = `$(WXCONFIG) --libs`
 LINK_FLAGS_CLI = `$(WXCONFIG) --libs base`
 
