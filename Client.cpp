@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.80 2003-08-22 17:29:07 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.81 2003-08-24 14:00:34 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -254,7 +254,7 @@ wxFont ClientConfig::GetFont() const
 	wxFont font = LogControl::GetDefaultFixedWidthFont();
 	if (str.Length())
 	{
-		font.SetNativeFontInfo(str);
+		font.wxFontBase::SetNativeFontInfo(str);
 	}
 	return font;
 }
