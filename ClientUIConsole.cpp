@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.53 2003-05-15 10:41:18 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.54 2003-05-16 16:13:01 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -401,7 +401,7 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHas
 	}
 	if (details2.find(wxT("AWAYTIMEDIFFSTRING")) != details2.end())
 	{
-		Output(nickname + wxT(" has been away for: ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
+		Output(nickname + wxT(" has been away for ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
 	}
 	Output(nickname + wxT(" is using ") + details2[wxT("AGENT")]);
 	Output(nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));

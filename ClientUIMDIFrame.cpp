@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.114 2003-05-15 10:41:18 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.115 2003-05-16 16:13:01 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -1016,7 +1016,7 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHa
 	}
 	if (details2.find(wxT("AWAYTIMEDIFFSTRING")) != details2.end())
 	{
-		AddLine(context, nickname + wxT(" has been away for: ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
+		AddLine(context, nickname + wxT(" has been away for ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
 	}
 	AddLine(context, nickname + wxT(" is using ") + details2[wxT("AGENT")]);
 	AddLine(context, nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
