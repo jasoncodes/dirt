@@ -1,23 +1,23 @@
 [Project]
-FileName=Dirt - Win32 Release.dev
+FileName=Dirt - Win32 Unicode Release.dev
 Name=Dirt
 Ver=1
 IsCpp=1
 Type=0
-Compiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1_@@_
-CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -I$(WXWIN)\include -I$(WXWIN)\lib\gcc_msw_@@_
+Compiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -D_UNICODE -DUNICODE_@@_
+CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -D_UNICODE -DUNICODE_@@_
 Includes=
-Linker=-lwxmsw25 -lwxregex -lwxpng -lwxjpeg -lwxzlib -lwxtiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
-Libs=crypto\Release\;$(WXWIN)\lib\gcc_msw
+Linker=-lwxmswu -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
+Libs=crypto\Release\
 UnitCount=107
 Folders=
 ObjFiles=
-PrivateResource=Dirt_-_Win32_Release_private.rc
+PrivateResource=Dirt_-_Win32_Unicode_Release_private.rc
 ResourceIncludes=
-MakeIncludes=Makefile.devcpp_incl
+MakeIncludes=Makefile.devcpp_incl_wxMSW240
 Icon=
-ExeOutput=Release
-ObjectOutput=Release
+ExeOutput=UnicodeRelease
+ObjectOutput=UnicodeRelease
 OverrideOutput=1
 OverrideOutputName=Dirt.exe
 HostApplication=
@@ -215,7 +215,7 @@ CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=1
-BuildCmd=$(CPP) -c Crypt.cpp -o Release/Crypt.o $(CXXFLAGS) -Wno-comment -Wno-unused
+BuildCmd=$(CPP) -c Crypt.cpp -o UnicodeRelease/Crypt.o $(CXXFLAGS) -Wno-comment -Wno-unused
 
 [Unit20]
 FileName=Crypt.h
@@ -830,7 +830,7 @@ FileDescription=Developed using the Dev-C++ IDE
 InternalName=
 LegalCopyright=
 LegalTrademarks=
-OriginalFilename=Dirt - Win32 Release.exe
+OriginalFilename=Dirt - Win32 Unicode Release.exe
 ProductName=Dirt
 ProductVersion=0.1
 AutoIncBuildNr=0

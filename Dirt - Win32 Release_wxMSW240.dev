@@ -5,16 +5,16 @@ Ver=1
 IsCpp=1
 Type=0
 Compiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1_@@_
-CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1 -I$(WXWIN)\include -I$(WXWIN)\lib\gcc_msw_@@_
+CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINVER=0x400 -D_MT -DwxUSE_GUI=1_@@_
 Includes=
-Linker=-lwxmsw25 -lwxregex -lwxpng -lwxjpeg -lwxzlib -lwxtiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
-Libs=crypto\Release\;$(WXWIN)\lib\gcc_msw
+Linker=-lwxmsw -lregex -lpng -ljpeg -lzlib -ltiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
+Libs=crypto\Release\
 UnitCount=107
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Release_private.rc
 ResourceIncludes=
-MakeIncludes=Makefile.devcpp_incl
+MakeIncludes=Makefile.devcpp_incl_wxMSW240
 Icon=
 ExeOutput=Release
 ObjectOutput=Release
