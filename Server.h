@@ -43,6 +43,7 @@ public:
 	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
 	virtual operator wxString() const;
 	virtual wxString GetInlineDetails() const { return GetRemoteHost(); }
+	virtual wxString GetId() const;
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
@@ -52,6 +53,7 @@ protected:
 protected:
 	wxString m_nickname;
 	wxString m_remotehost;
+	wxString m_remotehostandport;
 	wxString m_userdetails;
 	wxString m_awaymessage;
 	long m_lastactive;

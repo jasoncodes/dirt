@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.18 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.19 2003-02-19 00:20:34 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -110,7 +110,9 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					conn->m_remotehost = ::GetIPV4String(addr, false);
-					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + conn->GetRemoteHost());
+					conn->m_remotehostandport =
+						wxString() << conn->m_remotehost << wxT(':') << addr.Service();
+					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + GetId());
 				}
 				break;
 
@@ -119,7 +121,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_connections.Remove(conn);
-					m_event_handler->OnServerInformation(wxT("Connection to ") + conn->GetRemoteHost() + wxT(" lost"));
+					m_event_handler->OnServerInformation(wxT("Connection to ") + conn->GetId() + wxT(" lost"));
 					SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), wxString(wxT("Connection lost"))), true);
 					delete conn;
 					m_event_handler->OnServerConnectionChange();

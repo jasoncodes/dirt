@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.11 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.12 2003-02-19 00:20:34 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -14,6 +14,7 @@ ServerConnection::ServerConnection()
 {
 	m_nickname = wxEmptyString;
 	m_remotehost = wxEmptyString;
+	m_remotehostandport = wxEmptyString;
 	m_userdetails = wxEmptyString;
 	m_awaymessage = wxEmptyString;
 	m_latency = -1;
@@ -29,7 +30,7 @@ ServerConnection::operator wxString() const
 {
 	wxString retval;
 	retval << (GetNickname().Length()?GetNickname():wxT("N/A"));
-	retval << wxT("@") << (GetRemoteHost().Length()?GetRemoteHost():wxT("N/A"));
+	retval << wxT("@") << (GetRemoteHostAndPort().Length()?GetRemoteHostAndPort():wxT("N/A"));
 	retval << wxT(" (") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
 	retval << wxT(") (");
 	if (GetAwayMessage().Length())
@@ -45,6 +46,13 @@ ServerConnection::operator wxString() const
 	retval << wxT("Joined: ") << GetJoinTimeString();
 	retval << wxT(")");
 	return retval;
+}
+
+wxString ServerConnection::GetId() const
+{
+	return
+		<< ((GetNickname().Length()) ? GetNickname() : wxT("*"))
+		<< wxT("@") + GetRemoteHostAndPort();
 }
 
 void ServerConnection::Send(const wxString &context, const wxString &cmd, const ByteBuffer &data)

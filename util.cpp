@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.24 2003-02-19 00:08:15 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.25 2003-02-19 00:20:34 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -435,9 +435,6 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 	}
 	else
 	{
-		
-		OutputDebugString(wxString() << "Unpacking " << packed_array.GetHexDump() << "\n");
-		OutputDebugString(wxString() << "Max segments" << max_segments << "\n");
 	
 		ByteBufferArray array;
 		ByteBuffer src(packed_array);
@@ -450,7 +447,6 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 			size_t seglen = sep-ptr;
 			ByteBuffer b(ptr, seglen);
 			array.Add(b);
-			OutputDebugString(wxString() << b.GetHexDump() << "\n");
 			ptr += seglen;
 			len -= seglen;
 			if (!len)
@@ -467,8 +463,6 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 
 		ByteBuffer b(ptr, len);
 		array.Add(b);
-		OutputDebugString(wxString() << b.GetHexDump() << "\n");
-		OutputDebugString(wxString() << "END\n");
 		
 		src.Unlock();
 		return array;
