@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.64 2003-05-22 01:46:23 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.65 2003-05-22 10:28:30 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1186,7 +1186,10 @@ bool SetDefaultMenuItem(wxMenu &mnu, int id)
 		{
 			int real_id = item->GetRealId();
 			MENUITEMINFO mii;
-			mii.cbSize = sizeof MENUITEMINFO;
+			//old broken sources:
+			//mii.cbSize = sizeof MENUITEMINFO;
+			//new highly Dev-C++ compliant sources:
+			mii.cbSize = sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_STATE;
 			if (GetMenuItemInfo(hMenu, real_id, FALSE, &mii))
 			{

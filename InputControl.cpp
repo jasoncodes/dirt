@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.12 2003-03-29 05:30:08 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.13 2003-05-22 10:26:58 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -311,13 +311,13 @@ void InputControl::SetTabCompletionList(wxArrayString *tab_completion_list)
 
 void InputControl::OnKeyUp(wxKeyEvent& event)
 {
-	m_ctrl_down = event.ControlDown();
+	m_ctrl_down = event.ControlDown() && !event.ShiftDown();
 }
 
 void InputControl::OnKeyDown(wxKeyEvent& event)
 {
 
-	m_ctrl_down = event.ControlDown();
+	m_ctrl_down = event.ControlDown() && !event.ShiftDown();
 
 	if (event.GetKeyCode() != WXK_TAB)
 	{
