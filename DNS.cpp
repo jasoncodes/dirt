@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.11 2003-04-03 04:59:24 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.12 2003-06-30 13:06:12 jason Exp $)
 
 #include "DNS.h"
 
@@ -79,6 +79,7 @@ void DNS::CleanUp()
 	if (!m_worker) return;
 	m_worker->m_no_event = true;
 	m_section.Enter();
+	wxLogNull supress_log;
 	if (IsBusy())
 	{
 		// Kill() has issues even on Win32 (s_section_lookup not leaving)

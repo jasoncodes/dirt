@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.13 2003-05-27 17:02:19 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.14 2003-06-30 13:06:12 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -228,6 +228,7 @@ Console::Console(bool no_input)
 
 Console::~Console()
 {
+	wxLogNull supress_log;
 	m_read_thread->Delete();
 	delete m_read_thread;
 }
