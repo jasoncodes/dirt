@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.28 2003-02-21 10:23:25 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.29 2003-03-03 13:55:50 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -330,7 +330,7 @@ wxString AppTitle(const wxString &suffix)
 void ShowAbout()
 {
 	wxMessageBox(wxString()
-		<< wxT("Dirt Secure Chat 3.0.0 Alpha 0\n")
+		<< wxT("Dirt Secure Chat ") << GetProductVersion() << wxT("\n")
 		<< wxT("\n")
 		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
 		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
@@ -491,4 +491,38 @@ StringHashMap UnpackHashMap(const ByteBuffer &packed_hashmap)
 	}
 	wxASSERT(list.GetCount() == hashmap.size() * 2);
 	return hashmap;
+}
+
+const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, size_t lookfor_len)
+{
+	if (lookfor_len <= buff_len)
+	{
+		const byte *ptr = buff;
+		size_t len = buff_len;
+		while ((ptr = (const byte*)memchr(ptr, lookfor[0], len)) != NULL)
+		{
+			size_t len2 = ptr - buff;
+			if (len2+lookfor_len > buff_len) break;
+			
+			const byte *buff1 = ptr;
+			const byte *buff2 = lookfor;
+			size_t x = lookfor_len;
+			while (x && *buff1 == *buff2)
+			{
+				buff1++;
+				buff2++;
+				x--;
+			}
+			if (!x)
+			{
+				return ptr;
+			}
+			ptr++;
+			len = buff_len - len2;
+			if (!len) break;
+			len--;
+			if (!len) break;
+		}
+	}
+	return NULL;
 }
