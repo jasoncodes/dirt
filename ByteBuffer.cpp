@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.15 2003-06-05 14:05:51 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.16 2003-11-19 18:30:39 jason Exp $)
 
 #include "ByteBuffer.h"
 #include "util.h"
@@ -65,8 +65,29 @@ ByteBuffer::ByteBuffer(const wxString &str)
 	#if wxUSE_UNICODE
 		const wchar_t *bytes_unicode = str.wc_str();
 	#else
-		const wxWCharBuffer &buff_unicode = wxConvCurrent->cMB2WC(str.c_str());
+		wxWCharBuffer buff_unicode = wxConvCurrent->cMB2WC(str.c_str());
 		const wchar_t *bytes_unicode = buff_unicode.data();
+		if (!bytes_unicode)
+		{
+			buff_unicode = wxConvLocal.cMB2WC(str.c_str());
+			bytes_unicode = buff_unicode.data();
+		}
+		if (!bytes_unicode)
+		{
+			buff_unicode = wxConvLibc.cMB2WC(str.c_str());
+			bytes_unicode = buff_unicode.data();
+		}
+		if (!bytes_unicode)
+		{
+			buff_unicode = wxConvFile.cMB2WC(str.c_str());
+			bytes_unicode = buff_unicode.data();
+		}
+		if (!bytes_unicode)
+		{
+			fprintf(stderr, "%s\n", "Conversion of a string failed");
+			// todo: implement quick filter that keeps only ASCII7 characters and replaces rest with '?'
+			abort();
+		}
 	#endif
 
 	size_t nLen = wxConvUTF8.WC2MB((char *) NULL, bytes_unicode, 0);
