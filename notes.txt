@@ -18,7 +18,7 @@
 
 * scripting (/exec and /eval)
 
-* banning
+* banning (wxIsWild(), wxMatchWild())
 
 * right click menu for connection list in server
 
