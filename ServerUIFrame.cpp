@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.35 2003-03-12 05:05:05 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.36 2003-03-12 07:49:03 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -83,6 +83,7 @@ enum
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
+	EVT_SIZE(ServerUIFrame::OnSize)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
 	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
@@ -225,6 +226,12 @@ ServerUIFrame::~ServerUIFrame()
 	delete tray;
 	delete srv;
 
+}
+
+void ServerUIFrame::OnSize(wxSizeEvent &event)
+{
+	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
+	event.Skip();
 }
 
 void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
