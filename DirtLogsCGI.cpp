@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.6 2004-07-21 10:53:53 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.7 2004-07-25 05:55:07 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +40,7 @@ RCS_ID($Id: DirtLogsCGI.cpp,v 1.6 2004-07-21 10:53:53 jason Exp $)
 #include "util.h"
 #include "LogReader.h"
 #include "TextTools.h"
+#include "URL.h"
 
 #ifdef wxPuts
 #undef wxPuts
@@ -150,34 +151,60 @@ void output_line(const wxString &text, bool convert_urls, int colour)
 
 }
 
-int main(int argc, char **argv)
+struct Line
 {
+	wxString text;
+	bool convert_urls;
+	int colour;
+};
 
-	wxApp::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
+inline void output_line(const Line &line)
+{
+	output_line(line.text, line.convert_urls, line.colour);
+}
 
-	wxInitializer initializer;
-	if (!initializer)
+#include <wx/list.h>
+WX_DECLARE_LIST(Line, LineList);
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST(LineList);
+
+StringHashMap ParseQueryString(const wxString &str)
+{
+	StringHashMap map;
+	wxArrayString pairs = SplitString(str, wxT("&"));
+	for (size_t i = 0; i < pairs.Count(); ++i)
 	{
-		fprintf(stderr, "Error initializing wxWidgets.");
-		puts("</body></html>");
-		return EXIT_FAILURE;
+		HeadTail ht = SplitHeadTail(pairs[i], wxT("="));
+		map[URL::Unescape(ht.head)] = URL::Unescape(ht.tail);
 	}
+	return map;
+}
 
-	wxString pathinfo = wxGetenv(wxT("PATH_INFO"));
-	wxString scripturi = wxGetenv(wxT("SCRIPT_URI"));
-
-	if (scripturi.Length() == 0)
+long GetQueryLong(const StringHashMap &query, const wxString &name, long default_val)
+{
+	long x = default_val;
+	StringHashMap::const_iterator i = query.find(name);
+	if (i != query.end())
 	{
-		wxFprintf(stderr, wxT("This is a CGI application for viewing Dirt log files.\n"));
-		return EXIT_SUCCESS;
+		if (!i->second.ToLong(&x))
+		{
+			x = default_val;
+		}
 	}
+	return x;
+}
 
-	if (pathinfo.Length() == 0)
-	{
-		wxFprintf(stdout, wxString() << wxT("Location: ") << scripturi << wxT("/\r\n\r\n"));
-		return EXIT_SUCCESS;
-	}
+Line ReadLine(const LogReader &reader)
+{
+	Line line;
+	line.text = reader.GetText();
+	line.convert_urls = reader.GetTextConvertURLs();
+	line.colour = reader.GetTextColour();
+	return line;
+}
 
+void send_header(const wxString &baseuri, const wxString &pathinfo)
+{
 	fprintf(stdout, "Content-Type: text/html; charset=utf-8\r\n");
 	fprintf(stdout, "\r\n");
 	puts("<html>");
@@ -203,14 +230,70 @@ int main(int argc, char **argv)
 	puts("{");
 	puts("\tcolor: black;");
 	puts("\tfont-size: smaller;");
+	puts("\ttext-decoration: none;");
+	puts("}");
+	puts("a.small_link:hover");
+	puts("{");
+	puts("\ttext-decoration: underline;");
 	puts("}");
 	puts("</style>");
+	if (pathinfo.Length() > 1)
+	{
+		wxPuts(wxString() << wxT("<link rel=\"index\" href=\"") << baseuri << wxT("/\" />"));
+		//<link rel="prev" href="Chapter1.html" />
+		//<link rel="next" href="Chapter3.html" />
+		//<link rel="prefetch" href="Chapter3.html" />
+	}
 	puts("</head>");
+}
+
+int main(int argc, char **argv)
+{
+
+	wxApp::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
+
+	wxInitializer initializer;
+	if (!initializer)
+	{
+		fprintf(stderr, "Error initializing wxWidgets.");
+		puts("</body></html>");
+		return EXIT_FAILURE;
+	}
+
+	wxString pathinfo = wxGetenv(wxT("PATH_INFO"));
+	wxString scripturi = wxGetenv(wxT("SCRIPT_URI"));
+	wxString baseuri = scripturi.Left(scripturi.Length() - pathinfo.Length());
+
+	if (scripturi.Length() == 0)
+	{
+		wxFprintf(stderr, wxT("This is a CGI application for viewing Dirt log files.\n"));
+		return EXIT_SUCCESS;
+	}
+
+	if (pathinfo.Length() == 0)
+	{
+		wxFprintf(stdout, wxString() << wxT("Location: ") << scripturi << wxT("/\r\n\r\n"));
+		return EXIT_SUCCESS;
+	}
+
+	StringHashMap query = ParseQueryString(wxGetenv(wxT("QUERY_STRING")));
+
+	const long last = GetQueryLong(query, wxT("last"), -1);
+	const long start = GetQueryLong(query, wxT("start"), -1);
+	const long count = GetQueryLong(query, wxT("count"), -1);
+
+	bool no_header = (last > -1 && pathinfo.Length() > 1);
+
+	if (!no_header)
+	{
+		send_header(baseuri, pathinfo);
+	}
 
 	wxString logdir = GetLogDirectory();
 
 	if (logdir.Length() == 0)
 	{
+		if (no_header) send_header(baseuri, pathinfo);
 		fprintf(stderr, "Logging is disabled.");
 		puts("</body></html>");
 		return EXIT_FAILURE;
@@ -219,6 +302,7 @@ int main(int argc, char **argv)
 	if (pathinfo == wxT("/"))
 	{
 
+		if (no_header) send_header(baseuri, pathinfo);
 		wxPuts(wxString() << wxT("Log directory: ") << logdir << wxT("<br />"));
 
 		wxArrayString files;
@@ -238,7 +322,8 @@ int main(int argc, char **argv)
 			wxString friendly_name = GetFriendlyName(files[i]);
 			wxPuts(wxString()
 				<< wxT("<tt>") << make_link(relpath, friendly_name) << wxT("</tt>")
-				<< wxT(" ") << make_link(relpath + wxT("?last=100"), wxT("(last 100)"), false, wxT("small_link"))
+				<< wxT(" (") << make_link(relpath + wxT("?start=0&count=100"), wxT("first 100"), false, wxT("small_link")) << wxT(")")
+				<< wxT(" (") << make_link(relpath + wxT("?last=100"), wxT("last 100"), false, wxT("small_link")) << wxT(")")
 				<< wxT("<br />"));
 		}
 
@@ -248,6 +333,7 @@ int main(int argc, char **argv)
 
 		if (pathinfo.Find(wxT("../")) > -1 || pathinfo.Length() < 10 || pathinfo[0u] != wxT('/') || pathinfo.Right(8) != wxT(".dirtlog"))
 		{
+			if (no_header) send_header(baseuri, pathinfo);
 			wxPuts(wxString() << wxT("File not found: ") << pathinfo);
 			puts("</body></html>");
 			return EXIT_FAILURE;
@@ -257,6 +343,7 @@ int main(int argc, char **argv)
 
 		if (!fn.FileExists())
 		{
+			if (no_header) send_header(baseuri, pathinfo);
 			wxPuts(wxString() << wxT("File not found: ") << pathinfo);
 			puts("</body></html>");
 			return EXIT_FAILURE;
@@ -266,23 +353,86 @@ int main(int argc, char **argv)
 
 		if (!reader.Ok())
 		{
+			if (no_header) send_header(baseuri, pathinfo);
 			wxPuts(wxString() << wxT("Error reading file: ") << pathinfo);
 			puts("</body></html>");
 			return EXIT_FAILURE;
 		}
 
-		while(reader.HasNext())
+		if (last > -1)
 		{
+			int total = 0;
+			while (reader.HasNext())
+			{
+				LogEntryType type = reader.GetNext();
+				if (type == letText)
+				{
+					total++;
+				}
+			}
+			long count = wxMin(last, total);
+			long start = total - count;
+			wxFprintf(stdout, wxString()
+				<< wxT("Location: ") << scripturi
+				<< wxT("?start=") << start
+				<< wxT("&count=") << count
+				<< wxT("\r\n\r\n"));
+			return EXIT_SUCCESS;
+		}
 
+		if (no_header) send_header(baseuri, pathinfo);
+
+		int pos = 0;
+		while (reader.HasNext() && pos < start)
+		{
 			LogEntryType type = reader.GetNext();
-
 			if (type == letText)
 			{
-
-				output_line(reader.GetText(), reader.GetTextConvertURLs(), reader.GetTextColour());
-
+				pos++;
 			}
+		}
 
+		if (pos > 0 && count > 0)
+		{
+			int x = wxMax(pos - count, 0);
+			long before = pos-x;
+			wxPuts(wxString()
+				<< make_link(
+					wxString() << scripturi << wxT("?start=") << x << wxT("&count=") << count,
+					wxString() << wxT("Previous ") << AddCommas((wxLongLong_t)before))
+				<< wxT(" (") << AddCommas((wxLongLong_t)pos) << wxT(" more)"));
+		}
+
+		int num = 0;
+
+		while(reader.HasNext() && (count < 0 || num < count))
+		{
+			LogEntryType type = reader.GetNext();
+			if (type == letText)
+			{
+				pos++;
+				num++;
+				output_line(ReadLine(reader));
+			}
+		}
+
+		if (reader.HasNext() && count > 0)
+		{
+			long left = 0;
+			while (reader.HasNext())
+			{
+				LogEntryType type = reader.GetNext();
+				if (type == letText)
+				{
+					left++;
+				}
+			}
+			long next = wxMin(count, left);
+			wxPuts(wxString()
+				<< make_link(
+					wxString() << scripturi << wxT("?start=") << start+count << wxT("&count=") << count,
+					wxString() << wxT("Next ") << AddCommas((wxLongLong_t)next))
+				<< wxT(" (") << AddCommas((wxLongLong_t)left) << wxT(" more)"));
 		}
 
 	}

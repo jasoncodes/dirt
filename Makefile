@@ -64,7 +64,8 @@ OBJECTS = \
 	TextTools.o utilgui.o
 
 OBJECTS_DIRTLOGS_CGI = \
-	DirtLogsCGI.o TextTools.o RCS.o LogReader.o ByteBuffer.o util.o Crypt.o crypto/libcryptopp.a
+	DirtLogsCGI.o TextTools.o RCS.o LogReader.o ByteBuffer.o util.o Crypt.o crypto/libcryptopp.a \
+	URL.o
 
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
 DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
@@ -94,7 +95,7 @@ clean:
 
 all: clean dirt
 
-.cpp.o : 
+.cpp.o :
 	$(CC) -c $(CXXFLAGS) -o $@ $<
 
 %.d: %.cpp
@@ -146,7 +147,7 @@ mac_bundle: \
 
 $(BUNDLE)/MacOS:
 	install -d $@
-    
+
 $(BUNDLE)/Resources/Dirt.rsrc: $(WXPREFIX)/lib/libwx_mac-$(WXVERSION).rsrc
 	@install -d `dirname $@`
 	cp $< $@
