@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -28,12 +28,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.65 2004-06-19 12:42:38 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.66 2004-07-18 18:28:57 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
 #include "ServerDefault.h"
-#include "LogControl.h"
+#include "TextTools.h"
 #include "InputControl.h"
 #include "util.h"
 #include "TrayIcon.h"
@@ -363,7 +363,7 @@ void ServerUIFrame::Output(const wxString &line)
 			m_txtLog->Remove(0, i + 2);
 		}
 	}
-	wxString tmp = GetLongTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true);
+	wxString tmp = GetLongTimestamp() + ConvertModifiersIntoHtml(line, true);
 	if (m_txtLog->GetValue().Length() > 0)
 	{
 		m_txtLog->AppendText(wxT("\n") + tmp);
@@ -568,7 +568,7 @@ void ServerUIFrame::UpdateConnectionList()
 	{
 		for (int i = 0; i < m_lstConnections->GetItemCount(); ++i)
 		{
-			const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);	
+			const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);
 			null_right_click_conn &= (conn != m_right_click_conn);
 			SetItemText(m_lstConnections, i, 0, conn->GetNickname());
 			SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());

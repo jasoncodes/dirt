@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -28,12 +28,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.76 2004-07-11 17:50:25 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.77 2004-07-18 18:28:57 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
-#include "LogControl.h"
+#include "TextTools.h"
 #include "IPInfo.h"
 #include "Modifiers.h"
 
@@ -481,7 +481,7 @@ void Server::ProcessConsoleInput(const wxString &input, const wxString &nick)
 
 	wxString cmd, params;
 	bool is_cmd = false;
-	
+
 	SplitQuotedHeadTail(input, cmd, params);
 	if (input[0] == wxT('/'))
 	{
@@ -766,7 +766,7 @@ void Server::CloseAllConnections()
 
 void Server::ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg)
 {
-	
+
 	wxString context, cmd;
 	ByteBuffer data;
 	bool success = DecodeMessage(msg, context, cmd, data);
@@ -891,12 +891,12 @@ ByteBuffer Server::MakeNicknameValid(const ByteBuffer &src)
 {
 
 	wxString org_str = (wxString)src;
-	
-	wxString source_str = LogControl::ConvertModifiersIntoHtml(org_str, true);
-	
+
+	wxString source_str = ConvertModifiersIntoHtml(org_str, true);
+
 	wxString output;
 	output.Alloc(source_str.Length());
-	
+
 	// grab any valid characters
 	for (size_t i = 0; i < source_str.Length(); ++i)
 	{
@@ -922,7 +922,7 @@ ByteBuffer Server::MakeNicknameValid(const ByteBuffer &src)
 			}
 		}
 	}
-	
+
 	// replace all multiple spaces with a single space
 	while (output.Replace(wxT("  "), wxT(" ")) > 0);
 
@@ -936,12 +936,12 @@ bool Server::IsValidNickname(const wxString &nickname)
 
 	bool hasAlphaNum = false; /* used to test that the nick has at least one
 								 alpha numeric character */
-								
+
 	if (nickname.Length() < 1 || nickname.Length() > 32 || nickname == GetServerNickname())
 	{
 		return false;
 	}
-	
+
 	for (size_t i = 0; i < nickname.Length(); ++i)
 	{
 		wxChar c = nickname[i];
@@ -981,7 +981,7 @@ bool Server::IsValidNickname(const wxString &nickname)
 	}
 
 	return hasAlphaNum;
-	
+
 }
 
 ByteBuffer Server::GetNickList() const
@@ -1228,7 +1228,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		}
 
 		ByteBuffer new_nick = MakeNicknameValid(ProcessWordFilters(data));
-			
+
 		if (!IsValidNickname(new_nick))
 		{
 			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + data));
@@ -1236,7 +1236,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		}
 
 		ServerConnection *tmp = GetConnection(new_nick);
-		
+
 		if (tmp && tmp != conn)
 		{
 			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Nickname in use: ") + tmp->GetNickname()));
@@ -1334,7 +1334,7 @@ void Server::PopulateFilteredWords()
 	{
 		do
 		{
-			m_filtered_words_list.Add(LogControl::ConvertModifiersIntoHtml(val, true));
+			m_filtered_words_list.Add(ConvertModifiersIntoHtml(val, true));
 		}
 		while (m_config.GetConfig()->GetNextEntry(val, i));
 	}
@@ -1351,7 +1351,7 @@ void Server::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
 
 wxString Server::ProcessWordFilters(const wxString &text) const
 {
-	const wxString text_no_formatting = LogControl::ConvertModifiersIntoHtml(text, true);
+	const wxString text_no_formatting = ConvertModifiersIntoHtml(text, true);
 	wxString output = text_no_formatting;
 	for (size_t i = 0; i < m_filtered_words_list.GetCount(); ++i)
 	{

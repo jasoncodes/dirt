@@ -65,12 +65,8 @@ public:
 
 	void AddHtmlLine(const wxString &line, bool split_long_words = false, bool red_line = false);
 	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true, bool red_line = false);
-	static wxString FormatTextAsHtml(const wxString &text);
-	static wxString ConvertUrlsToLinks(const wxString &text);
-	static wxString ConvertModifiersIntoHtml(const wxString &text, bool strip_mode);
 
 	static wxString GetCellText(wxHtmlCell *cell);
-	static bool IsEmail(const wxString &token);
 	static void ClearRect(wxDC& dc, const wxRect &rect);
 	static void SetHtmlParserFonts(wxHtmlWinParser *parser);
 	static wxFont GetDefaultFixedWidthFont();

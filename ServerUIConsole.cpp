@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -28,11 +28,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.15 2004-05-23 06:01:09 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.16 2004-07-18 18:28:57 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
-#include "LogControl.h"
+#include "TextTools.h"
 #include "util.h"
 
 ServerUIConsole::ServerUIConsole(bool no_input, bool quit_on_stop)
@@ -49,7 +49,7 @@ ServerUIConsole::~ServerUIConsole()
 
 void ServerUIConsole::Output(const wxString &line)
 {
-	Console::Output(GetLongTimestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
+	Console::Output(GetLongTimestamp() + ConvertModifiersIntoHtml(line, true));
 }
 
 void ServerUIConsole::OnServerInformation(const wxString &line)

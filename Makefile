@@ -49,7 +49,19 @@ CXXFLAGS = \
 LINK_FLAGS = `$(WXCONFIG) --libs`
 
 SOURCES := $(wildcard *.cpp)
-OBJECTS = $(SOURCES:.cpp=.o) crypto/libcryptopp.a
+OBJECTS = \
+	BroadcastSocket.o ByteBuffer.o CPSCalc.o Client.o ClientDefault.o ClientTimers.o \
+	ClientUIConsole.o ClientUIMDICanvas.o ClientUIMDIConfigDialog.o ClientUIMDIFrame.o \
+	ClientUIMDIPasswordManagerDialog.o ClientUIMDITransferPanel.o ClientUIMDITransferResumeDialog.o \
+	ConfigFile.o Console.o Crypt.o CryptSocket.o CryptSocketProxy.o DNS.o Dirt.o File.o \
+	FileDropTarget.o FileTransfer.o FileTransfers.o FontControl.o HTTP.o HotKeyControl.o \
+	IPInfo.o InputControl.o LanListFrame.o LogControl.o LogReader.o LogViewerFrame.o \
+	LogWriter.o Mutex.o NickListControl.o RCS.o RadioBoxPanel.o Server.o ServerDefault.o \
+	ServerUIConsole.o ServerUIFrame.o ServerUIFrameConfig.o SpanTag.o Splash.o StaticCheckBoxSizer.o \
+	SwitchBar.o SwitchBarCanvas.o SwitchBarChild.o SwitchBarChildGeneric.o SwitchBarParent.o \
+	SwitchBarParentGeneric.o TrayIcon.o TristateConfigPanel.o URL.o util.o crypto/libcryptopp.a \
+	TextTools.o
+
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
 DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
 DIRTSERVER_EXE_PERMS = $(shell /bin/ls -l dirtserver | awk '{print $$1}' | tr -d "rw-")
