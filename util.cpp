@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.38 2003-03-20 07:25:26 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.39 2003-03-21 11:29:49 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -192,7 +192,10 @@ void SetHtmlParserFonts(wxHtmlWinParser *parser)
 	#endif
 
 	#ifdef __WXMSW__
-		parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
+		//parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
+		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
+	#else
+		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
 	#endif
 
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.20 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.21 2003-03-21 11:26:28 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -181,9 +181,12 @@ void CryptSocketBase::OnSocketInput()
 	ByteBuffer buff(4096);
 	m_sck->Read(buff.LockReadWrite(), buff.Length());
 	buff.Unlock();
-	CRYPTSOCKET_CHECK_RET(!m_sck->Error(), wxT("Socket error has occured"));
 	
-	if (m_sck->LastCount())
+	if (m_sck->Error())
+	{
+		CloseWithEvent();
+	}
+	else if (m_sck->LastCount())
 	{
 		if (m_sck->LastCount() == buff.Length())
 		{

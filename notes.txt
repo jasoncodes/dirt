@@ -1,3 +1,5 @@
+* if convert err when wxString::wxString(unicode), '?' should be used vs empty string
+
 * option to delete log files (to recycle bin on win32) (right click popup and delete key)
 
 * when colour popup shows on GTK cannot programmically focus back to main window
