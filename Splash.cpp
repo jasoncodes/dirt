@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.19 2003-03-31 05:19:51 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.20 2003-04-03 05:06:31 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -161,7 +161,7 @@ void Splash::OnButton(wxCommandEvent &event)
 
 		case ID_SERVER:
 			Destroy();
-			(new ServerUIFrame)->SetPositionAndShow();
+			(new ServerUIFrame)->SetPositionAndShow(false);
 			break;
 
 		case ID_INTERNET:

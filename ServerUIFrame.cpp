@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.49 2003-04-02 03:03:43 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.50 2003-04-03 05:06:31 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -201,7 +201,7 @@ ServerUIFrame::ServerUIFrame()
 
 	if (!m_server->IsRunning() || !m_tray->Ok())
 	{
-		SetPositionAndShow();
+		SetPositionAndShow(false);
 	}
 
 	m_txtInput->SetFocus();
@@ -244,11 +244,18 @@ void ServerUIFrame::OnClose(wxCloseEvent &event)
 	event.Skip();
 }
 
-void ServerUIFrame::SetPositionAndShow()
+void ServerUIFrame::SetPositionAndShow(bool force_foreground)
 {
 	if (m_size_set)
 	{
-		ForceForegroundWindow(this);
+		if (force_foreground)
+		{
+			ForceForegroundWindow(this);
+		}
+		else
+		{
+			Show();
+		}
 	}
 	else
 	{
@@ -261,7 +268,7 @@ void ServerUIFrame::SetPositionAndShow()
 
 void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
 {
-	SetPositionAndShow();
+	SetPositionAndShow(true);
 }
 
 void ServerUIFrame::OnIconize(wxIconizeEvent &event)
@@ -292,7 +299,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 
 void ServerUIFrame::OnRestore(wxCommandEvent &event)
 {
-	SetPositionAndShow();
+	SetPositionAndShow(true);
 }
 
 void ServerUIFrame::OnIdle(wxIdleEvent &event)
