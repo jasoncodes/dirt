@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.10 2003-06-17 08:31:19 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.11 2003-06-21 02:12:40 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -164,12 +164,15 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 
 		bool bSelected = (m_selected == i);
 
+		static wxColour highlight_colour = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNHIGHLIGHT);
+		static wxColour shadow_colour = wxSystemSettings::GetColour(wxSYS_COLOUR_3DDKSHADOW);
+
 		if (bSelected)
 		{
 			dc.SetPen(*wxTRANSPARENT_PEN);
 			wxBitmap stipple("\x0aa\x055\x0aa\x055\x0aa\x055\x0aa\x055", 8, 8, 1);
 			dc.SetTextBackground(GetBackgroundColour());
-			dc.SetTextForeground(*wxWHITE);
+			dc.SetTextForeground(highlight_colour);
 			stipple.SetMask(new wxMask(stipple));
 			dc.SetBrush(wxBrush(stipple));
 		}
@@ -189,11 +192,14 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			dc.SetBrush(wxBrush(un_stipple));
 		}
 
-		dc.SetPen( bSelected ? *wxGREY_PEN : *wxWHITE_PEN);
+		static wxPen highlight_pen(highlight_colour, 1, wxSOLID);
+		static wxPen shadow_pen(shadow_colour, 1, wxSOLID);
+
+		dc.SetPen(bSelected ? shadow_pen : highlight_pen);
 		dc.DrawLine( rct.GetLeft(), rct.GetTop(), rct.GetRight() + 1, rct.GetTop() );
 		dc.DrawLine( rct.GetLeft(), rct.GetTop(), rct.GetLeft(), rct.GetBottom() );
 
-		dc.SetPen( bSelected ? *wxWHITE_PEN : *wxGREY_PEN);
+		dc.SetPen(bSelected ? highlight_pen : shadow_pen);
 		dc.DrawLine( rct.GetLeft() + 1, rct.GetBottom() - 1, rct.GetRight() + 1, rct.GetBottom() - 1 );
 		dc.DrawLine( rct.GetRight(), rct.GetTop() + 1, rct.GetRight(), rct.GetBottom() );
 
