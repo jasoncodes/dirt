@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.8 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.9 2003-03-21 11:56:59 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -208,7 +208,7 @@ ByteBuffer::operator wxString() const
 
 	size_t actual_len = wxConvUTF8.MB2WC(unicode, utf8, m_data->length);
 
-	wxString result(unicode, *wxConvCurrent, actual_len);
+	wxString result(unicode, wxConvLocal, actual_len);
 
 	delete unicode;
 	delete utf8;
