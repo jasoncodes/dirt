@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.52 2003-04-28 08:12:50 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.53 2003-05-01 01:18:15 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
