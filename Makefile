@@ -2,7 +2,7 @@ CC = gcc
 CPPFLAGS = `wx-config --cxxflags`
 .SUFFIXES:      .o .cpp
 .PRECIOUS: dirt
-.PHONY: clean
+.PHONY: clean dirt
 SOURCES := $(shell /bin/ls *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
