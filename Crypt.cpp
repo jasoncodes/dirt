@@ -10,7 +10,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.12 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.13 2003-06-16 08:32:24 jason Exp $)
 
 #include "Crypt.h"
 #include "ByteBuffer.h"
@@ -33,6 +33,7 @@ RCS_ID($Id: Crypt.cpp,v 1.12 2003-05-06 06:58:12 jason Exp $)
 #include "crypto/md5.h"
 #include "crypto/md5mac.h"
 #include "crypto/base64.h"
+#include "crypto/zlib.h"
 
 #ifdef _MSC_VER
 	#pragma warning ( pop )
@@ -40,12 +41,79 @@ RCS_ID($Id: Crypt.cpp,v 1.12 2003-05-06 06:58:12 jason Exp $)
 
 using namespace CryptoPP;
 
+class ByteBufferSink : public Bufferless<Sink>
+{
+
+public:
+	unsigned int Put2(const byte *begin, unsigned int length, int messageEnd, bool blocking)
+	{
+		if (length)
+		{
+			m_buff.Add(ByteBuffer(begin, length));
+		}
+		return 0;
+	}
+
+	ByteBuffer GetAllChunks() const
+	{
+		ByteBuffer buff(GetAllChunksLength());
+		byte *ptr = buff.LockReadWrite();
+		for (size_t i = 0; i < m_buff.GetCount(); ++i)
+		{
+			const ByteBuffer &chunk = m_buff[i];
+			memcpy(ptr, chunk.LockRead(), chunk.Length());
+			chunk.Unlock();
+			ptr += chunk.Length();
+		}
+		buff.Unlock();
+		return buff;
+	}
+
+	size_t GetAllChunksLength() const
+	{
+		size_t count = 0;
+		for (size_t i = 0; i < m_buff.GetCount(); ++i)
+		{
+			count += m_buff[i].Length();
+		}
+		return count;
+	}
+	
+	size_t GetChunkCount() const
+	{
+		return m_buff.GetCount();
+	}
+	
+	const ByteBuffer& GetChunk(size_t i) const
+	{
+		return m_buff[i];
+	}
+
+	void Clear()
+	{
+		m_buff.Clear();
+	}
+
+protected:
+	ByteBufferArray m_buff;
+
+};
+
 class CryptPrivate
 {
 
 public:
-	CryptPrivate() : enc_keyset(false), dec_keyset(false)
+	CryptPrivate()
+		: enc_keyset(false), dec_keyset(false),
+		  zlib_comp(NULL), zlib_decomp(NULL),
+		  zlib_comp_output(NULL), zlib_decomp_output(NULL)
 	{
+	}
+
+	~CryptPrivate()
+	{
+		delete zlib_comp;
+		delete zlib_decomp;
 	}
 	
 public:
@@ -53,6 +121,11 @@ public:
 	AESDecryption dec;
 	bool enc_keyset;
 	bool dec_keyset;
+
+	ZlibCompressor *zlib_comp;
+	ZlibDecompressor *zlib_decomp;
+	ByteBufferSink *zlib_comp_output;
+	ByteBufferSink *zlib_decomp_output;
 
 };
 
@@ -492,4 +565,66 @@ ByteBuffer Crypt::Base64Decode(const ByteBuffer &data)
 
 	return result;
 
+}
+
+void Crypt::ZlibResetCompress(unsigned int level)
+{
+	delete m_priv->zlib_comp;
+	m_priv->zlib_comp_output = new ByteBufferSink;
+	m_priv->zlib_comp = new ZlibCompressor(m_priv->zlib_comp_output, level);
+}
+
+void Crypt::ZlibResetDecompress()
+{
+	delete m_priv->zlib_decomp;
+	m_priv->zlib_decomp_output = new ByteBufferSink;
+	m_priv->zlib_decomp = new ZlibDecompressor(m_priv->zlib_decomp_output, true);
+}
+
+ByteBuffer Crypt::ZlibCompress(const ByteBuffer &data)
+{
+	if (!m_priv->zlib_comp)
+	{
+		ZlibResetCompress();
+	}
+	wxASSERT(m_priv->zlib_comp && m_priv->zlib_comp_output);
+	wxASSERT(!m_priv->zlib_comp_output->GetAllChunksLength());
+	try
+	{
+		m_priv->zlib_comp->Put2(data.LockRead(), data.Length(), 0, true);
+		m_priv->zlib_comp->Flush(true);
+	}
+	catch (...)
+	{
+		data.Unlock();
+		throw;
+	}
+	data.Unlock();
+	ByteBuffer output = m_priv->zlib_comp_output->GetAllChunks();
+	m_priv->zlib_comp_output->Clear();
+	return output;
+}
+
+ByteBuffer Crypt::ZlibDecompress(const ByteBuffer &data)
+{
+	if (!m_priv->zlib_decomp)
+	{
+		ZlibResetDecompress();
+	}
+	wxASSERT(m_priv->zlib_decomp && m_priv->zlib_decomp_output);
+	wxASSERT(!m_priv->zlib_decomp_output->GetAllChunksLength());
+	try
+	{
+		m_priv->zlib_decomp->Put2(data.LockRead(), data.Length(), 0, true);
+		m_priv->zlib_decomp->Flush(true);
+	}
+	catch (...)
+	{
+		data.Unlock();
+		throw;
+	}
+	data.Unlock();
+	ByteBuffer output = m_priv->zlib_decomp_output->GetAllChunks();
+	m_priv->zlib_decomp_output->Clear();
+	return output;
 }

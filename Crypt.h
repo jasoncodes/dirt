@@ -35,6 +35,11 @@ public:
 	ByteBuffer AESEncrypt(const ByteBuffer &data);
 	ByteBuffer AESDecrypt(const ByteBuffer &data);
 
+	void ZlibResetCompress(unsigned int level = 9);
+	void ZlibResetDecompress();
+	ByteBuffer ZlibCompress(const ByteBuffer &data);
+	ByteBuffer ZlibDecompress(const ByteBuffer &data);
+
 protected:
 	CryptPrivate *m_priv;
 
