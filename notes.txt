@@ -34,9 +34,10 @@
 
 * hide /oper password when being typed
 
+* dirt:// protocol registration on mozilla and/or KDE
+
 * tray icon support
 * tab completion
-* dirt:// registration on Win32 (mozilla/konq would be nice also)
 * file transfers
 * /bind
 * /alias

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.24 2003-03-05 10:24:23 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.25 2003-03-05 10:30:53 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -343,6 +343,7 @@ void DirtApp::RegisterDirtProtocol()
 
 	#ifdef __WXMSW__
 
+		wxLogNull supress_log;
 		wxString exe = GetEXEName();
 		int num_actions = 0;
 		wxRegKey reg;
