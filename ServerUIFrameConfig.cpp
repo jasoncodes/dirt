@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.26 2003-03-11 12:41:37 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.27 2003-03-11 12:48:07 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -144,11 +144,11 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
-	wxButton *cmdSoundConnection = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetSize().y, m_txtSoundConnection->GetSize().y));
+	wxButton *cmdSoundConnection = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundConnection->GetBestSize().y, m_txtSoundConnection->GetBestSize().y));
 	wxStaticText *lblSoundJoin = new wxStaticText(panel, -1, wxT("&Join Sound:"));
 	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
-	wxButton *cmdSoundJoin = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetSize().y, m_txtSoundJoin->GetSize().y));
+	wxButton *cmdSoundJoin = new wxButton(panel, -1, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
 	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
