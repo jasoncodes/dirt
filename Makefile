@@ -152,7 +152,7 @@ mac_bundle: \
   $(BUNDLE)/MacOS/Dirt
 
 
-$(BUNDLE)/MacOS/Dirt:
+$(BUNDLE)/MacOS/Dirt: Dirt$(BINARY_SUFFIX)
 	$(REZ) Dirt$(BINARY_SUFFIX)
 	cp Dirt$(BINARY_SUFFIX) $(BUNDLE)/MacOS/Dirt
 

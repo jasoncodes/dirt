@@ -62,6 +62,7 @@ public:
 	void ShowFindDialog(bool show);
 	void AddSeparator();
 	bool SetFont(const wxFont &font);
+	void ScrollLog(int lines);
 
 	void AddHtmlLine(const wxString &line, bool split_long_words = false, bool red_line = false);
 	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true, bool red_line = false);

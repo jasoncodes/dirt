@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.32 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.33 2004-11-25 09:46:38 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -438,6 +438,18 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 			}
 		}
 
+	}
+	else if (event.GetKeyCode() == WXK_PAGEUP ||
+	         event.GetKeyCode() == WXK_PRIOR)
+	{
+		wxScrollEvent evt(wxEVT_SCROLL_PAGEUP, GetId());
+		ProcessEvent(evt);
+	}
+	else if (event.GetKeyCode() == WXK_PAGEDOWN ||
+	         event.GetKeyCode() == WXK_NEXT)
+	{
+		wxScrollEvent evt(wxEVT_SCROLL_PAGEDOWN, GetId());
+		ProcessEvent(evt);
 	}
 	else if (!ModifierCheck(event))
 	{

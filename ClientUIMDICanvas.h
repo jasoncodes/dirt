@@ -90,6 +90,7 @@ protected:
 	void OnPasswordEnter(wxCommandEvent &event);
 	void OnMouseWheel(wxMouseEvent &event);
 	void OnKeyDown(wxKeyEvent &event);
+	void OnScroll(wxScrollEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnDetach();

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.76 2004-07-19 10:12:05 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.77 2004-11-25 09:46:17 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -939,6 +939,13 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 	}
 
+}
+
+void LogControl::ScrollLog(int lines)
+{
+	int view_x, view_y;
+	GetViewStart(&view_x, &view_y);
+	Scroll(-1, view_y + lines);
 }
 
 void LogControl::OnIdle(wxIdleEvent &WXUNUSED(event))

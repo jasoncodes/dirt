@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.71 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.72 2004-11-25 09:47:21 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -76,6 +76,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
 	EVT_MENU(wxID_ANY, ClientUIMDICanvas::OnNickListMenuItem)
+	EVT_COMMAND_SCROLL(ID_INPUT, ClientUIMDICanvas::OnScroll)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &title, CanvasType type)
@@ -268,6 +269,18 @@ void ClientUIMDICanvas::OnActivate()
 void ClientUIMDICanvas::OnMouseWheel(wxMouseEvent &event)
 {
 	m_txtLog->ProcessEvent(event);
+}
+
+void ClientUIMDICanvas::OnScroll(wxScrollEvent &event)
+{
+	if (event.GetEventType() == wxEVT_SCROLL_PAGEUP)
+	{
+		m_txtLog->ScrollLog(-1);
+	}
+	else
+	{
+		m_txtLog->ScrollLog(1);
+	}
 }
 
 void ClientUIMDICanvas::OnKeyDown(wxKeyEvent &event)
