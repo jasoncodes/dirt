@@ -11,8 +11,8 @@
 
 * dcc send/recv dialog
 
-* add automated version tab and change dirt homepage to extract details from exe
-  and show latest ver number + last update date
+* update dirt homepage to extract details from exe and show latest ver number and
+  modified date (preferably from RCS data, but last modified date would probably be okay)
 
 * dirt:// protocol registration for mozilla on X11
 

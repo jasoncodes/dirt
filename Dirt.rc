@@ -4,6 +4,12 @@ hand CURSOR DISCARDABLE "res/hand.cur"
 
 #include "version.h"
 
+#ifdef DIRT_-_WIN32_UNICODE_RELEASE_PRIVATE_H
+	#ifndef _UNICODE
+		#define _UNICODE
+	#endif
+#endif
+
 #ifdef _UNICODE
 	#define UNICODE_STR "Unicode"
 #else
