@@ -31,6 +31,7 @@ ifeq ($(CXX),gcc)	# for some reason CXX is gcc on cygwin 1.1.4
 CXX = g++
 endif
 
+-include ../Makefile.config
 include ../Makefile.wx-config
 include ../Makefile.cross-compile
 
