@@ -27,6 +27,8 @@ static void Output(wxString &line)
 	puts(Timestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
 }
 
+#include <io.h>
+
 class ReadThread : public wxThread
 {
 
@@ -38,35 +40,124 @@ public:
 		Output(wxString()<<"ReadThread()");
 		m_console = console;
 		m_client = client;
-		in = new wxFFileInputStream(stdin);
-		cin = new wxTextInputStream(*in);
 	}
 
 	virtual ~ReadThread()
 	{
 		Output(wxString()<<"~ReadThread()");
-		delete cin;
-		delete in;
 	}
 
 	virtual ExitCode Entry()
 	{
+
 		Output(wxString()<<"read thread starting");
-		while (!in->Eof() && !TestDestroy())
+
+		int x = 0;
+
+		wxString line;
+		line.Alloc(128);
+
+		while (!TestDestroy() && x != -1)
 		{
-			wxString line(cin->ReadLine());
+			
+			line.Empty();
+
+			bool bGotInput = false;
+
+			while (!TestDestroy() && !bGotInput)
+			{
+
+				#ifdef __WXMSW__
+
+					HANDLE handle = ::GetStdHandle(STD_INPUT_HANDLE);
+
+					switch (::WaitForSingleObject(handle, 100))
+					{
+
+						case WAIT_OBJECT_0:
+							bGotInput = true;
+							break;
+
+						case WAIT_TIMEOUT:
+							break;
+
+						case WAIT_ABANDONED:
+						case WAIT_FAILED:
+						default:
+							wxFAIL_MSG("Unexpected return value from WaitForSingleObject()");
+							break;
+					}
+
+				#else
+
+					// The following is UNTESTED CODE!
+
+					fd_set rfds;
+					struct timeval tv;
+					int retval;
+
+					/* Watch stdin (fd 0) to see when it has input. */
+					FD_ZERO(&rfds);
+					FD_SET(0, &rfds);
+					/* Wait up to five seconds. */
+					tv.tv_sec = 1;
+					tv.tv_usec = 0;
+
+					retval = select(1, &rfds, NULL, NULL, &tv);
+					/* Don't rely on the value of tv now! */
+
+					if (retval < 0)
+					{
+					printf("error!");
+					}
+					else if (retval > 0)
+					{
+					printf("Data is available now.\n");
+					bGotInput = true;
+					/* FD_ISSET(0, &rfds) will be true. */
+					}
+					else
+					{
+					printf("No data within 1 second.\n");
+					}
+
+				#endif
+
+			}
+
+			while (!TestDestroy() && (x = getc(stdin)) != -1)
+			{
+
+				char c = (char)x;
+
+				if (c == '\n')
+				{
+					break;
+				}
+				else
+				{
+					line += c;
+				}
+
+			}
+
 			if (line.Length() > 0 && !TestDestroy())
 			{
 				ProcessInput(line);
 			}
+
 		}
+
 		Output(wxString()<<"read thread gracefully exiting");
+
 		if (!TestDestroy())
 		{
 			Output(wxString()<<"sending /exit (for read thread exit)");
 			ProcessInput("/exit");
 		}
+
 		return 0;
+
 	}
 
 	void ProcessInput(const wxString &input)
@@ -82,8 +173,6 @@ public:
 protected:
 	Client *m_client;
 	ClientUIConsole *m_console;
-	wxFFileInputStream *in;
-	wxTextInputStream *cin;
 
 };
 
@@ -167,6 +256,12 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 	{
 		OnClientInformation(context, "Supported commands: EXIT");
 		return false;
+	}
+	else if (cmd == "TEST")
+	{
+		OnClientDebug(context, "Screwing w/ stdin...");
+		fputs("\nblahblah\n",stdin);
+		return true;
 	}
 	else
 	{
