@@ -545,6 +545,14 @@ SOURCE=.\ServerUIFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIMDIPasswordManagerDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDIPasswordManagerDialog.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ServerUIFrameConfig.cpp
 # End Source File
 # Begin Source File
