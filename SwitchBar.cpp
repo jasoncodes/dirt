@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.16 2004-05-16 04:42:48 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.17 2004-12-12 06:56:10 jason Exp $)
 
 #include "SwitchBarMDI.h"
 #include <wx/image.h>
@@ -193,7 +193,6 @@ void SwitchBar::OnPaint(wxPaintEvent &WXUNUSED(event))
 	
 	wxPaintDC dc(this);
 
-	dc.SetOptimization(false);
 	dc.SetFont(GetFont());
 
 	for (int i = 0; i < GetButtonCount(); ++i)
