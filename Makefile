@@ -11,14 +11,19 @@ else
 endif
 
 CC = g++
-STRIP = strip
 WINDRES = windres
-OPTIMIZATIONS = -O1
+ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
+	COMPILE_FLAGS = -g -DDEBUG
+	STRIP = true||strip
+else
+	COMPILE_FLAGS = -O1 -DNDEBUG
+	STRIP = strip
+endif
 
 CXXFLAGS = \
 	$(strip \
-		$(OPTIMIZATION) `$(WXCONFIG) --cxxflags` \
-		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include -DNDEBUG \
+		$(COMPILE_FLAGS) `$(WXCONFIG) --cxxflags` \
+		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include \
 	)
 LINK_FLAGS = `$(WXCONFIG) --libs`
 .SUFFIXES: .o .cpp

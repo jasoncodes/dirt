@@ -1,3 +1,4 @@
+# these flags are overwritten below if wx is in debug mode
 CXXFLAGS = -O1 -DNDEBUG
 LDFLAGS =
 ARFLAGS = -cr	# ar needs the dash on OpenBSD
@@ -34,6 +35,11 @@ endif
 -include ../Makefile.config
 include ../Makefile.wx-config
 include ../Makefile.cross-compile
+
+# overwrite CXXFLAGS with debug mode stuff if wx is debug version
+ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
+	CXXFLAGS = -g -DDEBUG
+endif
 
 SRCS = $(wildcard *.cpp)
 ifeq ($(SRCS),)				# workaround wildcard function bug in GNU Make 3.77
