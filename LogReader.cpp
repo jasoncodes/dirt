@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.12 2003-03-19 12:21:29 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.13 2003-03-19 14:52:33 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -67,6 +67,10 @@ bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDate
 {
 	wxFileName fn(filename);
 	wxString name = fn.GetName();
+	if (fn.GetExt().Length() && fn.GetExt() != wxT("dirtlog"))
+	{
+		return false;
+	}
 	BoolArray is_digit;
 	is_digit.Alloc(name.Length());
 	is_digit.Add(false, name.Length());
