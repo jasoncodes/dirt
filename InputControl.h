@@ -11,7 +11,7 @@ class InputControl : public wxTextCtrl
 {
 
 public:
-	virtual wxSize GetBestSize();
+	virtual wxSize DoGetBestSize() const;
 	InputControl(
 		wxWindow* parent, wxWindowID id,
 		const wxPoint& pos = wxDefaultPosition,

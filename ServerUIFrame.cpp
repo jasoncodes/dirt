@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.7 2003-02-14 05:09:36 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.8 2003-02-14 06:04:59 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -25,7 +25,6 @@ enum
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
-	EVT_SIZE(ServerUIFrame::OnSize)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
 	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
@@ -39,10 +38,23 @@ ServerUIFrame::ServerUIFrame()
 
 	SetIcon(wxIcon( dirt_xpm ));
 
-	m_txtInput = new InputControl(this, ID_INPUT);
-	m_txtLog = new wxTextCtrl(this, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
+	wxPanel *pnlLog = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN);
+
+	m_txtInput = new InputControl(pnlLog, ID_INPUT);
+	m_txtLog = new wxTextCtrl(pnlLog, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
+
+	wxBoxSizer *szrLog = new wxBoxSizer( wxVERTICAL );
+	{
+		szrLog->Add(m_txtLog, 1, wxEXPAND);
+		szrLog->Add(m_txtInput, 0, wxEXPAND);
+	}
+	pnlLog->SetAutoLayout( TRUE );
+	pnlLog->SetSizer( szrLog );
+
+	szrLog->SetSizeHints( this );
+
 
 	m_server = new ServerDefault(this);
 
@@ -68,29 +80,6 @@ ServerUIFrame::ServerUIFrame()
 ServerUIFrame::~ServerUIFrame()
 {
 	delete m_server;
-}
-
-void ServerUIFrame::OnSize(wxSizeEvent &event)
-{
-
-	wxSize size = GetClientSize();
-
-	if (m_txtLog != NULL && m_txtInput != NULL)
-	{
-
-		int input_height = 
-			m_txtInput->GetBestSize().y;
-
-		int log_height =
-			size.y -
-			input_height;
-
-		m_txtInput->SetSize(0, log_height, size.x, input_height);
-
-		m_txtLog->SetSize(0, 0, size.x, log_height);
-
-	}
-
 }
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)

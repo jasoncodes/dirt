@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.5 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.6 2003-02-14 06:04:59 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -233,6 +233,7 @@ InputControl::InputControl(
 	txtBestSize = new wxTextCtrl(GetParent(), -1);
 	txtBestSize->Show(false);
 	txtBestSize->SetFont(GetFont());
+	SetSize(GetBestSize());
 
 	#ifdef __WXMSW__
 	{
@@ -551,7 +552,7 @@ void InputControl::ProcessInput()
 
 }
 
-wxSize InputControl::GetBestSize()
+wxSize InputControl::DoGetBestSize() const
 {
 	return txtBestSize->GetBestSize();
 }

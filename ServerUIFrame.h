@@ -20,7 +20,6 @@ protected:
 	virtual void OnServerWarning(const wxString &line);
 
 protected:
-	void OnSize(wxSizeEvent &event);
 	void OnInput(wxCommandEvent &event);
 	void OnFileExit(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
