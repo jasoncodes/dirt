@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.146 2004-05-16 10:07:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.147 2004-05-21 11:46:57 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -760,7 +760,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 					this, wxT("Send to ") + ht.head,
 					m_client->GetConfig().GetLastSendDir(), wxEmptyString,
 					wxFileSelectorDefaultWildcardStr,
-					wxOPEN | wxMULTIPLE | wxHIDE_READONLY | wxFILE_MUST_EXIST);
+					wxOPEN | wxMULTIPLE | wxFILE_MUST_EXIST);
 				if (dlg.ShowModal() == wxID_OK)
 				{
 					wxArrayString paths;

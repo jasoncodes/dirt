@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.48 2004-05-16 04:44:20 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.49 2004-05-21 11:46:57 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -427,7 +427,7 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 		(event.GetId()==ID_BROWSE_SOUND_CONNECTION) ?
 		m_txtSoundConnection : m_txtSoundJoin;
 	wxFileName fn(txt->GetValue());
-	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), wxT("Sound Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
+	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), wxT("Sound Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxFILE_MUST_EXIST, wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		txt->SetValue(dlg.GetPath());
