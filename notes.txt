@@ -22,8 +22,6 @@
 
 	* firewall traversal
 
-	* ensure IP mappings are being done correctly
-
 	* context menu options
 		* accept to $last_get_dir/file.ext
 		* open file.ext

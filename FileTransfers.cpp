@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.23 2003-05-10 04:34:39 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.24 2003-05-11 05:04:52 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -76,6 +76,25 @@ int FileTransfers::GetNewId()
 	return index;
 }
 
+wxArrayString FileTransfers::GetMyIPs() const
+{
+	wxArrayString IPs = GetIPAddresses();
+	int i;
+	if ((i = IPs.Index(wxT("127.0.0.1"))) > -1)
+	{
+		IPs.Remove(i);
+	}
+	if (m_client->m_ipself.Length())
+	{
+		if ((i = IPs.Index(m_client->m_ipself)) > -1)
+		{
+			IPs.Remove(i);
+		}
+		IPs.Insert(m_client->m_ipself, 0);
+	}
+	return IPs;
+}
+
 int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
@@ -129,20 +148,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	data.Add(wxLongLong(t->filesize).ToString());
 	data.Add(wxLongLong(t->transferid).ToString());
 	data.Add(ByteBuffer());
-	wxArrayString IPs = GetIPAddresses();
-	int i;
-	if ((i = IPs.Index(wxT("127.0.0.1"))) > -1)
-	{
-		IPs.Remove(i);
-	}
-	if (m_client->m_ipself.Length())
-	{
-		if ((i = IPs.Index(m_client->m_ipself)) > -1)
-		{
-			IPs.Remove(i);
-		}
-		IPs.Insert(m_client->m_ipself, 0);
-	}
+	wxArrayString IPs = GetMyIPs();
 	for (size_t i = 0; i < IPs.GetCount(); ++i)
 	{
 		data.Add(IPs[i]);
@@ -262,6 +268,17 @@ void FileTransfers::OnClientUserNick(const wxString &old_nick, const wxString &n
 		}
 	}
 }
+
+wxString FileTransfers::IPMappingForConnect(const wxString &ip)
+{
+	wxString last_server_hostname = m_client->GetLastURL().GetHostname();
+	if (last_server_hostname.Length() &&
+		m_client->m_server_ip_list.Index(ip) > -1)
+	{
+		return last_server_hostname;
+	}
+	return ip;
+}
 	
 bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
@@ -289,7 +306,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				{
 					return false;
 				}
-				wxString ip = fields[i+1];
+				wxString ip = IPMappingForConnect(fields[i+1]);
 				wxString port_str = fields[i+2];
 				wxLongLong_t size;
 				unsigned long id, port;
@@ -298,13 +315,6 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 					!port_str.ToULong(&port))
 				{
 					return false;
-				}
-
-				wxString last_server_hostname = m_client->GetLastURL().GetHostname();
-				if (last_server_hostname.Length() &&
-					m_client->m_server_ip_list.Index(ip) > -1)
-				{
-					ip = last_server_hostname;
 				}
 
 				FileTransfer *t = new FileTransfer(this);

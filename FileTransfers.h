@@ -34,7 +34,6 @@ public:
 	bool AcceptTransfer(int transferid, const wxString &filename, bool resume);
 	bool DeleteTransfer(int transferid, bool user_initiated);
 
-
 protected:
 	void OnTimer(wxTimerEvent &event);
 	void OnSocket(CryptSocketEvent &event);
@@ -49,6 +48,10 @@ protected:
 	void MaybeSendData(FileTransfer &t);
 	int FindRemoteTransfer(int remoteid);
 	int FindTransferBySocket(CryptSocketBase *sck);
+	wxArrayString GetMyIPs() const;
+	wxString IPMappingForConnect(const wxString &ip);
+
+protected:
 	void OnGetConnection(FileTransfer &t);
 	void OnRemoteCancel(FileTransfer &t);
 	void OnGetData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
