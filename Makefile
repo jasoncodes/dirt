@@ -71,4 +71,10 @@ crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: dirt
-	strip Dirt && upx --best Dirt && tar zcf DirtGTK.tar.gz Dirt dirt dirtconsole
+	strip Dirt && upx --best Dirt && make tar
+
+tar:
+	test -f DirtGTK.tar.gz && rm DirtGTK.tar.gz || true
+	tar cf DirtGTK.tar Dirt dirt dirtconsole
+	cd res && tar rf ../DirtGTK.tar dirt.xpm
+	gzip -9 DirtGTK.tar
