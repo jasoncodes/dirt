@@ -3,11 +3,13 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.17 2003-02-21 10:23:24 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.18 2003-02-22 05:16:20 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
+
+//////// ServerConnection ////////
 
 ServerConnection::ServerConnection()
 	: m_jointime(wxDateTime::Now())
@@ -61,6 +63,42 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 	SendData(EncodeMessage(context, cmd, data));
 }
 
+//////// ServerConfig ////////
+
+#include <wx/fileconf.h>
+
+ServerConfig::ServerConfig()
+{
+	m_config = new wxFileConfig(wxT("dirt"));
+}
+
+ServerConfig::~ServerConfig()
+{
+	delete m_config;
+}
+
+bool ServerConfig::Flush()
+{
+	return m_config->Flush();
+}
+
+bool ServerConfig::ResetToDefaults()
+{
+	return m_config->DeleteGroup(wxT("Server"));
+}
+
+long ServerConfig::GetListenPort() const
+{
+	return m_config->Read(wxT("Server/Listen Port"), 11626);
+}
+
+bool ServerConfig::SetListenPort(long port)
+{
+	return m_config->Write(wxT("Server/Listen Port"), port);
+}
+
+//////// Server ////////
+
 BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
 
@@ -68,11 +106,13 @@ Server::Server(ServerEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler)
 {
 	m_connections.Alloc(10);
+	m_config = new ServerConfig;
 }
 
 Server::~Server()
 {
 	CloseAllConnections();
+	delete m_config;
 }
 
 void Server::ProcessConsoleInput(const wxString &input)
@@ -333,10 +373,13 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			map[wxT("HOSTNAME")] = user->GetRemoteHost();
 			map[wxT("DETAILS")] = user->GetUserDetails();
 			map[wxT("AWAY")] = user->GetAwayMessage();
-			map[wxT("IDLE")] = user->GetIdleTimeString();
-			map[wxT("LATENCY")] = user->GetLatencyString();
+			map[wxT("IDLE")] = wxString() << user->GetIdleTime();
+			map[wxT("IDLESTRING")] = user->GetIdleTimeString();
+			map[wxT("LATENCY")] = wxString() << user->GetLatency();
+			map[wxT("LATENCYSTRING")] = user->GetLatencyString();
 			map[wxT("AGENT")] = user->GetUserAgent();
-			map[wxT("JOINTIME")] = user->GetJoinTimeString();
+			map[wxT("JOINTIME")] = wxString() << user->GetJoinTime().ToGMT().GetTicks();
+			map[wxT("JOINTIMESTRING")] = user->GetJoinTimeString();
 			conn->Send(context, cmd, PackHashMap(map));
 		}
 		else

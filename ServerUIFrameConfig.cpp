@@ -6,17 +6,19 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.4 2003-02-22 03:24:26 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.5 2003-02-22 05:16:20 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
 enum
 {
+	ID_RESET = 1
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(wxID_OK, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
+	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -29,14 +31,18 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
-	wxButton *cmdApply = new wxButton(panel, wxID_APPLY, wxT("Apply"));
+	wxButton *cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
+	wxButton *cmdReset = new wxButton(panel, ID_RESET, wxT("&Reset"));
 
+	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
+	m_txtListenPort = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtListenPort);
 	wxStaticText *lblUserPass = new wxStaticText(panel, -1, wxT("&User Password:"));
-	wxTextCtrl *txtUserPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(txtUserPass);
+	m_txtUserPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtUserPass);
 	wxStaticText *lblAdminPass = new wxStaticText(panel, -1, wxT("&Admin Password:"));
-	wxTextCtrl *txtAdminPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(txtAdminPass);
+	m_txtAdminPass = new wxTextCtrl(panel, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtAdminPass);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
 	{
@@ -49,6 +55,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
 				{
+					szrLabels->Add(lblListenPort, 1, wxRIGHT, 8);
 					szrLabels->Add(lblUserPass, 1, wxRIGHT, 8);
 					szrLabels->Add(lblAdminPass, 1, wxRIGHT, 8);
 				}
@@ -56,8 +63,9 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
 				{
-					szrTextBoxes->Add(txtUserPass, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(txtAdminPass, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtUserPass, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtAdminPass, 1, wxBOTTOM | wxEXPAND, 8);
 				}
 				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
 
@@ -77,6 +85,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			szrRight->Add(cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
+			szrRight->Add(cmdReset, 0, wxBOTTOM | wxEXPAND, 8);
 		}
 		szrAll->Add(szrRight, 0, wxALL | wxEXPAND, 8);
 
@@ -106,14 +115,39 @@ void ServerUIFrameConfig::OnOK(wxCommandEvent &event)
 	}
 }
 
+void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
+{
+	if (wxMessageBox(wxT("Warning: This will reset the server configuration to default values. This operation is not undoable.\n\nAre you sure you want to reset to defaults?"), wxT("Reset Confirmation"), wxOK|wxCANCEL|wxICON_QUESTION, this) == wxOK)
+	{
+		ServerConfig *config = m_server->GetConfig();
+		if (config->ResetToDefaults())
+		{
+			LoadSettings();
+		}
+		else
+		{
+			wxMessageBox(wxT("Unable to reset to defaults"), wxT("Error"), wxOK|wxICON_ERROR);
+		}
+	}
+}
+
 void ServerUIFrameConfig::LoadSettings()
 {
-
+	ServerConfig *config = m_server->GetConfig();
+	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
 }
 
 bool ServerUIFrameConfig::SaveSettings()
 {
-	//wxMessageBox(wxT("Not implemented"));
-	//return false;
+	ServerConfig *config = m_server->GetConfig();
+	long x;
+	if (!m_txtListenPort->GetValue().ToLong(&x) || !config->SetListenPort(x))
+	{
+		wxMessageBox(wxT("Invalid listen port"), wxT("Error"), wxOK|wxICON_ERROR);
+		m_txtListenPort->SetFocus();
+		m_txtListenPort->SetSelection(-1, -1);
+		return false;
+	}
+	config->Flush();
 	return true;
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.51 2003-02-21 10:23:24 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.52 2003-02-22 05:16:20 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -503,16 +503,19 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const StringHashMa
 		AddLine(context, nickname + " is away: " + details2["AWAY"]);
 	}
 	AddLine(context, nickname + " is using " + details2["AGENT"]);
-	AddLine(context, nickname + " has been idle for " + details2["IDLE"] + " (" + details2["LATENCY"] + " lag)");
-	AddLine(context, nickname + " signed on at " + details2["JOINTIME"]);
+	AddLine(context, nickname + " has been idle for " + details2["IDLESTRING"] + " (" + details2["LATENCYSTRING"] + " lag)");
+	AddLine(context, nickname + " signed on at " + details2["JOINTIMESTRING"]);
 	details2.erase("NICK");
 	details2.erase("DETAILS");
 	details2.erase("HOSTNAME");
 	details2.erase("AWAY");
 	details2.erase("AGENT");
 	details2.erase("IDLE");
+	details2.erase("IDLESTRING");
 	details2.erase("LATENCY");
+	details2.erase("LATENCYSTRING");
 	details2.erase("JOINTIME");
+	details2.erase("JOINTIMESTRING");
 	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
 		AddLine(context, nickname + " " + i->first + " = " + i->second);

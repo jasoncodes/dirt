@@ -44,7 +44,7 @@ public:
 	virtual void Start();
 	virtual void Stop();
 	virtual bool IsRunning();
-	virtual int GetListenPort();
+	virtual long GetListenPort();
 	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:

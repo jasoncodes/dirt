@@ -12,6 +12,7 @@ public:
 
 protected:
 	void OnOK(wxCommandEvent &event);
+	void OnReset(wxCommandEvent &event);
 
 protected:
 	virtual void LoadSettings();
@@ -19,6 +20,9 @@ protected:
 
 protected:
 	Server *m_server;
+	wxTextCtrl *m_txtListenPort;
+	wxTextCtrl *m_txtUserPass;
+	wxTextCtrl *m_txtAdminPass;
 
 private:
 	DECLARE_EVENT_TABLE()

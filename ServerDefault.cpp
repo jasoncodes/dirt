@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.25 2003-02-22 02:57:47 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.26 2003-02-22 05:16:20 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -78,7 +78,7 @@ void ServerDefault::Start()
 	wxCHECK_RET(!IsRunning(), wxT("Cannot start server. Server is already running."));
 	wxIPV4address addr;
 	addr.AnyAddress();
-	addr.Service(11626);
+	addr.Service(GetConfig()->GetListenPort());
 	if (m_sckListen->Listen(addr))
 	{
 		m_sckListen->GetLocal(addr);
@@ -236,7 +236,7 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 	}
 }
 
-int ServerDefault::GetListenPort()
+long ServerDefault::GetListenPort()
 {
 	wxASSERT(m_sckListen);
 	wxIPV4address addr;

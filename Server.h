@@ -4,6 +4,8 @@
 #include <wx/datetime.h>
 #include "util.h"
 
+//////// ServerEventHandler ////////
+
 class ServerEventHandler
 {
 
@@ -15,6 +17,8 @@ public:
 	virtual void OnServerWarning(const wxString &line) = 0;
 
 };
+
+//////// ServerConnection ////////
 
 class Server;
 
@@ -70,6 +74,30 @@ protected:
 #include <wx/dynarray.h>
 WX_DEFINE_ARRAY(ServerConnection*, ServerConnectionArray);
 
+//////// ServerConfig ////////
+
+#include <wx/confbase.h>
+
+class ServerConfig
+{
+
+public:
+	ServerConfig();
+	~ServerConfig();
+
+	bool Flush();
+	bool ResetToDefaults();
+
+	long GetListenPort() const;
+	bool SetListenPort(long port);
+
+protected:
+	wxConfigBase *m_config;
+
+};
+
+//////// Server ////////
+
 class Server : public wxEvtHandler
 {
 
@@ -81,7 +109,8 @@ public:
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
 	virtual bool IsRunning() = 0;
-	virtual int GetListenPort() = 0;
+	virtual long GetListenPort() = 0;
+	virtual ServerConfig* GetConfig() { return m_config; }
 	virtual size_t GetConnectionCount() { return m_connections.GetCount(); }
 	virtual ServerConnection* GetConnection(size_t index) { return m_connections.Item(index); }
 	virtual ServerConnection* GetConnection(const wxString &nickname);
@@ -99,6 +128,7 @@ protected:
 protected:
 	ServerEventHandler *m_event_handler;
 	ServerConnectionArray m_connections;
+	ServerConfig *m_config;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.32 2003-02-21 10:23:24 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.33 2003-02-22 05:16:19 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -259,17 +259,19 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const StringHashMap
 		Output(nickname + " is away: " + details2["AWAY"]);
 	}
 	Output(nickname + " is using " + details2["AGENT"]);
-	Output(nickname + " has been idle for " + details2["IDLE"] + " (" + details2["LATENCY"] + " lag)");
-	Output(nickname + " signed on at " + details2["JOINTIME"]);
+	Output(nickname + " has been idle for " + details2["IDLESTRING"] + " (" + details2["LATENCYSTRING"] + " lag)");
+	Output(nickname + " signed on at " + details2["JOINTIMESTRING"]);
 	details2.erase("NICK");
 	details2.erase("DETAILS");
 	details2.erase("HOSTNAME");
 	details2.erase("AWAY");
 	details2.erase("AGENT");
 	details2.erase("IDLE");
+	details2.erase("IDLESTRING");
 	details2.erase("LATENCY");
+	details2.erase("LATENCYSTRING");
 	details2.erase("JOINTIME");
-	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
+	details2.erase("JOINTIMESTRING");	for (StringHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
 		Output(nickname + " " + i->first + " = " + i->second);
 	}
