@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.13 2003-02-19 09:46:57 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.14 2003-02-19 09:57:36 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -321,12 +321,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			{
 				if (conn->m_nickname.Length() == 0)
 				{
-					
-					conn->Send(context, wxT("NICKLIST"), GetNickList());
+					ByteBuffer nicklist = GetNickList();
 					conn->Send(context, wxT("NICK"), data);
 					conn->m_nickname = new_nick;
 					m_event_handler->OnServerInformation(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
+					conn->Send(context, wxT("NICKLIST"), nicklist);
 				}
 				else
 				{
