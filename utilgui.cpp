@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: utilgui.cpp,v 1.2 2004-10-04 11:28:52 jason Exp $)
+RCS_ID($Id: utilgui.cpp,v 1.3 2005-01-02 11:48:19 jason Exp $)
 
 #include "utilgui.h"
 
@@ -94,7 +94,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 		ICInstance icInstance;
 
-		OSType psiSignature = '????';
+		OSType psiSignature = '\?\?\?\?';
 		ConstStr255Param hint = 0;
 
 		OSStatus error = ICStart(&icInstance, psiSignature);
