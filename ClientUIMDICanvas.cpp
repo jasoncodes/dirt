@@ -86,6 +86,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 			wxDefaultPosition, wxDefaultSize,
 			0, NULL,
 			wxLB_SINGLE | wxLB_SORT | wxLB_HSCROLL | wxLB_NEEDED_SB);
+		m_lstNickList->SetFont(m_txtInput->GetFont());
 		FixBorder(m_lstNickList);
 		m_lstNickList->Append("First");
 		m_lstNickList->Append("Second");
@@ -196,9 +197,12 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
 
+
 	#ifdef __WXMSW__
 
+		::wxBeginBusyCursor();
 		HINSTANCE hInstance = ::ShellExecute((HWND)GetHandle(), "open", event.GetString(), NULL, NULL, SW_NORMAL);
+		::wxEndBusyCursor();
 		bool success = ((int)hInstance > 32);
 		if (!success)
 		{
@@ -216,7 +220,9 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 		{
 			wxString cmdline;
 			cmdline << browsers[i] << ' ' << event.GetString();
+			::wxBeginBusyCursor();
 			long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
+			::wxEndBusyCursor();
 			success = (pid != 0);
 		}
 
