@@ -100,8 +100,6 @@ protected:
 	wxUint32 m_ip;
 	void *m_userdata;
 
-	DECLARE_NO_ASSIGN_CLASS(DNSEvent)
-
 };
 
 typedef void (wxEvtHandler::*DNSEventFunction)(DNSEvent&);

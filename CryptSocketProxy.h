@@ -177,8 +177,6 @@ protected:
 	Uint16Array m_dest_port_ranges_low;
 	Uint16Array m_dest_port_ranges_high;
 
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxySettings)
-	
 };
 
 class CryptSocketProxy
@@ -205,8 +203,6 @@ protected:
 	const CryptSocketProxySettings &m_settings;
 	wxString m_dest_ip;
 	wxUint16 m_dest_port;
-
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxy)
 
 };
 

@@ -245,8 +245,6 @@ protected:
 	ByteBuffer m_data;
 	void *m_userdata;
 
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketEvent)
-
 };
 
 typedef void (wxEvtHandler::*CryptSocketEventFunction)(CryptSocketEvent&);

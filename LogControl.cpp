@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.56 2003-08-05 05:05:57 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.57 2003-08-06 14:45:34 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -35,8 +35,6 @@ struct ModifierParserTag
 	{
 	}
 
-	DECLARE_NO_ASSIGN_CLASS(ModifierParserTag)
-
 };
 
 struct ModifierParserTagEntry
@@ -49,8 +47,6 @@ struct ModifierParserTagEntry
 		: tag(the_tag), attribs(the_attribs)
 	{
 	}
-
-	DECLARE_NO_ASSIGN_CLASS(ModifierParserTagEntry)
 
 };
 
@@ -471,8 +467,6 @@ public:
 		return m_result;
 
 	}
-
-	DECLARE_NO_ASSIGN_CLASS(ModifierParser)
 
 };
 

@@ -77,8 +77,6 @@ protected:
 	bool m_is_drop;
 	bool m_is_accepted;
 
-	DECLARE_NO_ASSIGN_CLASS(FileDropEvent)
-
 };
 
 typedef void (wxEvtHandler::*FileDropEventFunction)(FileDropEvent&);

@@ -211,8 +211,6 @@ protected:
 	bool m_is_redirecting;
 	void *m_userdata;
 
-	DECLARE_NO_ASSIGN_CLASS(HTTPEvent)
-
 };
 
 typedef void (wxEvtHandler::*HTTPEventFunction)(HTTPEvent&);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.23 2003-08-01 07:48:00 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.24 2003-08-06 14:45:33 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -99,8 +99,6 @@ protected:
 	bool m_connected_to_remote;
 	ByteBuffer m_buff;
 
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxyHTTP)
-
 };
 
 //////// CryptSocketProxySOCKS4 ////////
@@ -173,8 +171,6 @@ protected:
 	bool m_is_connect;
 	bool m_connected_to_remote;
 	ByteBuffer m_buff;
-
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxySOCKS4)
 
 };
 
@@ -389,8 +385,6 @@ protected:
 		stateUserPassResponse,
 		stateConnectResponse
 	} m_state;
-
-	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxySOCKS5)
 
 };
 

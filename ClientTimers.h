@@ -105,7 +105,6 @@ public:
 
 protected:
 	const ClientTimer m_timer;
-	DECLARE_NO_ASSIGN_CLASS(ClientTimersEvent)
 
 };
 

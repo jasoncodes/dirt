@@ -83,8 +83,6 @@ protected:
 	wxUint16 m_port;
 	ByteBuffer m_data;
 
-	DECLARE_NO_ASSIGN_CLASS(BroadcastSocketEvent)
-
 };
 
 typedef void (wxEvtHandler::*BroadcastSocketEventFunction)(BroadcastSocketEvent&);

@@ -81,8 +81,6 @@ protected:
 	bool m_more_idle;
 	wxLongLong_t m_pos;
 
-	DECLARE_NO_ASSIGN_CLASS(FileTransfer)
-
 };
 
 #endif
