@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.1 2003-03-10 23:48:55 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.2 2003-03-11 05:56:24 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -259,6 +259,7 @@ bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
 #include <qimage.h>
 #include <qtooltip.h>
 #include <netwm.h>
+#include "util.h"
 
 class TrayIconPrivate : public KSystemTray
 {
@@ -267,23 +268,38 @@ public:
 	TrayIconPrivate(TrayIcon *trayicon)
 		: KSystemTray(), m_trayicon(trayicon)
 	{
+
 		setAlignment(Qt::AlignTop|Qt::AlignLeft);
 		setGeometry(-128,-128,64,64);
 		NETRootInfo nri_before(qt_xdisplay(), NET::KDESystemTrayWindows);
 		nri_before.activate();
 		int before = nri_before.kdeSystemTrayWindowsCount();
 		show();
-		NETRootInfo nri_after(qt_xdisplay(), NET::KDESystemTrayWindows);
-		nri_after.activate();
-		int after = nri_after.kdeSystemTrayWindowsCount();
-		if (before+1 != after)
+		bool success = false;
+		wxLongLong_t stop_time = GetMillisecondTicks() + 1000;
+		while (!success && GetMillisecondTicks() < stop_time)
 		{
-			hide();
+			NETRootInfo nri_after(qt_xdisplay(), NET::KDESystemTrayWindows);
+			nri_after.activate();
+			int after = nri_after.kdeSystemTrayWindowsCount();
+			if (after > before)
+			{
+				success = true;
+				break;
+			}
+			wxThread::Sleep(50);
+		}
+
+		if (success)
+		{
+			update();
+			repaint();
 		}
 		else
 		{
-			update();
+			hide();
 		}
+
 	}
 
 	virtual ~TrayIconPrivate()
@@ -420,6 +436,8 @@ void TrayIcon::SetIcon(const char **xpm)
 		QImage img(xpm);
 		QPixmap pixmap(img.smoothScale(24, 24));
 		m_priv->setPixmap(pixmap);
+		m_priv->update();
+		kapp->processEvents();
 	}
 }
 
