@@ -24,18 +24,22 @@ public:
 	virtual ByteBufferHashMap GetProperties() const;
 	virtual ByteBuffer GetProperty(const wxString &name) const;
 
-	virtual bool IsEof() const;
+	virtual bool Eof() const;
 	virtual void Reset();
 	virtual off_t GetPosition() const;
 	virtual off_t GetLength() const;
 
-	inline bool HasNext() const { return !IsEof(); }
+	inline bool HasNext() const { return !Eof(); }
 	virtual LogEntryType GetNext();
 
 	virtual wxString GetText();
+	virtual wxColour GetTextColour();
+	virtual bool GetTextConvertURLs();
 
 protected:
 	virtual ByteBuffer Read();
+	virtual ByteBuffer GetTextHelper();
+	virtual void ParsePropertyEntry(const ByteBuffer &data);
 
 protected:
 	wxFile m_file;
