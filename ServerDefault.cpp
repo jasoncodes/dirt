@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.13 2003-02-16 11:01:17 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.14 2003-02-16 13:18:12 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -17,6 +17,11 @@ ServerDefaultConnection::ServerDefaultConnection()
 ServerDefaultConnection::~ServerDefaultConnection()
 {
 	delete m_sck;
+}
+
+void ServerDefaultConnection::Send(const ByteBuffer &data)
+{
+	m_sck->Send(data);
 }
 
 enum
@@ -62,7 +67,7 @@ void ServerDefault::Stop()
 {
 	wxCHECK_RET(IsRunning(), wxT("Cannot stop server. Server not running."));
 	m_sckListen->Close();
-	m_connections.Empty();
+	CloseAllConnections();
 	m_event_handler->OnServerInformation(wxT("Server stopped"));
 	m_event_handler->OnServerStateChange();
 }
@@ -114,9 +119,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					event.GetSocket()->GetPeer(addr);
 					wxASSERT(conn->m_sck == event.GetSocket());
 					size_t old_count = m_connections.GetCount();
-					int index = m_connections.Index(*conn);
-					wxASSERT(index > -1);
-					m_connections.Detach(index);
+					m_connections.Remove(conn);
 					size_t new_count = m_connections.GetCount();
 					wxASSERT(old_count - 1 == new_count);
 					delete conn;
@@ -128,14 +131,15 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 			case CRYPTSOCKET_INPUT:
 				{
 					m_event_handler->OnServerInformation(wxT("Input on socket: ") + event.GetData());
-					conn->m_sck->Send(event.GetData());
+					conn->ResetIdleTime();
+					conn->Send(event.GetData());
 				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
 				{
 					m_event_handler->OnServerInformation(wxT("Ready to output"));
-					conn->m_sck->Send(wxString(wxT("Welcome!")));
+					conn->Send(wxString(wxT("Welcome!")));
 				}
 				break;
 

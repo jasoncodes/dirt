@@ -3,18 +3,21 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.5 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.6 2003-02-16 13:18:11 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
 
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ServerConnectionArray);
-
 ServerConnection::ServerConnection()
 	: m_jointime(wxDateTime::Now())
 {
+	m_nickname = wxEmptyString;
+	m_remotehost = wxEmptyString;
+	m_userdetails = wxEmptyString;
+	m_awaymessage = wxEmptyString;
+	m_latency = -1;
+	m_useragent = wxEmptyString;
 	ResetIdleTime();
 }
 
@@ -55,6 +58,7 @@ Server::Server(ServerEventHandler *event_handler)
 
 Server::~Server()
 {
+	CloseAllConnections();
 }
 
 void Server::ProcessInput(const wxString &input)
@@ -124,4 +128,14 @@ void Server::ProcessInput(const wxString &input)
 		m_event_handler->OnServerWarning(wxT("Unrecognized command: ") + cmd);
 	}
 
+}
+
+void Server::CloseAllConnections()
+{
+	for (size_t i = 0; i < m_connections.GetCount(); ++i)
+	{
+		delete m_connections.Item(i);
+	}
+	m_connections.Empty();
+	m_event_handler->OnServerConnectionChange();
 }

@@ -14,6 +14,8 @@ class ServerDefaultConnection : public ServerConnection
 public:
 	virtual ~ServerDefaultConnection();
 
+	virtual void Send(const ByteBuffer &data);
+
 protected:
 	ServerDefaultConnection();
 
