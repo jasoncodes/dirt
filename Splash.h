@@ -16,6 +16,7 @@ protected:
 
 protected:
 	wxBitmap *m_bmp;
+	bool m_button_clicked;
 
 private:
 	DECLARE_EVENT_TABLE()

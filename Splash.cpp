@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.11 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.12 2003-02-21 11:10:02 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -71,6 +71,8 @@ Splash::Splash()
 
 	CentreOnScreen();
 
+	m_button_clicked = false;
+
 	Show();
 
 }
@@ -92,12 +94,16 @@ void Splash::OnPaint(wxPaintEvent &event)
 
 void Splash::OnClient(wxCommandEvent &event)
 {
-	new ClientUIMDIFrame;
+	if (m_button_clicked) return;
+	m_button_clicked = true;
 	Destroy();
+	new ClientUIMDIFrame;
 }
 
 void Splash::OnServer(wxCommandEvent &event)
 {
-	new ServerUIFrame;
+	if (m_button_clicked) return;
+	m_button_clicked = true;
 	Destroy();
+	new ServerUIFrame;
 }
