@@ -5,7 +5,7 @@
 #include "LogControl.h"
 #include "InputControl.h"
 #include "ClientUIMDITransferPanel.h"
-#include <wx/splitter.h>
+#include <wx/sashwin.h>
 
 class NickListControl;
 class Client;
@@ -40,6 +40,7 @@ protected:
 	void OnFocus(wxFocusEvent &event);
 	void OnInputEnter(wxCommandEvent &event);
 	void OnLinkClicked(wxCommandEvent &event);
+	void OnSashDragged(wxSashEvent &event);
 	void OnNickListDblClick(wxCommandEvent &event);
 	void OnNickListMenu(wxCommandEvent &event);
 	void OnNickListMenuItem(wxCommandEvent &event);
@@ -57,7 +58,7 @@ protected:
 	LogControl *m_txtLog;
 	InputControl *m_txtInput;
 
-	wxSplitterWindow *m_splitter;
+	wxSashWindow *m_sash;
 	NickListControl *m_lstNickList;
 
 	ClientUIMDITransferPanel *m_pnlTransfer;

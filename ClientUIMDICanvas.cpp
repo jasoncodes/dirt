@@ -18,74 +18,12 @@
 #include "res/send.xpm"
 #include "res/receive.xpm"
 
-class MySplitterWindow : public wxSplitterWindow
-{
-
-public:
-
-	MySplitterWindow(wxWindow *parent, int id)
-		: wxSplitterWindow(
-			parent, id,
-			wxDefaultPosition, wxDefaultSize,
-			wxSP_NOBORDER | wxSP_FULLSASH /*| wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN)
-	{
-		SetMinimumPaneSize(96);
-	}
-
-	virtual ~MySplitterWindow()
-	{
-	}
-
-	virtual void DrawSash(wxDC& dc)
-	{
-		int w, h;
-		GetClientSize(&w, &h);
-        dc.SetBrush(wxBrush(GetBackgroundColour(), wxSOLID));
-        dc.SetPen(wxPen(GetBackgroundColour(), 1, wxSOLID));
-        dc.DrawRectangle(0, 0, w-1, h-1);
-		dc.SetPen(wxNullPen);
-		dc.SetBrush(wxNullBrush);
-	}
-
-protected:
-
-	void OnSize(wxSizeEvent &event)
-	{
-
-		if (GetSize().x > 0 && GetSize().y > 0)
-		{
-		
-			int old_pos = GetSashPosition();
-			int old_size = GetWindow2()->GetSize().x;
-
-			wxSplitterWindow::OnSize(event);
-
-			if (old_pos > 0)
-			{
-				int new_size = GetWindow2()->GetSize().x;
-				int size_diff = new_size - old_size;
-				int new_pos = old_pos + size_diff;
-				SetSashPosition(new_pos);
-			}
-
-		}
-
-	}
-
-private:
-	DECLARE_EVENT_TABLE()
-
-};
-
-BEGIN_EVENT_TABLE(MySplitterWindow, wxSplitterWindow)
-	EVT_SIZE(MySplitterWindow::OnSize)
-END_EVENT_TABLE()
-
 enum
 {
 	ID_LOG = 1,
 	ID_INPUT,
 	ID_TRANSFER,
+	ID_SASH,
 	ID_NICKLIST,
 	ID_NICKLIST_NICK,
 	ID_NICKLIST_MESSAGE,
@@ -98,6 +36,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_TEXT_ENTER(ID_INPUT, ClientUIMDICanvas::OnInputEnter)
 	EVT_BUTTON(ID_LOG, ClientUIMDICanvas::OnLinkClicked)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
+	EVT_SASH_DRAGGED(ID_SASH, ClientUIMDICanvas::OnSashDragged)
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
 	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMenuItem)
@@ -152,15 +91,17 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	if (type == ChannelCanvas)
 	{
-		m_splitter = new MySplitterWindow(this, wxID_ANY);
-		m_lstNickList = new NickListControl(m_splitter, ID_NICKLIST);
+		m_sash = new wxSashWindow(
+			this, ID_SASH,
+			wxDefaultPosition, wxSize(112, 112),
+			wxSW_3DSASH | wxCLIP_CHILDREN);
+		m_sash->SetSashVisible(wxSASH_LEFT, true );
+		m_lstNickList = new NickListControl(m_sash, ID_NICKLIST);
 		m_lstNickList->SetFont(m_txtInput->GetFont());
-		m_txtLog->Reparent(m_splitter);
-		m_splitter->SplitVertically(m_txtLog, m_lstNickList, -128);
 	}
 	else
 	{
-		m_splitter = NULL;
+		m_sash = NULL;
 		m_lstNickList = NULL;
 	}
 
@@ -208,6 +149,15 @@ void ClientUIMDICanvas::OnActivate()
 	DoGotFocus();
 }
 
+void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
+{
+	if (event.GetDragStatus() == wxSASH_STATUS_OK)
+	{
+		m_sash->SetSize(event.GetDragRect());
+		ResizeChildren();
+	}
+}
+
 void ClientUIMDICanvas::ResizeChildren()
 {
 
@@ -224,25 +174,45 @@ void ClientUIMDICanvas::ResizeChildren()
 	{
 
 		int input_height = 
-			m_txtInput->GetBestSize().GetHeight();
-
-		int nicklist_width = (m_lstNickList != NULL) ? 128 : 0;
-
-		int log_width =
-			size.GetWidth() - nicklist_width;
+			m_txtInput->GetBestSize().y;
 
 		int log_height =
-			size.GetHeight() -
+			size.y -
 			input_height;
 
-		m_txtInput->SetSize(0, log_height, size.GetWidth(), input_height);
-		if (m_splitter)
+		m_txtInput->SetSize(0, log_height, size.x, input_height);
+
+		if (m_sash)
 		{
-			m_splitter->SetSize(0, 0, size.GetWidth(), log_height);
+
+			static const int min_width_nick = 96;
+			static const int min_width_log = 64;
+			
+			m_sash->SetMinimumSizeX(min_width_nick);
+			m_sash->SetMaximumSizeX(size.x - min_width_log);
+
+			int nick_width = m_sash->GetSize().x;
+			int log_width = size.x - nick_width;
+			
+			if (log_width < min_width_log)
+			{
+				log_width = min_width_log;
+				nick_width = size.x - log_width;
+			}
+
+			if (nick_width < min_width_nick)
+			{
+				nick_width = min_width_nick;
+				log_width = size.x - nick_width;
+			}
+			
+			m_txtLog->SetSize(0, 0, log_width, log_height);
+			m_sash->SetSize(log_width, 0, nick_width, log_height);
+
 		}
 		else
 		{
-			m_txtLog->SetSize(0, 0, log_width, log_height);
+			m_txtLog->SetSize(0, 0, size.x, log_height);
 		}
 
 	}
