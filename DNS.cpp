@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.15 2004-04-04 09:56:15 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.16 2004-04-25 18:57:59 jason Exp $)
 
 #include "DNS.h"
 
@@ -45,7 +45,7 @@ protected:
 			{
 				DNSEvent evt(m_dns->m_id, m_dns, success, hostname, addr, ip);
 				m_dns->m_handler->AddPendingEvent(evt);
-				#if defined(__WXMSW__) || defined(__WXMAC__)
+				#if defined(__WXMSW__)
 					::wxWakeUpMainThread();
 				#endif
 			}

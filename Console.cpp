@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.16 2004-04-25 18:27:19 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.17 2004-04-25 18:57:59 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -144,7 +144,7 @@ public:
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_ENTER, ID_CONSOLE_INPUT);
 		event.SetString(input);
 		m_console->AddPendingEvent(event);
-		#if defined(__WXMSW__) || defined(__WXMAC__)
+		#if defined(__WXMSW__)
 			::wxWakeUpMainThread();
 		#endif
 	}
