@@ -176,8 +176,8 @@ enum CryptSocketNotify
 	CRYPTSOCKET_INPUT,
 	CRYPTSOCKET_OUTPUT,
 	CRYPTSOCKET_CONNECTION,
-	CRYPTSOCKET_CONNECTION_LOST,
-	CRYPTSOCKET_CONNECTION_ERROR
+	CRYPTSOCKET_LOST,
+	CRYPTSOCKET_ERROR
 };
 
 class CryptSocketEvent : public wxEvent
@@ -197,8 +197,8 @@ public:
 	{
 		wxASSERT(
 			event == CRYPTSOCKET_INPUT ||
-			event == CRYPTSOCKET_CONNECTION_LOST ||
-			event == CRYPTSOCKET_CONNECTION_ERROR);
+			event == CRYPTSOCKET_LOST ||
+			event == CRYPTSOCKET_ERROR);
 		m_event = event;
 		SetEventObject(src);
 	}

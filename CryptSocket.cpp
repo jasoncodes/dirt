@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.34 2003-06-05 13:00:49 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.35 2003-06-07 12:46:16 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -513,7 +513,7 @@ void CryptSocketBase::OnSocketConnectionLost(const wxString &msg)
 	}
 	if (m_handler)
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_LOST, this, msg);
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_LOST, this, msg);
 		m_handler->AddPendingEvent(evt);
 	}
 }
@@ -526,7 +526,7 @@ void CryptSocketBase::OnSocketConnectionError(const wxString &msg)
 	}
 	if (m_handler)
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION_ERROR, this, msg);
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_ERROR, this, msg);
 		m_handler->AddPendingEvent(evt);
 	}
 }

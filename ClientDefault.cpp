@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.38 2003-06-05 13:00:49 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.39 2003-06-07 12:46:16 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -205,15 +205,15 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 			OnConnect();
 			break;
 
-		case CRYPTSOCKET_CONNECTION_LOST:
-		case CRYPTSOCKET_CONNECTION_ERROR:
+		case CRYPTSOCKET_LOST:
+		case CRYPTSOCKET_ERROR:
 			{
 				wxString msg;
-				if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION_LOST)
+				if (event.GetSocketEvent() == CRYPTSOCKET_LOST)
 				{
 					msg << wxT("Connection lost");
 				}
-				else if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION_ERROR)
+				else if (event.GetSocketEvent() == CRYPTSOCKET_ERROR)
 				{
 					msg << wxT("Error connecting to ") << GetLastURLString();
 				}
