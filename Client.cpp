@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.90 2004-05-31 10:35:33 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.91 2004-05-31 10:51:27 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1231,6 +1231,7 @@ void Client::OnTimerPing(wxTimerEvent &WXUNUSED(event))
 			{
 				m_ping_data = Crypt::Random(8).GetHexDump(false, false);
 				m_ping_timeout_tick = now + ping_timeout_delay;
+				m_ping_next = now;
 				SendToServer(EncodeMessage(wxEmptyString, wxT("PING"), m_ping_data));
 			}
 			else if (now > m_ping_timeout_tick)

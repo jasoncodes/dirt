@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.77 2004-05-31 10:35:34 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.78 2004-05-31 10:51:27 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -598,7 +598,12 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("usercount")] = wxString() << GetUserCount();
 	post_data[wxT("maxusers")] = wxString() << m_config.GetMaxUsers();
 	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
-	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
+	post_data[wxT("version")] = wxString()
+		<< GetProductVersion()
+		<< wxT(' ')
+		<< SplitHeadTail(GetRCSDate(), wxT(' ')).head
+		<< wxT(' ')
+		<< GetOSDescription();
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
 	post_data[wxT("uptime")] = wxString() << GetServerUptime();
 	post_data[wxT("idletime")] = wxString() << (now - m_last_active);
