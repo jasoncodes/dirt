@@ -18,8 +18,7 @@
 	ACCEPT id resumepos [ip port] [ip port]
 		-- sent by recv to accept send
 		-- optional ip/port pairs for firewall traversal
-		-- sender gets to decide if to support firewall mode
-		-- sender gets to decide which connection to keep if multiple succeed
+		-- sender decides which connection to keep if multiple succeed
 
 * dcc send/recv dialog
 
