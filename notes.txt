@@ -1,6 +1,7 @@
 * win32: scrolling, keeping any menu open, resizing/moving window, etc
   stops all network traffic from being processed (seems to be a win32 message pump problem)
   this problem reproduces in the socket sample
+  Give CVS HEAD a go before reporting.
 
 * file transfers
 
