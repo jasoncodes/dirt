@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.17 2003-03-04 06:54:33 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.18 2003-03-04 06:55:40 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -19,7 +19,6 @@ public:
 		: wxEvtHandler(), m_box(box), m_chk(chk)
 	{
 		Connect(wxID_ANY, wxID_ANY, wxEVT_PAINT, (wxObjectEventFunction)(wxEventFunction)(wxPaintEventFunction)&StaticCheckBoxSizerEventHandler::OnPaint);
-		Connect(wxID_ANY, wxID_ANY, wxEVT_IDLE, (wxObjectEventFunction)(wxEventFunction)(wxIdleEventFunction)&StaticCheckBoxSizerEventHandler::OnIdle);
 	}
 
 	virtual ~StaticCheckBoxSizerEventHandler()
@@ -30,13 +29,6 @@ protected:
 	void OnPaint(wxPaintEvent &event)
 	{
 		m_chk->Refresh();
-		event.Skip();
-	}
-
-	void OnIdle(wxIdleEvent &event)
-	{
-//		m_chk->Raise();
-//		m_chk->Refresh();
 		event.Skip();
 	}
 

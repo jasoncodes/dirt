@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.25 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.27 2003-03-04 06:54:33 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -99,19 +99,9 @@ long ServerConfig::GetListenPort() const
 	return m_config->Read(wxT("Server/Listen Port"), 11626);
 }
 
-bool ServerConfig::SetListenPort(long port)
-{
-	return m_config->Write(wxT("Server/Listen Port"), port);
-}
-
 wxString ServerConfig::GetUserPassword(bool decrypt) const
 {
 	return GetPassword(wxT("Server/User Password"), decrypt);
-}
-
-bool ServerConfig::SetUserPassword(const wxString &password)
-{
-	return SetPassword(wxT("Server/User Password"), password);
 }
 
 wxString ServerConfig::GetAdminPassword(bool decrypt) const
@@ -119,10 +109,125 @@ wxString ServerConfig::GetAdminPassword(bool decrypt) const
 	return GetPassword(wxT("Server/Admin Password"), decrypt);
 }
 
+wxString ServerConfig::GetServerName() const
+{
+	return m_config->Read(wxT("Server/Server Name"), wxEmptyString);
+}
+
+wxString ServerConfig::GetHostname() const
+{
+	return m_config->Read(wxT("Server/Hostname"), wxEmptyString);
+}
+
+bool ServerConfig::GetPublicListEnabled() const
+{
+	bool value;
+	bool success = m_config->Read(wxT("Server/Public List/Enabled"), &value, false);
+	return success?value:false;
+}
+
+wxString ServerConfig::GetPublicListAuthentication(bool decrypt) const
+{
+	return GetPassword(wxT("Server/Public List/Authentication"), decrypt);
+}
+
+wxString ServerConfig::GetPublicListComment() const
+{
+	return m_config->Read(wxT("Server/Public List/Comment"), wxEmptyString);
+}
+
+bool ServerConfig::GetHTTPProxyEnabled() const
+{
+	bool value;
+	bool success = m_config->Read(wxT("Server/HTTP Proxy/Enabled"), &value, false);
+	return success?value:false;
+}
+
+wxString ServerConfig::GetHTTPProxyHostname() const
+{
+	return m_config->Read(wxT("Server/HTTP Proxy/Hostname"), wxEmptyString);
+}
+
+long ServerConfig::GetHTTPProxyPort() const
+{
+	return m_config->Read(wxT("Server/HTTP Proxy/Port"), 80);
+}
+
+wxString ServerConfig::GetHTTPProxyUsername() const
+{
+	return m_config->Read(wxT("Server/HTTP Proxy/Username"), wxEmptyString);
+}
+
+wxString ServerConfig::GetHTTPProxyPassword(bool decrypt) const
+{
+	return GetPassword(wxT("Server/HTTP Proxy/Password"), decrypt);
+}
+
+bool ServerConfig::SetListenPort(long port)
+{
+	return m_config->Write(wxT("Server/Listen Port"), port);
+}
+
+bool ServerConfig::SetUserPassword(const wxString &password)
+{
+	return SetPassword(wxT("Server/User Password"), password);
+}
+
 bool ServerConfig::SetAdminPassword(const wxString &password)
 {
 	return SetPassword(wxT("Server/Admin Password"), password);
 }
+
+bool ServerConfig::SetServerName(const wxString &server_name)
+{
+	return m_config->Write(wxT("Server/Server Name"), server_name);
+}
+
+bool ServerConfig::SetHostname(const wxString &hostname)
+{
+	return m_config->Write(wxT("Server/Hostname"), hostname);
+}
+
+bool ServerConfig::SetPublicListEnabled(bool enabled)
+{
+	return m_config->Write(wxT("Server/Public List/Enabled"), enabled);
+}
+
+bool ServerConfig::SetPublicListAuthentication(const wxString &auth)
+{
+	return SetPassword(wxT("Server/Public List/Authentication"), auth);
+}
+
+bool ServerConfig::SetPublicListComment(const wxString &comment)
+{
+	return m_config->Write(wxT("Server/Public List/Comment"), comment);
+}
+
+bool ServerConfig::SetHTTPProxyEnabled(bool enabled)
+{
+	return m_config->Write(wxT("Server/HTTP Proxy/Enabled"), enabled);
+}
+
+bool ServerConfig::SetHTTPProxyHostname(const wxString &hostname)
+{
+	return m_config->Write(wxT("Server/HTTP Proxy/Hostname"), hostname);
+}
+
+bool ServerConfig::SetHTTPProxyPort(long port)
+{
+	return m_config->Write(wxT("Server/HTTP Proxy/Port"), port);
+}
+
+bool ServerConfig::SetHTTPProxyUsername(const wxString &username)
+{
+	return m_config->Write(wxT("Server/HTTP Proxy/Username"), username);
+}
+
+bool ServerConfig::SetHTTPProxyPassword(const wxString &password)
+{
+	return SetPassword(wxT("Server/HTTP Proxy/Password"), password);
+}
+
 
 static const wxString EncodedPrefix = wxT("Encoded:");
 
@@ -531,7 +636,6 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->m_isaway = true;
 			conn->m_awaymessage = (wxString)data;
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
-			Information(conn->GetId() + wxT(" is away: ") + conn->m_awaymessage);
 		}
 	}
 	else if (cmd == wxT("BACK"))
@@ -539,7 +643,6 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		if (conn->m_awaymessage.Length() > 0)
 		{
 			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
-			Information(conn->GetId() + wxT(" has returned (msg: ") + conn->m_awaymessage + (wxChar)OriginalModifier + wxT(")"));
 			conn->m_isaway = false;
 			conn->m_awaymessage = wxEmptyString;
 		}
