@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.35 2003-03-12 05:05:05 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.36 2003-03-12 05:39:21 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -657,23 +657,33 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 void ForceForegroundWindow(wxFrame *frm)
 {
+	
 	#if defined(__WXMSW__)
+		
 		HWND hWnd = (HWND)frm->GetHWND();
+		
 		if (hWnd != GetForegroundWindow())
 		{
+			
 			frm->Show();
+			
 			DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
 			DWORD ThreadID2 = GetWindowThreadProcessId(hWnd, 0);
-			if (ThreadID1 != ThreadID2)
+			bool flag = (ThreadID1 != ThreadID2);
+
+			if (flag)
 			{
 				AttachThreadInput(ThreadID1, ThreadID2, TRUE);
-				SetForegroundWindow(hWnd);
+			}
+			
+			SetForegroundWindow(hWnd);
+			SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_ASYNCWINDOWPOS | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+			
+			if (flag)
+			{
 				AttachThreadInput(ThreadID1, ThreadID2, FALSE);
 			}
-			else
-			{
-				SetForegroundWindow(hWnd);
-			}
+
 			if (IsIconic(hWnd))
 			{
 				ShowWindow(hWnd, SW_RESTORE);
@@ -682,10 +692,15 @@ void ForceForegroundWindow(wxFrame *frm)
 			{
 				ShowWindow(hWnd, SW_SHOW);
 			}
+
 		}
+
 	#else
+
 		frm->Show(false);
 		frm->Show(true);
 		frm->SetFocus();
+
 	#endif
+
 }

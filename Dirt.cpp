@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.26 2003-03-08 01:27:32 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.27 2003-03-12 05:39:21 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -166,6 +166,9 @@ bool DirtApp::OnInit()
 	Client *c = NULL;
 	m_console = NULL;
 	m_cmdline = NULL;
+	m_control_down = false;
+	m_alt_down = false;
+	m_shift_down = false;
 
 	#ifdef __WXMSW__
 		::timeBeginPeriod(1);
@@ -395,5 +398,33 @@ void DirtApp::RegisterDirtProtocol()
 	}
 	
 	#endif
+
+}
+
+int DirtApp::FilterEvent(wxEvent& event)
+{
+
+	wxEventType type = event.GetEventType();
+
+	if (type == wxEVT_KEY_DOWN || type == wxEVT_KEY_UP)
+	{
+
+		wxKeyEvent &key_event = (wxKeyEvent&)event;
+		m_control_down = key_event.ControlDown();
+		m_alt_down = key_event.AltDown();
+		m_shift_down = key_event.ShiftDown();
+		puts(wxString()<<key_event.ControlDown()<<key_event.AltDown()<<key_event.ShiftDown());
+	
+	}
+	else if (type == wxEVT_ACTIVATE || type == wxEVT_ACTIVATE_APP)
+	{
+
+		m_control_down = false;
+		m_alt_down = false;
+		m_shift_down = false;
+
+	}
+
+	return -1;
 
 }

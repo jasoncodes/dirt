@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.63 2003-03-05 12:05:54 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.64 2003-03-12 05:39:21 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -17,6 +17,10 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.63 2003-03-05 12:05:54 jason Exp $)
 #include "Modifiers.h"
 #include "FileTransfer.h"
 #include "FileTransfers.h"
+#include "TrayIcon.h"
+#include "Dirt.h"
+
+DECLARE_APP(DirtApp)
 
 #include "res/dirt.xpm"
 
@@ -25,6 +29,7 @@ enum
 	ID_FILE_EXIT = 1,
 	ID_HELP_ABOUT,
 	ID_FOCUSTIMER,
+	ID_TRAY,
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
@@ -32,6 +37,8 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_FILE_EXIT, ClientUIMDIFrame::OnFileExit)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
+	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ClientUIMDIFrame::OnTrayDblClick)
+	EVT_ICONIZE(ClientUIMDIFrame::OnIconize)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -41,6 +48,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 {
 
 	m_client = NULL;
+	m_tray = NULL;
 	m_focused = true;
 	m_alert = false;
 	m_flash = 0;
@@ -79,6 +87,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
+	delete m_tray;
 	delete m_tmrFocus;
 	delete m_client;
 }
@@ -176,6 +185,38 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	ShowAbout();
+}
+
+void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &event)
+{
+	ForceForegroundWindow(this);
+	delete m_tray;
+	m_tray = NULL;
+}
+
+void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
+{
+	if (event.Iconized() && !m_tray && wxGetApp().IsControlDown())
+	{
+		m_tray = new TrayIcon;
+		if (m_tray->Ok())
+		{
+			m_tray->SetEventHandler(this, ID_TRAY);
+			m_tray->SetIcon(dirt_xpm);
+			m_tray->SetToolTip(m_title);
+			Show(false);
+		}
+		else
+		{
+			delete m_tray;
+			m_tray = NULL;
+			event.Skip();
+		}
+	}
+	else
+	{
+		event.Skip();
+	}
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist, bool on_not_exist_return_null)
@@ -412,6 +453,11 @@ void ClientUIMDIFrame::UpdateCaption()
 				}
 			}
 		}
+	}
+	m_title = title;
+	if (m_tray)
+	{
+		m_tray->SetToolTip(m_title);
 	}
 	SetTitle(title);
 }

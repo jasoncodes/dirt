@@ -7,6 +7,7 @@
 class ClientUIMDICanvas;
 class NickListControl;
 class ClientUIMDITransferPanel;
+class TrayIcon;
 
 class ClientUIMDIFrame : public SwitchBarParent, public ClientEventHandler
 {
@@ -28,6 +29,8 @@ protected:
 	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusTimer(wxTimerEvent &event);
 	void OnActivate(wxActivateEvent &event);
+	void OnTrayDblClick(wxMouseEvent &event);
+	void OnIconize(wxIconizeEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
@@ -60,6 +63,8 @@ protected:
 	wxArrayString m_nicklist;
 	bool m_alert;
 	int m_flash;
+	TrayIcon *m_tray;
+	wxString m_title;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
 	ClientUIMDITransferPanel* GetContext(const long transferid);
