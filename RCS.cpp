@@ -4,7 +4,20 @@
 #include "wx/wxprec.h"
 
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.3 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.4 2003-02-13 13:17:56 jason Exp $)
+
+static wxString latest_ver;
+
+static wxString extract_ver(const char *x, const char *y)
+{
+	wxASSERT(x[0] == '$' && x[1] == 'I' && x[2] == 'd');
+	wxASSERT(y[0] == 'v' && y[1] == ' ');
+	wxString tmp(y+2);
+	size_t i = tmp.Index(' ');
+	wxASSERT(i > 0);
+	tmp = tmp.Mid(i + 1, 19);
+	return tmp;
+}
 
 static wxString latest_ver;
 
