@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.9 2003-03-04 05:35:35 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.10 2003-03-04 05:42:13 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -62,10 +62,11 @@ public:
 		if (m_chk)
 		{
 			wxPoint pos = m_box->GetPosition();
-			pos.x += 8;
+			pos.x += 12;
 			m_chk->Move(pos);
-			m_box->Lower();
-			m_chk->Raise();
+			//m_box->Lower();
+			//m_chk->Raise();
+			m_chk->SetSize(m_chk->GetBestSize());
 		}
 	}
 
@@ -158,7 +159,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			}
 			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxEmptyString);
+			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxT(" "));
 			wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
 			{
 
