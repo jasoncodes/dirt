@@ -51,7 +51,7 @@ CXXFLAGS = \
 		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
 	)
 LINK_FLAGS_GUI = `$(WXCONFIG) --libs`
-LINK_FLAGS_CLI = `$(WXCONFIG) --libs=base`
+LINK_FLAGS_CLI = `$(WXCONFIG) --libs base`
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS = \
