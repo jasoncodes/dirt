@@ -47,29 +47,29 @@ SRCS = $(shell ls *.cpp)
 endif
 
 LIBOBJS = \
-3way.cpp      dh2.cpp       ida.cpp       polynomi.cpp  skipjack.cpp \
-adler32.cpp   diamond.cpp   idea.cpp      pssr.cpp      socketft.cpp \
-algebra.cpp   diamondt.cpp  integer.cpp   pubkey.cpp    square.cpp \
-algparam.cpp  dsa.cpp       iterhash.cpp  queue.cpp     squaretb.cpp \
-arc4.cpp      ec2n.cpp      luc.cpp       rabin.cpp     strciphr.cpp \
-asn.cpp       eccrypto.cpp  mars.cpp      randpool.cpp  tea.cpp \
-base64.cpp    ecp.cpp       marss.cpp     rc2.cpp       \
-basecode.cpp  elgamal.cpp   md2.cpp       rc5.cpp       tftables.cpp \
-              eprecomp.cpp  md4.cpp       rc6.cpp       tiger.cpp \
-bfinit.cpp    esign.cpp     md5.cpp       rdtables.cpp  tigertab.cpp \
-blowfish.cpp  files.cpp     md5mac.cpp    trdlocal.cpp \
-blumshub.cpp  filters.cpp   misc.cpp      rijndael.cpp  twofish.cpp \
-cast.cpp      fips140.cpp   modes.cpp     ripemd.cpp     \
-casts.cpp     fipstest.cpp  modexppc.cpp  rng.cpp        \
-channels.cpp  gf256.cpp     mqueue.cpp    rsa.cpp        \
-crc.cpp       gf2_32.cpp    mqv.cpp       rw.cpp        wait.cpp \
-cryptest.cpp  gf2n.cpp      nbtheory.cpp  safer.cpp     wake.cpp \
-cryptlib.cpp  gfpcrypt.cpp  network.cpp   seal.cpp      winpipes.cpp \
-  gost.cpp      oaep.cpp      serpent.cpp   xtr.cpp \
-default.cpp   gzip.cpp      osrng.cpp     sha.cpp       xtrcrypt.cpp \
-des.cpp       haval.cpp     panama.cpp    shark.cpp     zdeflate.cpp \
-dessp.cpp     hex.cpp       pch.cpp       sharkbox.cpp  zinflate.cpp \
-dh.cpp        hrtimer.cpp   pkcspad.cpp   simple.cpp    zlib.cpp
+3way.o      dh2.o       ida.o       polynomi.o  skipjack.o \
+adler32.o   diamond.o   idea.o      pssr.o      socketft.o \
+algebra.o   diamondt.o  integer.o   pubkey.o    square.o \
+algparam.o  dsa.o       iterhash.o  queue.o     squaretb.o \
+arc4.o      ec2n.o      luc.o       rabin.o     strciphr.o \
+asn.o       eccrypto.o  mars.o      randpool.o  tea.o \
+base64.o    ecp.o       marss.o     rc2.o       \
+basecode.o  elgamal.o   md2.o       rc5.o       tftables.o \
+              eprecomp.o  md4.o       rc6.o       tiger.o \
+bfinit.o    esign.o     md5.o       rdtables.o  tigertab.o \
+blowfish.o  files.o     md5mac.o    trdlocal.o \
+blumshub.o  filters.o   misc.o      rijndael.o  twofish.o \
+cast.o      fips140.o   modes.o     ripemd.o     \
+casts.o     fipstest.o  modexppc.o  rng.o        \
+channels.o  gf256.o     mqueue.o    rsa.o        \
+crc.o       gf2_32.o    mqv.o       rw.o        wait.o \
+cryptest.o  gf2n.o      nbtheory.o  safer.o     wake.o \
+cryptlib.o  gfpcrypt.o  network.o   seal.o      winpipes.o \
+  gost.o      oaep.o      serpent.o   xtr.o \
+default.o   gzip.o      osrng.o     sha.o       xtrcrypt.o \
+des.o       haval.o     panama.o    shark.o     zdeflate.o \
+dessp.o     hex.o       pch.o       sharkbox.o  zinflate.o \
+dh.o        hrtimer.o   pkcspad.o   simple.o    zlib.o
 
 all: libcryptopp.a
 
