@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.77 2003-03-19 14:31:42 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.78 2003-03-20 05:11:34 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -428,7 +428,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS"), wxT(" "));
+	return SplitString(wxT("CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -476,6 +476,18 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	else if (cmd == wxT("TEST2"))
 	{
 		m_client->GetFileTransfers()->Test();
+		return true;
+	}
+	else if (cmd == wxT("LOGS"))
+	{
+		wxASSERT(wxGetApp().argc > 0);
+		wxString param;
+		param << wxT("--logs");
+		const wxChar *argv[3];
+		argv[0] = wxGetApp().argv[0];
+		argv[1] = param.c_str();
+		argv[2] = NULL;
+		::wxExecute((wxChar**)argv);
 		return true;
 	}
 	else
