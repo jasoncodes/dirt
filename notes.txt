@@ -48,18 +48,3 @@
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
 * flickering when ctrl-tab
-
-
-
-
-
-
-
-
-
-
-* finish ctcp
-
-* add CTCP PING
-
-* /alias ping /ctcp $1 ping

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.51 2003-04-03 01:34:52 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.52 2003-04-03 04:48:03 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -274,7 +274,12 @@ wxString SizeToLongString(off_t size, wxString suffix)
 	return result;
 }
 
-wxString SecondsToMMSS(long seconds)
+inline const wxChar* plural(int x)
+{
+	return (x == 1 || x == -1) ? wxT("") : wxT("s");
+}
+
+wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 {
 
 	bool neg = (seconds < 0);
@@ -282,6 +287,14 @@ wxString SecondsToMMSS(long seconds)
 	if (neg)
 	{
 		seconds = -seconds;
+	}
+
+	int ms = 0;
+
+	if (milliseconds)
+	{
+		ms = seconds % 1000;
+		seconds /= 1000;
 	}
 
 	int hour, min, sec;
@@ -303,11 +316,47 @@ wxString SecondsToMMSS(long seconds)
 
 	if (hour)
 	{
-		result = wxString::Format(wxT("%02d:%02d:%02d"), hour, min, sec);
+		if (verbose)
+		{
+			result = wxString::Format(wxT("%d hour%s, "), hour, plural(hour));
+		}
+		else
+		{
+			result = wxString::Format(wxT("%02d:"), hour);
+		}
+	}
+
+	if (verbose)
+	{
+		if (hour || min)
+		{
+			result += wxString::Format(wxT("%d minute%s, "), min, plural(min));
+		}
+		result += wxString::Format(wxT("%d second%s"), sec, plural(sec));
 	}
 	else
 	{
-		result = wxString::Format(wxT("%02d:%02d"), min, sec);
+		result += wxString::Format(wxT("%02d:%02d"), min, sec);
+	}
+
+	if (milliseconds)
+	{
+		if (verbose)
+		{
+			if (hour || min || sec)
+			{
+				result += wxT(", ");
+			}
+			else
+			{
+				result.Empty();
+			}
+			result += wxString::Format(wxT("%d millisecond%s"), ms, plural(ms));
+		}
+		else
+		{
+			result += wxString::Format(wxT(".%03d"), ms);
+		}
 	}
 
 	if (neg)

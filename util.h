@@ -36,7 +36,7 @@ wxString AddCommas(off_t size);
 wxString AddCommas(double size);
 wxString SizeToString(off_t size);
 wxString SizeToLongString(off_t size, wxString suffix = wxEmptyString);
-wxString SecondsToMMSS(long seconds);
+wxString SecondsToMMSS(long seconds, bool milliseconds = false, bool verbose = false);
 ByteBuffer Uint32ToBytes(wxUint32 num);
 wxUint32 BytesToUint32(const byte *data, int len);
 ByteBuffer Uint16ToBytes(wxUint16 num);

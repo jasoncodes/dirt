@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.45 2003-04-03 02:31:29 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.46 2003-04-03 04:48:02 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -68,7 +68,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -175,6 +175,12 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		type = ht.head;
 		data = ht.tail;
 		CTCP(context, nick, type, data);
+	}
+	else if (cmd == wxT("PING"))
+	{
+		ASSERT_CONNECTED();
+		HeadTail ht = SplitQuotedHeadTail(params);
+		CTCP(context, ht.head, cmd, params);
 	}
 	else if (cmd == wxT("OPER"))
 	{
@@ -576,19 +582,31 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		
 		if (cmd == wxT("CTCP"))
 		{
-			m_event_handler->OnClientCTCPIn(context, nick, type_str, ctcp_data);
+			if (!ProcessCTCPIn(context, nick, type_str, ctcp_data))
+			{
+				m_event_handler->OnClientCTCPIn(context, nick, type_str, ctcp_data);
+			}
 		}
 		else if (cmd == wxT("CTCPOK"))
 		{
-			m_event_handler->OnClientCTCPOut(context, nick, type_str, ctcp_data);
+			if (!ProcessCTCPOut(context, nick, type_str, ctcp_data))
+			{
+				m_event_handler->OnClientCTCPOut(context, nick, type_str, ctcp_data);
+			}
 		}
 		else if (cmd == wxT("CTCPREPLY"))
 		{
-			m_event_handler->OnClientCTCPReplyIn(context, nick, type_str, ctcp_data);
+			if (!ProcessCTCPReplyIn(context, nick, type_str, ctcp_data))
+			{
+				m_event_handler->OnClientCTCPReplyIn(context, nick, type_str, ctcp_data);
+			}
 		}
 		else if (cmd == wxT("CTCPREPLYOK"))
 		{
-			m_event_handler->OnClientCTCPReplyOut(context, nick, type_str, ctcp_data);
+			if (!ProcessCTCPReplyOut(context, nick, type_str, ctcp_data))
+			{
+				m_event_handler->OnClientCTCPReplyOut(context, nick, type_str, ctcp_data);
+			}
 		}
 	}
 	else if (cmd == wxT("PONG"))
@@ -736,13 +754,18 @@ void Client::Away(const wxString &msg)
 void Client::CTCP(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	ASSERT_CONNECTED();
-	SendToServer(EncodeMessage(context, wxT("CTCP"), Pack(nick.Upper(), type, data)));
+	ByteBuffer data2(data);
+	if (type.Upper() == wxT("PING"))
+	{
+		data2 = wxLongLong(GetMillisecondTicks()).ToString();
+	}
+	SendToServer(EncodeMessage(context, wxT("CTCP"), Pack(nick, type.Upper(), data2)));
 }
 
 void Client::CTCPReply(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	ASSERT_CONNECTED();
-	SendToServer(EncodeMessage(context, wxT("CTCPREPLY"), Pack(nick.Upper(), type, data)));
+	SendToServer(EncodeMessage(context, wxT("CTCPREPLY"), Pack(nick, type.Upper(), data)));
 }
 
 void Client::OnConnect()
@@ -1032,4 +1055,42 @@ void Client::OnClientTimers(ClientTimersEvent &event)
 {
 	const ClientTimer &timer = event.GetTimer();
 	ProcessAlias(timer.GetContext(), timer.GetCommands(), wxEmptyString);
+}
+
+bool Client::ProcessCTCPIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
+{
+	if (type == wxT("PING"))
+	{
+		CTCPReply(context, nick, type, data);
+		data = ByteBuffer();
+	}
+	return false;
+}
+
+bool Client::ProcessCTCPOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
+{
+	if (type == wxT("PING"))
+	{
+		data = ByteBuffer();
+	}
+	return false;
+}
+
+bool Client::ProcessCTCPReplyIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
+{
+	if (type == wxT("PING"))
+	{
+		unsigned long ul;
+		if (((wxString)data).ToULong(&ul))
+		{
+			long latency = (long)(GetMillisecondTicks() - ul);
+			data = ByteBuffer(SecondsToMMSS(latency, true, true)) + ByteBuffer(1) + ByteBuffer(wxString() << latency);
+		}
+	}
+	return false;
+}
+
+bool Client::ProcessCTCPReplyOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
+{
+	return false;
 }

@@ -110,6 +110,10 @@ protected:
 	virtual bool ProcessServerInputExtra(bool preprocess, const wxString &context, const wxString &cmd, const ByteBuffer &data) = 0;
 	virtual void OnConnect();
 	virtual void SendToServer(const ByteBuffer &msg) = 0;
+	virtual bool ProcessCTCPIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
+	virtual bool ProcessCTCPOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
+	virtual bool ProcessCTCPReplyIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
+	virtual bool ProcessCTCPReplyOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data);
 
 protected:
 	ClientEventHandler *m_event_handler;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.46 2003-04-01 10:24:52 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.47 2003-04-03 04:48:02 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -806,7 +806,9 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 				if (dest)
 				{
 					conn->Send(context, cmd + wxT("OK"), Pack(dest->GetNickname(), msg));
-					dest->Send(wxEmptyString, cmd, Pack(conn->GetNickname(), msg));
+					bool is_ctcp = (cmd == wxT("CTCP") || cmd == wxT("CTCPREPLY"));
+					wxString new_context = is_ctcp ? context : wxString();
+					dest->Send(new_context, cmd, Pack(conn->GetNickname(), msg));
 				}
 				else
 				{

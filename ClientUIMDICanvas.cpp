@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.43 2003-03-31 06:31:36 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.44 2003-04-03 04:48:02 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -31,7 +31,8 @@ enum
 	ID_NICKLIST_NICK,
 	ID_NICKLIST_MESSAGE,
 	ID_NICKLIST_QUERY,
-	ID_NICKLIST_WHOIS
+	ID_NICKLIST_WHOIS,
+	ID_NICKLIST_PING
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -47,6 +48,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMenuItem)
 	EVT_MENU(ID_NICKLIST_QUERY, ClientUIMDICanvas::OnNickListMenuItem)
 	EVT_MENU(ID_NICKLIST_WHOIS, ClientUIMDICanvas::OnNickListMenuItem)
+	EVT_MENU(ID_NICKLIST_PING, ClientUIMDICanvas::OnNickListMenuItem)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &title, CanvasType type)
@@ -368,6 +370,7 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Append(ID_NICKLIST_MESSAGE, wxT("Send &Message"));
 	menu.Append(ID_NICKLIST_QUERY, wxT("&Query"));
 	menu.Append(ID_NICKLIST_WHOIS, wxT("&Who Is"));
+	menu.Append(ID_NICKLIST_PING, wxT("&Ping"));
 
 	wxPoint pos = ScreenToClient(wxGetMousePosition());
 	PopupMenu(&menu, pos);
@@ -411,6 +414,12 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 		case ID_NICKLIST_WHOIS:
 		{
 			GetClient()->WhoIs(wxEmptyString, nick);
+		}
+		break;
+
+		case ID_NICKLIST_PING:
+		{
+			GetClient()->CTCP(wxEmptyString, nick, wxT("PING"), ByteBuffer());
 		}
 		break;
 

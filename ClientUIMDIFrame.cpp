@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.90 2003-04-02 04:06:31 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.91 2003-04-03 04:48:02 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -726,7 +726,7 @@ void ClientUIMDIFrame::OnClientCTCPIn(const wxString &context, const wxString &n
 	{
 		msg << wxT(' ') << data;
 	}
-	AddLine(wxEmptyString, msg, *wxRED);
+	AddLine(wxEmptyString, msg, *wxRED, true, true);
 }
 
 void ClientUIMDIFrame::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
@@ -741,7 +741,7 @@ void ClientUIMDIFrame::OnClientCTCPOut(const wxString &context, const wxString &
 	{
 		msg << wxT(' ') << data;
 	}
-	AddLine(context, msg, *wxRED);
+	AddLine(context, msg, *wxRED, true, true);
 }
 
 void ClientUIMDIFrame::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
@@ -757,7 +757,7 @@ void ClientUIMDIFrame::OnClientCTCPReplyIn(const wxString &context, const wxStri
 	{
 		msg << wxT(": ") << data;
 	}
-	AddLine(context, msg, *wxRED);
+	AddLine(context, msg, *wxRED, false, false);
 }
 
 void ClientUIMDIFrame::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
