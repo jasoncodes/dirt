@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.93 2003-04-03 07:35:20 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.94 2003-04-12 11:18:09 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -453,7 +453,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS"), wxT(" "));
+	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -461,6 +461,27 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	if (cmd == wxT("CLEAR"))
 	{
 		GetContext(context)->GetLog()->Clear();
+		return true;
+	}
+	else if (cmd == wxT("CLEARALL"))
+	{
+		for (int i = 0; i < m_switchbar->GetButtonCount(); ++i)
+		{
+			ClientUIMDICanvas *canvas = (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+			if (canvas->GetLog())
+			{
+				canvas->GetLog()->Clear();
+			}
+		}
+		return true;
+	}
+	else if (cmd == wxT("CLOSE"))
+	{
+		ClientUIMDICanvas *canvas = GetContext(context);
+		if (canvas->IsAttached())
+		{
+			canvas->GetParent()->Close();
+		}
 		return true;
 	}
 	else if (cmd == wxT("EXIT"))

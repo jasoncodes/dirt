@@ -1,7 +1,3 @@
-* /clearall
-
-* /close
-
 * highlight part of url and mouse pointer should reset back to hand after release
 
 * win32: scrolling, keeping any menu open, resizing/moving window, etc
