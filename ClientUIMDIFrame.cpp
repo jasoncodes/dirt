@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.54 2003-02-27 05:20:44 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.55 2003-02-27 06:26:56 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -274,6 +274,12 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		HeadTail ht = SplitQuotedHeadTail(params);
 		if (ht.head.Length() > 0)
 		{
+			int index = m_lstNickList->GetNickIndex(ht.head);
+			if (index > -1)
+			{
+				ht.head = m_lstNickList->GetNick(index);
+				params = wxT("\"") + ht.head + wxT("\" ") + ht.tail;
+			}
 			FocusCanvas(GetContext(ht.head));
 		}
 		cmd = wxT("MSG");
