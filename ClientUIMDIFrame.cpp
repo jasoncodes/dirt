@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.150 2004-05-23 10:35:19 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.151 2004-05-25 07:28:46 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -893,9 +893,11 @@ bool OpenPreferredBrowser(wxWindow *parent, const wxString &URL)
 				wxT("No web browser configured."),
 				wxT("Error Launching Web Browser"),
 				wxOK | wxICON_ERROR, parent);
-			return false;
+			break;
 
 	}
+
+	return false;
 
 }
 
