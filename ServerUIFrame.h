@@ -35,6 +35,8 @@ protected:
 	void OnTrayDblClick(wxMouseEvent &event);
 	void OnIconize(wxIconizeEvent &event);
 	void OnIdle(wxIdleEvent &event);
+	void OnTrayRightClick(wxMouseEvent &event);
+	void OnRestore(wxCommandEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();

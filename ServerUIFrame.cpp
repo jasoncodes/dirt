@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.32 2003-03-11 08:27:29 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.33 2003-03-11 09:51:38 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -78,7 +78,8 @@ enum
 	ID_CLIENT,
 	ID_CLEAR,
 	ID_TIMER_UPDATECONNECTIONS,
-	ID_TRAY
+	ID_TRAY,
+	ID_RESTORE
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
@@ -91,6 +92,10 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_BUTTON(ID_CLEAR, ServerUIFrame::OnClear)
 	EVT_TIMER(ID_TIMER_UPDATECONNECTIONS, ServerUIFrame::OnTimerUpdateConnections)
 	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ServerUIFrame::OnTrayDblClick)
+	EVT_TRAYICON_RIGHT_UP(ID_TRAY, ServerUIFrame::OnTrayRightClick)
+	EVT_MENU(ID_RESTORE, ServerUIFrame::OnRestore)
+	EVT_MENU(ID_STARTSTOP, ServerUIFrame::OnStartStop)
+	EVT_MENU(ID_CLIENT, ServerUIFrame::OnClient)
 	EVT_ICONIZE(ServerUIFrame::OnIconize)
 	EVT_IDLE(ServerUIFrame::OnIdle)
 END_EVENT_TABLE()
@@ -191,7 +196,11 @@ ServerUIFrame::ServerUIFrame()
 	m_server->Start();
 
 	ResetWindowPos();
-	Show();
+
+	if (!m_server->IsRunning())
+	{
+		Show();
+	}
 
 	m_txtInput->SetFocus();
 
@@ -268,6 +277,24 @@ void ServerUIFrame::OnIconize(wxIconizeEvent &event)
 	{
 		event.Skip();
 	}
+}
+
+void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
+{
+	wxMenu mnu;
+	mnu.Append(ID_RESTORE, wxT("&Open"));
+	mnu.AppendSeparator();
+	mnu.Append(ID_STARTSTOP, m_cmdStartStop->GetLabel());
+	mnu.Append(ID_CLIENT, wxT("Launch &Client"));
+	mnu.Enable(ID_CLIENT, m_cmdClient->IsEnabled());
+	mnu.AppendSeparator();
+	mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+	m_tray->PopupMenu(&mnu, event.GetPosition());
+}
+
+void ServerUIFrame::OnRestore(wxCommandEvent &event)
+{
+	ForceForegroundWindow(this);
 }
 
 void ServerUIFrame::OnIdle(wxIdleEvent &event)
