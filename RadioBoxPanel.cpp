@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RadioBoxPanel.cpp,v 1.6 2004-05-16 04:42:47 jason Exp $)
+RCS_ID($Id: RadioBoxPanel.cpp,v 1.7 2004-05-16 05:27:18 jason Exp $)
 
 #include "RadioBoxPanel.h"
 
@@ -79,6 +79,7 @@ void RadioBoxPanel::SetSizes()
 	size.y += m_pnl->GetSize().y + 8;
 	m_boxRadio->SetSize(size);
 	SetSize(size);
+	SetBestSize(size);
 }
 
 void RadioBoxPanel::OnSize(wxSizeEvent &WXUNUSED(event))
