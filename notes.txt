@@ -44,6 +44,8 @@
 
 * filter local ips from avg ping
 
+* sound for server connect / join
+
 * client tray icon
 * client side ping
 * /bind
