@@ -27,6 +27,12 @@ static void Output(wxString &line)
 	puts(Timestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
 }
 
+#if 0
+	#define DebugOutput(s) Output(s)
+#else
+	#define DebugOutput(s)
+#endif
+
 class ReadThread : public wxThread
 {
 
@@ -35,20 +41,20 @@ public:
 	ReadThread(ClientUIConsole *console, Client *client)
 		: wxThread(wxTHREAD_JOINABLE)
 	{
-		Output(wxString()<<"ReadThread()");
+		DebugOutput(wxString()<<"ReadThread()");
 		m_console = console;
 		m_client = client;
 	}
 
 	virtual ~ReadThread()
 	{
-		Output(wxString()<<"~ReadThread()");
+		DebugOutput(wxString()<<"~ReadThread()");
 	}
 
 	virtual ExitCode Entry()
 	{
 
-		Output(wxString()<<"read thread starting");
+		DebugOutput(wxString()<<"read thread starting");
 
 		int x = 0;
 
@@ -136,11 +142,11 @@ public:
 
 		}
 
-		Output(wxString()<<"read thread gracefully exiting");
+		DebugOutput(wxString()<<"read thread gracefully exiting");
 
 		if (!TestDestroy())
 		{
-			Output(wxString()<<"sending /exit (for read thread exit)");
+			DebugOutput(wxString()<<"sending /exit (for read thread exit)");
 			ProcessInput("/exit");
 		}
 
@@ -200,7 +206,7 @@ END_EVENT_TABLE()
 ClientUIConsole::ClientUIConsole()
 {
 
-	Output(wxString()<<"ClientUIConsole()");
+	DebugOutput(wxString()<<"ClientUIConsole()");
 	m_client = new ClientDefault(this);
 
 	m_read_thread = new ReadThread(this, m_client);
@@ -217,12 +223,12 @@ ClientUIConsole::ClientUIConsole()
 ClientUIConsole::~ClientUIConsole()
 {
 
-	Output(wxString()<<"~ClientUIConsole()");
+	DebugOutput(wxString()<<"~ClientUIConsole()");
 	delete m_client;
 
-	Output(wxString()<<"shutting down read thread");
+	DebugOutput(wxString()<<"shutting down read thread");
 	m_read_thread->Delete();
-	Output(wxString()<<"read thread shut down");
+	DebugOutput(wxString()<<"read thread shut down");
 	delete m_read_thread;
 
 }
