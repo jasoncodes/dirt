@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.134 2003-08-14 06:12:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.135 2003-08-15 00:39:41 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -194,6 +194,7 @@ void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 	m_focused = event.GetActive();
 	if (m_focused)
 	{
+		m_last_flash_window = 0;
 		m_alert = false;
 		UpdateCaption();
 	}
@@ -248,6 +249,7 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 {
 	if (IsFocused() || !IsWin32())
 	{
+		m_last_flash_window = 0;
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 		if (child)
 		{
