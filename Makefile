@@ -9,6 +9,9 @@ OBJECTS = $(SOURCES:.cpp=.o)
 dirt : Dirt
 	@chmod +x dirt dirtconsole
 
+clean:
+	rm -f *.o Dirt
+
 .cpp.o : 
 	$(CC) -c $(CPPFLAGS) -o $@ $<
 
@@ -17,12 +20,9 @@ dirt : Dirt
 		| sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
 		[ -s $@ ] || rm -f $@
 
-include $(SOURCES:.cpp=.d)
+-include $(SOURCES:.cpp=.d)
 
 Dirt: $(OBJECTS)
 	$(CC) -o Dirt $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
-
-clean:
-	rm -f *.o *.d Dirt
 
 all: clean dirt
