@@ -1,3 +1,5 @@
+* Add a config file for UNIX makefile so a NOKDE=1 setting can be kept
+
 * open when complete is broken
 
 * show file transfer statuses in log even if unticked in options
