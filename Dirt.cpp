@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.18 2003-02-16 05:21:13 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.19 2003-02-17 03:16:40 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -129,11 +129,11 @@ bool DirtApp::IsConsole()
 			"requires changes to the binary.\nThe command line option " \
 			"that was specified to change this mode has been ignored.\n")
 
-		if (cmdline->Found(wxT("gui")) && bIsConsole)
+		if (m_cmdline->Found(wxT("gui")) && bIsConsole)
 		{
 			puts(CANT_CHANGE_MODE);
 		}
-		else if (cmdline->Found(wxT("console")) && !bIsConsole)
+		else if (m_cmdline->Found(wxT("console")) && !bIsConsole)
 		{
 			wxMessageBox(CANT_CHANGE_MODE, wxT("Unsupported Option"), wxICON_ERROR);
 		}
@@ -157,15 +157,16 @@ bool DirtApp::IsConsole()
 
 bool DirtApp::OnInit()
 {
-	
-	Client *c = NULL;
 
+	Client *c = NULL;
 	m_console = NULL;
+	m_cmdline = NULL;
+
 	if (!ProcessCommandLine())
 	{
 		return false;
 	}
-	
+
 	if (IsConsole())
 	{
 
@@ -234,31 +235,31 @@ bool DirtApp::OnInit()
 int DirtApp::OnExit()
 {
 	delete m_console;
-	delete cmdline;
+	delete m_cmdline;
 	return wxApp::OnExit();
 }
 
 bool DirtApp::ProcessCommandLine()
 {
 
-	cmdline = new wxCmdLineParser(argc, argv);
+	m_cmdline = new wxCmdLineParser(argc, argv);
 
-	cmdline->AddSwitch(wxT("c"), wxT("console"), wxT("Console Mode"), 0);
-	cmdline->AddSwitch(wxT("g"), wxT("gui"), wxT("GUI Mode"), 0);
-	cmdline->AddSwitch(wxT("l"), wxT("client"), wxT("Client Mode"), 0);
-	cmdline->AddSwitch(wxT("s"), wxT("server"), wxT("Server Mode"), 0);
-	cmdline->AddOption(wxT("h"), wxT("host"), wxT("Remote host to connect to(implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddSwitch(wxT("c"), wxT("console"), wxT("Console Mode"), 0);
+	m_cmdline->AddSwitch(wxT("g"), wxT("gui"), wxT("GUI Mode"), 0);
+	m_cmdline->AddSwitch(wxT("l"), wxT("client"), wxT("Client Mode"), 0);
+	m_cmdline->AddSwitch(wxT("s"), wxT("server"), wxT("Server Mode"), 0);
+	m_cmdline->AddOption(wxT("h"), wxT("host"), wxT("Remote host to connect to(implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
-	if (cmdline->Parse() != 0)
+	if (m_cmdline->Parse() != 0)
 	{
 		return false;
 	}
 
-	if (cmdline->Found(wxT("server")))
+	if (m_cmdline->Found(wxT("server")))
 	{
 		m_appmode = appServer;
 	}
-	else if (cmdline->Found(wxT("client")))
+	else if (m_cmdline->Found(wxT("client")))
 	{
 		m_appmode = appClient;
 	}
@@ -267,7 +268,7 @@ bool DirtApp::ProcessCommandLine()
 		m_appmode = appDefault;
 	}
 
-	if (cmdline->Found(wxT("host"), &m_host))
+	if (m_cmdline->Found(wxT("host"), &m_host))
 	{
 		if (m_appmode == appDefault)
 		{
@@ -275,7 +276,7 @@ bool DirtApp::ProcessCommandLine()
 		}
 		else if (m_appmode != appClient)
 		{
-			cmdline->Usage();
+			m_cmdline->Usage();
 			return false;
 		}
 	}

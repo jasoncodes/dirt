@@ -24,7 +24,7 @@ protected:
 
 protected:
 	Console *m_console;
-	wxCmdLineParser *cmdline;
+	wxCmdLineParser *m_cmdline;
 	AppMode m_appmode;
 	wxString m_host;
 		
