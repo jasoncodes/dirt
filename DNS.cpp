@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.14 2004-03-02 10:03:16 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.15 2004-04-04 09:56:15 jason Exp $)
 
 #include "DNS.h"
 
@@ -91,6 +91,7 @@ void DNS::CleanUp()
 	{
 		m_worker->Delete();
 	}
+	m_worker->Wait();
 	delete m_worker;
 	m_worker = NULL;
 	m_section.Leave();
