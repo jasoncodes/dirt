@@ -43,6 +43,8 @@ public:
 	bool GetLogWriterWarningShown() const { return m_log_warning_shown; }
 	void SetLogWriterWarningShown(bool log_warning_shown) { m_log_warning_shown = log_warning_shown; }
 
+	void ProcessInput(const wxString &text);
+
 	void ResizeChildren();
 	void LogControlTest();
 
@@ -61,6 +63,8 @@ protected:
 	virtual void OnDetach();
 	virtual void OnActivate();
 	virtual void OnClose();
+	virtual bool OnPopupMenu(wxMenu &menu);
+	virtual bool OnPopupMenuItem(wxCommandEvent &event);
 
 	void DoGotFocus();
 

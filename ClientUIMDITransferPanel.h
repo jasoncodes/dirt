@@ -1,8 +1,9 @@
 #ifndef ClientUIMDITransferPanel_H_
 #define ClientUIMDITransferPanel_H_
 
+#include "FileTransfer.h"
+
 class ClientUIMDICanvas;
-class FileTransfer;
 
 class ClientUIMDITransferPanel : public wxPanel
 {
@@ -21,6 +22,7 @@ public:
 	void OnClose();
 
 	long GetTransferId();
+	FileTransferState GetState();
 	wxString GetNickname();
 	wxString GetFilename();
 	off_t GetFileSize();
@@ -31,6 +33,7 @@ public:
 	wxString GetStatus();
 
 	void SetTransferId(long id);
+	void SetState(FileTransferState state);
 	void SetNickname(const wxString &nickname);
 	void SetFilename(const wxString &filename);
 	void SetFileSize(off_t bytes);
@@ -41,6 +44,9 @@ public:
 	void SetStatus(const wxString &status);
 
 	wxString GetShortFilename();
+
+	virtual bool OnPopupMenu(wxMenu &menu);
+	virtual bool OnPopupMenuItem(wxCommandEvent &event);
 
 protected:
 	void OnSize(wxSizeEvent &event);
@@ -69,6 +75,7 @@ protected:
 
 protected:
 	long m_transferid;
+	FileTransferState m_state;
 	wxString m_nickname;
 	wxString m_filename;
 	off_t m_filesize;

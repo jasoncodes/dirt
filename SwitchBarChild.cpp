@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.13 2003-05-06 06:58:13 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.14 2003-05-07 09:26:14 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
@@ -126,7 +126,10 @@ void SwitchBarChild::OnClose(wxCloseEvent& event)
 	}
 	else
 	{
-		m_canvas->OnClose();
+		if (m_canvas->IsAttached())
+		{
+			m_canvas->OnClose();
+		}
 		event.Skip();
 	}
 }

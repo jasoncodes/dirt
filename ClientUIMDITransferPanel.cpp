@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.19 2003-05-07 05:15:16 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.20 2003-05-07 09:26:13 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -16,6 +16,11 @@ RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.19 2003-05-07 05:15:16 jason Exp $)
 #include "FileTransfers.h"
 #include "Client.h"
 #include "SwitchBar.h"
+
+enum
+{
+	ID_TRANSFER_ACCEPT = wxEVT_USER_FIRST + 3000
+};
 
 BEGIN_EVENT_TABLE(ClientUIMDITransferPanel, wxPanel)
 	EVT_SIZE(ClientUIMDITransferPanel::OnSize)
@@ -123,6 +128,7 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 {
 	wxASSERT(GetTransferId() == transfer.transferid);
 	wxASSERT(IsSend() == transfer.issend);
+	SetState(transfer.state);
 	SetNickname(transfer.nickname);
 	SetFilename(transfer.filename);
 	SetFileSize(transfer.filesize);
@@ -170,6 +176,27 @@ void ClientUIMDITransferPanel::OnClose()
 	}
 }
 
+bool ClientUIMDITransferPanel::OnPopupMenu(wxMenu &menu)
+{
+	menu.Insert(0, ID_TRANSFER_ACCEPT, wxT("&Accept"));
+	menu.Enable(ID_TRANSFER_ACCEPT, m_state == ftsGetPending);
+	menu.InsertSeparator(1);
+	return true;
+}
+
+bool ClientUIMDITransferPanel::OnPopupMenuItem(wxCommandEvent &event)
+{
+	if (event.GetId() == ID_TRANSFER_ACCEPT)
+	{
+		m_canvas->ProcessInput(wxString() << wxT("/dcc accept ") << m_transferid);
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 wxString ClientUIMDITransferPanel::GetShortFilename()
 {
 	wxFileName fn(m_filename);
@@ -184,6 +211,11 @@ wxString ClientUIMDITransferPanel::GetShortFilename()
 long ClientUIMDITransferPanel::GetTransferId()
 {
 	return m_transferid;
+}
+
+FileTransferState ClientUIMDITransferPanel::GetState()
+{
+	return m_state;
 }
 
 wxString ClientUIMDITransferPanel::GetNickname()
@@ -229,6 +261,11 @@ wxString ClientUIMDITransferPanel::GetStatus()
 void ClientUIMDITransferPanel::SetTransferId(long id)
 {
 	m_transferid = id;
+}
+
+void ClientUIMDITransferPanel::SetState(FileTransferState state)
+{
+	m_state = state;
 }
 
 void ClientUIMDITransferPanel::SetNickname(const wxString &nickname)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.106 2003-05-07 04:56:02 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.107 2003-05-07 09:26:13 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -546,26 +546,57 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	else if (cmd == wxT("DCC"))
 	{
 		HeadTail ht = SplitQuotedHeadTail(params);
-		ht.head.MakeUpper();
-		if (ht.head == wxT("SEND"))
+		wxString dcc_cmd = ht.head.Upper();
+		if (dcc_cmd == wxT("SEND"))
 		{
 			ht = SplitQuotedHeadTail(ht.tail);
-			if (ht.head.Length() && ht.tail.Length() == 0)
+			if (m_client->GetContact(ht.head) && ht.tail.Length() == 0)
 			{
 				wxFileDialog dlg(
 					this, wxT("Send files to ") + ht.head,
-					wxT(""), wxT(""), wxFileSelectorDefaultWildcardStr,
-					wxOPEN | wxMULTIPLE);
+					wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr,
+					wxOPEN | wxMULTIPLE | wxHIDE_READONLY | wxFILE_MUST_EXIST);
 				if (dlg.ShowModal() == wxID_OK)
 				{
 					wxArrayString paths;
 					dlg.GetPaths(paths);
 					for (size_t i = 0; i < paths.GetCount(); ++i)
 					{
-						m_client->ProcessConsoleInput(context, wxT("/dcc send \"") + ht.head + wxT("\" \"") + paths[i] + wxT("\""));
+						m_client->ProcessConsoleInput(context,
+							wxT("/dcc send \"") + ht.head + wxT("\" \"") +
+							paths[i] + wxT("\""));
 					}
 				}
 				return true;
+			}
+		}
+		else if (dcc_cmd == wxT("ACCEPT"))
+		{
+			ht = SplitQuotedHeadTail(ht.tail);
+			if (ht.tail.Length() == 0)
+			{
+				long x;
+				int i;
+				if (ht.head.ToLong(&x) &&
+					(i = m_client->GetFileTransfers()->FindTransfer(x)) > -1)
+				{
+					const FileTransfer &transfer =
+						m_client->GetFileTransfers()->GetTransferByIndex(i);
+					if (transfer.state == ftsGetPending)
+					{
+						wxFileDialog dlg(
+							this, wxT("Get ") + transfer.filename + wxT(" from ") + transfer.nickname,
+							wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr,
+							wxSAVE);
+						if (dlg.ShowModal() == wxID_OK)
+						{
+							m_client->ProcessConsoleInput(context,
+								wxT("/dcc accept ") + ht.head + wxT(" \"") +
+								dlg.GetPath() + wxT("\""));
+						}
+						return true;
+					}
+				}
 			}
 		}
 		return false;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.47 2003-05-07 02:04:10 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.48 2003-05-07 09:26:13 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -203,6 +203,24 @@ void ClientUIMDICanvas::OnClose()
 	{
 		GetTransferPanel()->OnClose();
 	}
+}
+
+bool ClientUIMDICanvas::OnPopupMenu(wxMenu &menu)
+{
+	if (m_pnlTransfer)
+	{
+		return m_pnlTransfer->OnPopupMenu(menu);
+	}
+	return true;
+}
+
+bool ClientUIMDICanvas::OnPopupMenuItem(wxCommandEvent &event)
+{
+	if (m_pnlTransfer)
+	{
+		return m_pnlTransfer->OnPopupMenuItem(event);
+	}
+	return true;
 }
 
 void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
@@ -409,17 +427,13 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 
 		case ID_NICKLIST_SEND:
 		{
-			wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
-			evt.SetString(wxT("/dcc send \"") + nick + wxT("\""));
-			AddPendingEvent(evt);
+			ProcessInput(wxT("/dcc send \"") + nick + wxT("\""));
 		}
 		break;
 
 		case ID_NICKLIST_QUERY:
 		{
-			wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
-			evt.SetString(wxT("/query \"") + nick + wxT("\""));
-			AddPendingEvent(evt);
+			ProcessInput(wxT("/query \"") + nick + wxT("\""));
 		}
 		break;
 
@@ -440,6 +454,13 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 
 	}
 
+}
+
+void ClientUIMDICanvas::ProcessInput(const wxString &text)
+{
+	wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
+	evt.SetString(text);
+	AddPendingEvent(evt);
 }
 
 void ClientUIMDICanvas::LogControlTest()

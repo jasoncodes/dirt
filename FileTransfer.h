@@ -35,6 +35,7 @@ class FileTransfer
 
 public:
 	int transferid;
+	int remoteid;
 	bool issend;
 	FileTransferState state;
 	wxString nickname;
