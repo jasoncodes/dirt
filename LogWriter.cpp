@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.8 2003-03-19 12:21:29 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.9 2003-03-19 12:38:45 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -17,7 +17,7 @@ LogWriter::LogWriter(const wxString &filename)
 	wxLogNull supress_log;
 	wxFileName fn(filename);
 	wxString dir = fn.GetPath(wxPATH_GET_VOLUME);
-	wxFileName::Mkdir(dir, 0077, wxPATH_MKDIR_FULL);
+	wxFileName::Mkdir(dir, 0700, wxPATH_MKDIR_FULL);
 	m_file.Open(filename, wxFile::write_append);
 }
 
