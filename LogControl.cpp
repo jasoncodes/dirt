@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.30 2003-03-18 06:36:39 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.31 2003-03-18 06:39:33 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1609,7 +1609,7 @@ void LogControl::ShowFindDialog(bool show)
 		if (!m_find_dlg)
 		{
 			m_find_data = wxFindReplaceData(wxFR_DOWN);
-			m_find_dlg = new wxFindReplaceDialog(this, &m_find_data, wxT("Find"), wxFR_NOUPDOWN);
+			m_find_dlg = new wxFindReplaceDialog(this, &m_find_data, wxT("Find"), wxFR_NOUPDOWN|wxFR_NOWHOLEWORD);
 			m_find_pos1 = m_Cell;
 			m_find_pos2 = m_Cell;
 			m_find_show_sel = false;
@@ -1650,7 +1650,7 @@ void LogControl::OnFindDialog(wxFindDialogEvent &event)
 		bool direction_down = ((flags & wxFR_DOWN) != 0);
 		bool whole_word = ((flags & wxFR_WHOLEWORD) != 0);
 		bool case_sensitive = ((flags & wxFR_MATCHCASE) != 0);
-		wxASSERT(direction_down && !whole_word);
+		if (!direction_down || whole_word) wxFAIL;
 
 		if (type == wxEVT_COMMAND_FIND)
 		{
