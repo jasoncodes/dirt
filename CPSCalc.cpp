@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.8 2003-06-07 12:40:58 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.9 2003-06-07 13:44:22 jason Exp $)
 
 #include "CPSCalc.h"
 
@@ -56,7 +56,7 @@ wxLongLong_t CPSCalc::Update(wxLongLong_t pos)
 
 			wxLongLong_t sum_of_diffs = 0;
 
-			for (size_t i = first_history; i < last_history; ++i)
+			for (int i = first_history; i < last_history; ++i)
 			{
 				sum_of_diffs += (m_history[i+1] - m_history[i]);
 			}
