@@ -36,6 +36,7 @@
 
 
 
+
 /*
   * View an HTML file
   */
@@ -68,3 +69,17 @@ void heViewHTMLFile(const wxString& url)
 
      ok = (wxExecute(cmd, FALSE) != 0);
 }
+
+
+
+
+
+    // Phys. Pixel length / height
+    ::wxDisplaySize (&x, &y);
+   // or this way
+    x = wxSystemSettings::GetMetric (wxSYS_SCREEN_X);
+    y = wxSystemSettings::GetMetric (wxSYS_SCREEN_Y);
+
+    // if you're working under Win you might be interested on that
+    // effektive Pixel Size
+    ::wxClientDisplayRect (&x, &y, &b, &h);
