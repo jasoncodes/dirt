@@ -50,7 +50,6 @@ protected:
 	int FindRemoteTransfer(int remoteid);
 	int FindTransferBySocket(CryptSocketBase *sck);
 	wxArrayString GetMyIPs() const;
-	wxString IPMappingForConnect(const wxString &ip) const;
 	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
 	void AppendMyIPs(ByteBufferArray &data, wxUint16 port) const;
 

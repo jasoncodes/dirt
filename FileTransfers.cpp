@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.31 2003-05-14 15:17:55 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.32 2003-05-14 23:57:27 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -286,17 +286,6 @@ void FileTransfers::OnClientUserNick(const wxString &old_nick, const wxString &n
 	}
 }
 
-wxString FileTransfers::IPMappingForConnect(const wxString &ip) const
-{
-	wxString last_server_hostname = m_client->GetLastURL().GetHostname();
-	if (last_server_hostname.Length() &&
-		m_client->m_server_ip_list.Index(ip) > -1)
-	{
-		return last_server_hostname;
-	}
-	return ip;
-}
-	
 bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const
 {
 	while (i < fields.GetCount() && fields[i].Length())
@@ -304,19 +293,43 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 		++i;
 	}
 	++i;
+	wxString last_server_hostname = m_client->GetLastURL().GetHostname();
+	Uint16Array server_ports;
 	if (i <= fields.GetCount() && ((fields.GetCount()-i) % 2) == 0)
 	{
 		while (i < fields.GetCount())
 		{
-			IPs.Add(IPMappingForConnect(fields[i]));
 			wxString port_str = fields[i+1];
 			unsigned long port;
 			if (!port_str.ToULong(&port))
 			{
 				return false;
 			}
+			if (last_server_hostname.Length() &&
+				m_client->m_server_ip_list.Index(wxString(fields[i])) > -1)
+			{
+				bool found = false;
+				for (size_t i = 0; i < server_ports.GetCount(); ++i)
+				{
+					if (server_ports[i] == port)
+					{
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					server_ports.Add(port);
+				}
+			}
+			IPs.Add(fields[i]);
 			ports.Add(port);
 			i += 2;
+		}
+		for (size_t i = 0; i < server_ports.GetCount(); ++i)
+		{
+			IPs.Insert(last_server_hostname, i);
+			ports.Insert(server_ports[i], i);
 		}
 		return true;
 	}
@@ -412,7 +425,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 								return false;
 							}
 
-							if (IPs.GetCount() > 0 && !t.m_connect_ok)
+							for (size_t i = 0; i < IPs.GetCount() && !t.m_connect_ok; ++i)
 							{
 								CryptSocketClient *sckClient = new CryptSocketClient;
 								t.m_scks.Add(sckClient);
@@ -420,8 +433,8 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 								sckClient->SetUserData(&t);
 								sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 								wxIPV4address addr;
-								addr.Hostname(IPs[0u]);
-								addr.Service(ports[0u]);
+								addr.Hostname(IPs[i]);
+								addr.Service(ports[i]);
 								sckClient->Connect(addr);
 							}
 
@@ -765,15 +778,18 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		t.status = wxT("Connecting...");
 		t.m_last_tick = GetMillisecondTicks();
 		
-		CryptSocketClient *sckClient = new CryptSocketClient;
-		t.m_scks.Add(sckClient);
-		sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
-		sckClient->SetUserData(&t);
-		sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
-		wxIPV4address addr;
-		addr.Hostname(t.m_IPs[0u]);
-		addr.Service(t.m_ports[0u]);
-		sckClient->Connect(addr);
+		for (size_t i = 0; i < t.m_IPs.GetCount(); ++i)
+		{
+			CryptSocketClient *sckClient = new CryptSocketClient;
+			t.m_scks.Add(sckClient);
+			sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
+			sckClient->SetUserData(&t);
+			sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+			wxIPV4address addr;
+			addr.Hostname(t.m_IPs[i]);
+			addr.Service(t.m_ports[i]);
+			sckClient->Connect(addr);
+		}
 
 		m_client->m_event_handler->OnClientTransferState(t);
 
@@ -787,6 +803,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		sckServer->SetEventHandler(this, ID_SOCKET_SERVER);
 		sckServer->SetUserData(&t);
 		sckServer->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+		wxIPV4address addr;
 		addr.AnyAddress();
 		addr.Service(0);
 		if (sckServer->Listen(addr))
