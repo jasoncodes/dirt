@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.38 2003-03-31 06:04:07 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.39 2003-04-03 07:35:20 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -494,6 +494,21 @@ int DirtApp::FilterEvent(wxEvent& event)
 		m_control_down = false;
 		m_alt_down = false;
 		m_shift_down = false;
+
+	}
+	else if (type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION)
+	{
+
+		wxCloseEvent &close_event = (wxCloseEvent&)event;
+
+		if (close_event.GetLoggingOff())
+		{
+			m_default_quit_message = wxT("Logging Off");
+		}
+		else
+		{
+			m_default_quit_message = wxT("Session Ending");
+		}
 
 	}
 

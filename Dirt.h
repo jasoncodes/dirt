@@ -27,6 +27,7 @@ public:
 	bool IsShiftDown() const { return m_shift_down; }
 
 	wxString GetConfigFilename() { return m_config_filename; }
+	wxString GetDefaultQuitMessage() { return m_default_quit_message; }
 
 protected:
 	bool ProcessCommandLine();
@@ -42,6 +43,7 @@ protected:
 	bool m_alt_down;
 	bool m_shift_down;
 	wxString m_config_filename;
+	wxString m_default_quit_message;
 
 };
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.44 2003-04-01 10:11:00 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.45 2003-04-03 07:35:20 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -14,6 +14,9 @@ RCS_ID($Id: ClientUIConsole.cpp,v 1.44 2003-04-01 10:11:00 jason Exp $)
 #include "util.h"
 #include "FileTransfer.h"
 #include "Modifiers.h"
+#include "Dirt.h"
+
+DECLARE_APP(DirtApp)
 
 ClientUIConsole::ClientUIConsole(bool no_input)
 	: Console(no_input),
@@ -72,7 +75,7 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 	{
 		if (m_client->IsConnected())
 		{
-			m_client->Quit(params);
+			m_client->Quit(params.Length() ? params : wxGetApp().GetDefaultQuitMessage());
 		}
 		ExitMainLoop();
 		return true;

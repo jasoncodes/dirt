@@ -21,8 +21,6 @@
 
 * hide /oper password when being typed
 
-* automatic quit messages for end task, log off, etc (wxCloseEvent)
-
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
 * when colour popup shows on GTK cannot programmically focus back to main window
