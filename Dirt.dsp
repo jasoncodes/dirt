@@ -259,6 +259,14 @@ SOURCE=.\Dirt.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\DNS.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DNS.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\FileTransfer.cpp
 # End Source File
 # Begin Source File
