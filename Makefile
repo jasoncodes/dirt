@@ -14,7 +14,7 @@ endif
 .PRECIOUS: dirt
 .PHONY: clean dirt all mac_post_link
 
-WXPREFIX=`$(WXCONFIG) --prefix`
+WXPREFIX := `$(WXCONFIG) --prefix`
 CC = g++
 WINDRES = windres
 REZ = $(shell $(WXCONFIG) --rezflags)
