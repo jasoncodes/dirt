@@ -7,27 +7,27 @@ defaultConfig=1
 // compiler 
 workingDirectory=
 arguments=
-intermediateFilesDirectory=Debug
-outputFilesDirectory=Debug
-compilerPreprocessor=_X86_=1, WIN32,_WIN32,WINVER=0x0400,__WIN95__,__GNUWIN32__,__WIN32__,STRICT,__WXMSW__,__WINDOWS__,__WXDEBUG__
+intermediateFilesDirectory=UnicodeDebug
+outputFilesDirectory=UnicodeDebug
+compilerPreprocessor=_X86_=1, WIN32,_WIN32,WINVER=0x0400,__WIN95__,__GNUWIN32__,__WIN32__,STRICT,__WXMSW__,__WINDOWS__
 extraCompilerOptions=-fno-pcc-struct-return 
 compilerIncludeDirectory=
-noWarning=0
+noWarning=1
 defaultWarning=0
-allWarning=1
+allWarning=0
 extraWarning=0
 isoWarning=0
 warningsAsErrors=0
 debugType=1
 debugLevel=2
-exceptionEnabled=0
-runtimeTypeEnabled=0
+exceptionEnabled=1
+runtimeTypeEnabled=1
 optimizeLevel=0
 
 // linker
-libraryPath=
-outputFilename=Debug\Dirt.exe
-libraries=wxmswd, regex, png, jpeg, zlib, tiff, stdc++, gcc, odbc32, wsock32, winspool, winmm, shell32, comctl32 , ctl3d32 , odbc32, advapi32, odbc32, wsock32, opengl32, glu32, ole32, oleaut32, uuid
+libraryPath=crypto\Release
+outputFilename=UnicodeDebug\Dirt.exe
+libraries=wxmswu, regex, png, jpeg, zlib, tiff, stdc++, gcc, odbc32, wsock32, winspool, winmm, shell32, comctl32 , ctl3d32 , odbc32, advapi32, odbc32, wsock32, opengl32, glu32, ole32, oleaut32, uuid, cryptlib
 extraLinkerOptions=
 ignoreStartupFile=0
 ignoreDefaultLibs=0
