@@ -73,6 +73,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", ChannelCanvas);
 	NewWindow(canvas, true);
+	m_lstNickList = canvas->GetNickList();
 
 	tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
 	tmrFocus->Start(100);
@@ -255,4 +256,56 @@ void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &t
 {
 	wxString context = is_private ? nick : (const wxString)wxEmptyString;
 	AddLine(context, "<" + nick + "> " + text);
+}
+
+void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
+{
+	m_lstNickList->Clear();
+	for (size_t i = 0; i < nicklist.GetCount(); ++i)
+	{
+		m_lstNickList->Append(nicklist[i]);
+	}
+}
+
+void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &details)
+{
+
+	wxString msg;
+	msg << "* " << nick;
+	if (details.Length() > 0)
+	{
+		msg << " (" << details << ")";
+	}
+	msg << " has joined the chat";
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
+
+	m_lstNickList->Append(nick);
+
+}
+
+void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message)
+{
+
+	wxString msg;
+	msg << "* " << nick;
+	if (details.Length() > 0)
+	{
+		msg << " (" << details << ")";
+	}
+	msg << " has left the chat";
+	if (message.Length() > 0)
+	{
+		msg << " (" << message << ")";
+	}
+	AddLine(wxEmptyString, msg, wxColour(0, 128, 0));
+
+	for (int i = 0; i < m_lstNickList->GetCount(); ++i)
+	{
+		if (m_lstNickList->GetString(i) == nick)
+		{
+			m_lstNickList->Delete(i);
+			break;
+		}
+	}
+
 }

@@ -24,9 +24,10 @@ public:
 
 	virtual bool IsClosable() { return m_type != ChannelCanvas; }
 
-	LogControl* GetLog() { return m_txtLog; }
-
 	virtual CanvasType GetType() { return m_type; }
+
+	LogControl* GetLog() { return m_txtLog; }
+	wxListBox* GetNickList() { return m_lstNickList; }
 
 	void LogControlTest();
 

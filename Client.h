@@ -11,6 +11,9 @@ public:
 	virtual void OnClientInformation(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientMessageOut(const wxString &nick, const wxString &text) = 0;
 	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private) = 0;
+	virtual void OnClientUserList(const wxArrayString &nicklist) = 0;
+	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
+	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
 
 };
 

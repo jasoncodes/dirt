@@ -21,6 +21,9 @@ protected:
 	virtual void OnClientInformation(const wxString &context, const wxString &text);
 	virtual void OnClientMessageOut(const wxString &nick, const wxString &text);
 	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private);
+	virtual void OnClientUserList(const wxArrayString &nicklist);
+	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
+	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);
 
 protected:
 	Client *m_client;

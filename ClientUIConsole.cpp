@@ -296,3 +296,52 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 		Output(wxString() << "<" + nick + "> " + text);
 	}
 }
+
+void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)
+{
+	wxString msg = "* Chatting with: ";
+	if (nicklist.GetCount() > 0)
+	{
+		for (size_t i = 0; i < nicklist.GetCount(); ++i)
+		{
+			if (i > 0)
+			{
+				msg += ", ";
+			}
+			msg += nicklist[i];
+		}
+	}
+	else
+	{
+		msg += "(Nobody)";
+	}
+	Output(msg);
+}
+
+void ClientUIConsole::OnClientUserJoin(const wxString &nick, const wxString &details)
+{
+	wxString msg;
+	msg << "* " << nick;
+	if (details.Length() > 0)
+	{
+		msg << " (" << details << ")";
+	}
+	msg << " has joined the chat";
+	Output(msg);
+}
+
+void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message)
+{
+	wxString msg;
+	msg << "* " << nick;
+	if (details.Length() > 0)
+	{
+		msg << " (" << details << ")";
+	}
+	msg << " has left the chat";
+	if (message.Length() > 0)
+	{
+		msg << " (" << message << ")";
+	}
+	Output(msg);
+}

@@ -20,9 +20,20 @@ END_EVENT_TABLE()
 ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 	: Client(event_handler)
 {
+
 	tmrTest = new wxTimer(this, ID_TIMER_TEST);
 	//tmrTest->Start(5000);
+
 	Debug(wxEmptyString, "ClientDefault Ready");
+
+	wxArrayString users(true);
+	users.Add("First");
+	users.Add("Third");
+	users.Add("Second");
+	m_event_handler->OnClientUserList(users);
+	m_event_handler->OnClientUserJoin("Fourth", "fourth@dev.null");
+	m_event_handler->OnClientUserPart("Fourth", "fourth@dev.null", "Quit message goes here");
+
 }
 
 ClientDefault::~ClientDefault()

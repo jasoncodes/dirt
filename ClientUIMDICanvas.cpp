@@ -81,8 +81,15 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	if (type == ChannelCanvas)
 	{
-		m_lstNickList = new wxListBox(this, ID_NICKLIST);
+		m_lstNickList = new wxListBox(
+			this, ID_NICKLIST,
+			wxDefaultPosition, wxDefaultSize,
+			0, NULL,
+			wxLB_SINGLE | wxLB_SORT | wxLB_HSCROLL | wxLB_NEEDED_SB);
 		FixBorder(m_lstNickList);
+		m_lstNickList->Append("First");
+		m_lstNickList->Append("Second");
+		m_lstNickList->Append("Third");
 	}
 	else
 	{
