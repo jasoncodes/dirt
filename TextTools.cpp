@@ -28,7 +28,7 @@
         #include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TextTools.cpp,v 1.3 2004-07-19 10:12:05 jason Exp $)
+RCS_ID($Id: TextTools.cpp,v 1.4 2004-07-21 07:59:21 jason Exp $)
 
 #include "TextTools.h"
 #include "Modifiers.h"
@@ -595,7 +595,7 @@ wxString ConvertUrlsToLinks(const wxString &text)
 					token = token.Left(token.Length() - 1);
 					url = url.Left(url.Length() - 1);
 				}
-				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\">") + token + wxT("</a>") + extra_chars;
+				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\" target=\"_blank\">") + token + wxT("</a>") + extra_chars;
 			}
 
 			output += token;

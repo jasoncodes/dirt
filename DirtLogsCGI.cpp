@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.4 2004-07-20 18:23:24 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.5 2004-07-21 07:59:21 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,10 +101,17 @@ int main(int argc, char **argv)
 	}
 
 	wxString pathinfo = wxGetenv(wxT("PATH_INFO"));
+	wxString scripturi = wxGetenv(wxT("SCRIPT_URI"));
+	
+	if (scripturi.Length() == 0)
+	{
+		wxFprintf(stderr, wxT("This is a CGI application for viewing Dirt log files.\n"));
+		return EXIT_SUCCESS;
+	}
 
 	if (pathinfo.Length() == 0)
 	{
-		wxFprintf(stdout, wxString() << wxT("Location: ") << wxGetenv(wxT("SCRIPT_URI")) << wxT("/\r\n\r\n"));
+		wxFprintf(stdout, wxString() << wxT("Location: ") << scripturi << wxT("/\r\n\r\n"));
 		return EXIT_SUCCESS;
 	}
 
@@ -112,6 +119,15 @@ int main(int argc, char **argv)
 	fprintf(stdout, "\r\n");
 	puts("<html>");
 	puts("<body>");
+	puts("<head>");
+	puts("<style type=\"text/css\">");
+	puts(".line");
+	puts("{");
+	puts("\tmargin-left: 32px;");
+	puts("\ttext-indent: -32px;");
+	puts("}");
+	puts("</style>");
+	puts("</head>");
 
 	wxString logdir = GetLogDirectory();
 
@@ -194,13 +210,16 @@ int main(int argc, char **argv)
 				line = ConvertModifiersIntoHtml(line, false);
 
 				line = wxString()
+					<< wxT("<div class=\"line\">")
 					<< wxT("<tt>")
 					<< wxT("<font color=\"")
 					<< ColourRGBToString(reader.GetTextColour())
 					<< wxT("\">")
 					<< line
 					<< wxT("</font>")
-					<< wxT("</tt><br />");
+					<< wxT("</tt>")
+					<< wxT("</div>")
+					<< wxT("<br />");
 
 				ConsoleOutputUTF8(line);
 
