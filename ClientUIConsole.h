@@ -2,16 +2,17 @@
 #define ClientUIConsole_H_
 
 #include "Client.h"
+#include "Console.h"
 
-class ReadThread;
-
-class ClientUIConsole : public wxEvtHandler, public ClientEventHandler
+class ClientUIConsole : public Console, public ClientEventHandler
 {
 
 public:
 
 	ClientUIConsole();
 	virtual ~ClientUIConsole();
+
+	virtual void Output(const wxString &line);
 
 protected:
 
@@ -30,11 +31,11 @@ protected:
 	virtual void OnClientTransferTimer(const FileTransfer &transfer);
 
 protected:
-	Client *m_client;
-	ReadThread *m_read_thread;
+	virtual void OnInput(const wxString &line);
+	virtual void OnEOF();
 
 protected:
-	void OnTextEnter(wxCommandEvent& event);
+	Client *m_client;
 
 private:
 	DECLARE_EVENT_TABLE()
