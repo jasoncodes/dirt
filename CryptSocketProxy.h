@@ -32,6 +32,7 @@ class CryptSocketProxySettings
 public:
 	CryptSocketProxySettings(Config &config);
 
+	void LoadDefaults();
 	bool LoadSettings();
 	bool SaveSettings();
 
@@ -63,6 +64,7 @@ public:
 	bool SetProtocol(const wxString &protocol);
 	bool SetHostname(const wxString &hostname);
 	bool SetPort(wxUint16 port);
+	bool SetPort(const wxString &port);
 	bool SetUsername(const wxString &username);
 	bool SetPassword(const wxString &password);
 	bool SetConnectionType(CryptSocketProxyConnectionTypes type, bool enabled);
@@ -71,6 +73,25 @@ public:
 	bool SetDestNetworkSubnet(const wxString &subnet);
 	bool SetDestPortsMode(CryptSocketProxyDestMode mode);
 	bool SetDestPortRanges(const wxString &port_ranges);
+
+protected:
+	template <typename T>
+	inline bool Read(const wxString &key, void (CryptSocketProxySettings::*fn)(T))
+	{
+		T x;
+		bool b = m_config.m_config->Read(m_config.m_path + wxT("/Proxy/") + key, &x);
+		if (b)
+		{
+			fn(x);
+		}
+		return b;
+	}
+
+	template <typename T>
+	inline bool Write(const wxString &key, T (CryptSocketProxySettings::*fn)())
+	{
+		return m_config.m_config->Write(m_config.m_path + wxT("/Proxy/") + key, fn());
+	}
 
 protected:
 	Config &m_config;
@@ -86,8 +107,8 @@ protected:
 	wxString m_dest_network;
 	wxString m_dest_subnet;
 	CryptSocketProxyDestMode m_dest_port_ranges_mode;
-	Uint16Array m_port_ranges_low;
-	Uint16Array m_port_ranges_high;
+	Uint16Array m_dest_port_ranges_low;
+	Uint16Array m_dest_port_ranges_high;
 	
 };
 
