@@ -1,3 +1,6 @@
+* add a user database to Client
+  Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache, WHOIS cache age
+
 * suppress wxBell when /away?
 
 * option in the dirt.ini to specify the log path and also to disable logging for server/client
@@ -6,12 +9,7 @@
 
 * add kde extension for /resetwindowpos
 
-* change window name from "Frame" to "Dirt"
-
 * increase win32 tray icon caption length if os + psdk supports?
-
-* add a user database to Client
-  Fields: Nickname, IsSelf, IsAway, AwayMessage, ByteBufferHashMap WHOIS cache, WHOIS cache age
 
 * away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
 

@@ -15,7 +15,8 @@ class SwitchBarParent : public wxMDIParentFrame
 public:
 	SwitchBarParent(
 		wxWindow *parent, const wxWindowID id, const wxString& title,
-		const wxPoint& pos, const wxSize& size, const long style);
+		const wxPoint& pos, const wxSize& size, const long style,
+		const wxString& name = wxFrameNameStr);
 
 	virtual ~SwitchBarParent();
 

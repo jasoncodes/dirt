@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.51 2003-04-03 05:52:36 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.52 2003-04-28 04:53:28 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -109,7 +109,7 @@ END_EVENT_TABLE()
 ServerUIFrame::ServerUIFrame()
 	: wxFrame(
 		NULL, -1, AppTitle(wxT("Server")),
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL), m_hide_self(false)
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL, wxT("Dirt")), m_hide_self(false)
 {
 
 	SetIcon(wxIcon(dirt_xpm));

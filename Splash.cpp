@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.21 2003-04-12 03:31:19 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.22 2003-04-28 04:53:28 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -74,7 +74,7 @@ BEGIN_EVENT_TABLE(Splash, wxFrame)
 END_EVENT_TABLE()
 
 Splash::Splash()
-	: wxFrame(NULL, wxID_ANY, AppTitle(), wxDefaultPosition, wxDefaultSize, (wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL) & ~(wxRESIZE_BORDER|wxMAXIMIZE_BOX))
+	: wxFrame(NULL, wxID_ANY, AppTitle(), wxDefaultPosition, wxDefaultSize, (wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL) & ~(wxRESIZE_BORDER|wxMAXIMIZE_BOX), wxT("Dirt"))
 {
 
 	wxImage::AddHandler(new wxJPEGHandler);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.94 2003-04-12 11:18:09 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.95 2003-04-28 04:53:28 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -71,7 +71,7 @@ END_EVENT_TABLE()
 ClientUIMDIFrame::ClientUIMDIFrame()
 	: SwitchBarParent(NULL, -1, AppTitle(wxT("Client")),
 		wxPoint(-1, -1), wxSize(500, 400),
-		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL)
+		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL, wxT("Dirt"))
 {
 
 	m_client = NULL;
