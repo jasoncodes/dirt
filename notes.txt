@@ -37,8 +37,6 @@
 
 * optional password protection for saved passwords and private keys in dirt.ini
 
-* /lanlist
-
 * notices to users via console@server
 
 * automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
