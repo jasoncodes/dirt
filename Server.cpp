@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.75 2004-07-11 10:03:05 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.76 2004-07-11 17:50:25 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -1151,7 +1151,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			if (m_log_public_messages)
 			{
 				wxString str;
-				str << GetLongTimestamp() << conn->GetNickname();
+				str << GetLongTimestamp() << wxT("*** ") << conn->GetNickname();
 				str << wxT(" is away: ") << conn->m_awaymessage;
 				if (last_state)
 				{
@@ -1173,7 +1173,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			if (m_log_public_messages)
 			{
 				wxString str;
-				str << GetLongTimestamp() << conn->GetNickname();
+				str << GetLongTimestamp() << wxT("*** ") << conn->GetNickname();
 				str << wxT(" has returned (msg: ") << conn->m_awaymessage;
 				str << (wxChar)OriginalModifier;
 				str << wxT(") (away for ") << SecondsToMMSS(away_time) << wxT(")");
@@ -1255,7 +1255,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					if (m_log_public_messages)
 					{
 						m_log_public_messages->AddText(wxString()
-							<< GetLongTimestamp()
+							<< GetLongTimestamp() << wxT("*** ")
 							<< conn->GetNickname()
 							<< wxT(" (") << conn->GetInlineDetails()
 							<< wxT(") has joined the chat"), colours[3]);
@@ -1293,7 +1293,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					if (m_log_public_messages)
 					{
 						m_log_public_messages->AddText(wxString()
-							<< GetLongTimestamp()
+							<< GetLongTimestamp() << wxT("*** ")
 							<< conn->GetNickname()
 							<< wxT(" is now known as ")
 							<< new_nick, colours[3]);
