@@ -23,7 +23,19 @@ don't hyperlink "news:", "http:", etc by themselves
 
 * do dupe nick check after content enhancing
 
-* win32: only setfocus in timer if getfroegroundwindow is mdi frame
+* win32: only setfocus in timer if GetForegroundWindow is mdi frame
+
+* option to minimize to tray by default (invert ctrl flag)
+
+* dirt.pl should use a javascript timer as well as a http refresh to refresh
+the page (as it seems the http one fails after a dirt:// link is clicked).
+
+* dirt.pl should use some javascript to show how many minutes and seconds
+ago the dirt.pl page refreshed (and why not throw in a thing saying how out
+the local clock is :))
+
+* dirt.pl should not count private ips (192.168.*.*, 172.16.*.* ->
+172.32.*.*, 10.*.*.*) in choosing something for the hostname field
 
 * ability to search logs
 	* how load the log search frame?
@@ -194,3 +206,14 @@ don't hyperlink "news:", "http:", etc by themselves
 * replace TrayIcon with wxTaskBarIcon and then remove all KDE calls
   (after confirming TaskbarCreated and X11 support exists in 2.4.1)
   (and also after workaround for non-supporting X11 WMs somehow is done in wx)
+
+* allow users to specify which browser to use in the options dialog.
+
+* Possible GTK 1.2 bug - ctrl+k and ctrl+b do not work properly. Ctrl+k brings up
+  no dialog. Ctrl+b does not always print a special character and then a b - when 
+  it does not, the missing space causes the cursor to henceforth appear one character
+  behind where it should.
+
+* Possible GTK 1.2 bug - taskbar notification does not always work. 
+  Behaviour is inconsistent - sometimes the notification will work (an 
+  asterisk will appear), sometimes it will not, during the same session.
