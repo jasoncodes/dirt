@@ -12,7 +12,7 @@ ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
 endif
 
 CC = gcc
-CPPFLAGS = `wx-config --cxxflags` $(KDE_CPPFLAGS)
+CPPFLAGS = `wx-config --cxxflags` $(KDE_CPPFLAGS) -O3
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
