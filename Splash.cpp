@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.35 2004-05-29 07:46:51 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.36 2004-05-31 05:39:36 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -568,6 +568,8 @@ Splash::Splash()
 
 	CentreOnScreen();
 	m_button_clicked = false;
+
+	btns[0]->SetFocus();
 
 	Show();
 
