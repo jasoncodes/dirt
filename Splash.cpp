@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.37 2004-05-31 07:49:55 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.38 2004-06-11 15:00:41 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -567,9 +567,9 @@ Splash::Splash()
 
 	}
 
-	panel->SetSizer(szrAll);
-	SetClientSize(wxSize(0, 0)); // so the line below always causes a resize event :)
-	SetClientSize(panel->GetBestSize());
+	wxSize size = panel->GetBestSize();
+	SetClientSize(size);
+	szrAll->SetDimension(0, 0, size.x, size.y);
 
 	CentreOnScreen();
 	m_button_clicked = false;
