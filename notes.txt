@@ -17,5 +17,7 @@
 
 * type -->blah'<--. problem is in ConvertUrlsToLinks
 
-currently working on console client ui for win32
-(and hopefully automaticly linux w/ the help of a virtual x server)
+* console client ui for win32
+  (and hopefully automaticly linux w/ the help of a virtual x server)
+
+* Make wxHtmlWindow::AppendToPage() more efficient
