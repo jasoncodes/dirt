@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.21 2003-08-13 08:16:17 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.22 2003-08-14 03:01:53 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -15,6 +15,7 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.21 2003-08-13 08:16:17 jason Exp $)
 #include "RadioBoxPanel.h"
 #include "CryptSocketProxy.h"
 #include "HotKeyControl.h"
+#include <wx/notebook.h>
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
 static const wxString tray_icon_options[] = { wxT("Flash"), wxT("Always Image"), wxT("Always Blank") };
@@ -149,176 +150,202 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_config = &(parent->GetClient()->GetConfig());
 	m_proxy_settings = new CryptSocketProxySettings(*m_config);
 	
-	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
+	wxPanel *pnlFrame = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
-	m_fraNickname = new wxStaticBox(panel, wxID_ANY, wxT("Default Nickname"));
-	m_txtNickname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	wxNotebook *notebook = new wxNotebook(pnlFrame, wxID_ANY);
+	wxNotebookSizer *szrNotebook = new wxNotebookSizer(notebook);
+
+	wxPanel *pnlGeneral = new wxPanel(notebook, wxID_ANY);
+
+	m_fraNickname = new wxStaticBox(pnlGeneral, wxID_ANY, wxT("Default Nickname"));
+	m_txtNickname = new wxTextCtrl(pnlGeneral, wxID_ANY, wxEmptyString);
 	FixBorder(m_txtNickname);
 
-	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
+	m_pnlLog = new TristateConfigPanel(pnlGeneral, ID_LOG, wxT("Log File Directory"));
 
-	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
-	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
-	m_chkFileTransferStatus = new wxCheckBox(panel, wxID_ANY, wxT("Show File Transfer Status Messages"));
-	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(panel, wxID_ANY, wxT("System Tray Icon:"));
-	m_cmbSystemTrayIcon = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
-	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
-
-	m_fraHotKey = new wxStaticBox(panel, wxID_ANY, wxT("Hot Keys"));
-	wxStaticText *lblHotKey1 = new wxStaticText(panel, wxID_ANY, wxT("Primary:"));
-	m_HotKey[0] = new HotKeyControl(panel, wxID_ANY);
-	wxStaticText *lblHotKey2 = new wxStaticText(panel, wxID_ANY, wxT("Alternate:"));
-	m_HotKey[1] = new HotKeyControl(panel, wxID_ANY);
+	m_fraHotKey = new wxStaticBox(pnlGeneral, wxID_ANY, wxT("Hot Keys"));
+	wxStaticText *lblHotKey1 = new wxStaticText(pnlGeneral, wxID_ANY, wxT("Primary:"));
+	m_HotKey[0] = new HotKeyControl(pnlGeneral, wxID_ANY);
+	wxStaticText *lblHotKey2 = new wxStaticText(pnlGeneral, wxID_ANY, wxT("Alternate:"));
+	m_HotKey[1] = new HotKeyControl(pnlGeneral, wxID_ANY);
 
 #ifndef __WXMSW__
 	m_HotKey[0]->Enable(false);
 	m_HotKey[1]->Enable(false);
 #endif
 
-	m_chkProxy = new wxCheckBox(panel, ID_PROXY_ENABLED, wxT("&Proxy Support"));
-	m_lblProtocol = new wxStaticText(panel, wxID_ANY, wxT("Protocol:"));
+	m_fraNotification = new wxStaticBox(pnlGeneral, wxID_ANY, wxT("Message Notification"));
+	m_chkTaskbarNotification = new wxCheckBox(pnlGeneral, wxID_ANY, wxT("Taskbar Notification Flash"));
+	m_chkFileTransferStatus = new wxCheckBox(pnlGeneral, wxID_ANY, wxT("Show File Transfer Status Messages"));
+	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(pnlGeneral, wxID_ANY, wxT("System Tray Icon:"));
+	m_cmbSystemTrayIcon = new wxComboBox(pnlGeneral, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
+	m_pnlSound = new TristateConfigPanel(pnlGeneral, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
+
+	wxPanel *pnlProxy = new wxPanel(notebook, wxID_ANY);
+
+	m_chkProxy = new wxCheckBox(pnlProxy, ID_PROXY_ENABLED, wxT("&Proxy Support"));
+	m_lblProtocol = new wxStaticText(pnlProxy, wxID_ANY, wxT("Protocol:"));
 	const wxString* const protocol_names = CryptSocketProxySettings::GetProtocolNames();
 	size_t protocol_count = CryptSocketProxySettings::GetProtocolCount();
-	m_cmbProtocol = new wxComboBox(panel, ID_PROXY_PROTOCOL, protocol_names[0], wxDefaultPosition, wxDefaultSize, protocol_count, protocol_names, wxCB_DROPDOWN|wxCB_READONLY);
-	m_lblHostname = new wxStaticText(panel, wxID_ANY, wxT("Hostname:"));
-	m_txtHostname = new wxTextCtrl(panel, wxID_ANY);
+	m_cmbProtocol = new wxComboBox(pnlProxy, ID_PROXY_PROTOCOL, protocol_names[0], wxDefaultPosition, wxDefaultSize, protocol_count, protocol_names, wxCB_DROPDOWN|wxCB_READONLY);
+	m_lblHostname = new wxStaticText(pnlProxy, wxID_ANY, wxT("Hostname:"));
+	m_txtHostname = new wxTextCtrl(pnlProxy, wxID_ANY);
 	FixBorder(m_txtHostname);
-	m_lblPort = new wxStaticText(panel, wxID_ANY, wxT("Port:"));
-	m_txtPort = new wxTextCtrl(panel, wxID_ANY);
+	m_lblPort = new wxStaticText(pnlProxy, wxID_ANY, wxT("Port:"));
+	m_txtPort = new wxTextCtrl(pnlProxy, wxID_ANY);
 	FixBorder(m_txtPort);
 	m_txtPort->SetSize(48, -1);
-	m_lblUsername = new wxStaticText(panel, wxID_ANY, wxT("Username:"));
-	m_txtUsername = new wxTextCtrl(panel, wxID_ANY);
+	m_lblUsername = new wxStaticText(pnlProxy, wxID_ANY, wxT("Username:"));
+	m_txtUsername = new wxTextCtrl(pnlProxy, wxID_ANY);
 	FixBorder(m_txtUsername);
 	m_txtUsername->SetSize(64, -1);
-	m_lblPassword = new wxStaticText(panel, wxID_ANY, wxT("Password:"));
-	m_txtPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	m_lblPassword = new wxStaticText(pnlProxy, wxID_ANY, wxT("Password:"));
+	m_txtPassword = new wxTextCtrl(pnlProxy, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtPassword);
 	m_txtPassword->SetSize(64, -1);
-	m_fraProxyTypes = new wxStaticBox(panel, wxID_ANY, wxT("Connection Types"));
-	m_chkTypeServer = new wxCheckBox(panel, wxID_ANY, wxT("Chat Server"));
-	m_chkTypeDCCConnect = new wxCheckBox(panel, wxID_ANY, wxT("DCC Connect"));
-	m_chkTypeDCCListen = new wxCheckBox(panel, wxID_ANY, wxT("DCC Listen"));
-	m_pnlDestNetwork = new DestNetworkPanel(panel, wxID_ANY);
-	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
+	m_fraProxyTypes = new wxStaticBox(pnlProxy, wxID_ANY, wxT("Connection Types"));
+	m_chkTypeServer = new wxCheckBox(pnlProxy, wxID_ANY, wxT("Chat Server"));
+	m_chkTypeDCCConnect = new wxCheckBox(pnlProxy, wxID_ANY, wxT("DCC Connect"));
+	m_chkTypeDCCListen = new wxCheckBox(pnlProxy, wxID_ANY, wxT("DCC Listen"));
+	m_pnlDestNetwork = new DestNetworkPanel(pnlProxy, wxID_ANY);
+	m_pnlDestPorts = new DestPortsPanel(pnlProxy, wxID_ANY);
 
-	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
-	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
+	wxButton *cmdOK = new wxButton(pnlFrame, wxID_OK, wxT("OK"));
+	wxButton *cmdCancel = new wxButton(pnlFrame, wxID_CANCEL, wxT("Cancel"));
 
-	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer *szrGeneral = new wxBoxSizer(wxHORIZONTAL);
 	{
 
-		wxBoxSizer *szrMain = new wxBoxSizer(wxHORIZONTAL);
+		wxBoxSizer *szrGeneralLeft = new wxBoxSizer(wxVERTICAL);
 		{
 
-			wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
+			wxStaticBoxSizer *szrNickname = new wxStaticBoxSizer(m_fraNickname, wxHORIZONTAL);
 			{
+				szrNickname->Add(m_txtNickname, 1, wxEXPAND, 0);
+			}
+			szrGeneralLeft->Add(szrNickname, 0, wxBOTTOM | wxEXPAND, 8);
 
-				wxStaticBoxSizer *szrNickname = new wxStaticBoxSizer(m_fraNickname, wxHORIZONTAL);
-				{
-					szrNickname->Add(m_txtNickname, 1, wxEXPAND, 0);
-				}
-				szrLeft->Add(szrNickname, 0, wxBOTTOM | wxEXPAND, 8);
+			szrGeneralLeft->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
 
-				szrLeft->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
-
-				wxStaticBoxSizer *szrNotification = new wxStaticBoxSizer(m_fraNotification, wxVERTICAL);
-				{
-
-					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
-					szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
-					wxFlexGridSizer *szrSystemTrayIcon = new wxFlexGridSizer(2, 0, 4);
-					szrSystemTrayIcon->AddGrowableCol(1);
-					{
-						szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
-						szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
-					}
-					szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
-					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
-
-				}
-				szrLeft->Add(szrNotification, 0, wxBOTTOM | wxEXPAND, 8);
-
-				wxStaticBoxSizer *szrHotKey = new wxStaticBoxSizer(m_fraHotKey, wxVERTICAL);
+			wxStaticBoxSizer *szrHotKey = new wxStaticBoxSizer(m_fraHotKey, wxVERTICAL);
+			{
+				
+				wxFlexGridSizer *szrHotKey2 = new wxFlexGridSizer(2, 8 ,8);
+				szrHotKey2->AddGrowableCol(1);
 				{
 					
-					wxFlexGridSizer *szrHotKey2 = new wxFlexGridSizer(2, 8 ,8);
-					szrHotKey2->AddGrowableCol(1);
-					{
-						
-						szrHotKey2->Add(lblHotKey1, 0, wxALIGN_CENTER_VERTICAL);
-						szrHotKey2->Add(m_HotKey[0], 0, wxEXPAND);
-						szrHotKey2->Add(lblHotKey2, 0, wxALIGN_CENTER_VERTICAL);
-						szrHotKey2->Add(m_HotKey[1], 0, wxEXPAND);
-
-					}
-					szrHotKey->Add(szrHotKey2, 0, wxEXPAND, 0);
+					szrHotKey2->Add(lblHotKey1, 0, wxALIGN_CENTER_VERTICAL);
+					szrHotKey2->Add(m_HotKey[0], 0, wxEXPAND);
+					szrHotKey2->Add(lblHotKey2, 0, wxALIGN_CENTER_VERTICAL);
+					szrHotKey2->Add(m_HotKey[1], 0, wxEXPAND);
 
 				}
-				szrLeft->Add(szrHotKey, 0, wxEXPAND, 0);
+				szrHotKey->Add(szrHotKey2, 0, wxEXPAND, 0);
 
 			}
-			szrMain->Add(szrLeft, 2, wxRIGHT, 8);
+			szrGeneralLeft->Add(szrHotKey, 0, wxEXPAND, 0);
 
-			wxStaticBox *fraProxy = new wxStaticBox(panel, wxID_ANY, wxString(wxT(' '), 28));
-			wxSizer *szrProxy = new StaticCheckBoxSizer(fraProxy, m_chkProxy, wxVERTICAL);
+		}
+		szrGeneral->Add(szrGeneralLeft, 1, wxALL, 8);
+
+
+		wxSizer *szrGeneralRight = new wxBoxSizer(wxVERTICAL);
+		{
+
+			wxStaticBoxSizer *szrNotification = new wxStaticBoxSizer(m_fraNotification, wxVERTICAL);
 			{
 
-				wxFlexGridSizer *szrProxyTop = new wxFlexGridSizer(2, 8, 8);
-				szrProxyTop->AddGrowableCol(1);
+				szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
+				szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
+				wxFlexGridSizer *szrSystemTrayIcon = new wxFlexGridSizer(2, 0, 4);
+				szrSystemTrayIcon->AddGrowableCol(1);
 				{
-
-					szrProxyTop->Add(m_lblProtocol, 0, wxALIGN_CENTER_VERTICAL);
-					szrProxyTop->Add(m_cmbProtocol, 0, wxEXPAND);
-
-					szrProxyTop->Add(m_lblHostname, 0, wxALIGN_CENTER_VERTICAL);
-					wxFlexGridSizer *szrProxyTopHostPort = new wxFlexGridSizer(3, 8 ,8);
-					szrProxyTopHostPort->AddGrowableCol(0);
-					{
-						szrProxyTopHostPort->Add(m_txtHostname, 0, wxEXPAND);
-						szrProxyTopHostPort->Add(m_lblPort, 0, wxALIGN_CENTER_VERTICAL);
-						szrProxyTopHostPort->Add(m_txtPort, 0, 0);
-					}
-					szrProxyTop->Add(szrProxyTopHostPort, 0, wxEXPAND);
-
-					szrProxyTop->Add(m_lblUsername, 0, wxALIGN_CENTER_VERTICAL);
-					wxFlexGridSizer *szrProxyTopUserPass = new wxFlexGridSizer(3, 8 ,8);
-					szrProxyTopUserPass->AddGrowableCol(0);
-					szrProxyTopUserPass->AddGrowableCol(2);
-					{
-						szrProxyTopUserPass->Add(m_txtUsername, 0, wxEXPAND);
-						szrProxyTopUserPass->Add(m_lblPassword, 0, wxALIGN_CENTER_VERTICAL);
-						szrProxyTopUserPass->Add(m_txtPassword, 0, wxEXPAND);
-					}
-					szrProxyTop->Add(szrProxyTopUserPass, 0, wxEXPAND);
-
+					szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
+					szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
 				}
-				szrProxy->Add(szrProxyTop, 0, wxEXPAND | wxBOTTOM, 0);
+				szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
+				szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
 
-				wxStaticBoxSizer *szrProxyTypes = new wxStaticBoxSizer(m_fraProxyTypes, wxHORIZONTAL);
-				{
-					szrProxyTypes->Add(m_chkTypeServer, 1, wxRIGHT, 8);
-					szrProxyTypes->Add(m_chkTypeDCCConnect, 1, wxRIGHT, 8);
-					szrProxyTypes->Add(m_chkTypeDCCListen, 1, 0, 0);
-				}
-				szrProxy->Add(szrProxyTypes, 0, wxEXPAND | wxBOTTOM, 0);
-
-				szrProxy->Add(m_pnlDestNetwork, 0, wxEXPAND | wxBOTTOM, 0);
-
-				szrProxy->Add(m_pnlDestPorts, 0, wxEXPAND | wxBOTTOM, 0);
-				
 			}
-			szrMain->Add(szrProxy, 3, 0, 0);
+			szrGeneralRight->Add(szrNotification, 1, wxEXPAND, 0);
 
 		}
-		szrAll->Add(szrMain, 1, wxALL | wxEXPAND, 8);
+		szrGeneral->Add(szrGeneralRight, 1, wxTOP|wxBOTTOM|wxRIGHT, 8);
 
-		wxBoxSizer *szrButtons = new wxBoxSizer(wxVERTICAL);
+	}
+	pnlGeneral->SetAutoLayout(true);
+	pnlGeneral->SetSizer(szrGeneral);
+	notebook->AddPage(pnlGeneral, wxT("General"));
+
+	wxSizer *szrProxyPanel = new wxBoxSizer(wxVERTICAL);
+	{
+
+		wxStaticBox *fraProxy = new wxStaticBox(pnlProxy, wxID_ANY, wxString(wxT(' '), 28));
+		wxSizer *szrProxy = new StaticCheckBoxSizer(fraProxy, m_chkProxy, wxVERTICAL);
 		{
-			szrButtons->Add(cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
-			szrButtons->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
+
+			wxFlexGridSizer *szrProxyTop = new wxFlexGridSizer(2, 8, 8);
+			szrProxyTop->AddGrowableCol(1);
+			{
+
+				szrProxyTop->Add(m_lblProtocol, 0, wxALIGN_CENTER_VERTICAL);
+				szrProxyTop->Add(m_cmbProtocol, 0, wxEXPAND);
+
+				szrProxyTop->Add(m_lblHostname, 0, wxALIGN_CENTER_VERTICAL);
+				wxFlexGridSizer *szrProxyTopHostPort = new wxFlexGridSizer(3, 8 ,8);
+				szrProxyTopHostPort->AddGrowableCol(0);
+				{
+					szrProxyTopHostPort->Add(m_txtHostname, 0, wxEXPAND);
+					szrProxyTopHostPort->Add(m_lblPort, 0, wxALIGN_CENTER_VERTICAL);
+					szrProxyTopHostPort->Add(m_txtPort, 0, 0);
+				}
+				szrProxyTop->Add(szrProxyTopHostPort, 0, wxEXPAND);
+
+				szrProxyTop->Add(m_lblUsername, 0, wxALIGN_CENTER_VERTICAL);
+				wxFlexGridSizer *szrProxyTopUserPass = new wxFlexGridSizer(3, 8 ,8);
+				szrProxyTopUserPass->AddGrowableCol(0);
+				szrProxyTopUserPass->AddGrowableCol(2);
+				{
+					szrProxyTopUserPass->Add(m_txtUsername, 0, wxEXPAND);
+					szrProxyTopUserPass->Add(m_lblPassword, 0, wxALIGN_CENTER_VERTICAL);
+					szrProxyTopUserPass->Add(m_txtPassword, 0, wxEXPAND);
+				}
+				szrProxyTop->Add(szrProxyTopUserPass, 0, wxEXPAND);
+
+			}
+			szrProxy->Add(szrProxyTop, 0, wxEXPAND | wxBOTTOM, 0);
+
+			wxStaticBoxSizer *szrProxyTypes = new wxStaticBoxSizer(m_fraProxyTypes, wxHORIZONTAL);
+			{
+				szrProxyTypes->Add(m_chkTypeServer, 1, wxRIGHT, 8);
+				szrProxyTypes->Add(m_chkTypeDCCConnect, 1, wxRIGHT, 8);
+				szrProxyTypes->Add(m_chkTypeDCCListen, 1, 0, 0);
+			}
+			szrProxy->Add(szrProxyTypes, 0, wxEXPAND | wxBOTTOM, 0);
+
+			szrProxy->Add(m_pnlDestNetwork, 0, wxEXPAND | wxBOTTOM, 0);
+
+			szrProxy->Add(m_pnlDestPorts, 0, wxEXPAND | wxBOTTOM, 0);
+			
 		}
-		szrAll->Add(szrButtons, 0, wxTOP | wxRIGHT | wxEXPAND, 8);
+		szrProxyPanel->Add(szrProxy, 0, wxALL|wxEXPAND, 8);
+
+	}
+	pnlProxy->SetAutoLayout(true);
+	pnlProxy->SetSizer(szrProxyPanel);
+	notebook->AddPage(pnlProxy, wxT("Proxy"));
+
+	wxBoxSizer *szrPanel = new wxBoxSizer(wxVERTICAL);
+	{
+
+		szrPanel->Add(szrNotebook, 1, wxEXPAND|wxALL, 8);
+
+		wxBoxSizer *szrButtons = new wxBoxSizer(wxHORIZONTAL);
+		{
+			szrButtons->Add(cmdOK, 0, wxEXPAND|wxRIGHT, 8);
+			szrButtons->Add(cmdCancel, 0, wxEXPAND, 0);
+		}
+		szrPanel->Add(szrButtons, 0, wxALIGN_RIGHT|wxLEFT|wxRIGHT|wxBOTTOM, 8);
 
 	}
 
@@ -326,9 +353,9 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 	m_txtNickname->SetFocus();
 	
-	panel->SetAutoLayout(TRUE);
-	panel->SetSizer(szrAll);
-	szrAll->SetSizeHints(this);
+	pnlFrame->SetAutoLayout(TRUE);
+	pnlFrame->SetSizer(szrPanel);
+	szrPanel->SetSizeHints(this);
 
 	FitInside();
 	CentreOnParent();
