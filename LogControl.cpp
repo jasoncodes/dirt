@@ -1151,7 +1151,11 @@ void LogControl::OnIdle(wxIdleEvent& event)
 
 	if (s_cur_hand == NULL)
 	{
-		s_cur_hand = new wxCursor(wxCURSOR_HAND);
+		#ifdef __WXMSW__
+			s_cur_hand = new wxCursor("hand");
+		#else
+			s_cur_hand = new wxCursor(wxCURSOR_HAND);
+		#endif
 		s_cur_arrow = new wxCursor(wxCURSOR_ARROW);
 	}
 

@@ -74,8 +74,9 @@ protected:
 	wxHtmlLinkInfo *m_tmpLastLink;
 	wxHtmlCell *m_tmpLastCell;
 	bool m_tmpMouseMoved;
-	wxCursor *s_cur_hand;
-	wxCursor *s_cur_arrow;
+	// these have been changed from static for easier maintenance
+	wxCursor *m_cur_hand;
+	wxCursor *m_cur_arrow;
 
 	wxHtmlCell *last_start_cell;
 	wxHtmlCell *last_end_cell;
