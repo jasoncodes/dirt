@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.40 2003-03-21 12:29:05 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.41 2003-03-23 04:48:57 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -15,9 +15,6 @@ RCS_ID($Id: ServerUIFrame.cpp,v 1.40 2003-03-21 12:29:05 jason Exp $)
 #include "InputControl.h"
 #include "util.h"
 #include "TrayIcon.h"
-
-#include "Dirt.h"
-DECLARE_APP(DirtApp)
 
 #include "res/dirt.xpm"
 #include "res/disabled.xpm"
@@ -404,11 +401,11 @@ void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 void ServerUIFrame::OnClient(wxCommandEvent& event)
 {
 	wxASSERT(m_server && m_server->IsRunning());
-	wxASSERT(wxGetApp().argc > 0);
+	wxASSERT(wxTheApp->argc > 0);
 	wxString param;
 	param << wxT("--host=dirt://localhost:") << m_server->GetListenPort() << wxT("/");
 	const wxChar *argv[3];
-	argv[0] = wxGetApp().argv[0];
+	argv[0] = wxTheApp->argv[0];
 	argv[1] = param.c_str();
 	argv[2] = NULL;
 	::wxExecute((wxChar**)argv);
