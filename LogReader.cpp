@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.10 2003-03-19 08:18:17 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.11 2003-03-19 10:45:16 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -105,10 +105,7 @@ bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDate
 		
 		return (end != NULL) && ((size_t)(end-start) == date_len);
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 bool LogReader::Ok() const
@@ -249,15 +246,12 @@ ByteBuffer LogReader::GetTextHelper()
 	{
 		data = m_crypt.AESDecrypt(data);
 	}
-	if (data.Length() > 4)
-	{
-		return data;
-	}
-	else
+	if (data.Length() < 4)
 	{
 		wxFAIL_MSG(wxT("Text entry must be at least 4 bytes"));
 		return ByteBuffer();
 	}
+	return data;
 }
 
 wxString LogReader::GetText()
