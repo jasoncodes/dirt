@@ -46,32 +46,39 @@ ifeq ($(SRCS),)				# workaround wildcard function bug in GNU Make 3.77
 SRCS = $(shell ls *.cpp)
 endif
 
-OBJS = $(SRCS:.cpp=.o)
-# test.o needs to be after bench.o for cygwin 1.1.4 (possible ld bug?)
-TESTOBJS = bench.o test.o validat1.o validat2.o validat3.o adhoc.o datatest.o regtest.o
-LIBOBJS = $(filter-out $(TESTOBJS),$(OBJS))
+LIBOBJS = \
+3way.cpp      dh2.cpp       ida.cpp       polynomi.cpp  skipjack.cpp \
+adler32.cpp   diamond.cpp   idea.cpp      pssr.cpp      socketft.cpp \
+algebra.cpp   diamondt.cpp  integer.cpp   pubkey.cpp    square.cpp \
+algparam.cpp  dsa.cpp       iterhash.cpp  queue.cpp     squaretb.cpp \
+arc4.cpp      ec2n.cpp      luc.cpp       rabin.cpp     strciphr.cpp \
+asn.cpp       eccrypto.cpp  mars.cpp      randpool.cpp  tea.cpp \
+base64.cpp    ecp.cpp       marss.cpp     rc2.cpp       \
+basecode.cpp  elgamal.cpp   md2.cpp       rc5.cpp       tftables.cpp \
+              eprecomp.cpp  md4.cpp       rc6.cpp       tiger.cpp \
+bfinit.cpp    esign.cpp     md5.cpp       rdtables.cpp  tigertab.cpp \ 
+blowfish.cpp  files.cpp     md5mac.cpp    trdlocal.cpp \
+blumshub.cpp  filters.cpp   misc.cpp      rijndael.cpp  twofish.cpp \
+cast.cpp      fips140.cpp   modes.cpp     ripemd.cpp     \
+casts.cpp     fipstest.cpp  modexppc.cpp  rng.cpp        \
+channels.cpp  gf256.cpp     mqueue.cpp    rsa.cpp        \
+crc.cpp       gf2_32.cpp    mqv.cpp       rw.cpp        wait.cpp \
+cryptest.cpp  gf2n.cpp      nbtheory.cpp  safer.cpp     wake.cpp \
+cryptlib.cpp  gfpcrypt.cpp  network.cpp   seal.cpp      winpipes.cpp \
+  gost.cpp      oaep.cpp      serpent.cpp   xtr.cpp \
+default.cpp   gzip.cpp      osrng.cpp     sha.cpp       xtrcrypt.cpp \
+des.cpp       haval.cpp     panama.cpp    shark.cpp     zdeflate.cpp \
+dessp.cpp     hex.cpp       pch.cpp       sharkbox.cpp  zinflate.cpp \
+dh.cpp        hrtimer.cpp   pkcspad.cpp   simple.cpp    zlib.cpp
 
 all: libcryptopp.a
 
 clean:
-	$(RM) cryptest.exe libcryptopp.a $(LIBOBJS) $(TESTOBJS)
+	$(RM) libcryptopp.a $(LIBOBJS)
 
 libcryptopp.a: $(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	$(RANLIB) $@
-
-cryptest.exe: libcryptopp.a $(TESTOBJS)
-	$(CXX) -o $@ $(CXXFLAGS) $(TESTOBJS) -L. -lcryptopp $(LDFLAGS) $(LDLIBS)
-
-nolib: $(OBJS)		# makes it faster to test changes
-	$(CXX) -o ct $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LDLIBS)
-
-adhoc.cpp: adhoc.cpp.proto
-ifeq ($(wildcard adhoc.cpp),)
-	cp adhoc.cpp.proto adhoc.cpp
-else
-	touch adhoc.cpp
-endif
 
 .SUFFIXES: .cpp
 
