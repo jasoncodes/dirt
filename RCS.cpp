@@ -1,10 +1,12 @@
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
-#include "wx/wxprec.h"
-
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.9 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.10 2003-03-10 13:04:44 jason Exp $)
 
 static wxString m_latest_rcs_date = wxEmptyString;
 static wxString m_latest_rcs_author = wxEmptyString;

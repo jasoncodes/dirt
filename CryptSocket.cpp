@@ -1,9 +1,12 @@
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
-#include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.17 2003-03-05 01:08:59 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.18 2003-03-10 13:04:44 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"

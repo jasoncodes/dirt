@@ -1,9 +1,12 @@
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
-#include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.7 2003-03-04 00:41:29 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.8 2003-03-10 13:04:44 jason Exp $)
 
 #include "ByteBuffer.h"
 

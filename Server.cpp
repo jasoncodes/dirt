@@ -1,9 +1,12 @@
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
-#include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.29 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.30 2003-03-10 13:04:44 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"

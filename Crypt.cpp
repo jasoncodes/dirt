@@ -2,12 +2,15 @@
 	#pragma warning ( disable : 4786 )
 #endif
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
-#include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.10 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.11 2003-03-10 13:04:44 jason Exp $)
 
 #include "Crypt.h"
 
