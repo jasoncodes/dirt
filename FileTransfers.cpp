@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.20 2003-05-07 23:59:05 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.21 2003-05-08 00:56:26 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -182,6 +182,18 @@ bool FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 			transfer.state = transfer.issend ? ftsSendFail : ftsGetFail;
 			transfer.status = wxT("Transfer cancelled");
 			m_client->m_event_handler->OnClientTransferState(transfer);
+			ByteBufferArray data;
+			if (transfer.issend)
+			{
+				data.Add(wxString(wxT("CANCELSEND")));
+				data.Add(wxString() << transfer.transferid);
+			}
+			else
+			{
+				data.Add(wxString(wxT("CANCELGET")));
+				data.Add(wxString() << transfer.remoteid);
+			}
+			m_client->CTCP(wxEmptyString, transfer.nickname, wxT("DCC"), Pack(data));
 		}
 		m_client->m_event_handler->OnClientTransferDelete(transfer, user_initiated);
 		
@@ -251,7 +263,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 		{
 
 			wxString dcc_type = ((wxString)fields[0u]).Upper();
-			if (dcc_type == wxT("SEND") && fields.GetCount() >= 7)
+			if (dcc_type == wxT("SEND") && fields.GetCount() >= 7 && (fields.Count() % 2) == 1)
 			{
 
 				wxString filename = wxFileName(fields[1u]).GetFullName();
@@ -400,7 +412,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 				off_t size = GetFileLength(ht.tail);
 				resume = m_client->m_event_handler->OnClientTransferResumePrompt(t, ht.tail, size < t.filesize);
 			}
-			if ((resume != rsCancel) && AcceptTransfer(x, ht.tail, resume == rsResume))
+			if ((resume != rsCancel) && !AcceptTransfer(x, ht.tail, resume == rsResume))
 			{
 				Warning(context, wxT("Error accepting transfer ") + ht.head);
 			}
@@ -522,26 +534,58 @@ void FileTransfers::Warning(const wxString &context, const wxString &text)
 
 bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, bool resume)
 {
+	
 	int index = FindTransfer(transferid);
+	
 	wxFileName fn(filename);
-	if (index > -1 && fn.FileExists())
+	wxASSERT(!resume || fn.FileExists());
+	
+	if (index > -1)
 	{
+
 		FileTransfer &t = m_transfers[index];
+		
+		bool open_ok;
+		if (resume)
+		{
+			open_ok = t.m_file.Open(filename, wxFile::write_append);
+		}
+		else
+		{
+			open_ok = t.m_file.Create(filename, true);
+		}
+		if (!open_ok)
+		{
+			return false;
+		}
+
 		t.filename = fn.GetFullPath();
 		t.state = ftsGetConnecting;
 		t.filesent = resume ? GetFileLength(t.filename) : 0;
 		t.status = wxT("Connecting...");
+		
 		CryptSocketClient *sck = new CryptSocketClient;
+		t.m_sck = sck;
 		sck->SetEventHandler(this, ID_SOCKET);
 		sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 		wxIPV4address addr;
 		addr.Hostname(t.m_ip);
 		addr.Service(t.m_port);
 		sck->Connect(addr);
-		// need code here
+
 		m_client->m_event_handler->OnClientTransferState(t);
-		// and here
+
+		ByteBufferArray data;
+		data.Add(wxString(wxT("ACCEPT")));
+		data.Add(wxString() << t.remoteid);
+		data.Add(wxString() << t.filesent);
+		data.Add(ByteBuffer());
+		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
+
 		return true;
+
 	}
+
 	return false;
+
 }
