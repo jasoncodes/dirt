@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.16 2003-03-04 06:39:05 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.17 2003-03-04 06:54:33 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -109,6 +109,7 @@ BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
 	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChange)
+	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChange)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
