@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.35 2003-03-05 02:02:13 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.36 2003-03-05 08:05:12 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -265,17 +265,20 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 		m_last_server_name = m_config->GetServerName();
 		SendToAll(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName(), false);
 	}
-	wxArrayString ip_list = GetIPAddresses();
-	if (m_ip_list != ip_list)
+	if (!(m_list_updating && !m_http.IsActive())) // don't want multiple DNS lookups at the same time
 	{
-		m_ip_list = ip_list;
-		if (m_ip_list.GetCount() == 1)
+		wxArrayString ip_list = GetIPAddresses();
+		if (m_ip_list != ip_list)
 		{
-			Information(wxT("Your IP addresses is: ") + m_ip_list.Item(0));
-		}
-		else
-		{
-			Information(wxT("Your IP addresses are: ") + JoinArray(m_ip_list, wxT(", ")));
+			m_ip_list = ip_list;
+			if (m_ip_list.GetCount() == 1)
+			{
+				Information(wxT("Your IP address is: ") + m_ip_list.Item(0));
+			}
+			else
+			{
+				Information(wxT("Your IP addresses are: ") + JoinArray(m_ip_list, wxT(", ")));
+			}
 		}
 	}
 	if (m_public_server && m_next_list_update <= now && !m_list_updating)
