@@ -1,10 +1,6 @@
-* using /bind'd hotkey when no mdi child focused == death
-
 * hotkey for minimize to tray
 
 * System tray icon option: flash, always phone, always blank
-
-* something in tray tooltip that shows if msg are pending (a * would do)
 
 * with common dialog open no messages are pumped
 
@@ -15,6 +11,11 @@
 
 * wxBug: each line read with wxTextFile has a null char on the end
   string_fix.patch is in Jason's local wxWindows checkout
+
+* option to set normal font (and CJK font when implemented)
+
+* use detect when normal font cannot display CJK characters and switch to a 2nd font
+  for those characters
 
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
@@ -143,10 +144,6 @@
 
 * add a server list model implementation for public list (dirt.pl)
 
-* Win32: fast incoming messages cause FlashWindow() not to work on at least WinXP
-  Maybe restrict the time between FlashWindow() calls to say 1 second except if
-  the window just got focused/unfocused (wxActivateEvent)
-
 * ability to search multiple logs
 
 * force full line selection if holding control when highlighting in logcontrol
@@ -216,8 +213,6 @@
 
 * /font (wxHtmlWindow::SetFonts() and maybe also drop <code/> usage)
 	Use wxWin 2.5's default sizes if avail else use hardcoded for wxWin 2.4
-
-* use Arial Unicode MS to display CJK characters if current font doesn't support
 
 * remove msvcp60.dll dependency?
 

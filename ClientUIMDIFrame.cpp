@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.129 2003-08-05 11:34:58 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.130 2003-08-11 02:26:28 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -513,19 +513,27 @@ void ClientUIMDIFrame::DoFlashWindow()
 {
 	m_alert = true;
 	#ifdef __WXMSW__
-		::FlashWindow((HWND)GetHandle(), TRUE);
+		wxLongLong_t now = GetMillisecondTicks();
+		if (now > m_last_flash_window + 1000)
+		{
+			::FlashWindow((HWND)GetHandle(), TRUE);
+			m_last_flash_window = now;
+		}
 	#else
 		m_flash = 8;
-		UpdateCaption();
 	#endif
-	if (m_tray && m_tray_auto_restore)
+	if (m_tray)
 	{
-		wxMouseEvent event;
-		OnTrayDblClick(event);
-	}
-	else if (m_tray && !m_tmrTray->IsRunning())
-	{
-		m_tmrTray->Start(500);
+		UpdateCaption();
+		if (m_tray_auto_restore)
+		{
+			wxMouseEvent event;
+			OnTrayDblClick(event);
+		}
+		else if (!m_tmrTray->IsRunning())
+		{
+			m_tmrTray->Start(500);
+		}
 	}
 }
 
@@ -818,21 +826,28 @@ void ClientUIMDIFrame::UpdateCaption()
 		if (m_alert)
 		{
 			::FlashWindow((HWND)GetHandle(), TRUE);
+			m_last_flash_window = GetMillisecondTicks();
 		}
 	#endif
 }
 
-wxString ClientUIMDIFrame::ConvertTitleToToolTip(const wxString &title)
+wxString ClientUIMDIFrame::ConvertTitleToToolTip(const wxString &title) const
 {
+	wxString tooltip;
+	if (m_alert)
+	{
+		tooltip << wxT("* ");
+	}
 	int index = title.Find(wxT(" - "));
 	if (index > -1)
 	{
-		return title.Left(index) + wxT("\n") + title.Mid(index+3);
+		tooltip << title.Left(index) << wxT("\n") << title.Mid(index+3);
 	}
 	else
 	{
-		return title;
+		tooltip << title;
 	}
+	return tooltip;
 }
 
 void ClientUIMDIFrame::NickPrompt(const wxString &nick)
@@ -1299,7 +1314,6 @@ void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
 			return;
 		}
 	}
-	event.Skip();
 }
 
 void ClientUIMDIFrame::OnCtrlF(wxCommandEvent &WXUNUSED(event))

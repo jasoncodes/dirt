@@ -84,7 +84,7 @@ protected:
 	void DoAlert();
 	void DoFlashWindow();
 
-	static wxString ConvertTitleToToolTip(const wxString &title);
+	wxString ConvertTitleToToolTip(const wxString &title) const;
 
 	#ifdef __WXMSW__
 		virtual long MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
@@ -107,6 +107,9 @@ protected:
 	bool m_log_date_okay;
 	#if wxUSE_WAVE
 		wxWave m_wave;
+	#endif
+	#ifdef __WXMSW__
+		wxLongLong_t m_last_flash_window;
 	#endif
 
 private:

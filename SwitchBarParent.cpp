@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.26 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.27 2003-08-11 02:26:29 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -70,6 +70,8 @@ SwitchBarParent::SwitchBarParent(
 {
 
 	m_switchbar = new SwitchBar(this, ID_SWITCHBAR, wxDefaultPosition, wxDefaultSize);
+	m_switchbar_popup_button_index = -1;
+	m_switchbar_popup_canvas = NULL;
 
 	m_tmrUpdateWindowMenu = new wxTimer(this, ID_UPDATEWINDOWMENUTIMER);
 
@@ -410,10 +412,14 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 		m_switchbar->PopupMenu(&menu, pos);
 	}
 
+	m_switchbar_popup_button_index = -1;
+	m_switchbar_popup_canvas = NULL;
+
 }
 
 void SwitchBarParent::OnSwitchBarMenuItem(wxCommandEvent& event)
 {
+	wxASSERT(m_switchbar_popup_canvas && m_switchbar_popup_button_index > -1);
 	if (m_switchbar_popup_canvas->OnPopupMenuItem(event))
 	{
 		if (event.GetId() == ID_SWITCHBAR_RESTORE)
@@ -447,6 +453,8 @@ void SwitchBarParent::OnSwitchBarMiddleClick(wxCommandEvent& event)
 		ID_SWITCHBAR_CLOSE :
 		ID_SWITCHBAR_MINIMIZE);
 	OnSwitchBarMenuItem(event);
+	m_switchbar_popup_button_index = -1;
+	m_switchbar_popup_canvas = NULL;
 }
 
 void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)
