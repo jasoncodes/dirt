@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.27 2003-03-12 05:39:21 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.28 2003-03-12 05:47:19 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -410,10 +410,14 @@ int DirtApp::FilterEvent(wxEvent& event)
 	{
 
 		wxKeyEvent &key_event = (wxKeyEvent&)event;
-		m_control_down = key_event.ControlDown();
-		m_alt_down = key_event.AltDown();
-		m_shift_down = key_event.ShiftDown();
-		puts(wxString()<<key_event.ControlDown()<<key_event.AltDown()<<key_event.ShiftDown());
+		m_control_down = key_event.ControlDown() | (key_event.GetKeyCode() == WXK_CONTROL);
+		m_alt_down = key_event.AltDown() | (key_event.GetKeyCode() == WXK_ALT);
+		m_shift_down = key_event.ShiftDown() | (key_event.GetKeyCode() == WXK_SHIFT);
+#ifdef __WXMSW__
+OutputDebugString(wxString()<<key_event.ControlDown()<<key_event.AltDown()<<key_event.ShiftDown()<<wxT('\n'));
+#else
+puts(wxString()<<key_event.ControlDown()<<key_event.AltDown()<<key_event.ShiftDown());
+#endif
 	
 	}
 	else if (type == wxEVT_ACTIVATE || type == wxEVT_ACTIVATE_APP)
