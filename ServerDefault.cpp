@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.65 2003-06-19 07:26:53 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.66 2003-06-30 12:36:35 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -168,6 +168,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				}
 				str << wxT(")");
 				Warning(str);
+				m_event_handler->OnServerStateChange();
 			}
 			break;
 

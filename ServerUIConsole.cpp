@@ -6,15 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.11 2003-03-15 08:19:04 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.12 2003-06-30 12:36:35 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "util.h"
 
-ServerUIConsole::ServerUIConsole(bool no_input)
-	: Console(no_input)
+ServerUIConsole::ServerUIConsole(bool no_input, bool quit_on_stop)
+	: Console(no_input), m_quit_on_stop(quit_on_stop)
 {
 	m_server = new ServerDefault(this);
 	m_server->Start();
@@ -70,6 +70,13 @@ wxArrayString ServerUIConsole::OnServerSupportedCommands()
 
 void ServerUIConsole::OnServerStateChange()
 {
+	if (m_quit_on_stop)
+	{
+		if (!m_server || !m_server->IsRunning())
+		{
+			OnEOF();
+		}
+	}
 }
 
 void ServerUIConsole::OnServerConnectionChange()

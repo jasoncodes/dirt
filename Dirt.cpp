@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.47 2003-06-30 08:26:28 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.48 2003-06-30 12:36:35 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -168,6 +168,11 @@ bool DirtApp::IsConsole()
 
 	#endif
 
+	if (m_cmdline->Found(wxT("server-dtach")))
+	{
+		bIsConsole = true;
+	}
+
 	return bIsConsole;
 
 }
@@ -214,7 +219,10 @@ bool DirtApp::OnInit()
 				break;
 
 			case appServer:
-				m_console = new ServerUIConsole(m_no_input);
+				{
+					bool dtach = m_cmdline->Found(wxT("server-dtach"));
+					m_console = new ServerUIConsole(m_no_input, dtach);
+				}
 				break;
 
 			case appLog:
@@ -342,6 +350,7 @@ bool DirtApp::ProcessCommandLine()
 	m_cmdline->AddOption(wxEmptyString, wxT("log"), wxT("Log file to view (implies log mode)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 	m_cmdline->AddSwitch(wxEmptyString, wxT("lanlist"), wxT("LAN List (GUI only)"), 0);
 	m_cmdline->AddOption(wxEmptyString, wxT("config"), wxT("Alternate config filename"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("server-dtach"), wxT("Server mode that will terminate if not listening. Implies --no-input, --server and --console"), 0);
 
 	if (m_cmdline->Parse() != 0)
 	{
@@ -418,6 +427,25 @@ bool DirtApp::ProcessCommandLine()
 	else
 	{
 		m_config_filename = wxEmptyString;
+	}
+
+	if (m_cmdline->Found(wxT("server-dtach")))
+	{
+		if (m_appmode == appDefault)
+		{
+			m_appmode = appServer;
+		}
+		else if (m_appmode != appServer)
+		{
+			m_cmdline->Usage();
+			return false;
+		}
+		if (m_cmdline->Found(wxT("gui")))
+		{
+			m_cmdline->Usage();
+			return false;
+		}
+		m_no_input = true;
 	}
 
 	return true;

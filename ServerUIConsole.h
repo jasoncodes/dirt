@@ -8,7 +8,7 @@ class ServerUIConsole : public Console, public ServerEventHandler
 {
 
 public:
-	ServerUIConsole(bool no_input = false);
+	ServerUIConsole(bool no_input = false, bool quit_on_stop  = false);
 	virtual ~ServerUIConsole();
 
 	virtual void Output(const wxString &line);
@@ -27,6 +27,7 @@ protected:
 
 protected:
 	Server *m_server;
+	bool m_quit_on_stop;
 
 };
 
