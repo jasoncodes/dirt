@@ -65,9 +65,15 @@ class ClientConfig
 
 public:
 	ClientConfig();
-	virtual ~ClientConfig();
+	~ClientConfig();
 
-	virtual wxConfigBase* GetConfig() const { return m_config; }
+	wxConfigBase* GetConfig() const { return m_config; }
+	
+	wxString GetLastSendDir() const;
+	wxString GetLastGetDir() const;
+
+	bool SetLastSendDir(const wxString &dir);
+	bool SetLastGetDir(const wxString &dir);
 
 protected:
 	ConfigFile *m_config;

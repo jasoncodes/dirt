@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.22 2003-05-10 04:34:39 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.23 2003-05-11 09:55:12 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -19,7 +19,12 @@ RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.22 2003-05-10 04:34:39 jason Exp $)
 
 enum
 {
-	ID_TRANSFER_ACCEPT = wxEVT_USER_FIRST + 3000
+	ID_TRANSFER_ACCEPT = wxEVT_USER_FIRST + 3000,
+	ID_TRANSFER_ACCEPT_LAST_DIR,
+	ID_TRANSFER_OPEN,
+	ID_TRANSFER_OPEN_COMPLETE,
+	ID_TRANSFER_OPEN_FOLDER,
+	ID_TRANSFER_OPEN_FOLDER_COMPLETE
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDITransferPanel, wxPanel)
@@ -36,6 +41,9 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	FixBorder(this);
 
 	m_canvas = canvas;
+
+	m_open_file_when_complete = false;
+	m_open_folder_when_complete = false;
 
 	UpdateCaption();
 
@@ -128,6 +136,20 @@ void ClientUIMDITransferPanel::Update(const FileTransfer &transfer)
 {
 	wxASSERT(GetTransferId() == transfer.transferid);
 	wxASSERT(IsSend() == transfer.issend);
+	if ((GetState() != ftsGetComplete && GetState() != ftsSendComplete) &&
+		(transfer.state == ftsGetComplete || transfer.state == ftsSendComplete))
+	{
+		if (m_open_file_when_complete)
+		{
+			m_open_file_when_complete = false;
+			OpenFile();
+		}
+		if (m_open_folder_when_complete)
+		{
+			m_open_folder_when_complete = false;
+			OpenFolder();
+		}
+	}
 	SetState(transfer.state);
 	SetNickname(transfer.nickname);
 	SetFilename(transfer.filename);
@@ -187,11 +209,62 @@ void ClientUIMDITransferPanel::OnClose()
 	}
 }
 
+wxFileName ClientUIMDITransferPanel::GetFilenameObject()
+{
+	if (IsSend())
+	{
+		return wxFileName(GetFilename());
+	}
+	else
+	{
+		ClientConfig &config = m_canvas->GetClient()->GetConfig();
+		return wxFileName(config.GetLastGetDir(), wxFileName(GetFilename()).GetFullName());
+	}
+}
+
 bool ClientUIMDITransferPanel::OnPopupMenu(wxMenu &menu)
 {
-	menu.Insert(0, ID_TRANSFER_ACCEPT, wxT("&Accept"));
-	menu.Enable(ID_TRANSFER_ACCEPT, m_state == ftsGetPending);
-	menu.InsertSeparator(1);
+	
+	ClientConfig &config = m_canvas->GetClient()->GetConfig();
+	
+	bool ok = ((m_state != ftsGetFail) && (m_state != ftsSendFail));
+
+	int pos = 0;
+	
+	wxFileName fn = GetFilenameObject();
+	
+	if (!IsSend())
+	{
+		
+		menu.Insert(pos++, ID_TRANSFER_ACCEPT, wxT("&Accept..."));
+		menu.Enable(ID_TRANSFER_ACCEPT, m_state == ftsGetPending);
+		
+		menu.Insert(pos++, ID_TRANSFER_ACCEPT_LAST_DIR, wxT("Accept &to ") + fn.GetFullPath());
+		menu.Enable(ID_TRANSFER_ACCEPT_LAST_DIR, m_state == ftsGetPending && wxFileName::DirExists(config.GetLastGetDir()));
+
+	}
+
+	if (pos)
+	{
+		menu.InsertSeparator(pos++);
+	}
+
+	menu.Insert(pos++, ID_TRANSFER_OPEN, wxT("&Open file"));
+	menu.Enable(ID_TRANSFER_OPEN, (m_state == ftsGetComplete || IsSend()) && fn.FileExists());
+	
+	menu.Insert(pos++, ID_TRANSFER_OPEN_COMPLETE, wxT("Open file when &complete"), wxEmptyString, true);
+	menu.Enable(ID_TRANSFER_OPEN_COMPLETE, ok && m_state != ftsGetComplete && m_state != ftsSendComplete);
+	menu.Check(ID_TRANSFER_OPEN_COMPLETE, menu.IsEnabled(ID_TRANSFER_OPEN_COMPLETE) && m_open_file_when_complete);
+	
+	menu.Insert(pos++, ID_TRANSFER_OPEN_FOLDER, wxT("Open &folder"));
+	menu.Enable(ID_TRANSFER_OPEN_FOLDER, fn.FileExists());
+	
+	menu.Insert(pos++, ID_TRANSFER_OPEN_FOLDER_COMPLETE, wxT("Open folder when co&mplete"), wxEmptyString, true);
+	menu.Enable(ID_TRANSFER_OPEN_FOLDER_COMPLETE, ok && m_state != ftsGetComplete && m_state != ftsSendComplete);
+	menu.Check(ID_TRANSFER_OPEN_FOLDER_COMPLETE, menu.IsEnabled(ID_TRANSFER_OPEN_FOLDER_COMPLETE) && m_open_folder_when_complete);
+
+	menu.InsertSeparator(pos++);
+
 	return true;
 }
 
@@ -202,6 +275,32 @@ bool ClientUIMDITransferPanel::OnPopupMenuItem(wxCommandEvent &event)
 		m_canvas->ProcessInput(wxString() << wxT("/dcc accept ") << m_transferid);
 		return false;
 	}
+	else if (event.GetId() == ID_TRANSFER_ACCEPT_LAST_DIR)
+	{
+		wxFileName fn = GetFilenameObject();
+		m_canvas->ProcessInput(wxString() << wxT("/dcc accept ") << m_transferid << wxT(" \"") << fn.GetFullPath() << wxT("\""));
+		return false;
+	}
+	else if (event.GetId() == ID_TRANSFER_OPEN)
+	{
+		OpenFile();
+		return false;
+	}
+	else if (event.GetId() == ID_TRANSFER_OPEN_COMPLETE)
+	{
+		m_open_file_when_complete = !m_open_file_when_complete;
+		return false;
+	}
+	else if (event.GetId() == ID_TRANSFER_OPEN_FOLDER)
+	{
+		OpenFolder();
+		return false;
+	}
+	else if (event.GetId() == ID_TRANSFER_OPEN_FOLDER_COMPLETE)
+	{
+		m_open_folder_when_complete = !m_open_folder_when_complete;
+		return false;
+	}
 	else
 	{
 		return true;
@@ -210,7 +309,7 @@ bool ClientUIMDITransferPanel::OnPopupMenuItem(wxCommandEvent &event)
 
 wxString ClientUIMDITransferPanel::GetShortFilename()
 {
-	wxFileName fn(m_filename);
+	wxFileName fn = GetFilenameObject();
 	wxString result = fn.GetName();
 	if (fn.HasExt())
 	{
@@ -343,4 +442,14 @@ void ClientUIMDITransferPanel::SetStatus(const wxString &status)
 {
 	m_status = status;
 	m_lblStatus->SetLabel(status);
+}
+
+void ClientUIMDITransferPanel::OpenFile()
+{
+	::OpenFile(m_canvas->GetSwitchBar()->GetParent(), GetFilenameObject().GetFullPath());
+}
+
+void ClientUIMDITransferPanel::OpenFolder()
+{
+	::OpenFolder(m_canvas->GetSwitchBar()->GetParent(), GetFilenameObject().GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 }

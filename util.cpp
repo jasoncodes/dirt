@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.58 2003-05-10 04:34:40 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.59 2003-05-11 09:55:12 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -709,20 +709,7 @@ bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error)
 
 	#ifdef __WXMSW__
 
-		::wxBeginBusyCursor();
-		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), URL, NULL, NULL, SW_NORMAL);
-		::wxEndBusyCursor();
-		bool success = ((int)hInstance > 32);
-		if (!success)
-		{
-			if (show_error)
-			{
-				wxMessageBox(
-					wxT("Unable to navigate to ") + URL,
-					wxT("Browser Problem"), wxOK | wxICON_ERROR, parent);
-			}
-			return false;
-		}
+		return OpenFile(parent, URL, show_error);
 
 	#else
 
@@ -1084,4 +1071,104 @@ bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x)
 	wxChar c;
 	int retval = wxSscanf(str.c_str(), wxT("%") wxLongLongFmtSpec wxT("u%c"), x, &c);
 	return (retval == 1);
+}
+
+bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
+{
+
+	wxLogNull supress_log;
+
+	#ifdef __WXMSW__
+
+		::wxBeginBusyCursor();
+		HINSTANCE hInstance = ::ShellExecute((HWND)(parent->GetHandle()), wxT("open"), filename, NULL, NULL, SW_NORMAL);
+		::wxEndBusyCursor();
+		bool success = ((int)hInstance > 32);
+		if (!success)
+		{
+			if (show_error)
+			{
+				wxMessageBox(
+					wxT("Unable to open ") + filename,
+					wxT("Error launching external application"), wxOK | wxICON_ERROR, parent);
+			}
+			return false;
+		}
+		return true;
+
+	#else
+		
+		wxString ext = wxFileName(filename).GetExt();
+		wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
+		if ( !ft )
+		{
+			if (show_error)
+			{
+				wxMessageBox(
+					wxT("Unable to determine the file type for the extension \"") + ext + wxT("\"."),
+					wxT("Error launching external application"), wxOK | wxICON_ERROR, parent);
+			}
+			return false;
+		}
+
+		wxString cmd;
+		bool ok = ft->GetOpenCommand(
+			&cmd, wxFileType::MessageParameters(filename, wxT("")));
+		delete ft;
+
+		if (!ok)
+		{
+			if (show_error)
+			{
+				wxMessageBox(
+					wxT("Unable to determine the command for executing files with extension \"") + ext + wxT("\"."),
+					wxT("Error launching external application"), wxOK | wxICON_ERROR, parent);
+			}
+			return false;
+		}
+
+		// GetOpenCommand can prepend file:// even if it already has http://
+		if (cmd.Find(wxT("http://")) != -1)
+		{
+			cmd.Replace(wxT("file://"), wxT(""));
+		}
+
+		ok = (wxExecute(cmd, FALSE) != 0);
+
+		if (!ok)
+		{
+			if (show_error)
+			{
+				wxMessageBox(
+					wxT("Unable to execute \"") + cmd + wxT("\""),
+					wxT("Error launching external application"), wxOK | wxICON_ERROR, parent);
+			}
+			return false;
+		}
+				
+		return true;
+
+	#endif
+
+}
+
+bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
+{
+	#ifdef KDE_AVAILABLE
+		wxString cmdline;
+		cmdline << wxT("konqueror ") << folder;
+		::wxBeginBusyCursor();
+		long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
+		::wxEndBusyCursor();
+		bool success = (pid != 0);
+		if (!success && show_error_)
+		{
+			wxMessageBox(
+				wxT("Unable to open ") + filename,
+				wxT("Error launching Konqueror"), wxOK | wxICON_ERROR, parent);
+		}
+		return success;
+	#else
+		return OpenBrowser(parent, wxT("file://") + folder, show_error);
+	#endif
 }

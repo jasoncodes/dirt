@@ -4,6 +4,7 @@
 #include "FileTransfer.h"
 
 class ClientUIMDICanvas;
+class wxFileName;
 
 class ClientUIMDITransferPanel : public wxPanel
 {
@@ -57,6 +58,9 @@ protected:
 	wxString GetTypeString() { return IsSend() ? wxT("Send") : wxT("Get"); }
 	void UpdateCaption();
 	void UpdateProgress();
+	void OpenFile();
+	void OpenFolder();
+	wxFileName GetFilenameObject();
 
 protected:
 	ClientUIMDICanvas *m_canvas;
@@ -84,6 +88,8 @@ protected:
 	long m_cps;
 	wxLongLong_t m_filesent;
 	wxString m_status;
+	bool m_open_file_when_complete;
+	bool m_open_folder_when_complete;
 
 private:
 	DECLARE_EVENT_TABLE()

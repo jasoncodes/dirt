@@ -64,6 +64,8 @@ const byte* findbytes(const byte *buff, size_t buff_len, const byte *lookfor, si
 wxLongLong_t GetMillisecondTicks();
 wxString GetPublicListURL();
 bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
+bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error = true);
+bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error = true);
 void ForceForegroundWindow(wxFrame *frm);
 void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized);
 void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show = false);

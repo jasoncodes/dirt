@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.61 2003-05-10 04:34:39 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.62 2003-05-11 09:55:11 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -28,6 +28,26 @@ ClientConfig::ClientConfig()
 ClientConfig::~ClientConfig()
 {
 	delete m_config;
+}
+
+wxString ClientConfig::GetLastSendDir() const
+{
+	return m_config->Read(wxT("Client/Last Send Directory"));
+}
+
+wxString ClientConfig::GetLastGetDir() const
+{
+	return m_config->Read(wxT("Client/Last Get Directory"));
+}
+
+bool ClientConfig::SetLastSendDir(const wxString &dir)
+{
+	return m_config->Write(wxT("Client/Last Send Directory"), dir);
+}
+
+bool ClientConfig::SetLastGetDir(const wxString &dir)
+{
+	return m_config->Write(wxT("Client/Last Get Directory"), dir);
 }
 
 enum

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.24 2003-05-11 05:04:52 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.25 2003-05-11 09:55:12 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -110,6 +110,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->nickname = contact->GetNickname();
 	wxFileName fn(filename);
 	wxASSERT(fn.FileExists());
+	m_client->GetConfig().SetLastSendDir(fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
 	t->filename = fn.GetFullPath();
 	t->filesize = File::Length(t->filename);
 	t->time = 0;
@@ -631,6 +632,8 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 	if (index > -1)
 	{
 
+		m_client->GetConfig().SetLastGetDir(wxFileName(filename).GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+
 		FileTransfer &t = m_transfers[index];
 		
 		bool open_ok;
@@ -805,6 +808,7 @@ void FileTransfers::OnClose(FileTransfer &t)
 			t.status = t.m_connect_ok?wxT("Connection lost"):wxT("Error connecting to remote");
 		}
 	}
+	t.m_file.Close();
 	m_client->m_event_handler->OnClientTransferState(t);
 	DeleteTransfer(t.transferid, false);
 }
