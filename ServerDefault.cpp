@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.78 2004-05-31 10:51:27 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.79 2004-07-14 02:00:06 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -256,7 +256,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 						if (m_log_public_messages)
 						{
 							m_log_public_messages->AddText(wxString()
-								<< GetLongTimestamp()
+								<< GetLongTimestamp() << wxT("*** ")
 								<< conn->GetNickname()
 								<< wxT(" (") << conn->GetInlineDetails()
 								<< wxT(") has left the chat (")
