@@ -6,10 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: BroadcastSocket.cpp,v 1.2 2003-04-27 07:24:33 jason Exp $)
+RCS_ID($Id: BroadcastSocket.cpp,v 1.3 2003-04-27 09:28:28 jason Exp $)
 
 #include "BroadcastSocket.h"
 #include "util.h"
+
+const wxEventType wxEVT_BROADCAST_SOCKET = wxNewEventType();
 
 class BroadcastSocketData
 {
@@ -39,15 +41,20 @@ private:
 
 enum
 {
-	ID_IPCHECK = 1
+	ID_IPCHECK = 1,
+	ID_SOCKET
 };
 
 BEGIN_EVENT_TABLE(BroadcastSocket, wxEvtHandler)
 	EVT_TIMER(ID_IPCHECK, BroadcastSocket::OnIPCheck)
+	EVT_SOCKET(ID_SOCKET, BroadcastSocket::OnSocket)
 END_EVENT_TABLE()
 
 BroadcastSocket::BroadcastSocket(unsigned short port)
 {
+
+	m_handler = NULL;
+	m_id = wxID_ANY;
 
 	m_port = port;
 	m_tmrIPCheck = new wxTimer(this, ID_IPCHECK);
@@ -82,6 +89,12 @@ BroadcastSocket::~BroadcastSocket()
 		delete m_data[i];
 	}
 	m_data.Clear();
+}
+
+void BroadcastSocket::SetEventHandler(wxEvtHandler *handler, wxEventType id)
+{
+	m_handler = handler;
+	m_id = id;
 }
 
 void BroadcastSocket::OnIPCheck(wxTimerEvent &event)
@@ -153,7 +166,7 @@ static inline void EnableBroadcast(wxDatagramSocket *sck)
 	#if defined(__WXMSW__) || defined(__UNIX__)
 		int value = 1;
 		int retval = setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (const char*)&value, sizeof(int));
-		wxCHECK_RET(retval == 0, wxT("setsockopt SO_BROADCAST failed"));
+		wxASSERT(retval == 0);
 	#else
 		#error "Sorry, your OS is not supported yet"
 	#endif
@@ -198,8 +211,11 @@ void BroadcastSocket::CheckForIPs()
 				wxIPV4address addr;
 				addr.Hostname(data->m_ipinfo.IPAddressString);
 				addr.Service(m_port);
-				data->m_sck = new wxDatagramSocket(addr, wxSOCKET_NOWAIT);
+				data->m_sck = new wxDatagramSocket(addr);
 				EnableBroadcast(data->m_sck);
+				data->m_sck->SetEventHandler(*this, ID_SOCKET);
+				data->m_sck->SetNotify(wxSOCKET_INPUT_FLAG);
+				data->m_sck->Notify(true);
 				m_data.Add(data);
 			}
 		}
@@ -257,4 +273,31 @@ void BroadcastSocket::Send(const wxString &ip, wxUint16 port, const ByteBuffer &
 		}
 	}
 	data.Unlock();
+}
+
+void BroadcastSocket::OnSocket(wxSocketEvent &event)
+{
+	if (event.GetSocketEvent() == wxSOCKET_INPUT)
+	{
+		wxDatagramSocket *sck = (wxDatagramSocket*)event.GetSocket();
+		wxIPV4address addr;
+		static ByteBuffer buff(32768);
+		byte *ptr = buff.LockReadWrite();
+		sck->RecvFrom(addr, ptr, buff.Length());
+		if (!sck->Error())
+		{
+			sck->GetPeer(addr);
+			ByteBuffer data(ptr, sck->LastCount());
+			buff.Unlock();
+			if (m_handler)
+			{
+				BroadcastSocketEvent evt(m_id, this, GetIPV4AddressString(addr), addr.Service(), data);
+				m_handler->AddPendingEvent(evt);
+			}
+		}
+		else
+		{
+			buff.Unlock();
+		}
+	}
 }
