@@ -1,4 +1,4 @@
-* change all dirt.ini code to use utf-8 for file storage
+* change all config file code to use utf-8 for file storage
 
 * add checks to /bind to not allow invalid keynames
 
