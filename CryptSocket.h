@@ -199,10 +199,10 @@ typedef void (wxEvtHandler::*CryptSocketEventFunction)(CryptSocketEvent&);
 		(CryptSocketEventFunction) & func, \
 		(wxObject *) NULL ),
 
-#endif
-
 //////// IPV4 Utility Functions ////////
 
 wxUint32 GetIPV4Address(wxSockAddress &addr);
 wxString GetIPV4AddressString(wxSockAddress &addr);
 wxString GetIPV4String(wxSockAddress &addr, bool include_port);
+
+#endif
