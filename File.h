@@ -14,6 +14,7 @@
 	#include <wx/file.h>
 #endif
 
+typedef unsigned char byte;
 
 class File
 {
