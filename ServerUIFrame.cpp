@@ -6,13 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.2 2003-02-14 03:58:17 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.1 2003-02-14 03:57:00 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "InputControl.h"
-#include "util.h"
+#include "Util.h"
 
 enum
 {

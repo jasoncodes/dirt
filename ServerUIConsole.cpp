@@ -3,12 +3,12 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.2 2003-02-14 03:58:16 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.1 2003-02-14 03:57:00 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
-#include "util.h"
+#include "Util.h"
 
 ServerUIConsole::ServerUIConsole()
 {
