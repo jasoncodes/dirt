@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.24 2003-05-07 23:59:05 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.25 2003-05-09 13:44:48 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -537,6 +537,10 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	CryptSocketClient *sck = new CryptSocketClient;
 	wxCHECK_MSG(!sck->m_sck, NULL, wxT("Socket is not initialised"));
 	sck->Destroy();
+	if (m_keyLocalPublic.Length() && m_keyLocalPrivate.Length())
+	{
+		sck->SetKey(m_keyLocalPublic, m_keyLocalPrivate);
+	}
 	sck->m_sck = new wxSocketClient;
 	sck->InitBuffers();
 	sck->InitSocketEvents();

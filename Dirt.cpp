@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.42 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.43 2003-05-09 13:44:48 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -20,8 +20,13 @@ RCS_ID($Id: Dirt.cpp,v 1.42 2003-05-06 06:58:12 jason Exp $)
 #include "LanListFrame.h"
 #include "Splash.h"
 #include "URL.h"
+#include "FileTransfers.h"
 
 IMPLEMENT_APP(DirtApp)
+
+BEGIN_EVENT_TABLE(DirtApp, wxApp)
+	EVT_IDLE(DirtApp::OnIdle)
+END_EVENT_TABLE()
 
 #ifdef __WIN32__
 
@@ -167,10 +172,14 @@ bool DirtApp::IsConsole()
 
 }
 
+DirtApp::DirtApp()
+{
+	m_client = NULL;
+}
+
 bool DirtApp::OnInit()
 {
 
-	Client *c = NULL;
 	LogViewerFrame *l = NULL;
 	m_console = NULL;
 	m_cmdline = NULL;
@@ -200,7 +209,7 @@ bool DirtApp::OnInit()
 				{
 					ClientUIConsole *cui = new ClientUIConsole(m_no_input);
 					m_console = cui;
-					c = cui->GetClient();
+					m_client = cui->GetClient();
 				}
 				break;
 
@@ -233,7 +242,7 @@ bool DirtApp::OnInit()
 			case appClient:
 				{
 					ClientUIMDIFrame *cui = new ClientUIMDIFrame;
-					c = cui->GetClient();
+					m_client = cui->GetClient();
 				}
 				break;
 
@@ -258,9 +267,9 @@ bool DirtApp::OnInit()
 
 	}
 
-	if (c && m_host.Length())
+	if (m_client && m_host.Length())
 	{
-		c->Connect(m_host);
+		m_client->Connect(m_host);
 	}
 	if (l && m_logfile.length())
 	{
@@ -554,4 +563,13 @@ int DirtApp::FilterEvent(wxEvent& event)
 
 	return -1;
 
+}
+
+void DirtApp::OnIdle(wxIdleEvent &event)
+{
+	if (m_client && m_client->GetFileTransfers())
+	{
+		m_client->GetFileTransfers()->OnAppIdle(event);
+	}
+	event.Skip();
 }

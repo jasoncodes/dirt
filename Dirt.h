@@ -7,6 +7,7 @@
 #endif
 
 class Console;
+class Client;
 
 enum AppMode
 {
@@ -21,6 +22,8 @@ class DirtApp : public wxApp
 {
 
 public:
+	DirtApp();
+
 	virtual bool OnInit();
 	virtual int OnExit();
 	virtual int FilterEvent(wxEvent& event);
@@ -39,6 +42,9 @@ protected:
 	bool ProcessCommandLine();
 
 protected:
+	void OnIdle(wxIdleEvent &idle);
+
+protected:
 	Console *m_console;
 	wxCmdLineParser *m_cmdline;
 	AppMode m_appmode;
@@ -50,11 +56,15 @@ protected:
 	bool m_shift_down;
 	wxString m_config_filename;
 	wxString m_default_quit_message;
+	Client *m_client;
 
 	#ifdef __WXMSW__
 		static LRESULT CALLBACK MsgHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 		static HHOOK s_hMsgHookProc;
 	#endif
+
+private:
+	DECLARE_EVENT_TABLE()
 
 };
 

@@ -64,8 +64,15 @@ protected:
 	wxFile m_file;
 	CPSCalc m_cps;
 	CryptSocketBase *m_sck;
+
+	//  get only
 	wxString m_ip;
 	unsigned short m_port;
+
+	// send only
+	bool m_connect_ok;
+	bool m_got_accept;
+	bool m_more_idle;
 
 };
 

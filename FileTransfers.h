@@ -6,6 +6,8 @@
 class Client;
 class FileTransfer;
 class ByteBuffer;
+class CryptSocketEvent;
+class DirtApp;
 
 WX_DECLARE_OBJARRAY(FileTransfer, FileTransferArray);
 
@@ -14,6 +16,7 @@ class FileTransfers : public wxEvtHandler
 
 	friend class FileTransfer;
 	friend class Client;
+	friend class DirtApp;
 
 public:
 	FileTransfers(Client *client);
@@ -30,8 +33,11 @@ public:
 	bool AcceptTransfer(int transferid, const wxString &filename, bool resume);
 	bool DeleteTransfer(int transferid, bool user_initiated);
 
+
 protected:
 	void OnTimer(wxTimerEvent &event);
+	void OnSocket(CryptSocketEvent &event);
+	void OnAppIdle(wxIdleEvent &event);
 
 protected:
 	int GetNewId();
@@ -39,6 +45,13 @@ protected:
 	void ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params);
 	void Information(const wxString &context, const wxString &text);
 	void Warning(const wxString &context, const wxString &text);
+	void MaybeSendData(FileTransfer &t);
+	int FindRemoteTransfer(int remoteid);
+	int FindTransferBySocket(CryptSocketBase *sck);
+	void OnGetConnection(FileTransfer &t);
+	void OnRemoteCancel(FileTransfer &t);
+	void OnGetData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
+	void OnSendData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);

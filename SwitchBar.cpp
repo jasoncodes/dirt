@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.7 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.8 2003-05-09 13:43:56 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -190,9 +190,10 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 			IndentTop(rct, 1);
 		}
 
+		wxRect button_pos = rct;
+
 		if (button.icon.Ok())
 		{
-			dc.DrawBitmap(button.icon, rct.x + 2, rct.y + 2, true);
 			IndentLeft(rct, button.icon.GetWidth() + 2);
 		}
 
@@ -247,6 +248,11 @@ void SwitchBar::OnPaint(wxPaintEvent &event)
 		{
 			dc.SetTextForeground(*wxRED);
 			dc.DrawText(tmp, rct.x, rct.y);
+		}
+
+		if (button.icon.Ok())
+		{
+			dc.DrawBitmap(button.icon, button_pos.x + 2, button_pos.y + 2, true);
 		}
 
 	}
