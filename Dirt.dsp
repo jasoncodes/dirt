@@ -49,7 +49,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MD /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "WXUSINGDLL" /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W4 /GR /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "WXUSINGDLL" /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
@@ -59,7 +59,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240.lib /nologo /subsystem:windows /machine:I386 /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240.lib crypto\Release\cryptlib.lib /nologo /subsystem:windows /machine:I386 /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -80,7 +80,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "ReleaseDLL\D
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /D "WXUSINGDLL" /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W4 /GR /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /D "WXUSINGDLL" /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
@@ -90,7 +90,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240d.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240d.lib crypto/Debug/cryptlib.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Release"
@@ -107,7 +107,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MD /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W4 /GR /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
@@ -117,7 +117,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmsw.lib /nologo /subsystem:windows /machine:I386 /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmsw.lib crypto\Release\cryptlib.lib /nologo /subsystem:windows /machine:I386 /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -138,7 +138,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "Release\Dirt
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W4 /GR /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
@@ -148,7 +148,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib crypto/Debug/cryptlib.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Console Release DLL"
@@ -165,7 +165,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MD /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "WXUSINGDLL" /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W4 /GR /GX /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "WXUSINGDLL" /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
@@ -175,7 +175,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240.lib crypto\Release\cryptlib.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -196,7 +196,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "ConsoleRelea
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /D "WXUSINGDLL" /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W4 /GR /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /D "WXUSINGDLL" /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
@@ -206,7 +206,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240d.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib wxmsw240d.lib crypto/Debug/cryptlib.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Console Release"
@@ -223,7 +223,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MD /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W4 /GR /GX /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
@@ -233,7 +233,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmsw.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmsw.lib crypto\Release\cryptlib.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -254,7 +254,7 @@ PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "ConsoleRelea
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /FR /YX"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W4 /GR /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /FR /YX"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
@@ -264,7 +264,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib crypto/Debug/cryptlib.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
