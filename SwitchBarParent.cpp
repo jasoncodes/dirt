@@ -480,9 +480,11 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 			child->Maximize(true);
 		}
 		child->Close(true);
+
 	}
 	else
 	{
+
 		if (child == NULL)
 		{
 			child = NewWindow(canvas, true);
@@ -490,6 +492,7 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 		}
 		child->Show(true);
 		child->Activate();
+
 	}
 
 	UpdateWindowMenu();
