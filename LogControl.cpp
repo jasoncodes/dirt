@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.36 2003-03-23 04:14:12 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.37 2003-03-27 03:53:51 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -980,9 +980,16 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 			if (line.Length() > 2 && line[0] == wxT('<'))
 			{
 				int j = line.Find(wxT('>'));
-				if (j > 0 && line.Length() > (size_t)j + 1 && line[j+1] == wxT(' '))
+				if (j > 0)
 				{
-					line = line.Mid(j+2);
+					if (line.Length() > (size_t)j || line[j+1] == wxT(' '))
+					{
+						line = line.Mid(j+2);
+					}
+					else
+					{
+						line = line.Mid(j+1);
+					}
 				}
 			}
 			lines[i] = line;
