@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FontControl.cpp,v 1.2 2004-05-16 04:42:45 jason Exp $)
+RCS_ID($Id: FontControl.cpp,v 1.3 2004-05-16 04:54:59 jason Exp $)
 
 #include "FontControl.h"
 #include <wx/fontdlg.h>
@@ -70,6 +70,20 @@ private:
 
 };
 
+class SquareButton : public wxButton
+{
+
+public:
+	SquareButton(wxWindow *window, int id, const wxString &text)
+		: wxButton(window, id, text)
+	{
+		wxSize size = GetSize();
+		SetSize(size.y, size.y);
+		SetBestSize(GetSize());
+	}
+
+};
+
 BEGIN_EVENT_TABLE(FontControlPreviewPanel, wxPanel)
 	EVT_PAINT(FontControlPreviewPanel::OnPaint)
 END_EVENT_TABLE()
@@ -83,10 +97,7 @@ FontControl::FontControl(wxWindow *parent, int id, wxPoint pos, wxSize size)
 {
 
 	m_pnlPreview = new FontControlPreviewPanel(this, wxID_ANY, m_data);
-	wxButton *cmdBrowse = new wxButton(this, ID_BROWSE, wxT("..."));
-
-	wxSize sizeBrowse = cmdBrowse->GetSize();
-	cmdBrowse->SetSize(sizeBrowse.y, sizeBrowse.y);
+	wxButton *cmdBrowse = new SquareButton(this, ID_BROWSE, wxT("..."));
 
 	wxBoxSizer *szr = new wxBoxSizer(wxHORIZONTAL);
 	{
