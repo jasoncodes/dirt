@@ -57,6 +57,7 @@ protected:
 	wxStaticText *m_lblHTTPProxyPassword;
 	wxTextCtrl *m_txtHTTPProxyPassword;
 
+	wxButton *m_cmdOK;
 	wxButton *m_cmdApply;
 
 	wxTimer *m_tmrNextUpdate;

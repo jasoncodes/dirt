@@ -12,8 +12,6 @@
 			directory with browse button
 			[x] append nickname to path
 
-* server log file options in config dialog
-
 * add kde extension for /resetwindowpos
 
 * update dirt homepage to extract details from exe and show latest ver number and

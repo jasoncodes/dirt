@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.36 2003-05-20 07:08:42 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.37 2003-05-20 07:19:25 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -117,10 +117,9 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 {
 	
 	m_server = server;
-
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
 
-	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
+	m_cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 	m_cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
 	wxButton *cmdReset = new wxButton(panel, ID_RESET, wxT("&Reset"));
@@ -128,11 +127,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *m_lblNextUpdateLabel = new wxStaticText(panel, -1, wxT("Next update:"));
 	m_lblNextUpdate = new wxStaticText(panel, -1, wxT("N/A"));
 
-	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
-	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	FixBorder(m_txtListenPort);
 	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, m_txtListenPort->GetSize().y), wxTE_PASSWORD);
+	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtUserPassword);
 	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
 	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
@@ -151,14 +147,15 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtSoundJoin = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundJoin);
 	wxButton *cmdSoundJoin = new wxButton(panel, ID_BROWSE_SOUND_JOIN, wxT("..."), wxDefaultPosition, wxSize(m_txtSoundJoin->GetBestSize().y, m_txtSoundJoin->GetBestSize().y));
+	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
+	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtListenPort);
 	wxStaticText *lblMaxUsers = new wxStaticText(panel, -1, wxT("Max &Users:"));
 	m_txtMaxUsers = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtMaxUsers);
 	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
 	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtMaxUsersIP);
-
-	lblListenPort->SetSize(lblSoundConnection->GetSize());
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log Directory"));
 
@@ -203,92 +200,76 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			wxBoxSizer *szrLeftTop = new wxBoxSizer(wxHORIZONTAL);
 			{
 
-				wxBoxSizer *szrLeftTopLabels = new wxBoxSizer(wxVERTICAL);
-				{
-					szrLeftTopLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
-					szrLeftTopLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
-					szrLeftTopLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
-				}
-				szrLeftTop->Add(szrLeftTopLabels, 0, wxEXPAND | wxRIGHT, 8);
-
-				wxBoxSizer *szrLeftTopTextBoxes = new wxBoxSizer(wxVERTICAL);
-				{
-					szrLeftTopTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
-					szrLeftTopTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
-					szrLeftTopTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
-				}
-				szrLeftTop->Add(szrLeftTopTextBoxes, 1, wxEXPAND, 0);
-
-			}
-			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
-
-			wxBoxSizer *szrLeftMiddle = new wxBoxSizer(wxHORIZONTAL);
-			{
-
-				wxBoxSizer *szrLeftMiddleLeft = new wxBoxSizer(wxHORIZONTAL);
+				wxBoxSizer *szrLeftTopLeft = new wxBoxSizer(wxHORIZONTAL);
 				{
 
-					wxBoxSizer *szrLeftMiddleLeftLabels = new wxBoxSizer(wxVERTICAL);
+					wxBoxSizer *szrLeftTopLeftLabels = new wxBoxSizer(wxVERTICAL);
 					{
-						szrLeftMiddleLeftLabels->Add(lblServerName, 1, wxBOTTOM, 8);
-						szrLeftMiddleLeftLabels->Add(lblHostname, 1, wxBOTTOM, 8);
-						szrLeftMiddleLeftLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
-						szrLeftMiddleLeftLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblServerName, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblHostname, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
 					}
-					szrLeftMiddleLeft->Add(szrLeftMiddleLeftLabels, 0, wxEXPAND | wxRIGHT, 8);
+					szrLeftTopLeft->Add(szrLeftTopLeftLabels, 0, wxEXPAND | wxRIGHT, 8);
 
-					wxBoxSizer *szrLeftMiddleLeftTextBoxes = new wxBoxSizer(wxVERTICAL);
+					wxBoxSizer *szrLeftTopLeftTextBoxes = new wxBoxSizer(wxVERTICAL);
 					{
-						szrLeftMiddleLeftTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
-						szrLeftMiddleLeftTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
 						wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
 						{
 							szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);
 							szrSoundConnection->Add(cmdSoundConnection, 0, 0, 0);
 						}
-						szrLeftMiddleLeftTextBoxes->Add(szrSoundConnection, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(szrSoundConnection, 1, wxBOTTOM | wxEXPAND, 8);
 						wxBoxSizer *szrSoundJoin = new wxBoxSizer(wxHORIZONTAL);
 						{
 							szrSoundJoin->Add(m_txtSoundJoin, 1, wxEXPAND, 0);
 							szrSoundJoin->Add(cmdSoundJoin, 0, 0, 0);
 						}
-						szrLeftMiddleLeftTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(szrSoundJoin, 1, wxBOTTOM | wxEXPAND, 8);
 					}
-					szrLeftMiddleLeft->Add(szrLeftMiddleLeftTextBoxes, 1, wxEXPAND, 0);
+					szrLeftTopLeft->Add(szrLeftTopLeftTextBoxes, 1, wxEXPAND, 0);
 				
 				}
-				szrLeftMiddle->Add(szrLeftMiddleLeft, 3, wxRIGHT, 8);
+				szrLeftTop->Add(szrLeftTopLeft, 3, wxRIGHT, 8);
 
-				wxBoxSizer *szrLeftMiddleRight = new wxBoxSizer(wxVERTICAL);
+				wxBoxSizer *szrLeftTopRight = new wxBoxSizer(wxVERTICAL);
 				{
 
-					wxBoxSizer *szrLeftMiddleRightTop = new wxBoxSizer(wxHORIZONTAL);
+					wxBoxSizer *szrLeftTopRightTop = new wxBoxSizer(wxHORIZONTAL);
 					{
 
-						wxBoxSizer *szrLeftMiddleRightTopLabels = new wxBoxSizer(wxVERTICAL);
+						wxBoxSizer *szrLeftTopRightTopLabels = new wxBoxSizer(wxVERTICAL);
 						{
-							szrLeftMiddleRightTopLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
-							szrLeftMiddleRightTopLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
+							szrLeftTopRightTopLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
+							szrLeftTopRightTopLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
+							szrLeftTopRightTopLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
 						}
-						szrLeftMiddleRightTop->Add(szrLeftMiddleRightTopLabels, 0, wxEXPAND | wxRIGHT, 8);
+						szrLeftTopRightTop->Add(szrLeftTopRightTopLabels, 0, wxEXPAND | wxRIGHT, 8);
 
-						wxBoxSizer *szrLeftMiddleRightTopTextBoxes = new wxBoxSizer(wxVERTICAL);
+						wxBoxSizer *szrLeftTopRightTopTextBoxes = new wxBoxSizer(wxVERTICAL);
 						{
-							szrLeftMiddleRightTopTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
-							szrLeftMiddleRightTopTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
+							szrLeftTopRightTopTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
+							szrLeftTopRightTopTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
+							szrLeftTopRightTopTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
 						}
-						szrLeftMiddleRightTop->Add(szrLeftMiddleRightTopTextBoxes, 1, wxEXPAND, 0);
+						szrLeftTopRightTop->Add(szrLeftTopRightTopTextBoxes, 1, wxEXPAND, 0);
 
 					}
-					szrLeftMiddleRight->Add(szrLeftMiddleRightTop, 0, wxEXPAND, 0);
+					szrLeftTopRight->Add(szrLeftTopRightTop, 0, wxEXPAND, 0);
 				
-					szrLeftMiddleRight->Add(m_pnlLog, 0, wxEXPAND, 0);
+					szrLeftTopRight->Add(m_pnlLog, 0, wxEXPAND, 0);
 
 				}
-				szrLeftMiddle->Add(szrLeftMiddleRight, 2, 0, 0);
+				szrLeftTop->Add(szrLeftTopRight, 2, 0, 0);
 
 			}
-			szrLeft->Add(szrLeftMiddle, 0, wxEXPAND, 0);
+			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
 
 			wxBoxSizer *szrLeftBottom = new wxBoxSizer(wxHORIZONTAL);
 			{
@@ -352,7 +333,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 		wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
 		{
-			szrRight->Add(cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
+			szrRight->Add(m_cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(m_cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdReset, 0, wxBOTTOM | wxEXPAND, 8);
@@ -376,7 +357,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	FitInside();
 	CentreOnParent();
-	cmdOK->SetDefault();
+	m_cmdOK->SetDefault();
 	ShowModal();
 
 }
@@ -496,6 +477,7 @@ void ServerUIFrameConfig::LoadSettings()
 	wxCommandEvent evt;
 	OnChangeCheck(evt);
 	m_cmdApply->Enable(false);
+	m_cmdOK->SetFocus();
 
 }
 
