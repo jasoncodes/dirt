@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.34 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.35 2003-05-07 14:49:28 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -314,7 +314,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);
-	szrAll->SetSizeHints( this );
+	szrAll->SetSizeHints(this);
 
 	FitInside();
 	CentreOnParent();
