@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.141 2004-03-14 04:18:12 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.142 2004-03-14 09:00:02 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -1283,8 +1283,7 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 	if (old_nick == new_nick) return;
 
-	m_lstNickList->Remove(old_nick);
-	m_lstNickList->Add(new_nick);
+	m_lstNickList->RenameNick(old_nick, new_nick);
 	m_nicklist.Remove(old_nick);
 	m_nicklist.Add(new_nick);
 

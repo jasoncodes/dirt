@@ -29,6 +29,7 @@ public:
 	virtual int GetSelectedIndex();
 	virtual wxString GetSelectedNick();
 	virtual int HitTest(const wxPoint &pt);
+	virtual void RenameNick(const wxString &old_nick, const wxString &new_nick);
 
 protected:
 	void OnRightUp(wxMouseEvent &event);

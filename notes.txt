@@ -73,8 +73,6 @@ investigate missing ppp0 ip on dirt server
 
 not restoring maximized state from client/windowstate/maximized on startup
 
-console ver shows /quit in the quit message
-
 auto complete should work on the last 10 lines of chat msgs from that window as well
 as any nicks in use
 
@@ -118,8 +116,6 @@ filter various invalid chars from nick after content enhance (, ), space, etc
 for enhanced word filter: option not to use filter for nicks, msg, away, etc
 
 option to globally not filter nicks, msg, away, etc
-
-changing nick while away results in (Away) dropping from nick list
 
 flash taskbar not often work (although do get beep and redline)
 

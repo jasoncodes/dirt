@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.16 2003-08-27 06:50:23 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.17 2004-03-14 09:00:02 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
@@ -153,6 +153,14 @@ wxString NickListControl::GetSelectedNick()
 int NickListControl::GetCount()
 {
 	return wxListBox::GetCount();
+}
+
+void NickListControl::RenameNick(const wxString &old_nick, const wxString &new_nick)
+{
+	bool is_away = GetAway(old_nick);
+	Remove(old_nick);
+	Add(new_nick);
+	SetAway(new_nick, is_away);
 }
 
 int NickListControl::HitTest(const wxPoint &pt)
