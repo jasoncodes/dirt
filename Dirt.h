@@ -18,6 +18,7 @@ public:
 	virtual int OnExit();
 
 	bool IsConsole();
+	void RegisterDirtProtocol();
 
 protected:
 	bool ProcessCommandLine();

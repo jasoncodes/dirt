@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.23 2003-02-23 06:15:50 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.24 2003-03-05 10:24:23 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -176,6 +176,8 @@ bool DirtApp::OnInit()
 		return false;
 	}
 
+	RegisterDirtProtocol();
+
 	if (IsConsole())
 	{
 
@@ -300,5 +302,70 @@ bool DirtApp::ProcessCommandLine()
 	m_no_input = m_cmdline->Found("no-input");
 
 	return true;
+
+}
+
+#ifdef __WXMSW__
+
+	#include <wx/msw/registry.h>
+
+	wxString GetEXEName()
+	{
+		wxChar path[MAX_PATH];
+		GetModuleFileName(NULL, path, MAX_PATH);
+		return path;
+	}
+
+	static bool MaybeSet(wxRegKey &reg, const wxChar *key, const wxString& value)
+	{
+		wxString val;
+		if (!reg.HasValue(key) || !reg.QueryValue(key, val) || value != val)
+		{
+			return reg.SetValue(key, value);
+		}
+		return false;
+	}
+
+	static bool MaybeSet(wxRegKey &reg, const wxChar *key, long value)
+	{
+		long val;
+		if (!reg.HasValue(key) || !reg.QueryValue(key, &val) || value != val)
+		{
+			return reg.SetValue(key, value);
+		}
+		return false;
+	}
+
+#endif
+
+void DirtApp::RegisterDirtProtocol()
+{
+
+	#ifdef __WXMSW__
+
+		wxString exe = GetEXEName();
+		int num_actions = 0;
+		wxRegKey reg;
+		reg.SetName(wxRegKey::HKCR, wxT("dirt"));
+		num_actions += !!reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxT("URL:Dirt Secure Chat Protocol"));
+		num_actions += !!MaybeSet(reg, wxT("EditFlags"), 2);
+		num_actions += !!MaybeSet(reg, wxT("URL Protocol"), wxEmptyString);
+		reg.SetName(wxRegKey::HKCR, wxT("dirt\\DefaultIcon"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, exe + wxT(",0"));
+		reg.SetName(wxRegKey::HKCR, wxT("dirt\\shell\\open\\command"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --host=\"%1\""));
+		if (num_actions)
+		{
+			SendMessageTimeout(HWND_BROADCAST, WM_WININICHANGE, 0, 0, 0, 500, 0);
+		}
+
+	#else
+
+		// only available on Win32
+
+	#endif
 
 }
