@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.30 2004-05-16 04:42:48 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.31 2004-05-22 19:22:04 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -41,25 +41,6 @@ RCS_ID($Id: SwitchBarParent.cpp,v 1.30 2004-05-16 04:42:48 jason Exp $)
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
 #endif
-
-enum
-{
-	ID_SWITCHBARPARENT_FIRST = 11000,
-	ID_WINDOW_WINDOWS = ID_SWITCHBARPARENT_FIRST,
-	ID_SWITCHBAR = ID_WINDOW_WINDOWS + 1000,
-	ID_UPDATEWINDOWMENUTIMER,
-	ID_WINDOW_MINIMIZE,
-	ID_WINDOW_CLOSE,
-	ID_WINDOW_CASCADE,
-	ID_WINDOW_TILE,
-	ID_WINDOW_ARRANGE,
-	ID_WINDOW_NEXT,
-	ID_WINDOW_PREV,
-	ID_SWITCHBAR_RESTORE,
-	ID_SWITCHBAR_MINIMIZE,
-	ID_SWITCHBAR_CLOSE,
-	ID_SWITCHBARPARENT_LAST
-};
 
 BEGIN_EVENT_TABLE(SwitchBarParent, wxMDIParentFrame)
 	EVT_MENU_RANGE(ID_WINDOW_WINDOWS + 0, ID_WINDOW_WINDOWS + 999, SwitchBarParent::OnWindowWindows)

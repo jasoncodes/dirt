@@ -28,27 +28,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.3 2004-05-16 04:42:48 jason Exp $)
+RCS_ID($Id: SwitchBarParentGeneric.cpp,v 1.4 2004-05-22 19:22:04 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
 #if !NATIVE_MDI
 
 #include "util.h"
-
-enum
-{
-	ID_SWITCHBARPARENT_FIRST = 11000,
-	ID_SWITCHBAR = ID_SWITCHBARPARENT_FIRST + 1000,
-	ID_WINDOW_MINIMIZE,
-	ID_WINDOW_CLOSE,
-	ID_WINDOW_NEXT,
-	ID_WINDOW_PREV,
-	ID_SWITCHBAR_RESTORE,
-	ID_SWITCHBAR_MINIMIZE,
-	ID_SWITCHBAR_CLOSE,
-	ID_SWITCHBARPARENT_LAST
-};
 
 BEGIN_EVENT_TABLE(SwitchBarParent, wxFrame)
 	EVT_SIZE(SwitchBarParent::OnSize)

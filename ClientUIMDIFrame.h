@@ -68,6 +68,7 @@ protected:
 	void OnCtrlF(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
 	void OnConfigFileChanged(wxCommandEvent &event);
+	void OnWindowMinimize(wxCommandEvent& event);
 
 protected:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);

@@ -2,9 +2,6 @@ wallops. unknown commands should possibly just broadcast out to
 console@server. use say to force broadcast or a / prefix to force
 command. typing from the actual server console should output msg as from console@server
 
-Pressing Escape should close the ctrl-k popup,
-else clear the input control, else minimize selected mdi client
-
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
 increasing padding on staticboxes in option dialog should do it
 

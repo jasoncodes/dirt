@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.148 2004-05-22 17:08:48 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.149 2004-05-22 19:22:03 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -104,6 +104,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU_RANGE(ID_BINDING_F1, ID_BINDING_F12, ClientUIMDIFrame::OnBinding)
 	EVT_CLOSE(ClientUIMDIFrame::OnClose)
 	EVT_CONFIG_FILE_CHANGED(ID_CONFIG, ClientUIMDIFrame::OnConfigFileChanged)
+	EVT_MENU(ID_WINDOW_MINIMIZE, ClientUIMDIFrame::OnWindowMinimize)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -428,6 +429,36 @@ void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
 	{
 		event.Skip();
 	}
+}
+
+void ClientUIMDIFrame::OnWindowMinimize(wxCommandEvent &event)
+{
+
+	ClientUIMDICanvas *canvas = (ClientUIMDICanvas*)GetActiveCanvas();
+	if (canvas)
+	{
+
+		InputControl *txtInput = canvas->GetInput();
+		if (txtInput && txtInput->IsPopupVisible())
+		{
+			txtInput->ClosePopup();
+			return;
+		}
+
+		wxTextCtrl *txt = canvas->GetPasswordMode() ? canvas->GetPassword() : canvas->GetInput();
+		if (txt)
+		{
+			if (txt->GetValue().Length())
+			{
+				txt->SetValue(wxEmptyString);
+				return;
+			}
+		}
+
+	}
+
+	event.Skip();
+
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist, bool on_not_exist_return_null, bool case_sensitive)

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.64 2004-05-22 18:58:26 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.65 2004-05-22 19:22:03 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -121,7 +121,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 	{
 		m_txtInput = new InputControl(this, ID_INPUT);
 		m_txtInput->SetTabCompletionList(((ClientUIMDIFrame*)parent)->GetNicklist());
-		ConnectScrollWheel(m_txtInput);
+		ListenToInput(m_txtInput);
 		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtPassword = NULL;
 		if (type == QueryCanvas)
@@ -169,16 +169,26 @@ ClientUIMDICanvas::~ClientUIMDICanvas()
 	delete m_log;
 }
 
-void ClientUIMDICanvas::ConnectScrollWheel(wxWindow *wnd)
+void ClientUIMDICanvas::ListenToInput(wxWindow *wnd)
 {
+
 	if (wnd)
 	{
+
 		wnd->Connect(
 			wxID_ANY, wxEVT_MOUSEWHEEL,
 			(wxObjectEventFunction) (wxEventFunction)
 				wxStaticCastEvent( wxMouseEventFunction, & ClientUIMDICanvas::OnMouseWheel ),
 			NULL, this);
+
+		wnd->Connect(
+			wxID_ANY, wxEVT_KEY_DOWN,
+			(wxObjectEventFunction) (wxEventFunction)
+				wxStaticCastEvent( wxCharEventFunction, & ClientUIMDICanvas::OnKeyDown),
+			NULL, this);
+
 	}
+
 }
 
 void ClientUIMDICanvas::InitLog()
@@ -258,6 +268,18 @@ void ClientUIMDICanvas::OnActivate()
 void ClientUIMDICanvas::OnMouseWheel(wxMouseEvent &event)
 {
 	m_txtLog->ProcessEvent(event);
+}
+
+void ClientUIMDICanvas::OnKeyDown(wxKeyEvent &event)
+{
+	if (event.GetKeyCode() == WXK_ESCAPE && !event.HasModifiers())
+	{
+		// don't let the input control handle escapes, we handle them
+	}
+	else
+	{
+		event.Skip();
+	}
 }
 
 void ClientUIMDICanvas::OnFocusCheck()
@@ -380,7 +402,7 @@ void ClientUIMDICanvas::SetPasswordMode(bool value)
 		m_txtInput->Show(false);
 		m_txtPassword = new wxTextCtrl(this, ID_PASSWORD, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_PASSWORD);
 		FixBorder(m_txtPassword);
-		ConnectScrollWheel(m_txtPassword);
+		ListenToInput(m_txtPassword);
 		ResizeChildren();
 		DoGotFocus();
 	}

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.28 2004-05-22 18:35:20 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.29 2004-05-22 19:22:04 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -296,6 +296,11 @@ void InputControl::ClosePopup()
 		m_popup->Destroy();
 		m_popup = NULL;
 	}
+}
+
+bool InputControl::IsPopupVisible()
+{
+	return (m_popup != NULL);
 }
 
 void InputControl::ShowPopup()

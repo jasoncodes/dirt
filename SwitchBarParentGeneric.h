@@ -23,6 +23,20 @@
 #ifndef SwitchBarParentGeneric_H_
 #define SwitchBarParentGeneric_H_
 
+enum
+{
+	ID_SWITCHBARPARENT_FIRST = 11000,
+	ID_SWITCHBAR = ID_SWITCHBARPARENT_FIRST + 1000,
+	ID_WINDOW_MINIMIZE,
+	ID_WINDOW_CLOSE,
+	ID_WINDOW_NEXT,
+	ID_WINDOW_PREV,
+	ID_SWITCHBAR_RESTORE,
+	ID_SWITCHBAR_MINIMIZE,
+	ID_SWITCHBAR_CLOSE,
+	ID_SWITCHBARPARENT_LAST
+};
+
 class SwitchBarChild;
 
 class SwitchBarParent : public wxFrame

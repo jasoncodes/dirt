@@ -58,6 +58,7 @@ public:
 	LogControl* GetLog() { return m_txtLog; }
 	NickListControl* GetNickList() { return m_lstNickList; }
 	InputControl* GetInput() { return m_txtInput; }
+	wxTextCtrl* GetPassword() { return m_txtPassword; }
 	ClientUIMDITransferPanel* GetTransferPanel() { return m_pnlTransfer; }
 	Client* GetClient();
 	bool GetPasswordMode() const;
@@ -88,6 +89,7 @@ protected:
 	void OnNickListMenuItem(wxCommandEvent &event);
 	void OnPasswordEnter(wxCommandEvent &event);
 	void OnMouseWheel(wxMouseEvent &event);
+	void OnKeyDown(wxKeyEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnDetach();
@@ -97,7 +99,7 @@ protected:
 	virtual bool OnPopupMenuItem(wxCommandEvent &event);
 
 	void DoGotFocus();
-	void ConnectScrollWheel(wxWindow *wnd);
+	void ListenToInput(wxWindow *wnd);
 
 protected:
 	CanvasType m_type;

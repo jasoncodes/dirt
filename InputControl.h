@@ -43,6 +43,7 @@ public:
 	virtual wxSize DoGetBestSize() const;
 
 	void ClosePopup();
+	bool IsPopupVisible();
 	void RemoveLastHistoryEntry();
 	void SetTabCompletionList(wxArrayString *tab_completion_list);
 	virtual bool SetFont(const wxFont &font);
