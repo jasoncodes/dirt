@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.12 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.13 2004-02-14 11:07:53 blacksage Exp $)
 
 #include "TrayIcon.h"
 
@@ -104,7 +104,7 @@ protected:
 		}
 	}
 
-	void OnMenu(wxMenuEvent &event)
+	void OnMenu(wxCommandEvent &event)
 	{
 		if (m_trayicon->m_handler)
 		{
@@ -509,7 +509,7 @@ public:
 	}
 
 protected:
-	void OnMenu(wxMenuEvent &event)
+	void OnMenu(wxCommandEvent &event)
 	{
 		if (m_handler)
 		{
