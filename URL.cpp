@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.4 2003-02-17 02:23:27 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.5 2003-02-17 02:29:45 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -120,7 +120,7 @@ wxString URL::Unescape(const wxString &text)
 		}
 		dstptr++;
 	}
-	*dstptr = NULL;
+	*dstptr = 0;
 	src.Unlock();
 	dst.Unlock();
 	return dst;
