@@ -34,6 +34,7 @@ protected:
 	void OnTimerUpdateConnections(wxTimerEvent &event);
 	void OnTrayDblClick(wxMouseEvent &event);
 	void OnIconize(wxIconizeEvent &event);
+	void OnIdle(wxIdleEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();
@@ -53,6 +54,7 @@ protected:
 	TrayIcon *m_tray;
 	int m_last_xpm;
 	wxString m_last_tooltip;
+	bool m_hide_self;
 
 private:
 	DECLARE_EVENT_TABLE()

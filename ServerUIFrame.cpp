@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.31 2003-03-11 08:06:26 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.32 2003-03-11 08:27:29 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -92,12 +92,13 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_TIMER(ID_TIMER_UPDATECONNECTIONS, ServerUIFrame::OnTimerUpdateConnections)
 	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ServerUIFrame::OnTrayDblClick)
 	EVT_ICONIZE(ServerUIFrame::OnIconize)
+	EVT_IDLE(ServerUIFrame::OnIdle)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
 	: wxFrame(
 		NULL, -1, AppTitle(wxT("Server")),
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL)
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL), m_hide_self(false)
 {
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -223,6 +224,7 @@ static void ForceForegroundWindow(wxFrame *frm)
 	HWND hWnd = (HWND)frm->GetHWND();
 	if (hWnd != GetForegroundWindow())
 	{
+		frm->Show();
 		DWORD ThreadID1 = GetWindowThreadProcessId(GetForegroundWindow(), 0);
 		DWORD ThreadID2 = GetWindowThreadProcessId(hWnd, 0);
 		if (ThreadID1 != ThreadID2)
@@ -262,6 +264,14 @@ void ServerUIFrame::OnIconize(wxIconizeEvent &event)
 	{
 		Show(false);
 	}
+	else
+	{
+		event.Skip();
+	}
+}
+
+void ServerUIFrame::OnIdle(wxIdleEvent &event)
+{
 	event.Skip();
 }
 
