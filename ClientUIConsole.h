@@ -8,7 +8,7 @@ class ClientUIConsole : public Console, public ClientEventHandler
 {
 
 public:
-	ClientUIConsole();
+	ClientUIConsole(bool no_input = false);
 	virtual ~ClientUIConsole();
 
 	Client* GetClient() { return m_client; }

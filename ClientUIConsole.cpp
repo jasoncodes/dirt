@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.27 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.28 2003-02-20 12:29:12 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -15,7 +15,8 @@ RCS_ID($Id: ClientUIConsole.cpp,v 1.27 2003-02-18 13:30:59 jason Exp $)
 #include "FileTransfer.h"
 #include "Modifiers.h"
 
-ClientUIConsole::ClientUIConsole()
+ClientUIConsole::ClientUIConsole(bool no_input)
+	: Console(no_input)
 {
 	m_client = new ClientDefault(this);
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.8 2003-02-16 05:21:13 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.9 2003-02-20 12:29:13 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -206,12 +206,15 @@ BEGIN_EVENT_TABLE(Console, wxEvtHandler)
 	EVT_TEXT_ENTER(ID_CONSOLE_INPUT, Console::OnTextEnter)
 END_EVENT_TABLE()
 
-Console::Console()
+Console::Console(bool no_input)
 {
 
 	m_read_thread = new ConsoleReadThread(this);
-	m_read_thread->Create();
-	m_read_thread->Run();
+	if (!no_input)
+	{
+		m_read_thread->Create();
+		m_read_thread->Run();
+	}
 
 	g_read_thread = m_read_thread;
 	#ifdef __WXMSW__

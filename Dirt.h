@@ -27,6 +27,7 @@ protected:
 	wxCmdLineParser *m_cmdline;
 	AppMode m_appmode;
 	wxString m_host;
+	bool m_no_input;
 		
 };
 

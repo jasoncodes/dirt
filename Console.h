@@ -8,7 +8,7 @@ class Console : public wxEvtHandler
 
 public:
 
-	Console();
+	Console(bool no_input = false);
 	virtual ~Console();
 
 	virtual void ExitMainLoop();

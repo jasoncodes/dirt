@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.20 2003-02-17 03:23:21 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.21 2003-02-20 12:29:13 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -176,14 +176,14 @@ bool DirtApp::OnInit()
 			case appClient:
 			case appDefault:
 				{
-					ClientUIConsole *cui = new ClientUIConsole;
+					ClientUIConsole *cui = new ClientUIConsole(m_no_input);
 					m_console = cui;
 					c = cui->GetClient();
 				}
 				break;
 
 			case appServer:
-				m_console = new ServerUIConsole;
+				m_console = new ServerUIConsole(m_no_input);
 				break;
 
 			default:
@@ -248,7 +248,8 @@ bool DirtApp::ProcessCommandLine()
 	m_cmdline->AddSwitch(wxT("g"), wxT("gui"), wxT("GUI Mode"), 0);
 	m_cmdline->AddSwitch(wxT("l"), wxT("client"), wxT("Client Mode"), 0);
 	m_cmdline->AddSwitch(wxT("s"), wxT("server"), wxT("Server Mode"), 0);
-	m_cmdline->AddOption(wxT("h"), wxT("host"), wxT("Remote host to connect to(implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddOption(wxT("h"), wxT("host"), wxT("Remote host to connect to (implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddSwitch(wxT("n"), wxT("no-input"), wxT("Disable reading from the console (for background tasks, applies to console only)"), 0);
 
 	if (m_cmdline->Parse() != 0)
 	{
@@ -280,6 +281,8 @@ bool DirtApp::ProcessCommandLine()
 			return false;
 		}
 	}
+
+	m_no_input = m_cmdline->Found("no-input");
 
 	return true;
 

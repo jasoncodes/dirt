@@ -3,14 +3,15 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.8 2003-02-17 07:00:39 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.9 2003-02-20 12:29:13 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "util.h"
 
-ServerUIConsole::ServerUIConsole()
+ServerUIConsole::ServerUIConsole(bool no_input)
+	: Console(no_input)
 {
 	m_server = new ServerDefault(this);
 	m_server->Start();

@@ -8,7 +8,7 @@ class ServerUIConsole : public Console, public ServerEventHandler
 {
 
 public:
-	ServerUIConsole();
+	ServerUIConsole(bool no_input = false);
 	virtual ~ServerUIConsole();
 
 	virtual void Output(const wxString &line);
