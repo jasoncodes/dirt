@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.20 2003-08-12 08:03:33 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.21 2003-08-13 08:16:17 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -14,6 +14,7 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.20 2003-08-12 08:03:33 jason Exp $)
 #include "StaticCheckBoxSizer.h"
 #include "RadioBoxPanel.h"
 #include "CryptSocketProxy.h"
+#include "HotKeyControl.h"
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
 static const wxString tray_icon_options[] = { wxT("Flash"), wxT("Always Image"), wxT("Always Blank") };
@@ -150,6 +151,30 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	
 	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
+	m_fraNickname = new wxStaticBox(panel, wxID_ANY, wxT("Default Nickname"));
+	m_txtNickname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	FixBorder(m_txtNickname);
+
+	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
+
+	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
+	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
+	m_chkFileTransferStatus = new wxCheckBox(panel, wxID_ANY, wxT("Show File Transfer Status Messages"));
+	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(panel, wxID_ANY, wxT("System Tray Icon:"));
+	m_cmbSystemTrayIcon = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
+	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
+
+	m_fraHotKey = new wxStaticBox(panel, wxID_ANY, wxT("Hot Keys"));
+	wxStaticText *lblHotKey1 = new wxStaticText(panel, wxID_ANY, wxT("Primary:"));
+	m_HotKey[0] = new HotKeyControl(panel, wxID_ANY);
+	wxStaticText *lblHotKey2 = new wxStaticText(panel, wxID_ANY, wxT("Alternate:"));
+	m_HotKey[1] = new HotKeyControl(panel, wxID_ANY);
+
+#ifndef __WXMSW__
+	m_HotKey[0]->Enable(false);
+	m_HotKey[1]->Enable(false);
+#endif
+
 	m_chkProxy = new wxCheckBox(panel, ID_PROXY_ENABLED, wxT("&Proxy Support"));
 	m_lblProtocol = new wxStaticText(panel, wxID_ANY, wxT("Protocol:"));
 	const wxString* const protocol_names = CryptSocketProxySettings::GetProtocolNames();
@@ -177,19 +202,6 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_pnlDestNetwork = new DestNetworkPanel(panel, wxID_ANY);
 	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
 
-	m_fraNickname = new wxStaticBox(panel, wxID_ANY, wxT("Default Nickname"));
-	m_txtNickname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
-	FixBorder(m_txtNickname);
-
-	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
-
-	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
-	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
-	m_chkFileTransferStatus = new wxCheckBox(panel, wxID_ANY, wxT("Show File Transfer Status Messages"));
-	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(panel, wxID_ANY, wxT("System Tray Icon:"));
-	m_cmbSystemTrayIcon = new wxComboBox(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
-	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
-
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 
@@ -198,6 +210,55 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 		wxBoxSizer *szrMain = new wxBoxSizer(wxHORIZONTAL);
 		{
+
+			wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
+			{
+
+				wxStaticBoxSizer *szrNickname = new wxStaticBoxSizer(m_fraNickname, wxHORIZONTAL);
+				{
+					szrNickname->Add(m_txtNickname, 1, wxEXPAND, 0);
+				}
+				szrLeft->Add(szrNickname, 0, wxBOTTOM | wxEXPAND, 8);
+
+				szrLeft->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
+
+				wxStaticBoxSizer *szrNotification = new wxStaticBoxSizer(m_fraNotification, wxVERTICAL);
+				{
+
+					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
+					szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
+					wxFlexGridSizer *szrSystemTrayIcon = new wxFlexGridSizer(2, 0, 4);
+					szrSystemTrayIcon->AddGrowableCol(1);
+					{
+						szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
+						szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
+					}
+					szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
+					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
+
+				}
+				szrLeft->Add(szrNotification, 0, wxBOTTOM | wxEXPAND, 8);
+
+				wxStaticBoxSizer *szrHotKey = new wxStaticBoxSizer(m_fraHotKey, wxVERTICAL);
+				{
+					
+					wxFlexGridSizer *szrHotKey2 = new wxFlexGridSizer(2, 8 ,8);
+					szrHotKey2->AddGrowableCol(1);
+					{
+						
+						szrHotKey2->Add(lblHotKey1, 0, wxALIGN_CENTER_VERTICAL);
+						szrHotKey2->Add(m_HotKey[0], 0, wxEXPAND);
+						szrHotKey2->Add(lblHotKey2, 0, wxALIGN_CENTER_VERTICAL);
+						szrHotKey2->Add(m_HotKey[1], 0, wxEXPAND);
+
+					}
+					szrHotKey->Add(szrHotKey2, 0, wxEXPAND, 0);
+
+				}
+				szrLeft->Add(szrHotKey, 0, wxEXPAND, 0);
+
+			}
+			szrMain->Add(szrLeft, 2, wxRIGHT, 8);
 
 			wxStaticBox *fraProxy = new wxStaticBox(panel, wxID_ANY, wxString(wxT(' '), 28));
 			wxSizer *szrProxy = new StaticCheckBoxSizer(fraProxy, m_chkProxy, wxVERTICAL);
@@ -247,38 +308,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 				szrProxy->Add(m_pnlDestPorts, 0, wxEXPAND | wxBOTTOM, 0);
 				
 			}
-			szrMain->Add(szrProxy, 3, wxRIGHT, 8);
-
-			wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
-			{
-
-				wxStaticBoxSizer *szrNickname = new wxStaticBoxSizer(m_fraNickname, wxHORIZONTAL);
-				{
-					szrNickname->Add(m_txtNickname, 1, wxEXPAND, 0);
-				}
-				szrRight->Add(szrNickname, 0, wxBOTTOM | wxEXPAND, 8);
-
-				szrRight->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
-
-				wxStaticBoxSizer *szrNotification = new wxStaticBoxSizer(m_fraNotification, wxVERTICAL);
-				{
-
-					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
-					szrNotification->Add(m_chkFileTransferStatus, 0, wxTOP|wxBOTTOM, 4);
-					wxFlexGridSizer *szrSystemTrayIcon = new wxFlexGridSizer(2, 0, 4);
-					szrSystemTrayIcon->AddGrowableCol(1);
-					{
-						szrSystemTrayIcon->Add(m_lblSystemTrayIcon, 0, wxALIGN_CENTER_VERTICAL);
-						szrSystemTrayIcon->Add(m_cmbSystemTrayIcon, 0, wxEXPAND);
-					}
-					szrNotification->Add(szrSystemTrayIcon, 0, wxTOP|wxBOTTOM|wxEXPAND, 4);
-					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
-
-				}
-				szrRight->Add(szrNotification, 0, wxEXPAND, 0);
-
-			}
-			szrMain->Add(szrRight, 2, 0, 0);
+			szrMain->Add(szrProxy, 3, 0, 0);
 
 		}
 		szrAll->Add(szrMain, 1, wxALL | wxEXPAND, 8);
@@ -294,7 +324,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 	LoadSettings();
 
-	m_chkProxy->SetFocus();
+	m_txtNickname->SetFocus();
 	
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);
@@ -304,7 +334,6 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	CentreOnParent();
 	cmdOK->SetDefault();
 	CenterOnParent();
-	ShowModal();
 
 }
 
@@ -352,6 +381,8 @@ void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &WXUNUSED(event))
 
 void ClientUIMDIConfigDialog::LoadSettings()
 {
+
+	m_config->BeginBatch();
 
 	m_pnlLog->SetMode(m_config->GetLogDirType());
 	if (m_config->GetLogDirType() == Config::tsmCustom)
@@ -402,8 +433,15 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
 	m_cmbSystemTrayIcon->SetSelection(m_config->GetSystemTrayIconMode());
 
+	for (int i = 0; i < 2; ++i)
+	{
+		m_HotKey[i]->SetValue(m_config->GetHotKey(i, false), m_config->GetHotKey(i, true));
+	}
+
 	wxCommandEvent evt;
 	OnProxy(evt);
+
+	m_config->EndBatch();
 
 }
 
@@ -417,6 +455,8 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 {
 
 	bool success = true;
+
+	m_config->BeginBatch();
 
 	bool bLogChanged = (m_config->GetLogDirType() != m_pnlLog->GetMode());
 	if (!bLogChanged && m_config->GetLogDirType() == Config::tsmCustom)
@@ -622,6 +662,19 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		}
 	}
 
+	for (int i = 0; i < 2; ++i)
+	{
+		if (success)
+		{
+			if (!m_config->SetHotKey(i, false, m_HotKey[i]->GetKeyCode()) ||
+				!m_config->SetHotKey(i, true, m_HotKey[i]->GetModifiers()))
+			{
+				ErrMsg(wxString() << wxT("Error setting Hot Key ") << (i+1));
+				success = false;
+			}
+		}
+	}
+
 	if (!m_config->Flush())
 	{
 		if (success)
@@ -630,6 +683,8 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 			success = false;
 		}
 	}
+
+	m_config->EndBatch();
 
 	return success;
 

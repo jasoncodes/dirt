@@ -108,6 +108,9 @@ public:
 	virtual bool DeleteSavedPassword(const wxString &server_name);
 	virtual bool DeleteSavedPasswords();
 
+	virtual int GetHotKey(int index, bool mod) const;
+	virtual bool SetHotKey(int index, bool mod, int value);
+
 protected:
 	virtual wxString GetSoundFileKey() const;
 

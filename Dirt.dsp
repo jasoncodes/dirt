@@ -417,6 +417,14 @@ SOURCE=.\FileTransfers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\HotKeyControl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HotKeyControl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\HTTP.cpp
 # End Source File
 # Begin Source File

@@ -7,6 +7,7 @@ class TristateConfigPanel;
 class DestNetworkPanel;
 class DestPortsPanel;
 class CryptSocketProxySettings;
+class HotKeyControl;
 
 class ClientUIMDIConfigDialog : public wxDialog
 {
@@ -49,6 +50,9 @@ protected:
 	wxCheckBox *m_chkTaskbarNotification;
 	wxCheckBox *m_chkFileTransferStatus;
 	wxComboBox *m_cmbSystemTrayIcon;
+
+	wxStaticBox *m_fraHotKey;
+	HotKeyControl *m_HotKey[2];
 
 	TristateConfigPanel *m_pnlSound;
 

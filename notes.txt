@@ -1,5 +1,3 @@
-* hotkey for minimize to tray
-
 * with common dialog open no messages are pumped
 
 * delete failed get file if 0 bytes and file length > 0

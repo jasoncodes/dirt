@@ -27,6 +27,7 @@ public:
 	wxArrayString* GetNicklist() { return &m_nicklist; }
 	wxDateTime GetLogDate();
 	bool MinToTray();
+	void RestoreFromTray();
 	void InitLogs();
 
 protected:
@@ -44,6 +45,7 @@ protected:
 	void OnBinding(wxCommandEvent &event);
 	void OnCtrlF(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
+	void OnConfigFileChanged(wxCommandEvent &event);
 
 protected:
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
@@ -83,6 +85,12 @@ protected:
 	void NickPrompt(const wxString &nick);
 	void DoAlert();
 	void DoFlashWindow();
+	void SetHotKey();
+	static bool IsHotKeySupported();
+	bool SetHotKey(int keycode, wxUint8 mods);
+	void OnHotKey();
+	int GetHotKeyKeyCode() const;
+	wxUint8 GetHotKeyModifiers() const;
 
 	wxString ConvertTitleToToolTip(const wxString &title) const;
 
@@ -110,6 +118,10 @@ protected:
 	#endif
 	#ifdef __WXMSW__
 		wxLongLong_t m_last_flash_window;
+	#endif
+	#ifdef __WXMSW__
+		int m_hotkey_keycode;
+		wxUint8 m_hotkey_mods;
 	#endif
 
 private:

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.77 2003-08-12 07:43:04 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.78 2003-08-13 08:16:16 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -207,6 +207,44 @@ bool ClientConfig::DeleteSavedPasswords()
 		return m_config->DeleteGroup(name);
 	}
 	return true;
+}
+
+static wxString GetHotKeyKey(int index, bool mod)
+{
+	wxASSERT(index >= 0 && index <= 1);
+	wxString key;
+	key << wxT("/Client/Hot Keys/");
+	key << (mod ? wxT("Modifier ") : wxT("Key Code "));
+	key << index;
+	return key;
+}
+
+int ClientConfig::GetHotKey(int index, bool mod) const
+{
+	int x;
+	if (m_config->Read(GetHotKeyKey(index, mod), &x))
+	{
+		if (mod)
+		{
+			if (x >= 0 && x <= 15)
+			{
+				return x;
+			}
+		}
+		else
+		{
+			if (x >= 0 && x <= 65535)
+			{
+				return x;
+			}
+		}
+	}
+	return 0;
+}
+
+bool ClientConfig::SetHotKey(int index, bool mod, int value)
+{
+	return m_config->Write(GetHotKeyKey(index, mod), value);
 }
 
 enum

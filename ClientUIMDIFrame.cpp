@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.131 2003-08-11 07:03:14 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.132 2003-08-13 08:16:17 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -28,10 +28,12 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.131 2003-08-11 07:03:14 jason Exp $)
 #include "ClientUIMDIConfigDialog.h"
 #include <wx/filename.h>
 #include "ClientUIMDIPasswordManagerDialog.h"
+#include "HotKeyControl.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
+	#include <wx/msw/private.h>
 #endif
 
 DECLARE_APP(DirtApp)
@@ -50,6 +52,7 @@ enum
 	ID_TRAYTIMER,
 	ID_RESTORE,
 	ID_CTRL_F,
+	ID_CONFIG,
 	ID_BINDING_F1,
 	ID_BINDING_F2,
 	ID_BINDING_F3,
@@ -79,6 +82,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_MENU(ID_CTRL_F, ClientUIMDIFrame::OnCtrlF)
 	EVT_MENU_RANGE(ID_BINDING_F1, ID_BINDING_F12, ClientUIMDIFrame::OnBinding)
 	EVT_CLOSE(ClientUIMDIFrame::OnClose)
+	EVT_CONFIG_FILE_CHANGED(ID_CONFIG, ClientUIMDIFrame::OnConfigFileChanged)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -118,6 +122,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_client = new ClientDefault(this);
 
+	m_client->GetConfig().SetEventHandler(this, ID_CONFIG);
+
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxT("[Main]"), ChannelCanvas);
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
@@ -127,6 +133,12 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	config->Read(wxT("/Client/WindowState/NickList"), &nicklist_width, nicklist_width);
 	canvas->GetNickList()->GetParent()->SetSize(nicklist_width, -1);
 	canvas->ResizeChildren();
+
+#ifdef __WXMSW__
+	m_hotkey_keycode = 0;
+	m_hotkey_mods = 0;
+#endif
+	SetHotKey();
 
 	ResetWindowPos();
 	RestoreWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
@@ -262,6 +274,11 @@ void ClientUIMDIFrame::OnToolsPasswords(wxCommandEvent &WXUNUSED(event))
 void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent &WXUNUSED(event))
 {
 	ClientUIMDIConfigDialog dlg(this);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		SetHotKey();
+		UpdateCaption();
+	}
 }
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
@@ -271,13 +288,15 @@ void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
 
 void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &WXUNUSED(event))
 {
-	ForceForegroundWindow(this);
-	m_tmrTray->Stop();
-	delete m_tray;
-	m_tray = NULL;
+	RestoreFromTray();
 }
 
 void ClientUIMDIFrame::OnRestore(wxCommandEvent &WXUNUSED(event))
+{
+	RestoreFromTray();
+}
+
+void ClientUIMDIFrame::RestoreFromTray()
 {
 	ForceForegroundWindow(this);
 	m_tmrTray->Stop();
@@ -777,6 +796,123 @@ void ClientUIMDIFrame::OnClientStateChange()
 	UpdateCaption();
 }
 
+void ClientUIMDIFrame::SetHotKey()
+{
+
+	if (!IsHotKeySupported()) return;
+	
+	int keycode[2];
+	wxUint8 modifiers[2];
+	
+	for (int i = 0; i < 2; ++i)
+	{
+		keycode[i] = m_client->GetConfig().GetHotKey(i, false);
+		modifiers[i] = m_client->GetConfig().GetHotKey(i, true);
+	}
+
+	if (!keycode[0] && !keycode[1])
+	{
+		SetHotKey(0, 0);
+		return;
+	}
+
+	for (int i = 0; i < 2; ++i)
+	{
+		if (keycode[i] && modifiers[i])
+		{
+			if (SetHotKey(keycode[i], modifiers[i]))
+			{
+				return;
+			}
+		}
+	}
+	
+}
+
+void ClientUIMDIFrame::OnHotKey()
+{
+	if (IsFocused())
+	{
+		if (!MinToTray())
+		{
+			Iconize();
+		}
+	}
+	else
+	{
+		RestoreFromTray();
+	}
+}
+
+bool ClientUIMDIFrame::IsHotKeySupported()
+{
+#ifdef __WXMSW__
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool ClientUIMDIFrame::SetHotKey(int keycode, wxUint8 mods)
+{
+
+#ifdef __WXMSW__
+
+	if (keycode == m_hotkey_keycode && mods == m_hotkey_mods)
+	{
+		return true;
+	}
+
+	if (m_hotkey_keycode || m_hotkey_mods)
+	{
+		if (::UnregisterHotKey(GetHwnd(), 1) == 0)
+		{
+			return false;
+		}
+		m_hotkey_keycode = 0;
+		m_hotkey_mods = 0;
+		UpdateCaption();
+	}
+
+	if (keycode && mods)
+	{
+		if (::RegisterHotKey(GetHwnd(), 1, mods, keycode) != 0)
+		{
+			m_hotkey_keycode = keycode;
+			m_hotkey_mods = mods;
+			UpdateCaption();
+			return true;
+		}
+	}
+	
+	return (!keycode && !mods);
+
+#else
+
+	return (!keycode && !mods);
+
+#endif
+
+}
+
+int ClientUIMDIFrame::GetHotKeyKeyCode() const
+{
+#ifdef __WXMSW__
+	return m_hotkey_keycode;
+#else
+	return 0;
+#endif
+}
+
+wxUint8 ClientUIMDIFrame::GetHotKeyModifiers() const
+{
+#ifdef __WXMSW__
+	return m_hotkey_mods;
+#else
+	return 0;
+#endif
+}
+
 void ClientUIMDIFrame::UpdateCaption()
 {
 	wxString title;
@@ -787,6 +923,14 @@ void ClientUIMDIFrame::UpdateCaption()
 	if (IsWin32() || !m_alert || (m_flash % 2) == 0)
 	{
 		title << AppTitle(wxT("Client"));
+		int keycode = GetHotKeyKeyCode();
+		wxUint8 mods = GetHotKeyModifiers();
+		if (keycode && mods)
+		{
+			wxString hotkey = HotKeyControl::HotKeyToString(keycode, mods);
+			hotkey.Replace(wxT(" "), wxT(""));
+			title << wxT(" [") << hotkey << wxT("]");
+		}
 		if (m_client && m_client->IsConnected())
 		{
 			title << wxT(" - ");
@@ -1347,6 +1491,11 @@ wxDateTime ClientUIMDIFrame::GetLogDate()
 	return m_log_date;
 }
 
+void ClientUIMDIFrame::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
+{
+	SetHotKey();
+}
+
 void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 {
 
@@ -1404,6 +1553,11 @@ void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 				MinToTray();
 				return 0;
 			}
+		}
+		else if (nMsg == WM_HOTKEY)
+		{
+			OnHotKey();
+			return 0;
 		}
 		return SwitchBarParent::MSWWindowProc(nMsg, wParam, lParam);
 	}
