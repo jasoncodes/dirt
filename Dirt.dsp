@@ -341,6 +341,14 @@ SOURCE=.\ServerUIFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ServerUIFrameConfig.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServerUIFrameConfig.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SpanTag.cpp
 # End Source File
 # Begin Source File

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.18 2003-02-22 05:16:20 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.19 2003-02-22 09:05:35 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -66,6 +66,7 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 //////// ServerConfig ////////
 
 #include <wx/fileconf.h>
+#include "Crypt.h"
 
 ServerConfig::ServerConfig()
 {
@@ -95,6 +96,106 @@ long ServerConfig::GetListenPort() const
 bool ServerConfig::SetListenPort(long port)
 {
 	return m_config->Write(wxT("Server/Listen Port"), port);
+}
+
+wxString ServerConfig::GetUserPassword(bool decrypt) const
+{
+	return GetPassword(wxT("Server/User Password"), decrypt);
+}
+
+bool ServerConfig::SetUserPassword(const wxString &password)
+{
+	return SetPassword(wxT("Server/User Password"), password);
+}
+
+wxString ServerConfig::GetAdminPassword(bool decrypt) const
+{
+	return GetPassword(wxT("Server/Admin Password"), decrypt);
+}
+
+bool ServerConfig::SetAdminPassword(const wxString &password)
+{
+	return SetPassword(wxT("Server/Admin Password"), password);
+}
+
+static const wxString EncodedPrefix = wxT("Encoded:");
+
+static wxString DecodePassword(const wxString &value, bool decrypt)
+{
+	if (!decrypt || value.Length() == 0 || !LeftEq(value, EncodedPrefix))
+	{
+		return value;
+	}
+	else
+	{
+		ByteBuffer data = Crypt::Base64Decode(value.Mid(EncodedPrefix.Length()));
+		if (data.Length() < 40)
+		{
+			return wxEmptyString;
+		}
+		if (((data.Length() - 40) % 16) != 0)
+		{
+			return wxEmptyString;
+		}
+		const byte *ptr = data.Lock();
+		ByteBuffer crc32(ptr, 4);
+		ByteBuffer len_buff(ptr+4, 4);
+		size_t len = BytesToUint32(len_buff.Lock(), len_buff.Length());
+		len_buff.Unlock();
+		ByteBuffer AESKey(ptr+8, 32);
+		ByteBuffer enc(ptr+40, data.Length()-40);
+		data.Unlock();
+		Crypt crypt;
+		try
+		{
+			crypt.SetAESDecryptKey(AESKey);
+			data = crypt.AESDecrypt(enc);
+		}
+		catch (...)
+		{
+			return wxEmptyString;
+		}
+		ByteBuffer dec(data.Lock(), len);
+		data.Unlock();
+		if (crc32 == Crypt::CRC32(AESKey + dec))
+		{
+			return dec;
+		}
+		else
+		{
+			return wxEmptyString;
+		}
+	}
+}
+
+wxString ServerConfig::GetPassword(const wxString &key, bool decrypt) const
+{
+	return DecodePassword(m_config->Read(key), decrypt);
+}
+
+bool ServerConfig::SetPassword(const wxString &key, const wxString &password)
+{
+	ByteBuffer data;
+	if (password.Length() > 0)
+	{
+		if (LeftEq(password, EncodedPrefix))
+		{
+			return (DecodePassword(password, true).Length() > 0);
+		}
+		else
+		{
+			ByteBuffer AESKey = Crypt::Random(32);
+			Crypt crypt;
+			crypt.SetAESEncryptKey(AESKey);
+			data =
+				Crypt::CRC32(AESKey + ByteBuffer(password)) + 
+				Uint32ToBytes(password.Length()) +
+				AESKey +
+				crypt.AESEncrypt(password);
+			data = EncodedPrefix + Crypt::Base64Encode(data, false);
+		}
+	}
+	return m_config->Write(key, data);
 }
 
 //////// Server ////////

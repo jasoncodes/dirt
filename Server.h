@@ -90,6 +90,14 @@ public:
 
 	long GetListenPort() const;
 	bool SetListenPort(long port);
+	wxString GetUserPassword(bool decrypt) const;
+	bool SetUserPassword(const wxString &password);
+	wxString GetAdminPassword(bool decrypt) const;
+	bool SetAdminPassword(const wxString &password);
+
+protected:
+	wxString GetPassword(const wxString &key, bool decrypt) const;
+	bool SetPassword(const wxString &key, const wxString &password);
 
 protected:
 	wxConfigBase *m_config;

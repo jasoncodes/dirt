@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.26 2003-02-22 05:16:20 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.27 2003-02-22 09:05:35 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -180,7 +180,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);
-					conn->m_authenticated = false;
+					conn->m_authenticated = (m_config->GetUserPassword(true).Length() == 0);
 					conn->m_nextping = 0;
 					if (conn->m_authenticated)
 					{
@@ -265,7 +265,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 			bool success;
 			try
 			{
-				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(wxT("test")), data);
+				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(m_config->GetUserPassword(true)), data);
 			}
 			catch (...)
 			{

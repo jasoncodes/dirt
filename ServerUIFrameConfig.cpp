@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.6 2003-02-22 05:50:56 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.8 2003-02-22 09:05:35 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -38,12 +38,12 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
 	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtListenPort);
-	wxStaticText *lblUserPass = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPass = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(m_txtUserPass);
-	wxStaticText *lblAdminPass = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
-	m_txtAdminPass = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(m_txtAdminPass);
+	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
+	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtUserPassword);
+	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
+	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtAdminPassword);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
 	{
@@ -57,16 +57,16 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
 				{
 					szrLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblUserPass, 1, wxBOTTOM, 8);
-					szrLabels->Add(lblAdminPass, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
 				}
-				szrLeftTop->Add(szrLabels, 0, wxEXPAND, 0);
+				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
 				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
 				{
 					szrTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtUserPass, 1, wxBOTTOM | wxEXPAND, 8);
-					szrTextBoxes->Add(m_txtAdminPass, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
 				}
 				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
 
@@ -141,7 +141,16 @@ void ServerUIFrameConfig::LoadSettings()
 {
 	ServerConfig *config = m_server->GetConfig();
 	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
+	m_txtUserPassword->SetValue(config->GetUserPassword(false));
+	m_txtAdminPassword->SetValue(config->GetAdminPassword(false));
 	m_cmdApply->Enable(false);
+}
+
+void ServerUIFrameConfig::ReportError(const wxString &error_message, wxTextCtrl *txt)
+{
+	wxMessageBox(error_message, wxT("Error"), wxOK|wxICON_ERROR, this);
+	txt->SetFocus();
+	txt->SetSelection(-1, -1);
 }
 
 bool ServerUIFrameConfig::SaveSettings()
@@ -150,9 +159,17 @@ bool ServerUIFrameConfig::SaveSettings()
 	long x;
 	if (!m_txtListenPort->GetValue().ToLong(&x) || !config->SetListenPort(x))
 	{
-		wxMessageBox(wxT("Invalid listen port"), wxT("Error"), wxOK|wxICON_ERROR, this);
-		m_txtListenPort->SetFocus();
-		m_txtListenPort->SetSelection(-1, -1);
+		ReportError(wxT("Invalid listen port"), m_txtListenPort);
+		return false;
+	}
+	if (!config->SetUserPassword(m_txtUserPassword->GetValue()))
+	{
+		ReportError(wxT("Invalid user password"), m_txtUserPassword);
+		return false;
+	}
+	if (!config->SetAdminPassword(m_txtAdminPassword->GetValue()))
+	{
+		ReportError(wxT("Invalid admin password"), m_txtAdminPassword);
 		return false;
 	}
 	config->Flush();

@@ -18,12 +18,13 @@ protected:
 protected:
 	virtual void LoadSettings();
 	virtual bool SaveSettings();
+	virtual void ReportError(const wxString &error_message, wxTextCtrl *txt);
 
 protected:
 	Server *m_server;
 	wxTextCtrl *m_txtListenPort;
-	wxTextCtrl *m_txtUserPass;
-	wxTextCtrl *m_txtAdminPass;
+	wxTextCtrl *m_txtUserPassword;
+	wxTextCtrl *m_txtAdminPassword;
 	wxButton *m_cmdApply;
 
 private:
