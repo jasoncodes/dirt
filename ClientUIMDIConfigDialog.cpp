@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.26 2004-05-23 10:35:19 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.27 2004-06-25 12:33:26 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -177,7 +177,6 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	wxPanel *pnlFrame = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
 	wxNotebook *notebook = new wxNotebook(pnlFrame, wxID_ANY);
-	wxNotebookSizer *szrNotebook = new wxNotebookSizer(notebook);
 
 	wxPanel *pnlGeneral = new wxPanel(notebook, wxID_ANY);
 
@@ -383,7 +382,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	wxBoxSizer *szrPanel = new wxBoxSizer(wxVERTICAL);
 	{
 
-		szrPanel->Add(szrNotebook, 1, wxEXPAND|wxALL, 8);
+		szrPanel->Add(notebook, 1, wxEXPAND|wxALL, 8);
 
 		wxBoxSizer *szrButtons = new wxBoxSizer(wxHORIZONTAL);
 		{

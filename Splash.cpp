@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.38 2004-06-11 15:00:41 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.39 2004-06-25 12:33:26 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -404,6 +404,10 @@ protected:
 				{
 					m_depressed = false;
 					Refresh();
+				}
+				else
+				{
+					GetParent()->GetParent()->Destroy();
 				}
 				break;
 
