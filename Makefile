@@ -14,17 +14,14 @@ BUNDLE = Dirt.app/Contents
 
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
 	CXXFLAGS_EXTRA = `pkg-config --cflags gtk+-2.0`
-	PACKAGE_NAME = DirtGTK
 else
 	ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 		CXXFLAGS_EXTRA = `gtk-config --cflags`
-		PACKAGE_NAME = DirtGTK
 	endif
 endif
 
 ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
 	EXTRA_POST_LINK_CMD = @make mac_bundle
-	PACKAGE_NAME = DirtMac
 endif
 
 ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
@@ -97,11 +94,17 @@ crypto/libcryptopp.a:
 package: dirt
 ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
 	upx --best Dirt$(BINARY_SUFFIX)
-else
-	test -f $(PACKAGE_NAME).tar.bz2 && rm $(PACKAGE_NAME).tar.bz2 || true
-	tar cf $(PACKAGE_NAME).tar Dirt$(BINARY_SUFFIX) dirt dirtconsole
-	cd res && tar rf ../$(PACKAGE_NAME).tar dirt.xpm
-	bzip2 -9 $(PACKAGE_NAME).tar
+endif
+ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
+	test -f DirtGTK.tar.bz2 && rm DirtGTK.tar.bz2 || true
+	tar cf DirtGTK.tar Dirt dirt dirtconsole
+	cd res && tar rf ../DirtGTK.tar dirt.xpm
+	bzip2 -9 DirtGTK.tar
+endif
+ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
+	test -f DirtMac.tar.bz2 && rm DirtMac.tar.bz2 || true
+	tar cf DirtMac.tar Dirt.app
+	bzip2 -9 DirtMac.tar
 endif
 
 mac_bundle: \
