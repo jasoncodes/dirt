@@ -20,7 +20,7 @@
 
 * banning (wxIsWild(), wxMatchWild())
 
-* automatic quit messages for end task, log off, etc
+* automatic quit messages for end task, log off, etc (wxCloseEvent)
 
 * non-wrapping lines have row of blank pixels underneath (visible on highlight and bg colour)
 
