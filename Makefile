@@ -2,16 +2,31 @@
 
 include ./Makefile.wx-config
 
+.SUFFIXES: .o .cpp
+.PRECIOUS: dirt
+.PHONY: clean dirt all mac_post_link
+
+WXPREFIX=`$(WXCONFIG) --prefix`
+CC = g++
+WINDRES = windres
+REZ = $(shell $(WXCONFIG) --rezflags)
+BUNDLE = Dirt.app/Contents
+
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
-	GTK_EXTRAS = `pkg-config --cflags gtk+-2.0`
+	CXXFLAGS_EXTRA = `pkg-config --cflags gtk+-2.0`
+	PACKAGE_NAME = DirtGTK
 else
 	ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
-		GTK_EXTRAS = `gtk-config --cflags`
+		CXXFLAGS_EXTRA = `gtk-config --cflags`
+		PACKAGE_NAME = DirtGTK
 	endif
 endif
 
-CC = g++
-WINDRES = windres
+ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
+	EXTRA_POST_LINK_CMD = @make mac_bundle
+	PACKAGE_NAME = DirtMac
+endif
+
 ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
 	COMPILE_FLAGS = -g -DDEBUG
 	STRIP = true||strip
@@ -23,12 +38,10 @@ endif
 CXXFLAGS = \
 	$(strip \
 		$(COMPILE_FLAGS) `$(WXCONFIG) --cxxflags` \
-		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include \
+		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
 	)
 LINK_FLAGS = `$(WXCONFIG) --libs`
-.SUFFIXES: .o .cpp
-.PRECIOUS: dirt
-.PHONY: clean dirt all
+
 SOURCES := $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o) crypto/libcryptopp.a
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
@@ -50,6 +63,7 @@ endif
 
 clean:
 	rm -f *.o Dirt DirtGTK.tar.bz2
+	rm -rf Dirt.app
 
 all: clean dirt
 
@@ -63,9 +77,10 @@ all: clean dirt
 
 -include $(SOURCES:.cpp=.d)
 
-Dirt$(BINARY_SUFFIX): $(OBJECTS) $(EXTRA_DEPENDS)
-	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS) $(EXTRA_DEPENDS)
+Dirt$(BINARY_SUFFIX): $(OBJECTS)
+	$(CC) -o Dirt$(BINARY_SUFFIX) $(OBJECTS) $(LINK_FLAGS)
 	$(STRIP) Dirt$(BINARY_SUFFIX)
+	$(EXTRA_POST_LINK_CMD)
 
 Dirt.res: Dirt.rc
 	$(WINDRES) \
@@ -80,7 +95,41 @@ crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: dirt
-	test -f DirtGTK.tar.bz2 && rm DirtGTK.tar.bz2 || true
-	tar cf DirtGTK.tar Dirt dirt dirtconsole
-	cd res && tar rf ../DirtGTK.tar dirt.xpm
-	bzip2 -9 DirtGTK.tar
+ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
+	upx --best Dirt$(BINARY_SUFFIX)
+else
+	test -f $(PACKAGE_NAME).tar.bz2 && rm $(PACKAGE_NAME).tar.bz2 || true
+	tar cf $(PACKAGE_NAME).tar Dirt$(BINARY_SUFFIX) dirt dirtconsole
+	cd res && tar rf ../$(PACKAGE_NAME).tar dirt.xpm
+	bzip2 -9 $(PACKAGE_NAME).tar
+endif
+
+mac_bundle: \
+  $(BUNDLE)/MacOS \
+  $(BUNDLE)/Resources/Dirt.rsrc \
+  $(BUNDLE)/Resources/wxmac.icns \
+  $(BUNDLE)/PkgInfo \
+  $(BUNDLE)/Info.plist
+	$(REZ) Dirt
+	cp Dirt $(BUNDLE)/MacOS/Dirt
+
+$(BUNDLE)/MacOS:
+	install -d $@
+    
+$(BUNDLE)/Resources/Dirt.rsrc: $(WXPREFIX)/lib/libwx_mac-2.5.1.rsrc
+	@install -d `dirname $@`
+	cp $< $@
+
+$(BUNDLE)/Resources/wxmac.icns: res/dirt.icns
+	@install -d `dirname $@`
+	cp $< $@
+
+$(BUNDLE)/PkgInfo:
+	@install -d `dirname $@`
+	echo -n "APPL????" > $@
+
+$(BUNDLE)/Info.plist: res/Info.plist.in
+	@install -d `dirname $@`
+	sed -e "s/IDENTIFIER/`echo Dirt | sed 's,/,.,g'`/" \
+	    -e "s/EXECUTABLE/Dirt/" \
+	    -e "s/VERSION/3.0.0/" $< > $@
