@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.97 2003-04-28 11:35:22 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.98 2003-04-29 13:12:58 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -536,7 +536,8 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		wxString param;
 		param << wxT("--logs");
 		const wxChar *argv[3];
-		argv[0] = GetSelf();
+		wxString self = GetSelf();
+		argv[0] = self.c_str();
 		argv[1] = param.c_str();
 		argv[2] = NULL;
 		::wxExecute((wxChar**)argv);
