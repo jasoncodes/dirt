@@ -28,12 +28,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.72 2004-05-23 06:01:09 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.73 2004-05-27 21:42:24 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
 #include "LogControl.h"
+#include "IPInfo.h"
 
 //////// ServerConnection ////////
 
@@ -409,7 +410,7 @@ void Server::Warning(const wxString &line)
 wxArrayString Server::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("HELP KICK START STOP USERS WORDFILTER"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("INFO HELP KICK START STOP USERS WORDFILTER"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnServerSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -615,6 +616,37 @@ void Server::ProcessConsoleInput(const wxString &input, const wxString &nick)
 		{
 			Warning(wxT("Invalid word filter command"));
 		}
+	}
+	else if (cmd == wxT("INFO"))
+	{
+		LogConsoleInput(input, nick);
+		if (!IsRunning())
+		{
+			Warning(wxT("Server is not running"));
+			return;
+		}
+		wxString colon_port;
+		colon_port << wxT(':') << m_config.GetListenPort();
+		Information(wxT("Server Information:"));
+		Information(wxT("    Server Name:  ") + m_config.GetServerName());
+		Information(wxT("    Hostname:     ") + (m_config.GetHostname().Length() ? (m_config.GetHostname() + colon_port) : wxString()));
+		wxString tmp = wxT("    Listening on: ");
+		wxArrayString iplist = GetIPAddresses();
+		for (size_t i = 0u; i < iplist.GetCount(); ++i)
+		{
+			Information(tmp + iplist[i] + colon_port);
+			tmp = wxT("                  ");
+		}
+		Information(wxT("    Users:        ") + wxString()
+			<< GetUserCount() << wxT(" (")
+			<< GetAwayCount() << wxT(" away, ")
+			<< m_peak_users << wxT(" peak, ")
+			<< m_config.GetMaxUsers() << wxT(" max)"));
+		Information(wxT("    Average Ping: ") + wxString() << GetAverageLatency() << wxT(" ms"));
+		Information(wxT("    Version:      ") + GetProductVersion() + wxT(" ") + SplitHeadTail(GetRCSDate(), wxT(' ')).head);
+		Information(wxT("    Uptime:       ") + SecondsToMMSS(GetServerUptime()));
+		Information(wxT("    Comment:      ") + m_config.GetPublicListComment());
+		Information(wxT("End of Server Information"));
 	}
 	else if (cmd == wxT("HELP"))
 	{

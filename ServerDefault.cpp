@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.72 2004-05-16 04:42:47 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.73 2004-05-27 21:42:24 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -557,7 +557,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
 	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
-	post_data[wxT("uptime")] = wxString() << (now - m_start_tick);
+	post_data[wxT("uptime")] = wxString() << GetServerUptime();
 	post_data[wxT("idletime")] = wxString() << (now - m_last_active);
 	post_data[wxT("hostname")] = m_config.GetHostname().Length() ? (m_config.GetHostname() + colon_port) : wxString();
 	post_data[wxT("away")] = wxString() << GetAwayCount();
@@ -565,6 +565,11 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 
 	return post_data;
 
+}
+
+long ServerDefault::GetServerUptime() const
+{
+	return IsRunning() ? (::wxGetUTCTime() - m_start_tick) : 0;
 }
 
 long ServerDefault::GetListenPort() const

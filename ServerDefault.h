@@ -78,6 +78,7 @@ public:
 	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual void ResetPublicListUpdate(int num_secs_till_next_update, bool force_show);
 	virtual wxLongLong_t GetNextPublicListUpdateTick() const;
+	virtual long GetServerUptime() const;
 
 protected:
 	virtual StringHashMap GetPublicPostData(bool include_auth);

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.89 2004-05-23 10:35:21 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.90 2004-05-27 21:42:24 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -312,7 +312,7 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 		seconds /= 1000;
 	}
 
-	int hour, min, sec;
+	int day = 0, hour, min, sec;
 
 	sec = seconds % 60;
 	min = seconds / 60;
@@ -326,10 +326,16 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 	{
 		hour = 0;
 	}
+
+	if (hour > 23)
+	{
+		day = hour / 24;
+		hour = hour % 24;
+	}
 	
 	wxString result;
 
-	if (hour)
+	if (day || hour)
 	{
 		if (verbose)
 		{
@@ -341,9 +347,21 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 		}
 	}
 
+	if (day)
+	{
+		if (verbose)
+		{
+			result = wxString::Format(wxT("%d day%s, "), day, plural(day));
+		}
+		else
+		{
+			result = wxString::Format(wxT("%02d:"), day);
+		}
+	}
+
 	if (verbose)
 	{
-		if (hour || min)
+		if (day || hour || min)
 		{
 			result += wxString::Format(wxT("%d minute%s, "), min, plural(min));
 		}
@@ -358,7 +376,7 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 	{
 		if (verbose)
 		{
-			if (hour || min || sec)
+			if (day || hour || min || sec)
 			{
 				result += wxT(", ");
 			}

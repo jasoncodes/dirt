@@ -204,6 +204,7 @@ public:
 	static ByteBuffer MakeNicknameValid(const ByteBuffer &src);
 	void LogConsoleInput(const wxString &cmd, const wxString &params, const wxString &nick);
 	void LogConsoleInput(const wxString &input, const wxString &nick);
+	virtual long GetServerUptime() const = 0;
 
 protected:
 	void OnConfigFileChanged(wxCommandEvent &event);
