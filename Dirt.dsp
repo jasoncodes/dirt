@@ -58,7 +58,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxmsw25.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxbase25.lib wxmsw25_core.lib wxmsw25_html.lib wxbase25_net.lib wxmsw25_adv.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -89,7 +89,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxmsw25d.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxbase25d.lib wxmsw25d_core.lib wxmsw25d_html.lib wxbase25d_net.lib wxmsw25d_adv.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Console Release"
@@ -117,7 +117,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxmsw25.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxbase25.lib wxmsw25_core.lib wxmsw25_html.lib wxbase25_net.lib wxmsw25_adv.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -148,7 +148,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxmsw25d.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxbase25d.lib wxmsw25d_core.lib wxmsw25d_html.lib wxbase25d_net.lib wxmsw25d_adv.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Dirt - Win32 Unicode Release"
@@ -175,7 +175,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxmsw25u.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlib.lib wxregex.lib wxpng.lib wxjpeg.lib wxtiff.lib wxbase25u.lib wxmsw25u_core.lib wxmsw25u_html.lib wxbase25u_net.lib wxmsw25u_adv.lib crypto\Release\cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -206,7 +206,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxmsw25ud.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
+# ADD LINK32 wxzlibd.lib wxregexd.lib wxpngd.lib wxjpegd.lib wxtiffd.lib wxbase25ud.lib wxmsw25ud_core.lib wxmsw25ud_html.lib wxbase25ud_net.lib wxmsw25ud_adv.lib crypto/Debug/cryptlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib iphlpapi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_lib" /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

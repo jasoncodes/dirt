@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RadioBoxPanel.cpp,v 1.4 2003-08-14 04:22:17 jason Exp $)
+RCS_ID($Id: RadioBoxPanel.cpp,v 1.5 2004-03-07 01:52:05 jason Exp $)
 
 #include "RadioBoxPanel.h"
 
@@ -119,7 +119,7 @@ long RadioBoxPanel::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
 
 			wxBrush *brush = wxTheBrushList->FindOrCreateBrush(colBack, wxSOLID);
 
-			return (WXHBRUSH)brush->GetResourceHandle();
+			return (long)(WXHBRUSH)brush->GetResourceHandle();
 			}
 
 		default:
