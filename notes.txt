@@ -6,8 +6,6 @@
 
 * away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
 
-* change all config file code to use utf-8 for file storage
-
 * file transfers
 
 * firewall traversal: try connecting both ways at same time, close alt route if main succeeds
