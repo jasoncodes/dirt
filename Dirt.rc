@@ -4,26 +4,26 @@ hand CURSOR DISCARDABLE "res/hand.cur"
 
 #include "version.h"
 
-#ifdef DIRT_-_WIN32_UNICODE_RELEASE_PRIVATE_H
-	#ifndef _UNICODE
-		#define _UNICODE
+#ifdef EXTRA_VER_INFO
+	#ifdef _UNICODE
+		#define UNICODE_STR "Unicode"
+	#else
+		#define UNICODE_STR "ANSI"
 	#endif
-#endif
-
-#ifdef _UNICODE
-	#define UNICODE_STR "Unicode"
+	#ifdef _CONSOLE
+		#define CONSOLE_STR " Console"
+	#else
+		#define CONSOLE_STR " GUI"
+	#endif
+	#ifdef _DEBUG
+		#define DEBUG_STR " Debug"
+	#else
+		#define DEBUG_STR " Release"
+	#endif
 #else
-	#define UNICODE_STR "ANSI"
-#endif
-#ifdef _CONSOLE
-	#define CONSOLE_STR " Console"
-#else
-	#define CONSOLE_STR " GUI"
-#endif
-#ifdef _DEBUG
-	#define DEBUG_STR " Debug"
-#else
-	#define DEBUG_STR " Release"
+	#define UNICODE_STR
+	#define CONSOLE_STR
+	#define DEBUG_STR
 #endif
 
 1 VERSIONINFO
