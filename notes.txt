@@ -1,3 +1,39 @@
+* auto-reconnect if connection lost (due to timeout or kick for example)
+  status messages should not be as verbose as existing /reconnect and should
+  only say something like "*** Connection restored" after the "*** Connection lost"
+  or "*** Ping timeout". make sure no reconnect on /quit
+
+* option to set nickname
+
+* dialog for saving server passwords
+
+* option to disable file transfer status messages
+
+* quit msg not filtered
+
+[22:18] *** Jason is away: internet
+[22:18] *** Jason has returned (msg: INTARNET) (away for 00:05)
+
+* don't add red line if own message
+
+* can't send 0 byte file (problem in DCC ACCEPT code)
+
+* option to auto /back if talk in main window or talk in any window
+
+* when new word filter is added, recheck away msg and nicks
+
+/mintotray
+
+[15:11] *** Get Greek Orthodox Byzantine Chant - Angelopoulos odes.mp3 from Andrew: Cancelled by remote (Remote error: Transfer cancelled)
+[15:11] *** Get ogl.rar from Blacksage: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
+Blacksage cancelling a transfer aborted transfer with Andrew
+
+* some way to limit number of unACK'd bytes
+
+* admin change nick and away messages
+
+* can't delete dir last sent from / recv to.
+
 * if other side of file transfer is on same subnet as any of local subnets then
   set block size to 8192 KB else 2048 KB
 
@@ -177,6 +213,8 @@
 * remove msvcp60.dll dependency?
 
 * research that log control gdi thing in 9x
+  Perhaps you should if 9x, if messagelog.length > x, (use gdi resource free% api?)
+  SAY Warning: 9x about to run out of dgi resources
 
 * non-wrapping lines have row of blank pixels underneath (related to font?)
 
