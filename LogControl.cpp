@@ -1388,6 +1388,11 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 	}
 
+	if (st.GetString().Length() > 0)
+	{
+		output += st.GetString();
+	}
+
 	return output;
 
 
