@@ -21,6 +21,7 @@ public:
 	bool IsFocused();
 	bool ResetWindowPos();
 	void ResetRedLines();
+	wxArrayString* GetNicklist() { return &m_nicklist; }
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
@@ -56,6 +57,7 @@ protected:
 	Client *m_client;
 	bool m_focused;
 	NickListControl *m_lstNickList;
+	wxArrayString m_nicklist;
 	bool m_alert;
 	int m_flash;
 

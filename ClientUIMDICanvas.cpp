@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.36 2003-03-05 02:33:23 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.37 2003-03-05 12:05:54 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -87,6 +87,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 	if (type == ChannelCanvas || type == QueryCanvas)
 	{
 		m_txtInput = new InputControl(this, ID_INPUT);
+		m_txtInput->SetTabCompletionList(((ClientUIMDIFrame*)parent)->GetNicklist());
 		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtPassword = NULL;
 	}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.9 2003-03-05 02:33:23 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.10 2003-03-05 12:05:55 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -213,7 +213,7 @@ InputControl::InputControl(
 	: wxTextCtrl(parent, id, wxT(""), pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
 	history(),
 	history_pos(0), m_ctrl_down(false),
-	popup(NULL)
+	popup(NULL), m_tab_completion_list(NULL), m_ignore_change(false)
 {
 
 	// a whole lot of messing around to get the same font as wxHtmlWindow uses
@@ -299,6 +299,11 @@ void InputControl::RemoveLastHistoryEntry()
 	}
 }
 
+void InputControl::SetTabCompletionList(wxArrayString *tab_completion_list)
+{
+	m_tab_completion_list = tab_completion_list;
+}
+
 void InputControl::OnKeyUp(wxKeyEvent& event)
 {
 	m_ctrl_down = event.ControlDown();
@@ -308,6 +313,11 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 {
 
 	m_ctrl_down = event.ControlDown();
+
+	if (event.GetKeyCode() != WXK_TAB)
+	{
+		m_tab_completion_prefix = wxEmptyString;
+	}
 
 	if (event.GetKeyCode() == WXK_UP)
 	{
@@ -498,16 +508,109 @@ void InputControl::OnChar(wxKeyEvent& event)
 {
 	if ( event.KeyCode() == WXK_RETURN )
 	{
+		m_tab_completion_prefix = wxEmptyString;
 		ProcessInput();
+	}
+	else if ( event.KeyCode() == WXK_TAB )
+	{
+
+		wxString val = GetValue();
+		int index = val.Find(wxT(' '), true);
+		if (index > -1)
+		{
+			val = val.Mid(index + 1);
+		}
+
+		long from, to;
+		GetSelection(&from, &to);
+		if (from > to)
+		{
+			long tmp = from;
+			from = to;
+			to = tmp;
+		}
+		if (GetLastPosition() != to)
+		{
+			m_tab_completion_prefix = wxEmptyString;
+			wxBell();
+			return;
+		}
+
+		if (val.Length() > 0)
+		{
+			if (m_tab_completion_prefix.Length() == 0)
+			{
+				m_tab_completion_prefix = val;
+			}
+			
+			wxArrayString possibles;
+			int current_index = -1;
+			for (size_t i = 0; i < m_tab_completion_list->GetCount(); ++i)
+			{
+				if (LeftEq(m_tab_completion_list->Item(i).Lower(), m_tab_completion_prefix.Lower()))
+				{
+					possibles.Add(m_tab_completion_list->Item(i));
+					if (current_index == -1 && m_tab_completion_list->Item(i).CmpNoCase(val) == 0)
+					{
+						current_index = (int)possibles.GetCount()-1;
+					}
+				}
+			}
+
+			if (possibles.GetCount() == 1 && current_index == 0)
+			{
+				m_tab_completion_prefix = wxEmptyString;
+				wxBell();
+				return;
+			}
+			if (possibles.GetCount() > 0 && (current_index > -1 || m_tab_completion_prefix == val))
+			{
+				current_index++;
+				if (current_index >= (int)possibles.GetCount())
+				{
+					current_index = 0;
+				}
+				wxString newval = GetValue();
+				newval =
+					newval.Left(newval.Length()-val.Length()) +
+					possibles.Item(current_index);
+				m_ignore_change = true;
+				SetValue(newval);
+				SetInsertionPointEnd();
+			}
+			else
+			{
+				m_tab_completion_prefix = wxEmptyString;
+				wxBell();
+				return;
+			}
+			
+		}
+		else
+		{
+			m_tab_completion_prefix = wxEmptyString;
+			wxBell();
+			return;
+		}
+
 	}
 	else
 	{
+		m_tab_completion_prefix = wxEmptyString;
 		event.Skip();
 	}
 }
 
 void InputControl::OnChange(wxCommandEvent &event)
 {
+	if (m_ignore_change)
+	{
+		m_ignore_change = false;
+	}
+	else
+	{
+		m_tab_completion_prefix = wxEmptyString;
+	}
 	if (GetValue().Find(wxT("\n")) > -1)
 	{
 		ProcessInput();
@@ -516,6 +619,7 @@ void InputControl::OnChange(wxCommandEvent &event)
 
 void InputControl::OnEnterPress(wxCommandEvent &event)
 {
+	m_tab_completion_prefix = wxEmptyString;
 	AddToHistory(event.GetString());
 	event.SetString(ReplaceAlternateModifiers(event.GetString()));
 	if (m_ctrl_down)

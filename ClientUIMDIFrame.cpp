@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.62 2003-03-05 02:02:13 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.63 2003-03-05 12:05:54 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -489,6 +489,7 @@ void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &t
 void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
 {
 	m_lstNickList->Clear();
+	m_nicklist = nicklist;
 	bool self_found = false;
 	for (size_t i = 0; i < nicklist.GetCount(); ++i)
 	{
@@ -501,6 +502,7 @@ void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
 	if (!self_found && m_client->GetNickname().Length())
 	{
 		m_lstNickList->Add(m_client->GetNickname());
+		m_nicklist.Add(m_client->GetNickname());
 	}
 }
 
@@ -524,6 +526,7 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Add(nick);
+	m_nicklist.Add(nick);
 
 }
 
@@ -544,6 +547,7 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 	AddLine(wxEmptyString, msg, wxColour(0, 128, 0), true, false, false);
 
 	m_lstNickList->Remove(nick);
+	m_nicklist.Remove(nick);
 
 }
 
@@ -574,6 +578,8 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 	m_lstNickList->Remove(old_nick);
 	m_lstNickList->Add(new_nick);
+	m_nicklist.Remove(old_nick);
+	m_nicklist.Add(new_nick);
 
 	ClientUIMDICanvas *old_canvas = GetContext(old_nick, false, true);
 	ClientUIMDICanvas *new_canvas = GetContext(new_nick, false, true);

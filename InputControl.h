@@ -21,6 +21,7 @@ public:
 
 	void ClosePopup();
 	void RemoveLastHistoryEntry();
+	void SetTabCompletionList(wxArrayString *tab_completion_list);
 
 protected:
 	void OnChange(wxCommandEvent &event);
@@ -46,6 +47,9 @@ protected:
 	InputControlColourPopup *popup;
 	wxTextCtrl *txtBestSize;
 	bool m_ctrl_down;
+	wxArrayString *m_tab_completion_list;
+	wxString m_tab_completion_prefix;
+	bool m_ignore_change;
 
 private:
 	DECLARE_EVENT_TABLE()
