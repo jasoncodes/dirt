@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.14 2003-04-12 03:49:41 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.15 2003-04-12 09:23:03 jason Exp $)
 
 #include "SwitchBarParent.h"
 #include "SwitchBarChild.h"
@@ -524,10 +524,20 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 		}
 		child->Show(true);
 
-		while (GetActiveChild() != child)
-		{
-			ActivateNext();
-		}
+		#ifdef __WXMSW__
+			wxMDIChildFrame *org = GetActiveChild();
+			while (GetActiveChild() != child)
+			{
+				ActivateNext();
+				if (GetActiveChild() == org)
+				{
+					child->Activate();
+					break;
+				}
+			}
+		#else
+			child->Activate();
+		#endif
 
 	}
 
