@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.18 2004-07-19 09:35:35 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.19 2004-07-25 03:32:51 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -123,7 +123,7 @@ bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDate
 		suffix = name.Mid(pos+date_len).Trim(false).Trim(true);
 		const wxChar *start = date_str.c_str();
 		const wxChar *end = date.ParseFormat(start, wxT("%Y%m%d%H%M%S"));
-		
+
 		return (end != NULL) && ((size_t)(end-start) == date_len);
 	}
 	return false;
@@ -261,13 +261,13 @@ LogEntryType LogReader::GetNext()
 	return m_entry_type;
 }
 
-ByteBuffer LogReader::GetTextHelper()
+ByteBuffer LogReader::GetTextHelper() const
 {
 	wxASSERT(m_entry_type == letText);
 	ByteBuffer data = m_entry;
 	if (m_public_key.Length() && m_private_key.Length())
 	{
-		data = m_crypt.AESDecrypt(data);
+		data = const_cast<Crypt&>(m_crypt).AESDecrypt(data);
 	}
 	if (data.Length() < 4)
 	{
@@ -277,7 +277,7 @@ ByteBuffer LogReader::GetTextHelper()
 	return data;
 }
 
-wxString LogReader::GetText()
+wxString LogReader::GetText() const
 {
 	ByteBuffer buff = GetTextHelper();
 	if (buff.Length() > 4)
@@ -302,7 +302,7 @@ wxString LogReader::GetText()
 	return wxEmptyString;
 }
 
-long LogReader::GetTextColour()
+long LogReader::GetTextColour() const
 {
 	ByteBuffer buff = GetTextHelper();
 	if (buff.Length() > 4)
@@ -327,7 +327,7 @@ long LogReader::GetTextColour()
 	return 0;
 }
 
-bool LogReader::GetTextConvertURLs()
+bool LogReader::GetTextConvertURLs() const
 {
 	ByteBuffer buff = GetTextHelper();
 	if (buff.Length() > 4)

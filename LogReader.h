@@ -1,7 +1,7 @@
 /*
     Copyright 2002, 2003 General Software Laboratories
-    
-    
+
+
     This file is part of Dirt Secure Chat.
 
     Dirt Secure Chat is free software; you can redistribute it and/or modify
@@ -56,13 +56,13 @@ public:
 	inline bool HasNext() const { return !Eof(); }
 	virtual LogEntryType GetNext();
 
-	virtual wxString GetText();
-	virtual long GetTextColour();
-	virtual bool GetTextConvertURLs();
+	virtual wxString GetText() const;
+	virtual long GetTextColour() const;
+	virtual bool GetTextConvertURLs() const;
 
 protected:
 	virtual ByteBuffer Read();
-	virtual ByteBuffer GetTextHelper();
+	virtual ByteBuffer GetTextHelper() const;
 	virtual void ParsePropertyEntry(const ByteBuffer &data);
 
 protected:
