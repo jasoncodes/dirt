@@ -1,4 +1,4 @@
-ifneq ($(NOKDE),)
+ifneq ($(NOKDE),1)
 	KAPP_H := $(shell kde-config --prefix)/include/kde/kapplication.h
 	ifeq ($(wildcard $(KAPP_H)),$(KAPP_H))
 		QAPP_H := $(QTDIR)/include/qapplication.h
