@@ -1,3 +1,7 @@
+* when transfer complete, instead of showing ??? cps show (filesize-startpos)/time
+
+* dragging to switchbar should select dragged over item
+
 * turn "bool Listen(...)" into "void Listen(...)" + events
 
 * SOCKS 4/5 BIND support for DCC Listen

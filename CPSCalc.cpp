@@ -6,14 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CPSCalc.cpp,v 1.9 2003-06-07 13:44:22 jason Exp $)
+RCS_ID($Id: CPSCalc.cpp,v 1.10 2003-06-17 08:14:43 jason Exp $)
 
 #include "CPSCalc.h"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(HistoryArray);
 
-const int num_history = 5;
+const int num_history = 10;
 
 const int last_history = num_history - 1;
 
