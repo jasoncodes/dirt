@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.6 2003-03-19 01:05:57 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.7 2003-03-19 11:54:49 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -105,4 +105,16 @@ void LogWriter::Write(const ByteBuffer &data)
 	m_file.SeekEnd();
 	m_file.Write(tmp.LockRead(), tmp.Length());
 	tmp.Unlock();
+}
+
+wxDateTime LogWriter::GenerateNewLogDate(const wxString &prefix)
+{
+	wxDateTime date = wxDateTime::Now();
+	wxFileName fn(GenerateFilename(prefix, date));
+	while (fn.FileExists())
+	{
+		date += wxTimeSpan::Seconds(1);
+		fn = wxFileName(GenerateFilename(prefix, date));
+	}
+	return date;
 }

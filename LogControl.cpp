@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.31 2003-03-18 06:39:33 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.33 2003-03-19 11:54:49 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1548,7 +1548,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 			{
 				url = wxT("mailto:") + token;
 			}
-			else if ((token_lower.Find(wxT(".com")) > -1) || (token_lower.Find(wxT(".net")) > -1) || (token_lower.Find(wxT(".org")) > -1))
+			else if ((token_lower.Find(wxT(".com")) > 0) || (token_lower.Find(wxT(".net")) > 0) || (token_lower.Find(wxT(".org")) > 0))
 			{
 				url = wxT("http://") + token;
 			}
@@ -1650,7 +1650,10 @@ void LogControl::OnFindDialog(wxFindDialogEvent &event)
 		bool direction_down = ((flags & wxFR_DOWN) != 0);
 		bool whole_word = ((flags & wxFR_WHOLEWORD) != 0);
 		bool case_sensitive = ((flags & wxFR_MATCHCASE) != 0);
-		if (!direction_down || whole_word) wxFAIL;
+		if (!direction_down || whole_word)
+		{
+			wxFAIL;
+		}
 
 		if (type == wxEVT_COMMAND_FIND)
 		{

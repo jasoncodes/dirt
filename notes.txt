@@ -12,6 +12,8 @@
 
 * logging
 
+* separators for log control
+
 * scripting (/exec and /eval)
 
 * banning (wxIsWild(), wxMatchWild())
