@@ -329,6 +329,14 @@ SOURCE=.\ClientUIMDITransferPanel.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CPSCalc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CPSCalc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Dirt.cpp
 # End Source File
 # Begin Source File
