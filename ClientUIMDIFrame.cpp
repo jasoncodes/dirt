@@ -145,7 +145,7 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	{
 		for (int i = 1; i < m_switchbar->GetButtonCount(); ++i)
 		{
-			if (m_switchbar->GetButtonCaption(i) == context)
+			if (m_switchbar->GetButtonCaption(i).CmpNoCase(context) == 0)
 			{
 				return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
 			}
