@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SpanTag.cpp,v 1.5 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: SpanTag.cpp,v 1.6 2003-06-12 06:58:32 jason Exp $)
 
 #include "SpanTag.h"
 
@@ -206,12 +206,8 @@ bool SpanTagHandler::HandleTag(const wxHtmlTag& tag)
 		wxColour clr;
 		if (ParseColour(bgcolor,&clr))
 		{
-			if (cell == NULL)
-			{
-				cell = new SpanTagCell();
-				c->InsertCell(cell);
-			}
-			cell->SetBackgroundColour(clr);
+			cell = new SpanTagCell();
+			c->InsertCell(cell);
 		}
 	}
 
