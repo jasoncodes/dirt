@@ -89,28 +89,28 @@ ClientUIMDIFrame::~ClientUIMDIFrame()
 
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 {
-	AddLine(wxEmptyString, wxString() << "Got activate event: " << event.GetActive());
 	m_focused = event.GetActive();
 }
 
 bool ClientUIMDIFrame::IsFocused()
 {
-/*	wxWindow *wnd = ::wxGetActiveWindow();
-	while (wnd && wnd->GetParent())
-	{
-		wnd = wnd->GetParent();
-	}
-	return wnd == this;*/
-	return m_focused;
+	#ifdef __WXMSW__
+		HWND hWnd = (HWND)GetHandle();
+		return (::GetForegroundWindow() == hWnd);
+	#else
+		return m_focused;
+	#endif
 }
 
 void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 {
-	SetTitle(wxString() << IsFocused());
-	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
-	if (child)
+	if (IsFocused())
 	{
-		child->GetCanvas()->OnActivate();
+		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
+		if (child)
+		{
+			child->GetCanvas()->OnActivate();
+		}
 	}
 }
 
@@ -170,19 +170,13 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 			bAlert = true;
 		}
 
-		#ifdef __WXMSW__
-			HWND hWnd = (HWND)GetHandle();
-			if (::GetForegroundWindow() != hWnd)
-			{
-				::FlashWindow(hWnd, TRUE);
-				bAlert = true;
-			}
-		#else
-			if (!IsFocused())
-			{
-				bAlert = true;
-			}
-		#endif
+		if (!IsFocused())
+		{
+			#ifdef __WXMSW__
+				::FlashWindow((HWND)GetHandle(), TRUE);
+			#endif
+			bAlert = true;
+		}
 
 		if (bAlert)
 		{
