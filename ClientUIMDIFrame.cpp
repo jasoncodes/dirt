@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.75 2003-03-16 12:24:21 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.76 2003-03-18 06:36:39 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -33,6 +33,7 @@ enum
 	ID_TRAY,
 	ID_TRAYTIMER,
 	ID_RESTORE,
+	ID_CTRL_F,
 	ID_BINDING_F1,
 	ID_BINDING_F2,
 	ID_BINDING_F3,
@@ -57,6 +58,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_ICONIZE(ClientUIMDIFrame::OnIconize)
 	EVT_MENU(ID_RESTORE, ClientUIMDIFrame::OnRestore)
 	EVT_TIMER(ID_TRAYTIMER, ClientUIMDIFrame::OnTrayTimer)
+	EVT_MENU(ID_CTRL_F, ClientUIMDIFrame::OnCtrlF)
 	EVT_MENU_RANGE(ID_BINDING_F1, ID_BINDING_F12, ClientUIMDIFrame::OnBinding)
 END_EVENT_TABLE()
 
@@ -104,17 +106,19 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_client = new ClientDefault(this);
 
-	size_t num_accel = 12;
-	wxAcceleratorEntry *entries = new wxAcceleratorEntry[GetAcceleratorCount()+num_accel];
+	size_t num_bindings = 12;
+	size_t num_accel = 1;
+	wxAcceleratorEntry *entries = new wxAcceleratorEntry[GetAcceleratorCount()+num_bindings+num_accel];
+	entries[0].Set(wxACCEL_CTRL, 'F', ID_CTRL_F);
 	for (size_t i = 0; i < 12; ++i)
 	{
-		entries[i].Set(0, WXK_F1+i, ID_BINDING_F1+i);
+		entries[i+num_accel].Set(0, WXK_F1+i, ID_BINDING_F1+i);
 	}
-	for (size_t i = num_accel; i < GetAcceleratorCount()+num_accel; ++i)
+	for (size_t i = num_bindings; i < GetAcceleratorCount()+num_bindings; ++i)
 	{
-		entries[i] = GetAccelerators()[i-num_accel];
+		entries[i+num_accel] = GetAccelerators()[i-num_bindings];
 	}
-	wxAcceleratorTable accel(GetAcceleratorCount()+num_accel, entries);
+	wxAcceleratorTable accel(GetAcceleratorCount()+num_bindings+num_accel, entries);
 	SetAcceleratorTable(accel);
 	delete[] entries;
 
@@ -866,4 +870,15 @@ void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
 		}
 	}
 	event.Skip();
+}
+
+void ClientUIMDIFrame::OnCtrlF(wxCommandEvent &event)
+{
+	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
+	if (child)
+	{
+		ClientUIMDICanvas *canvas = (ClientUIMDICanvas*)child->GetCanvas();
+		LogControl *txtLog = canvas->GetLog();
+		txtLog->ShowFindDialog(true);
+	}
 }

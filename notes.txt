@@ -2,8 +2,6 @@
 
 * flickering when ctrl-tab
 
-* find text via ctrl-f
-
 * dcc send/recv dialog
 
 * only scroll to bottom if scrollpos was already at bottom (and/or no sel)?

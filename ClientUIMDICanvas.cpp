@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.40 2003-03-15 04:28:27 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.41 2003-03-18 06:36:38 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -155,6 +155,14 @@ void ClientUIMDICanvas::OnFocus(wxFocusEvent &event)
 void ClientUIMDICanvas::OnAttach()
 {
 	DoGotFocus();
+}
+
+void ClientUIMDICanvas::OnDetach()
+{
+	if (m_txtLog)
+	{
+		m_txtLog->ShowFindDialog(false);
+	}
 }
 
 void ClientUIMDICanvas::OnActivate()

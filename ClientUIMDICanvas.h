@@ -52,6 +52,7 @@ protected:
 	void OnPasswordEnter(wxCommandEvent &event);
 
 	virtual void OnAttach();
+	virtual void OnDetach();
 	virtual void OnActivate();
 	virtual void OnClose();
 

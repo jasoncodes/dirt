@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.29 2003-03-17 05:54:13 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.32 2003-03-18 06:41:07 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -19,6 +19,7 @@ RCS_ID($Id: LogControl.cpp,v 1.29 2003-03-17 05:54:13 jason Exp $)
 #include "LogControl.h"
 #include "SpanTag.h"
 #include "Modifiers.h"
+#include <wx/fdrepdlg.h>
 
 DECLARE_APP(DirtApp)
 
@@ -473,6 +474,11 @@ BEGIN_EVENT_TABLE(LogControl, wxHtmlWindow)
 	EVT_ERASE_BACKGROUND(LogControl::OnErase)
 	EVT_IDLE(LogControl::OnIdle)
 	EVT_MOUSE_EVENTS(LogControl::OnMouseEvent)
+	EVT_FIND(wxID_ANY, LogControl::OnFindDialog)
+	EVT_FIND_NEXT(wxID_ANY, LogControl::OnFindDialog)
+	EVT_FIND_REPLACE(wxID_ANY, LogControl::OnFindDialog)
+	EVT_FIND_REPLACE_ALL(wxID_ANY, LogControl::OnFindDialog)
+	EVT_FIND_CLOSE(wxID_ANY, LogControl::OnFindDialog)
 END_EVENT_TABLE()
 
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
@@ -494,6 +500,9 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 		s_bInitDone = true;
 
 	}
+
+	m_find_dlg = NULL;
+	m_find_show_sel = false;
 
 	m_tmpMouseMoved = FALSE;
 	m_cur_hand = NULL;
@@ -520,6 +529,7 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 
 LogControl::~LogControl()
 {
+	delete m_find_dlg;
 	delete m_cur_hand;
 	delete m_cur_arrow;
 }
@@ -725,6 +735,12 @@ void LogControl::OnDraw(wxDC& dcFront)
 			wxRect red_rect = GetCellRect(m_red_line);
 			dcBack.DrawLine(0, red_rect.y, GetClientSize().x, red_rect.y);
 			dcBack.SetPen(old_pen);
+		}
+
+		if (m_find_show_sel)
+		{
+			InitDCForHighlighting(dcBack);
+			HighlightCells(dcBack, m_find_pos1, m_find_pos2);
 		}
 
 		if (last_start_end_valid)
@@ -1199,6 +1215,11 @@ void LogControl::OnIdle(wxIdleEvent& event)
 	{
 		#ifdef __WXMSW__
 			m_cur_hand = new wxCursor(wxT("hand"));
+			if (!m_cur_hand->Ok())
+			{
+				delete m_cur_hand;
+				m_cur_hand = new wxCursor(wxCURSOR_HAND);
+			}
 		#else
 			m_cur_hand = new wxCursor(wxCURSOR_HAND);
 		#endif
@@ -1576,5 +1597,170 @@ void LogControl::ResetRedLine()
 	{
 		m_red_line = NULL;
 		Refresh();
+	}
+}
+
+void LogControl::ShowFindDialog(bool show)
+{
+
+	if (show)
+	{
+
+		if (!m_find_dlg)
+		{
+			m_find_data = wxFindReplaceData(wxFR_DOWN);
+			m_find_dlg = new wxFindReplaceDialog(this, &m_find_data, wxT("Find"), wxFR_NOUPDOWN|wxFR_NOWHOLEWORD);
+			m_find_pos1 = m_Cell;
+			m_find_pos2 = m_Cell;
+			m_find_show_sel = false;
+			Refresh();
+		}
+
+		m_find_dlg->Show(false);
+		m_find_dlg->Show(true);
+
+	}
+	else
+	{
+
+		if (m_find_dlg)
+		{
+			delete m_find_dlg;
+			m_find_dlg = NULL;
+			m_find_pos1 = m_Cell;
+			m_find_pos2 = m_Cell;
+			m_find_show_sel = false;
+			Refresh();
+		}
+
+	}
+
+}
+
+void LogControl::OnFindDialog(wxFindDialogEvent &event)
+{
+
+	wxEventType type = event.GetEventType();
+
+	if (type == wxEVT_COMMAND_FIND || type == wxEVT_COMMAND_FIND_NEXT)
+	{
+
+		int flags = event.GetFlags();
+
+		bool direction_down = ((flags & wxFR_DOWN) != 0);
+		bool whole_word = ((flags & wxFR_WHOLEWORD) != 0);
+		bool case_sensitive = ((flags & wxFR_MATCHCASE) != 0);
+		if (!direction_down || whole_word)
+		{
+			wxFAIL;
+		}
+
+		if (type == wxEVT_COMMAND_FIND)
+		{
+			m_find_pos1 = m_Cell;
+			m_find_pos2 = m_Cell;
+		}
+		else
+		{
+			m_find_pos2 = FindNext(m_find_pos2);
+			m_find_pos1 = m_find_pos2;
+		}
+
+		wxString to_find = event.GetFindString();
+		if (!case_sensitive)
+		{
+			to_find.MakeLower();
+		}
+		while (m_find_pos2)
+		{
+			wxString text = GetTextFromRange(m_find_pos1, m_find_pos2, false);
+			if (!case_sensitive)
+			{
+				text.MakeLower();
+			}
+			int index = text.Find(to_find);
+			if (index > -1)
+			{
+				while (m_find_pos1 != m_find_pos2)
+				{
+					wxHtmlCell *next = FindNext(m_find_pos1);
+					text = GetTextFromRange(next, m_find_pos2, false);
+					if (!case_sensitive)
+					{
+						text.MakeLower();
+					}
+					if (text.Find(to_find) == -1)
+					{
+						break;
+					}
+					m_find_pos1 = next;
+				}
+				break;
+			}
+			while (text.Length() > to_find.Length() && m_find_pos1 != m_find_pos2)
+			{
+				wxHtmlCell *next = FindNext(m_find_pos1);
+				text = GetTextFromRange(next, m_find_pos2, false);
+				if (text.Length() < to_find.Length())
+				{
+					break;
+				}
+				m_find_pos1 = next;
+			}
+			m_find_pos2 = FindNext(m_find_pos2);
+		}
+		if (m_find_pos2)
+		{
+			m_find_show_sel = true;
+			EnsureVisible(m_find_pos1);
+			Refresh();
+		}
+		else
+		{
+			m_find_pos1 = m_Cell;
+			m_find_pos2 = m_Cell;
+			m_find_show_sel = false;
+			Refresh();
+			wxMessageBox(
+				wxString::Format(wxT("No more matches for \"%s\" found."), event.GetFindString().c_str()),
+				wxT("Find"), wxOK | wxICON_INFORMATION, event.GetDialog());
+		}
+
+	}
+	else if (type == wxEVT_COMMAND_FIND_CLOSE)
+	{
+		m_find_dlg = NULL;
+		m_find_show_sel = false;
+		event.GetDialog()->Destroy();
+		Refresh();
+	}
+	else
+	{
+		wxFAIL_MSG(wxT("Unexpected event type in LogControl::OnFindDialog"));
+	}
+
+}
+
+void LogControl::EnsureVisible(wxHtmlCell *cell)
+{
+	int y = 0;
+	while (cell)
+	{
+		y += cell->GetPosY();
+		cell = cell->GetParent();
+	}
+	y += m_iYOffset;
+	y /= wxHTML_SCROLL_STEP;
+	int current_min_y;
+	GetViewStart(NULL, &current_min_y);
+	int current_max_y = current_min_y + (GetClientSize().y / wxHTML_SCROLL_STEP);
+	wxASSERT(current_min_y<current_max_y);
+	if (y < current_min_y)
+	{
+		Scroll(-1, y);
+	}
+	else if (y+1 > current_max_y)
+	{
+		Scroll(-1, y - (current_max_y - current_min_y) + 1);
 	}
 }

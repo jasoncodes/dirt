@@ -6,6 +6,7 @@
 #define LogControl_H_
 
 #include "wx/html/htmlwin.h"
+#include <wx/fdrepdlg.h>
 
 enum TextModifierMode
 {
@@ -27,6 +28,7 @@ public:
 	void ScrollToBottom();
 	void Clear();
 	void ResetRedLine();
+	void ShowFindDialog(bool show);
 
 	void AddHtmlLine(const wxString &line, bool split_long_words = false, bool red_line = false);
 	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true, bool red_line = false);
@@ -43,11 +45,13 @@ protected:
 	void OnErase(wxEraseEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnIdle(wxIdleEvent& event);
+	void OnFindDialog(wxFindDialogEvent &event);
 	
 	virtual void OnLinkClicked(const wxHtmlLinkInfo& link);
 
 	void CalculateOffset();
 	void ClearBlankArea(wxDC& dc);
+	void EnsureVisible(wxHtmlCell *cell);
 
 	wxPoint GetVirtualMousePosition();
 	wxRect GetCellRect(wxHtmlCell *cell);
@@ -83,6 +87,12 @@ protected:
 	bool last_start_end_valid;
 
 	wxHtmlCell *m_red_line;
+
+	wxFindReplaceDialog *m_find_dlg;
+	wxFindReplaceData m_find_data;
+	wxHtmlCell *m_find_pos1;
+	wxHtmlCell *m_find_pos2;
+	bool m_find_show_sel;
 
 private:
 	DECLARE_EVENT_TABLE()
