@@ -1,3 +1,11 @@
+* idle time shows as 0 on public list when no body has joined yet
+	change last active system to be a long in the main server
+	instead of relying on connection idle times
+
+* change TristateConfigPanel to extend RadioBoxPanel
+
+* preview sound button next to any sound browse buttons
+
 * proxy support for client
 
 * Mutex (win32 + unix)
@@ -57,6 +65,10 @@
 
 * other scriptable bindings: Dirt_AuthPrompt, Connect, Disconnect
 
+* split /lanlist into a UI and model interface and model implementation
+
+* add a server list model implementation for public list (dirt.pl)
+
 * Win32: fast incoming messages cause FlashWindow() not to work on at least WinXP
   Maybe restrict the time between FlashWindow() calls to say 1 second except if
   the window just got focused/unfocused (wxActivateEvent)
@@ -98,12 +110,15 @@
 
 * only scroll to bottom if scrollpos was already at or near bottom
   and no scroll in progress and no selection in progress.
+  also do red line if no scroll this time (maybe also a sound?)
 
 * scripting (/exec and /eval)
 
 * banning (wxIsWild(), wxMatchWild(), wxString::Matches())
 
 * hide /oper password when being typed
+
+* option to ignore colour/bold/etc
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
