@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.7 2003-05-02 02:04:27 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.8 2003-05-03 07:38:31 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -136,4 +136,24 @@ const FileTransfer& FileTransfers::GetTransferByIndex(int index)
 {
 	wxASSERT(index > -1 && index < GetTransferCount());
 	return m_transfers.Item(index);
+}
+
+bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	return false;
+}
+
+bool FileTransfers::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	return false;
+}
+
+bool FileTransfers::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	return false;
+}
+
+bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	return false;
 }

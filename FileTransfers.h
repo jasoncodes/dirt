@@ -5,6 +5,7 @@
 
 class Client;
 class FileTransfer;
+class ByteBuffer;
 
 WX_DECLARE_OBJARRAY(FileTransfer, FileTransferArray);
 
@@ -12,6 +13,7 @@ class FileTransfers : public wxEvtHandler
 {
 
 	friend class FileTransfer;
+	friend class Client;
 
 public:
 	FileTransfers(Client *client);
@@ -33,6 +35,12 @@ protected:
 
 protected:
 	int GetNewId();
+
+protected:
+	virtual bool OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual bool OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual bool OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual bool OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 
 protected:
 	Client *m_client;

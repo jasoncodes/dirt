@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.53 2003-05-01 01:18:15 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.54 2003-05-03 07:38:31 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1134,7 +1134,7 @@ bool Client::ProcessCTCPIn(const wxString &context, const wxString &nick, wxStri
 		CTCPReply(context, nick, type, data);
 		data = ByteBuffer();
 	}
-	return false;
+	return m_file_transfers->OnClientCTCPIn(context, nick, type, data);
 }
 
 bool Client::ProcessCTCPOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
@@ -1143,7 +1143,7 @@ bool Client::ProcessCTCPOut(const wxString &context, const wxString &nick, wxStr
 	{
 		data = ByteBuffer();
 	}
-	return false;
+	return m_file_transfers->OnClientCTCPOut(context, nick, type, data);
 }
 
 bool Client::ProcessCTCPReplyIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
@@ -1155,12 +1155,12 @@ bool Client::ProcessCTCPReplyIn(const wxString &context, const wxString &nick, w
 		long latency = (long)(GetMillisecondTicks() - num);
 		data = ByteBuffer(SecondsToMMSS(latency, true, true)) + ByteBuffer(1) + data;
 	}
-	return false;
+	return m_file_transfers->OnClientCTCPReplyIn(context, nick, type, data);
 }
 
 bool Client::ProcessCTCPReplyOut(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
 {
-	return false;
+	return m_file_transfers->OnClientCTCPReplyOut(context, nick, type, data);
 }
 
 size_t Client::GetContactCount() const
