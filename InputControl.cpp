@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.10 2003-03-05 12:05:55 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.11 2003-03-05 12:48:46 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -205,6 +205,7 @@ BEGIN_EVENT_TABLE(InputControl, wxTextCtrl)
 	EVT_KEY_DOWN(InputControl::OnKeyDown)
 	EVT_KEY_UP(InputControl::OnKeyUp)
 	EVT_CHAR(InputControl::OnChar)
+	EVT_IDLE(InputControl::OnIdle)
 END_EVENT_TABLE()
 
 InputControl::InputControl(
@@ -557,7 +558,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 				}
 			}
 
-			if (possibles.GetCount() == 1 && current_index == 0)
+			if (possibles.GetCount() == 1 && current_index == 0 && val == possibles.Item(0))
 			{
 				m_tab_completion_prefix = wxEmptyString;
 				wxBell();
@@ -601,13 +602,15 @@ void InputControl::OnChar(wxKeyEvent& event)
 	}
 }
 
+void InputControl::OnIdle(wxIdleEvent &event)
+{
+	m_ignore_change = false;
+	event.Skip();
+}
+
 void InputControl::OnChange(wxCommandEvent &event)
 {
-	if (m_ignore_change)
-	{
-		m_ignore_change = false;
-	}
-	else
+	if (!m_ignore_change)
 	{
 		m_tab_completion_prefix = wxEmptyString;
 	}

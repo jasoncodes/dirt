@@ -29,6 +29,7 @@ protected:
 	void OnKeyDown(wxKeyEvent& event);
 	void OnKeyUp(wxKeyEvent& event);
 	void OnChar(wxKeyEvent& event);
+	void OnIdle(wxIdleEvent &event);
 
 protected:
 	void AddToHistory(const wxString &line);

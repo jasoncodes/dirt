@@ -40,3 +40,5 @@
 * file transfers
 * /bind
 * /alias
+
+* segfault from dns code on gtk. only when lookup() isn't called
