@@ -8,11 +8,8 @@
 
 #include "Console.h"
 #include <stdio.h>
-#include "util.h"
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
-#include "Dirt.h"
 
+#include "Dirt.h"
 DECLARE_APP(DirtApp)
 
 enum

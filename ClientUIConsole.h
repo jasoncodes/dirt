@@ -8,14 +8,12 @@ class ClientUIConsole : public Console, public ClientEventHandler
 {
 
 public:
-
 	ClientUIConsole();
 	virtual ~ClientUIConsole();
 
 	virtual void Output(const wxString &line);
 
 protected:
-
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
 	virtual void OnClientWarning(const wxString &context, const wxString &text);
@@ -36,9 +34,6 @@ protected:
 
 protected:
 	Client *m_client;
-
-private:
-	DECLARE_EVENT_TABLE()
 
 };
 
