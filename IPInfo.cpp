@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.7 2003-06-21 10:42:18 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.8 2003-09-14 04:47:00 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -66,6 +66,7 @@ IPInfoEntry::IPInfoEntry()
 	#include <sys/ioctl.h>
 	#include <net/if_arp.h>
 	#include <arpa/inet.h>
+	#include <netinet/in.h>
 
 #else
 

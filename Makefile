@@ -25,7 +25,7 @@ else
 endif
 
 CC = g++
-CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS))
+CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS) -I`wx-config --prefix`/include)
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
