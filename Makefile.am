@@ -20,7 +20,7 @@ ifeq (,$(BASENAME))
 	BASENAME = $(shell wx-config --libs | tr ' ' '\n' | grep wx_)
 endif
 ifneq (,$(findstring wx_gtk2,$(BASENAME)))
-	GTK_EXTRAS = pkg-config --cflags gtk+-2.0
+	GTK_EXTRAS = `pkg-config --cflags gtk+-2.0`
 else
 	ifneq (,$(findstring wx_gtk,$(BASENAME)))
 		GTK_EXTRAS = `gtk-config --cflags`
@@ -28,7 +28,7 @@ else
 endif
 
 CC = g++
-CPPFLAGS = $(strip -O3 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS) -I`wx-config --prefix`/include)
+CPPFLAGS = $(strip -O1 `wx-config --cxxflags` $(KDE_CPPFLAGS) $(GTK_EXTRAS) -I`wx-config --prefix`/include) -DNDEBUG
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
@@ -70,5 +70,11 @@ Dirt: $(OBJECTS) crypto/libcryptopp.a
 crypto/libcryptopp.a:
 	@cd crypto && make
 
-package: dirt
-	strip Dirt && upx --best Dirt && tar zcf DirtGTK.tar.gz Dirt dirt dirtconsole
+package: all
+	strip Dirt && upx --best Dirt && make tar
+
+tar:
+	test -f DirtGTK.tar.gz && rm DirtGTK.tar.gz || true
+	tar cf DirtGTK.tar Dirt dirt dirtconsole
+	cd res && tar rf ../DirtGTK.tar dirt.xpm
+	gzip -9 DirtGTK.tar
