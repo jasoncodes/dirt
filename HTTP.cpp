@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.2 2003-03-03 14:00:30 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.3 2003-03-04 00:29:48 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -289,6 +289,12 @@ void HTTP::OnSocket(wxSocketEvent &event)
 			if (m_content_length > -1)
 			{
 				m_transfer_complete = (m_content_received == m_content_length);
+			}
+			else if (!m_chunked)
+			{
+				// cannot tell if complete or not as no content-length and
+				// no chunked encoding. will have to hope all went well.
+				m_transfer_complete = true;
 			}
 			if (m_handler)
 			{
