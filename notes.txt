@@ -49,6 +49,8 @@
 
 * nice about screen (wxHtmlWindow maybe?)
 
+* option to change block size for file transfers in client options (512 ... 8192)
+
 * /notice
 
 * /lock
