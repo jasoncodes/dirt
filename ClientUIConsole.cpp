@@ -27,8 +27,6 @@ static void Output(wxString &line)
 	puts(Timestamp() + LogControl::ConvertModifiersIntoHtml(line, true));
 }
 
-#include <io.h>
-
 class ReadThread : public wxThread
 {
 
@@ -71,7 +69,7 @@ public:
 
 					HANDLE handle = ::GetStdHandle(STD_INPUT_HANDLE);
 
-					switch (::WaitForSingleObject(handle, 100))
+					switch (::WaitForSingleObject(handle, 250))
 					{
 
 						case WAIT_OBJECT_0:
