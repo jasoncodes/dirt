@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.64 2003-06-19 07:14:36 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.65 2003-06-19 07:26:53 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -135,9 +135,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 		
 			case CRYPTSOCKET_LISTEN:
 			{
-				wxIPV4address addr;
-				m_sckListen->GetLocal(addr);
-				Information(wxT("Server started on ") + GetIPV4String(addr, true));
+				Information(wxString() << wxT("Server started on ") << m_sckListen->GetListenIP() << wxT(":") << (int)m_sckListen->GetListenPort());
 				m_event_handler->OnServerStateChange();
 				m_peak_users = 0;
 				m_start_tick = ::wxGetUTCTime();
@@ -544,10 +542,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 
 long ServerDefault::GetListenPort() const
 {
-	wxASSERT(m_sckListen);
-	wxIPV4address addr;
-	m_sckListen->GetLocal(addr);
-	return addr.Service();
+	return m_sckListen->GetListenPort();
 }
 
 wxLongLong_t ServerDefault::GetNextPublicListUpdateTick() const

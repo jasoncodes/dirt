@@ -158,6 +158,7 @@ public:
 	virtual void Listen(const wxString &host = wxEmptyString, wxUint16 port = 0);
 	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY, void *userdata = NULL);
 
+	virtual wxString GetListenIP() const; // returns empty string for all local interfaces
 	virtual wxUint16 GetListenPort() const;
 
 	virtual CryptSocketType GetType() const { return cstServer; }

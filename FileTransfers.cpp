@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.48 2003-06-19 07:14:36 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.49 2003-06-19 07:26:53 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -117,14 +117,33 @@ wxArrayString FileTransfers::GetMyIPs() const
 	return IPs;
 }
 
-void FileTransfers::AppendMyIPs(ByteBufferArray &data, wxUint16 port) const
+void FileTransfers::AppendMyIPs(ByteBufferArray &data, CryptSocketServer *sckServer) const
 {
-	wxArrayString IPs = GetMyIPs();
-	for (size_t i = 0; i < IPs.GetCount(); ++i)
+
+	if (sckServer && sckServer->GetListenPort())
 	{
-		data.Add(IPs[i]);
-		data.Add(wxString() << (int)port);
+
+		wxString IP = sckServer->GetListenIP();
+		wxUint16 port = sckServer->GetListenPort();
+
+		wxArrayString IPs;
+		if (IP.Length())
+		{
+			IPs.Add(IP);
+		}
+		else
+		{
+			IPs = GetMyIPs();
+		}
+
+		for (size_t i = 0; i < IPs.GetCount(); ++i)
+		{
+			data.Add(IPs[i]);
+			data.Add(wxString() << (int)port);
+		}
+
 	}
+
 }
 
 void FileTransfers::SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const
@@ -909,10 +928,7 @@ void FileTransfers::SendCTCPAccept(FileTransfer &t, CryptSocketServer *sckServer
 		data.Add(wxString() << t.remoteid);
 		data.Add(wxLongLong(t.filesent).ToString());
 		data.Add(ByteBuffer());
-		if (sckServer && sckServer->GetListenPort())
-		{
-			AppendMyIPs(data, sckServer->GetListenPort());
-		}
+		AppendMyIPs(data, sckServer);
 		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
 		t.m_accept_sent = true;
 	}
@@ -1025,7 +1041,7 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 						data.Add(wxLongLong(t->filesize).ToString());
 						data.Add(wxLongLong(t->transferid).ToString());
 						data.Add(ByteBuffer());
-						AppendMyIPs(data, sck->GetListenPort());
+						AppendMyIPs(data, sck);
 						m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
 						t->status = wxT("Waiting for accept...");
 						m_client->m_event_handler->OnClientTransferState(*t);

@@ -54,7 +54,7 @@ protected:
 	int FindTransferBySocket(CryptSocketBase *sck);
 	wxArrayString GetMyIPs() const;
 	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
-	void AppendMyIPs(ByteBufferArray &data, wxUint16 port) const;
+	void AppendMyIPs(ByteBufferArray &data, CryptSocketServer *sckServer) const;
 	void SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const;
 	void SendCTCPAccept(FileTransfer &t, CryptSocketServer *sckServer);
 

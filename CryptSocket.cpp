@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.38 2003-06-19 07:14:36 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.39 2003-06-19 07:26:53 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -795,6 +795,21 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 		sck->Destroy();
 		return NULL;
 	}
+}
+
+wxString CryptSocketServer::GetListenIP() const
+{
+	wxIPV4address addr;
+	wxString IP;
+	if (Ok() && GetLocal(addr))
+	{
+		IP = GetIPV4String(addr, false);
+		if (IP == wxT("*"))
+		{
+			IP.Empty();
+		}
+	}
+	return IP;
 }
 
 wxUint16 CryptSocketServer::GetListenPort() const
