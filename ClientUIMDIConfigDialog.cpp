@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.1 2003-05-19 13:27:11 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.2 2003-05-20 05:37:09 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -14,7 +14,8 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.1 2003-05-19 13:27:11 jason Exp $)
 
 enum
 {
-	ID_SOUND = 1
+	ID_LOG = 1,
+	ID_SOUND
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIConfigDialog, wxDialog)
@@ -32,6 +33,8 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 
+	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
+	
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"));
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
@@ -43,6 +46,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 			wxBoxSizer *szrLeftTristate = new wxBoxSizer(wxHORIZONTAL);
 			{
 
+				szrLeftTristate->Add(m_pnlLog, 1, wxRIGHT, 8);
 				szrLeftTristate->Add(m_pnlSound, 1, 0, 0);
 
 			}
@@ -93,6 +97,13 @@ void ClientUIMDIConfigDialog::OnOK(wxCommandEvent &event)
 
 void ClientUIMDIConfigDialog::LoadSettings()
 {
+
+	m_pnlLog->SetMode(m_config->GetLogDirType());
+	if (m_config->GetLogDirType() == Config::tsmCustom)
+	{
+		m_pnlLog->SetPath(m_config->GetActualLogDir());
+	}
+
 	m_pnlSound->SetMode(m_config->GetSoundType());
 	if (m_config->GetSoundType() == Config::tsmCustom)
 	{
@@ -106,16 +117,40 @@ void ClientUIMDIConfigDialog::LoadSettings()
 			m_pnlSound->SetMode(Config::tsmDefault);
 		}
 	#endif
+
 }
 
 bool ClientUIMDIConfigDialog::SaveSettings()
 {
+	
 	bool success = true;
+	
+	bool bLogChanged = (m_config->GetLogDirType() != m_pnlLog->GetMode());
+	if (!bLogChanged && m_config->GetLogDirType() == Config::tsmCustom)
+	{
+		bLogChanged = m_pnlLog->GetPath() != m_config->GetActualLogDir();
+	}
+	if (bLogChanged)
+	{
+		success &= m_config->SetLogDir(m_pnlLog->GetMode(), m_pnlLog->GetPath());
+		if (success)
+		{
+			((ClientUIMDIFrame*)GetParent())->InitLogs();
+		}
+		else
+		{
+			wxMessageBox(wxT("Error setting log directory"), GetTitle(), wxOK|wxICON_ERROR, this);
+		}
+	}
+	
 	success &= m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath());
 	if (!success)
 	{
 		wxMessageBox(wxT("Error setting notification sound"), GetTitle(), wxOK|wxICON_ERROR, this);
 	}
+	
 	success &= m_config->Flush();
+
 	return success;
+
 }
