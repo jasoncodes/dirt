@@ -54,22 +54,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	SetMenuBar(mnu);
 
-	#ifdef __WXMSW__
-		
-		RECT WorkArea;
-		::SystemParametersInfo(SPI_GETWORKAREA, 0, &WorkArea, 0);
-		RECT DefaultPos;
-		DefaultPos.bottom = WorkArea.bottom;
-		DefaultPos.left = WorkArea.left;
-		DefaultPos.right = WorkArea.right;
-		DefaultPos.top = DefaultPos.bottom - 326;//(WorkArea.bottom-WorkArea.top)/2.5;
-		SetSize(
-			DefaultPos.left,
-			DefaultPos.top,
-			DefaultPos.right - DefaultPos.left,
-			DefaultPos.bottom - DefaultPos.top);
-
-	#endif
+	ResetWindowPos();
 
 	Show();
 
@@ -88,6 +73,34 @@ ClientUIMDIFrame::~ClientUIMDIFrame()
 {
 	delete tmrFocus;
 	delete m_client;
+}
+
+bool ClientUIMDIFrame::ResetWindowPos()
+{
+
+	#ifdef __WXMSW__
+		
+		RECT WorkArea;
+		::SystemParametersInfo(SPI_GETWORKAREA, 0, &WorkArea, 0);
+		RECT DefaultPos;
+		DefaultPos.bottom = WorkArea.bottom;
+		DefaultPos.left = WorkArea.left;
+		DefaultPos.right = WorkArea.right;
+		DefaultPos.top = DefaultPos.bottom - 326;//(WorkArea.bottom-WorkArea.top)/2.5;
+		SetSize(
+			DefaultPos.left,
+			DefaultPos.top,
+			DefaultPos.right - DefaultPos.left,
+			DefaultPos.bottom - DefaultPos.top);
+
+		return true;
+
+	#else
+
+		return false;
+
+	#endif
+
 }
 
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
@@ -259,9 +272,17 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		cmd = "MSG";
 		return false;
 	}
+	else if (cmd == "RESETWINDOWPOS")
+	{
+		if (!ResetWindowPos())
+		{
+			OnClientWarning(context, "/resetwindowpos: Unavailable on this platform");
+		}
+		return true;
+	}
 	else if (cmd == "HELP")
 	{
-		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST TEST2 QUERY");
+		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST TEST2 QUERY RESETWINDOWPOS");
 		return false;
 	}
 	else

@@ -20,6 +20,8 @@ public:
 
 	bool IsFocused();
 
+	bool ResetWindowPos();
+
 protected:
 	void OnFileExit(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
