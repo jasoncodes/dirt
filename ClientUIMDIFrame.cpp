@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.64 2003-03-12 05:39:21 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.65 2003-03-12 06:37:06 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -23,6 +23,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.64 2003-03-12 05:39:21 jason Exp $)
 DECLARE_APP(DirtApp)
 
 #include "res/dirt.xpm"
+#include "res/blank.xpm"
 
 enum
 {
@@ -30,6 +31,8 @@ enum
 	ID_HELP_ABOUT,
 	ID_FOCUSTIMER,
 	ID_TRAY,
+	ID_TRAYTIMER,
+	ID_RESTORE
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
@@ -38,7 +41,10 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_TIMER(ID_FOCUSTIMER, ClientUIMDIFrame::OnFocusTimer)
 	EVT_ACTIVATE(ClientUIMDIFrame::OnActivate)
 	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ClientUIMDIFrame::OnTrayDblClick)
+	EVT_TRAYICON_RIGHT_UP(ID_TRAY, ClientUIMDIFrame::OnTrayRightClick)
 	EVT_ICONIZE(ClientUIMDIFrame::OnIconize)
+	EVT_MENU(ID_RESTORE, ClientUIMDIFrame::OnRestore)
+	EVT_TIMER(ID_TRAYTIMER, ClientUIMDIFrame::OnTrayTimer)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -81,14 +87,17 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_tmrFocus = new wxTimer(this, ID_FOCUSTIMER);
 	m_tmrFocus->Start(100);
 
+	m_tmrTray = new wxTimer(this, ID_TRAYTIMER);
+
 	m_client = new ClientDefault(this);
 
 }
 
 ClientUIMDIFrame::~ClientUIMDIFrame()
 {
-	delete m_tray;
 	delete m_tmrFocus;
+	delete m_tmrTray;
+	delete m_tray;
 	delete m_client;
 }
 
@@ -190,8 +199,48 @@ void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &event)
 {
 	ForceForegroundWindow(this);
+	m_tmrTray->Stop();
 	delete m_tray;
 	m_tray = NULL;
+}
+
+void ClientUIMDIFrame::OnRestore(wxCommandEvent &event)
+{
+	ForceForegroundWindow(this);
+	m_tmrTray->Stop();
+	delete m_tray;
+	m_tray = NULL;
+}
+
+void ClientUIMDIFrame::OnTrayTimer(wxTimerEvent &event)
+{
+	if (m_tray && m_tray->Ok())
+	{
+		m_tray_flash = !m_tray_flash;
+		if (m_tray_flash)
+		{
+			m_tray->SetIcon(blank_xpm);
+		}
+		else
+		{
+			m_tray->SetIcon(dirt_xpm);
+		}
+	}
+	else
+	{
+		m_tmrTray->Stop();
+	}
+}
+void ClientUIMDIFrame::OnTrayRightClick(wxMouseEvent &event)
+{
+	if (m_tray && m_tray->Ok())
+	{
+		wxMenu mnu;
+		mnu.Append(ID_RESTORE, wxT("&Restore"));
+		mnu.AppendSeparator();
+		mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+		m_tray->PopupMenu(&mnu, event.GetPosition());
+	}
 }
 
 void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
@@ -199,6 +248,8 @@ void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
 	if (event.Iconized() && !m_tray && wxGetApp().IsControlDown())
 	{
 		m_tray = new TrayIcon;
+		m_tray_flash = false;
+		m_tray_auto_restore = wxGetApp().IsShiftDown();
 		if (m_tray->Ok())
 		{
 			m_tray->SetEventHandler(this, ID_TRAY);
@@ -309,6 +360,15 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 				m_flash = 8;
 				UpdateCaption();
 			#endif
+			if (m_tray && m_tray_auto_restore)
+			{
+				wxMouseEvent event;
+				OnTrayDblClick(event);
+			}
+			else if (m_tray && !m_tmrTray->IsRunning())
+			{
+				m_tmrTray->Start(250);
+			}
 		}
 
 	}

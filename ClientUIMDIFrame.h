@@ -30,7 +30,10 @@ protected:
 	void OnFocusTimer(wxTimerEvent &event);
 	void OnActivate(wxActivateEvent &event);
 	void OnTrayDblClick(wxMouseEvent &event);
+	void OnTrayRightClick(wxMouseEvent &event);
+	void OnRestore(wxCommandEvent &event);
 	void OnIconize(wxIconizeEvent &event);
+	void OnTrayTimer(wxTimerEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
@@ -65,6 +68,9 @@ protected:
 	int m_flash;
 	TrayIcon *m_tray;
 	wxString m_title;
+	wxTimer *m_tmrTray;
+	bool m_tray_flash;
+	bool m_tray_auto_restore;
 
 	ClientUIMDICanvas* GetContext(const wxString &context, bool create_if_not_exist = true, bool on_not_exist_return_null = false);
 	ClientUIMDITransferPanel* GetContext(const long transferid);
