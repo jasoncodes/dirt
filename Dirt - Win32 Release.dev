@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -Wall -fexceptions -DNDEBUG -DWIN32 -D_WINDOWS -DWINV
 Includes=
 Linker=-lwxmsw25 -lwxregex -lwxpng -lwxjpeg -lwxzlib -lwxtiff -lstdc++ -lgcc -lodbc32 -lwsock32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -lodbc32 -ladvapi32 -lodbc32 -lwsock32 -lopengl32 -lglu32 -lole32 -loleaut32 -luuid -lcryptlib -liphlpapi_@@_
 Libs=crypto\Release\;$(WXWIN)\lib\gcc_msw
-UnitCount=107
+UnitCount=109
 Folders=
 ObjFiles=
 PrivateResource=Dirt_-_Win32_Release_private.rc
@@ -1107,6 +1107,26 @@ BuildCmd=
 
 [Unit107]
 FileName=ClientUIMDIPasswordManagerDialog.h
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit108]
+FileName=Mutex.cpp
+CompileCpp=1
+Folder=Dirt
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit109]
+FileName=Mutex.h
 CompileCpp=1
 Folder=Dirt
 Compile=1

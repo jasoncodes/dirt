@@ -489,6 +489,14 @@ SOURCE=.\Modifiers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Mutex.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Mutex.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NickListControl.cpp
 # End Source File
 # Begin Source File

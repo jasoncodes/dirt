@@ -20,18 +20,6 @@
   only say something like "*** Connection restored" after the "*** Connection lost"
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
-* Mutex (win32 + unix)
-	use same OS API as wxSingleInstanceChecker
-	make sure recursive safe (int m_depth;)
-	wxCriticalSection to protect m_depth;
-	assert on unlocking an unlocked mutex
-	assert on locked mutex during destruction
-	use same class layout as TrayIcon
-	void Lock();
-	void Unlock();
-	bool IsLocked() const;
-	size_t GetLockDepth() const;
-
 * multiple instances using one config file will cause data loss if both write
 	* make ConfigFile extend wxConfigBase and forward to internal wx
 	* the whole of any forwarding method should have the mutex locked
