@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.75 2003-08-05 05:05:57 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.76 2003-08-08 18:48:03 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -26,7 +26,7 @@ RCS_ID($Id: util.cpp,v 1.75 2003-08-05 05:05:57 jason Exp $)
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(Uint16Array)
 
-const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
+const wxString PUBLIC_LIST_URL = wxT("http://dirt.gslabs.com.au/cgi-bin/dirt.pl");
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -433,7 +433,7 @@ void ShowAbout()
 		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
 		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
 		<< wxT("\n")
-		<< wxT("http://dirtchat.sourceforge.net/"),
+		<< wxT("http://dirt.gslabs.com.au/"),
 		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
 }
 
