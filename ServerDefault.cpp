@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.58 2003-05-13 06:11:43 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.59 2003-05-30 05:55:34 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -101,7 +101,8 @@ void ServerDefault::Start()
 		Information(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
 		m_peak_users = 0;
-		m_start_tick = GetMillisecondTicks();
+		m_start_tick = ::wxGetUTCTime();
+		m_last_active = m_start_tick;
 		m_ip_list.Empty();
 		m_tmrPing->Start(ping_timer_interval);
 		m_last_failed = false;
@@ -167,6 +168,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_CONNECTION:
 				{
+					m_last_active = ::wxGetUTCTime();
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					conn->m_remotehost = ::GetIPV4String(addr, false);
@@ -206,6 +208,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_LOST:
 				{
+					m_last_active = ::wxGetUTCTime();
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_connections.Remove(conn);
@@ -493,6 +496,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 		}
 		post_data[wxT("auth")] = auth;
 	}
+	long now = ::wxGetUTCTime();
 	wxString colon_port;
 	colon_port << wxT(':') << m_config.GetListenPort();
 	post_data[wxT("iplist")] = JoinArray(GetIPAddresses(), wxT(' '), wxEmptyString, colon_port);
@@ -501,8 +505,8 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
 	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
 	post_data[wxT("peakusers")] = wxString() << m_peak_users;
-	post_data[wxT("uptime")] = wxString() << (long)((GetMillisecondTicks() - m_start_tick) / 1000);
-	post_data[wxT("idletime")] = wxString() << GetLowestIdleTime();
+	post_data[wxT("uptime")] = wxString() << (now - m_start_tick);
+	post_data[wxT("idletime")] = wxString() << (now - m_last_active);
 	post_data[wxT("hostname")] = m_config.GetHostname().Length() ? (m_config.GetHostname() + colon_port) : wxString();
 	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config.GetPublicListComment();

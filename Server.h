@@ -46,7 +46,7 @@ public:
 	virtual bool IsAway() const { return m_isaway; }
 	virtual long GetAwayTime() const { return m_awaytime; }
 	virtual ByteBuffer GetAwayMessage() const { return m_awaymessage; }
-	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }
+	virtual long GetIdleTime() const { return wxGetUTCTime() - m_last_active; }
 	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : wxT("N/A"); }
 	virtual time_t GetLatency() const { return m_latency; }
 	virtual wxString GetLatencyString() const { return GetLatency() > -1 ? AddCommas((wxLongLong_t)GetLatency()) + wxT(" ms") : wxT("N/A"); }
@@ -63,7 +63,6 @@ public:
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual void SendData(const ByteBuffer &data) = 0;
-	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }
 
 protected:
 	wxString m_nickname;
@@ -74,7 +73,7 @@ protected:
 	bool m_isaway;
 	long m_awaytime;
 	ByteBuffer m_awaymessage;
-	long m_lastactive;
+	long m_last_active;
 	time_t m_latency;
 	wxString m_useragent;
 	const wxDateTime m_jointime;
@@ -172,7 +171,6 @@ public:
 	virtual wxLongLong_t GetNextPublicListUpdateTick() const = 0;
 	virtual size_t GetUserCount() const;
 	virtual size_t GetAwayCount() const;
-	virtual long GetLowestIdleTime() const;
 	virtual time_t GetAverageLatency() const;
 	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
 	virtual wxArrayString GetSupportedCommands() const;
@@ -191,6 +189,7 @@ protected:
 	ServerConfig m_config;
 	static const wxString s_server_nickname;
 	size_t m_peak_users;
+	long m_last_active;
 	wxArrayString m_ip_list;
 	#if wxUSE_WAVE
 		wxWave m_wave;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.52 2003-05-23 13:18:55 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.53 2003-05-30 05:55:34 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -27,7 +27,7 @@ ServerConnection::ServerConnection()
 	m_useragent = wxEmptyString;
 	m_authenticated = false;
 	m_admin = false;
-	ResetIdleTime();
+	m_last_active = ::wxGetUTCTime();
 }
 
 ServerConnection::~ServerConnection()
@@ -294,6 +294,7 @@ Server::Server(ServerEventHandler *event_handler)
 	InitLog();
 	m_connections.Alloc(10);
 	m_peak_users = 0;
+	m_last_active = ::wxGetUTCTime();
 }
 
 Server::~Server()
@@ -528,20 +529,6 @@ size_t Server::GetAwayCount() const
 	return count;
 }
 
-long Server::GetLowestIdleTime() const
-{
-	long lowest_idle = 0;
-	for (size_t i = 0; i < GetConnectionCount(); ++i)
-	{
-		long idle_time = GetConnection(i)->GetIdleTime();
-		if (i == 0 || lowest_idle > idle_time)
-		{
-			lowest_idle = idle_time;
-		}
-	}
-	return lowest_idle;
-}
-
 time_t Server::GetAverageLatency() const
 {
 
@@ -671,7 +658,8 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 	if (cmd != wxT("PING") && cmd != wxT("PONG") && cmd != wxT("CTCPREPLY"))
 	{
-		conn->ResetIdleTime();
+		m_last_active = ::wxGetUTCTime();
+		conn->m_last_active = m_last_active;
 	}
 
 	if (ProcessClientInputExtra(true, true, conn, context, cmd, data))

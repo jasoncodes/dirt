@@ -1,7 +1,3 @@
-* idle time shows as 0 on public list when no body has joined yet
-	change last active system to be a long in the main server
-	instead of relying on connection idle times
-
 * change TristateConfigPanel to extend RadioBoxPanel
 
 * preview sound button next to any sound browse buttons

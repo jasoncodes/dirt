@@ -76,7 +76,7 @@ protected:
 	bool m_list_updating;
 	wxString m_http_data;
 	bool m_list_connect_ok;
-	wxLongLong_t m_start_tick;
+	long m_start_tick;
 	bool m_last_failed;
 	bool m_show_http_result;
 	wxString m_last_server_name;
