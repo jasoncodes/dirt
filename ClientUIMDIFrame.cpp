@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.68 2003-03-13 01:17:18 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.69 2003-03-13 01:19:57 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -527,7 +527,7 @@ void ClientUIMDIFrame::UpdateCaption()
 			}
 			if (m_client->GetLatency() >= 0)
 			{
-				title << wxT(" (") << AddCommas(m_client->GetLatency()) << wxT(" ms lag)");
+				title << wxT(" (") << AddCommas((off_t)m_client->GetLatency()) << wxT(" ms lag)");
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.12 2003-03-13 01:17:19 jason Exp $)
 
 #include "SwitchBarParent.h"
 #include "SwitchBarChild.h"
@@ -77,14 +77,14 @@ SwitchBarParent::SwitchBarParent(
 	mnuWindow->AppendSeparator();
 	num_window_menus = 0;
 
-	wxAcceleratorEntry entries[5];
-	entries[0].Set(wxACCEL_CTRL, WXK_TAB, ID_WINDOW_NEXT);
-	entries[1].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_TAB, ID_WINDOW_PREV);
-	entries[2].Set(wxACCEL_CTRL, WXK_F6, ID_WINDOW_NEXT);
-	entries[3].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_F6, ID_WINDOW_PREV);
-	entries[4].Set(0, WXK_ESCAPE, ID_WINDOW_MINIMIZE);
-	wxAcceleratorTable accel(5, entries);
-	SetAcceleratorTable(accel);
+	m_accelerator_count = 5;
+	m_accelerators = new wxAcceleratorEntry[5];
+	m_accelerators[0].Set(wxACCEL_CTRL, WXK_TAB, ID_WINDOW_NEXT);
+	m_accelerators[1].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_TAB, ID_WINDOW_PREV);
+	m_accelerators[2].Set(wxACCEL_CTRL, WXK_F6, ID_WINDOW_NEXT);
+	m_accelerators[3].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_F6, ID_WINDOW_PREV);
+	m_accelerators[4].Set(0, WXK_ESCAPE, ID_WINDOW_MINIMIZE);
+	SetAcceleratorTable(wxAcceleratorTable(m_accelerator_count, m_accelerators));
 
 }
 
@@ -92,6 +92,7 @@ SwitchBarParent::~SwitchBarParent()
 {
 	delete tmrUpdateWindowMenu;
 	tmrUpdateWindowMenu = NULL;
+	delete[] m_accelerators;
 }
 
 void SwitchBarParent::OnClose(wxCloseEvent& event)

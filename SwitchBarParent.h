@@ -50,6 +50,8 @@ protected:
 	void DoUpdateWindowMenu();
 	void UpdateCheckMenuItem(int id, const wxString &label, bool enabled, bool checked);
 	SwitchBarCanvas *GetActiveCanvas();
+	size_t GetAcceleratorCount() const { return m_accelerator_count; }
+	wxAcceleratorEntry *GetAccelerators() const { return m_accelerators; }
 
 	virtual SwitchBarChild* OnCreateNewChild(wxPoint pos, wxSize size, bool bMaximized, SwitchBarCanvas *canvas);
 
@@ -67,6 +69,8 @@ protected:
 	int num_window_menus;
 	int switchbar_popup_button_index;
 	SwitchBarCanvas *switchbar_popup_canvas;
+	wxAcceleratorEntry *m_accelerators;
+	size_t m_accelerator_count;
 
 };
 

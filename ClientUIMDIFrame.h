@@ -34,6 +34,7 @@ protected:
 	void OnRestore(wxCommandEvent &event);
 	void OnIconize(wxIconizeEvent &event);
 	void OnTrayTimer(wxTimerEvent &event);
+	void OnBinding(wxCommandEvent &event);
 
 	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params);
 	virtual void OnClientDebug(const wxString &context, const wxString &text);
