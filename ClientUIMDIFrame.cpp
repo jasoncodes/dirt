@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.124 2003-07-06 14:35:07 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.125 2003-07-06 22:57:55 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -415,10 +415,10 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 		bAlert = true;
 	}
 
-	if (!IsFocused() && config.GetTaskbarNotification())
+	if (!IsFocused())
 	{
 		bAlert = true;
-		bFlashWindow = true;
+		bFlashWindow = config.GetTaskbarNotification();
 	}
 
 	wxString text = GetShortTimestamp() + line;
