@@ -1,17 +1,4 @@
-* cvs diff -bu2 src/common/strconv.cpp > utf8fix.diff
-
 * proxy support for client
-	(*) None ( ) SOCKS 4 ( ) SOCKS 5 ( ) HTTP CONNECT
-	hostname port
-	username password (enabled for SOCKS 5 and HTTP CONNECT)
-	Connection Types
-		[ ] Chat [ ] DCC Connect [ ] DCC Listen (dcc modes only enabled for SOCKS)
-	Destination Networks
-		( ) Any ( ) Use only for ( ) Don't use for
-		Network Address and Subnet Mask (dot separated IPv4 addresses)
-	Destination Ports
-		( ) Any (*) Use only for ( ) Don't use for
-		list of ports and port ranges (comma separated, dash for ranges)
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker
@@ -97,6 +84,10 @@
 			directory with browse button
 
 * add kde extension for /resetwindowpos
+
+* speed limiting on file transfers
+
+* delete file after sent, delete file
 
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)

@@ -489,6 +489,14 @@ SOURCE=.\NickListControl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\RadioBoxPanel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RadioBoxPanel.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RCS.cpp
 # End Source File
 # Begin Source File
@@ -550,6 +558,14 @@ SOURCE=.\Splash.cpp
 # Begin Source File
 
 SOURCE=.\Splash.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StaticCheckBoxSizer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StaticCheckBoxSizer.h
 # End Source File
 # Begin Source File
 
