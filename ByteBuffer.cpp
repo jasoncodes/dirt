@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.16 2003-11-19 18:30:39 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.17 2003-11-20 06:40:08 jason Exp $)
 
 #include "ByteBuffer.h"
 #include "util.h"
@@ -84,9 +84,14 @@ ByteBuffer::ByteBuffer(const wxString &str)
 		}
 		if (!bytes_unicode)
 		{
-			fprintf(stderr, "%s\n", "Conversion of a string failed");
-			// todo: implement quick filter that keeps only ASCII7 characters and replaces rest with '?'
-			abort();
+			buff_unicode = wxWCharBuffer(str.Length()+1);
+			wchar_t *buff = buff_unicode.data();
+			for (size_t i = 0; i < str.Length(); ++i)
+			{
+				buff[i] = (((unsigned char)str[i]) < 0x80) ? str[i] : '?';
+			}
+			buff[str.Length()] = 0;
+			bytes_unicode = buff_unicode.data();
 		}
 	#endif
 
@@ -101,7 +106,6 @@ ByteBuffer::ByteBuffer(const wxString &str)
 	memcpy(m_data->buffer, buf.data(), m_data->length);
 	m_data->refcount = 1;
 	m_data->locks = 0;
-
 }
 
 ByteBuffer::~ByteBuffer()
