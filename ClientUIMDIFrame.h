@@ -63,6 +63,7 @@ protected:
 	ClientUIMDITransferPanel* GetContext(const long transferid);
 	void AddLine(const wxString &context, const wxString &line, const wxColour &line_colour = *wxBLACK, bool create_if_not_exist = true, bool suppress_alert = false, bool convert_urls = true);
 	void UpdateCaption();
+	void NickPrompt(const wxString &nick);
 
 private:
 	DECLARE_EVENT_TABLE()

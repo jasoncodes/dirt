@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.58 2003-02-27 08:00:10 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.59 2003-02-27 08:17:55 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -340,6 +340,14 @@ void ClientUIMDIFrame::OnClientWarning(const wxString &context, const wxString &
 void ClientUIMDIFrame::OnClientError(const wxString &context, const wxString &type, const wxString &text)
 {
 	AddLine(context, wxString() << wxT("*** Error ") << type << wxT(": ") << text, *wxRED);
+	if (type == wxT("NICK") && context == wxEmptyString)
+	{
+		HeadTail ht = SplitHeadTail(text, ": ");
+		if (ht.tail.Length())
+		{
+			NickPrompt(ht.tail);
+		}
+	}
 }
 	
 void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxString &text)
@@ -388,6 +396,14 @@ void ClientUIMDIFrame::UpdateCaption()
 	SetTitle(title);
 }
 
+void ClientUIMDIFrame::NickPrompt(const wxString &nick)
+{
+	InputControl *txtInput = GetContext(wxEmptyString)->GetInput();
+	txtInput->SetValue(wxT("/nick ") + nick);
+	txtInput->SetInsertionPoint(6);
+	txtInput->SetSelection(6, txtInput->GetValue().Length());
+}
+
 void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
 {
 	OnClientInformation(wxEmptyString, text);
@@ -396,15 +412,12 @@ void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
 
 void ClientUIMDIFrame::OnClientAuthDone(const wxString &text)
 {
-	if (GetContext(wxEmptyString)->GetPasswordMode())
-	{
-		GetContext(wxEmptyString)->SetPasswordMode(false);
-	}
+	GetContext(wxEmptyString)->SetPasswordMode(false);
 	if (text.Length())
 	{
 		OnClientInformation(wxEmptyString, text);
 	}
-	m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+	NickPrompt(m_client->GetDefaultNick());
 }
 
 void ClientUIMDIFrame::OnClientAuthBad(const wxString &text)

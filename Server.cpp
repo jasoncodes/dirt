@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.23 2003-02-27 05:20:44 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.24 2003-02-27 08:17:55 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -587,7 +587,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			wxString new_nick = data;
 			if (!IsValidNickname(new_nick))
 			{
-				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxString(wxT("Invalid nickname"))));
+				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxT("Invalid nickname: ") + new_nick));
 			}
 			else if (conn->m_nickname != new_nick)
 			{

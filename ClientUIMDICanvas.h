@@ -32,6 +32,7 @@ public:
 
 	LogControl* GetLog() { return m_txtLog; }
 	NickListControl* GetNickList() { return m_lstNickList; }
+	InputControl* GetInput() { return m_txtInput; }
 	ClientUIMDITransferPanel* GetTransferPanel() { return m_pnlTransfer; }
 	Client* GetClient();
 	bool GetPasswordMode() const;
