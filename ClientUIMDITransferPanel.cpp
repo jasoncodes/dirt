@@ -80,13 +80,18 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 	
 	wxSize size = GetSize();
 	int gauge_height = m_gauge->GetSize().y;
+	int status_height = m_lblStatus->GetSize().y;
 
 	m_pnlLeft->Move(8, m_lblType->GetRect().GetBottom());
 	m_pnlRight->Move(m_pnlLeft->GetRect().GetRight() + 8, m_pnlLeft->GetRect().GetTop());
 	m_pnlRight->SetSize( size.x, -1 );
 	
-	m_lblStatus->Move(8, size.y - gauge_height - 16 - m_lblStatus->GetSize().y);
+	int gauge_y = size.y - gauge_height - 8;
+	int min_gauge_y = m_pnlLeft->GetRect().GetBottom() + 16 + status_height;
+	gauge_y = wxMax(gauge_y, min_gauge_y);
 
-	m_gauge->SetSize(8, size.y - gauge_height - 8, size.x - 16, gauge_height);
+	m_lblStatus->Move(8, gauge_y - 8 - status_height);
+
+	m_gauge->SetSize(8, gauge_y, size.x - 16, gauge_height);
 
 }
