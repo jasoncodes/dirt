@@ -59,7 +59,7 @@ protected:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick);
-	virtual void OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff);
+	virtual void OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff, bool already_away, long last_away_time, const wxString &last_msg);
 	virtual void OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff);
 	virtual void OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details);
 	virtual void OnClientTransferNew(const FileTransfer &transfer);

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.147 2004-05-21 11:46:57 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.148 2004-05-22 17:08:48 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -430,16 +430,26 @@ void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
 	}
 }
 
-ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist, bool on_not_exist_return_null)
+ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist, bool on_not_exist_return_null, bool case_sensitive)
 {
 	wxASSERT(m_switchbar->GetButtonCount() >= 1);
 	if (context.Length() > 0)
 	{
 		for (int i = 1; i < m_switchbar->GetButtonCount(); ++i)
 		{
-			if (m_switchbar->GetButtonCaption(i).CmpNoCase(context) == 0)
+			if (case_sensitive)
 			{
-				return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+				if (m_switchbar->GetButtonCaption(i).Cmp(context) == 0)
+				{
+					return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+				}
+			}
+			else
+			{
+				if (m_switchbar->GetButtonCaption(i).CmpNoCase(context) == 0)
+				{
+					return (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+				}
 			}
 		}
 	}
@@ -1316,8 +1326,8 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 	m_nicklist.Remove(old_nick);
 	m_nicklist.Add(new_nick);
 
-	ClientUIMDICanvas *old_canvas = GetContext(old_nick, false, true);
-	ClientUIMDICanvas *new_canvas = GetContext(new_nick, false, true);
+	ClientUIMDICanvas *old_canvas = GetContext(old_nick, false, true, true);
+	ClientUIMDICanvas *new_canvas = GetContext(new_nick, false, true, true);
 
 	if (old_canvas && new_canvas)
 	{
@@ -1333,7 +1343,7 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 }
 
-void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
+void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff, bool already_away, long last_away_time, const wxString &last_msg)
 {
 	bool bIsSelf = (nick == m_client->GetNickname());
 	wxString text;
@@ -1348,7 +1358,16 @@ void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &ms
 	}
 	if (msg.Length())
 	{
-		text << wxT(": ") << msg;
+		text << wxT(": ") << msg << (wxChar)OriginalModifier;
+	}
+	if (already_away)
+	{
+		text << wxT(" (was: ") << last_msg << (wxChar)OriginalModifier;
+		if (last_away_time > -1)
+		{
+			text << wxT(" for ") << SecondsToMMSS(last_away_time);
+		}
+		text << wxT(")");
 	}
 	AddLine(wxEmptyString, text, wxColour(0,0,128), true, bIsSelf);
 	m_lstNickList->SetAway(nick, true);

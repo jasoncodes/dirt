@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.87 2004-05-16 04:42:42 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.88 2004-05-22 17:08:46 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -968,8 +968,20 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		}
 		bool bIsAway = (cmd == wxT("AWAY"));
 		ClientContact *contact = GetContact(nick);
+		bool bWasAway = false;
+		wxString strWasAwayMsg;
+		long WasAwayTime = -1;
 		if (contact)
 		{
+			bWasAway = contact->m_is_away;
+			if (bWasAway)
+			{
+				strWasAwayMsg = contact->m_away_message;
+				if (away_time > -1 && contact->m_away_time > -1)
+				{
+					WasAwayTime = away_time - contact->m_away_time;
+				}
+			}
 			contact->m_is_away = bIsAway;
 			contact->m_away_time = away_time;
 			contact->m_server_clock_diff = wxGetUTCTime() - away_time;
@@ -982,7 +994,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		}
 		if (bIsAway)
 		{
-			m_event_handler->OnClientUserAway(nick, text, away_time, away_time_diff);
+			m_event_handler->OnClientUserAway(nick, text, away_time, away_time_diff, bWasAway, WasAwayTime, strWasAwayMsg);
 		}
 		else
 		{
@@ -1483,6 +1495,10 @@ bool Client::ProcessCTCPIn(const wxString &context, const wxString &nick, wxStri
 		if (tz_str[0u] != wxT('-'))
 		{
 			tz_str.Prepend(wxT('+'));
+		}
+		if (tz_str.Length() == 4) // must be missing a zero after the sign
+		{
+			tz_str = tz_str.Left(1) + wxT("0") + tz_str.Mid(1);
 		}
 		ByteBufferArray reply;
 		reply.Add(FormatISODateTime(now) + wxT(" UTC") + tz_str);

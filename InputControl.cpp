@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.25 2004-05-16 04:42:46 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.26 2004-05-22 17:08:49 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -369,7 +369,7 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 		}
 		else
 		{
-			wxBell();
+			Alert();
 		}
 
 	}
@@ -389,7 +389,7 @@ void InputControl::OnKeyDown(wxKeyEvent& event)
 			}
 			else
 			{
-				wxBell();
+				Alert();
 			}
 			m_history_pos = m_history.GetCount();
 		}
@@ -580,7 +580,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 		if (GetLastPosition() != to)
 		{
 			m_tab_completion_prefix = wxEmptyString;
-			wxBell();
+			Alert();
 			return;
 		}
 
@@ -608,7 +608,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 			if (possibles.GetCount() == 1 && current_index == 0 && val == possibles.Item(0))
 			{
 				m_tab_completion_prefix = wxEmptyString;
-				wxBell();
+				Alert();
 				return;
 			}
 			if (possibles.GetCount() > 0 && (current_index > -1 || m_tab_completion_prefix == val))
@@ -629,7 +629,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 			else
 			{
 				m_tab_completion_prefix = wxEmptyString;
-				wxBell();
+				Alert();
 				return;
 			}
 			
@@ -637,7 +637,7 @@ void InputControl::OnChar(wxKeyEvent& event)
 		else
 		{
 			m_tab_completion_prefix = wxEmptyString;
-			wxBell();
+			Alert();
 			return;
 		}
 
@@ -647,6 +647,11 @@ void InputControl::OnChar(wxKeyEvent& event)
 		m_tab_completion_prefix = wxEmptyString;
 		event.Skip();
 	}
+}
+
+void InputControl::Alert()
+{
+	//wxBell();
 }
 
 void InputControl::OnIdle(wxIdleEvent &event)

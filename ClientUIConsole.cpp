@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.59 2004-05-16 04:42:43 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.60 2004-05-22 17:08:47 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -383,7 +383,7 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 
 }
 
-void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
+void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff, bool already_away, long last_away_time, const wxString &last_msg)
 {
 	wxString text;
 	text << wxT("*** ") << nick;
@@ -397,7 +397,16 @@ void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg
 	}
 	if (msg.Length())
 	{
-		text << wxT(": ") << msg;
+		text << wxT(": ") << msg << (wxChar)OriginalModifier;
+	}
+	if (already_away)
+	{
+		text << wxT(" (was: ") << last_msg << (wxChar)OriginalModifier;
+		if (last_away_time > -1)
+		{
+			text << wxT(" for ") << SecondsToMMSS(last_away_time);
+		}
+		text << wxT(")");
 	}
 	Output(text);
 }

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.62 2004-05-16 10:11:52 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.63 2004-05-22 17:08:47 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -161,6 +161,12 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 		m_pnlTransfer = NULL;
 	}
 
+	m_txtInput->Connect(
+		wxID_ANY, wxEVT_MOUSEWHEEL,
+		(wxObjectEventFunction) (wxEventFunction)
+			wxStaticCastEvent( wxMouseEventFunction, & ClientUIMDICanvas::OnMouseWheel ),
+		NULL, this);
+
 }
 
 ClientUIMDICanvas::~ClientUIMDICanvas()
@@ -240,6 +246,11 @@ void ClientUIMDICanvas::OnActivate()
 		((ClientUIMDIFrame*)m_parent)->ResetRedLines();
 	}
 	DoGotFocus();
+}
+
+void ClientUIMDICanvas::OnMouseWheel(wxMouseEvent &event)
+{
+	m_txtLog->ProcessEvent(event);
 }
 
 void ClientUIMDICanvas::OnFocusCheck()

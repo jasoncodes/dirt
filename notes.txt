@@ -3,21 +3,10 @@ increasing padding on staticboxes in option dialog should do it
 
 * allow users to specify which browser to use in the options dialog.
 
-[16:27] *** Andrew is now known as ANDREW
-[16:27] *** Note: You have a query window open to both Andrew and ANDREW
-the query window still said Andrew not ANDREW
-
 primary/alternate labels on hotkeys are not centred vertically
 seems to be a bug in wxFlexGridSizer
 
-win32+possibly others: Failed to retrieve file times for 'C:\...\dirt,ini' (error 32: ... used by another process)
-many of them, use wxLogNull and place in a few second loop or maybe there's an alt function to use
-
 win32: sometimes hitting ctrl-alt-d doesnt bring to top (although it appears to focus)
-
-*** Jason is away: Coke (was: Phone [37:08])
-
-win32: handling of scroll wheel events
 
 win32: pressing ctrl-enter in the middle of a line of input results in the
 line being split into two lines, it should do the same thing as pressing
@@ -27,17 +16,11 @@ make down arrow on input row not do anything
 
 make up arrow then down arrow bring back the last line that was being typed
 
-abstract out all dings from input control into an event that if skipped
-or not handled causes a wxBell otherwise does nothing (to allow the canvas
-to trigger the default configured sound)
-
 MinGW+NT4: Pressing Alt+T followed by space results in crash
 
 GTK: startup with --host=jason.darktech.org results in it thinking
 that it didn't have focus and a red line appears at the top
 with multiple taskbar flashes
-
-@home.my shouldnt be URL'd
 
 GTK: hotkey support
 
@@ -45,13 +28,11 @@ GTK2: clipboard seems to be not performing a UTF8 conversion somewhere
 
 GTK2: change font dialog does not default to last selected font
 
-GTK2: scroll wheel on log control not working unless over scrollbar
-
 GTK2: underlined text in log control not working
 
 GTK2: input control not font'd
 
-GTK2: TristateConfigPanel does not render correctly
+GTK2: TristateConfigPanel does not render correctly (depends on the theme it seems)
 
 prompt when pasting multiple lines
 
@@ -177,12 +158,9 @@ option to disable red and beep for a mdi child (for server console)
   log dir created in %home% even though ./dirtlogs
 
 * automatic /away, use mouse pos on a timer and key press in dirtapp to reset tick
+  have a look around for inactivity APIs (what does GAIM do?)
 
 * only ding on incoming transfer, complete and fail
-
-* if a url ends in . or ? then strip it from the url
-
-* don't hyperlink "news:", "http:", etc by themselves
 
 * Automaticly /lock when not focused for X minutes
   min2tray if not already
@@ -201,8 +179,6 @@ option to disable red and beep for a mdi child (for server console)
 * an option not to match against already replaced words in word filters
   would be nice
 
-* "[Dave TIME reply]: 2003/09/10 11:19:58 UTC-700" should show UTC-0700
-
 * when auto-away after reconnect, need to send away time
   (ticks offset since /away) to keep "away since" correct
 
@@ -214,13 +190,11 @@ option to disable red and beep for a mdi child (for server console)
 
 * set default width as current, but make sure not more that width of primary display
 
-* configfile: access denied on checking last mod,
-  "Entry Y appears more than once in Client"
-  Is something in ConfigFile not mutex protected?
+* configfile: "Entry Y appears more than once in Client"
 
 * option to minimize to tray by default (invert ctrl flag)
 
-* only flash 2 times then display maybe a third icon option for system tray
+* only flash 2 times then display a third icon option for system tray
 
 * dirt.pl should not count private ips (192.168.*.*, 172.16.*.* ->
   172.32.*.*, 10.*.*.*) in choosing something for the hostname field
@@ -240,6 +214,8 @@ option to disable red and beep for a mdi child (for server console)
 	* max hits total, max hits per log
 	* log file sort order (cronological or reverse)
 
+* slow clients freeze when faster clients send to them
+
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
   probably via a short timer to make sure is processed after taking a breath7
@@ -255,8 +231,6 @@ option to disable red and beep for a mdi child (for server console)
   only say something like "*** Connection restored" after the "*** Connection lost"
   or "*** Ping timeout". make sure no auto-reconnect happens on a /quit
 
-* slow clients freeze when faster clients send to them
-
 * recheck away msg and nicks in PopulateFilteredWords()
   (keep a copy of the nick/away msg before filtering and use it for refiltering)
 
@@ -271,7 +245,9 @@ option to disable red and beep for a mdi child (for server console)
 * option to auto /back if talk in main window or talk in any window
   ("don't do it if been away for less than x seconds" option too)
 
-* can't delete dir last sent from / recv to.
+* can't delete dir last sent from, no prob with recving
+  doesn't appear to be cwd
+  right click, send and drag 'n drop are both affected
 
 * if other side of file transfer is on same subnet as any of local subnets then
   set block size to 8192 KB else 2048 KB

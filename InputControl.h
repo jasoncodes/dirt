@@ -65,6 +65,7 @@ protected:
 	void ShowPopup();
 	void MaybeClosePopup(wxKeyEvent& event);
 	bool IsPrintable(const wxString &text);
+	void Alert();
 
 protected:
 	wxArrayString m_history;

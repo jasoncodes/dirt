@@ -74,7 +74,7 @@ public:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick) = 0;
-	virtual void OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff) = 0;
+	virtual void OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff, bool already_away, long last_away_time, const wxString &last_msg) = 0;
 	virtual void OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff) = 0;
 	virtual void OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details) = 0;
 	virtual void OnClientTransferNew(const FileTransfer &transfer) = 0;

@@ -87,6 +87,7 @@ protected:
 	void OnNickListMenu(wxCommandEvent &event);
 	void OnNickListMenuItem(wxCommandEvent &event);
 	void OnPasswordEnter(wxCommandEvent &event);
+	void OnMouseWheel(wxMouseEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnDetach();

@@ -139,6 +139,8 @@ protected:
 
 	wxHtmlWindow *m_dummy_html_wnd;
 
+	int m_wheel_rotation;
+
 private:
 	DECLARE_EVENT_TABLE()
 	DECLARE_NO_COPY_CLASS(LogControl)

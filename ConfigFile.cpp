@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.15 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.16 2004-05-22 17:08:49 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -302,9 +302,19 @@ wxDateTime ConfigFile::GetLastFileModified() const
 	wxFileName fn(m_filename);
 	if (fn.FileExists())
 	{
-		wxDateTime last_mod = fn.GetModificationTime();
-		wxASSERT(last_mod.IsValid());
-		return last_mod;
+		wxLogNull suppress_logging;
+		wxDateTime last_mod;
+		if (fn.GetTimes(NULL, &last_mod, NULL))
+		{
+			wxASSERT(last_mod.IsValid());
+			return last_mod;
+		}
+		wxSleep(1);
+		if (fn.GetTimes(NULL, &last_mod, NULL))
+		{
+			wxASSERT(last_mod.IsValid());
+			return last_mod;
+		}
 	}
 	return wxDateTime(1, wxDateTime::Jan, 1970).ToGMT();
 }

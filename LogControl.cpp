@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.66 2004-05-16 04:42:46 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.67 2004-05-22 17:08:49 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -581,6 +581,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 
 	m_Resizing = false;
 	m_iYOffset = 0;
+
+	m_wheel_rotation = 0;
 
 	FixBorder(this);
 
@@ -1246,6 +1248,26 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 		}
 	}
 
+	m_wheel_rotation += event.GetWheelRotation();
+
+	if (m_wheel_rotation != 0 && event.GetWheelDelta())
+	{
+		while (m_wheel_rotation >= event.GetWheelDelta())
+		{
+			int view_x, view_y;
+			GetViewStart(&view_x, &view_y);
+			Scroll(-1, view_y - event.GetLinesPerAction());
+			m_wheel_rotation -= event.GetWheelDelta();
+		}
+		while (m_wheel_rotation <= -event.GetWheelDelta())
+		{
+			int view_x, view_y;
+			GetViewStart(&view_x, &view_y);
+			Scroll(-1, view_y + event.GetLinesPerAction());
+			m_wheel_rotation += event.GetWheelDelta();
+		}
+	}
+
 	wxPoint pos = GetVirtualMousePosition();
 
 	static wxPoint down_pos(0,0);
@@ -1753,7 +1775,7 @@ bool LogControl::IsEmail(const wxString &token)
 {
 	wxString buff = token;
 	long a = buff.Find(wxT('@'));
-	if (a > -1)
+	if (a > 0)
 	{
 		buff = token.Mid(a);
 		if (buff.Find(wxT('.')) > -1)
@@ -1823,7 +1845,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 			wxString token_lower = token.Lower();
 
-			if (token_lower.Left(5) == wxT("news:"))
+			if (token_lower.Left(5) == wxT("news:") && token_lower.Length() > 5)
 			{
 				url = token;
 			}
@@ -1835,7 +1857,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 			{
 				url = token;
 			}
-			else if ((token_lower.Left(3) == wxT("www")) && (token.Find(wxT('.')) > -1))
+			else if ((token_lower.Left(3) == wxT("www")) && (token.Length() > 4u) && (token.Find(wxT('.')) > -1) && (token.Find(wxT('.')) < (int)token.Length()-1))
 			{
 				url = wxT("http://") + token;
 			}
@@ -1854,7 +1876,13 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 			if (url.Length() > 0)
 			{
-				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\">") + token + wxT("</a>");
+				wxString extra_chars;
+				while (token.Right(1) == wxT('.') || token.Right(1) == wxT('?'))
+				{
+					extra_chars = token.Right(1) + extra_chars;
+					token = token.Left(token.Length() - 1);
+				}
+				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\">") + token + wxT("</a>") + extra_chars;
 			}
 
 			output += token;

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.86 2004-05-16 04:42:49 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.87 2004-05-22 17:08:50 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -831,6 +831,8 @@ void ForceForegroundWindow(wxFrame *frm)
 			{
 				ShowWindow(hWnd, SW_SHOW);
 			}
+
+			SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_ASYNCWINDOWPOS | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
 		}
 
