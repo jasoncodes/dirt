@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.47 2003-03-31 07:05:57 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.48 2003-03-31 07:49:38 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -787,7 +787,7 @@ void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized)
 
 }
 
-void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show, bool is_already_maximized)
+void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show)
 {
 
 	#ifdef __WIN32__
@@ -816,13 +816,8 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool sh
 
 	#else
 
-		is_already_maximized |= frm->IsMaximized();
-
-		if (!(is_already_maximized && maximized))
-		{
-			frm->SetSize(r);
-			frm->Maximize(maximized);
-		}
+		frm->SetSize(r);
+		frm->Maximize(maximized);
 		if (show)
 		{
 			frm->Show();
@@ -879,15 +874,13 @@ void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name, b
 
 	maximized |= default_maximized;
 
-	bool org_max = maximized;
-
 	cfg->Read(wxT("X"), &r.x, r.x);
 	cfg->Read(wxT("Y"), &r.y, r.y);
 	cfg->Read(wxT("Width"), &r.width, r.width);
 	cfg->Read(wxT("Height"), &r.height, r.height);
 	cfg->Read(wxT("Maximized"), &maximized, maximized);
 
-	SetWindowState(frm, r, maximized, show, org_max);
+	SetWindowState(frm, r, maximized, show);
 
 	cfg->SetPath(old_path);
 
