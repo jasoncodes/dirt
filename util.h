@@ -94,5 +94,6 @@ wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value,
 wxString GetOSDescription();
 void DebugMsg(const wxString &msg);
 void ConsoleOutput(const wxString &line);
+void ConsoleOutputUTF8(const wxString &line);
 
 #endif

@@ -23,12 +23,19 @@
 #ifndef TextTools_H_
 #define TextTools_H_
 
+#include "Modifiers.h"
+
 wxString FormatTextAsHtml(const wxString &text);
 wxString ConvertUrlsToLinks(const wxString &text);
 wxString ConvertModifiersIntoHtml(const wxString &text, bool strip_mode);
 bool IsEmail(const wxString &token);
 wxString ColourRGBToString(int red, int green, int blue);
 wxString ColourIndexToString(int colour_number);
+
+inline wxString ColourRGBToString(long clr)
+{
+	return ColourRGBToString(CLR_RED(clr), CLR_GREEN(clr), CLR_BLUE(clr));
+}
 
 inline wxString ColourRGBToString(const wxColour &clr)
 {

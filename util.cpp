@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.100 2004-07-19 18:27:51 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.101 2004-07-20 18:13:38 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -881,5 +881,13 @@ void ConsoleOutput(const wxString &line)
 		}
 		puts(buff);
 	#endif
+	fflush(stdout);
+}
+
+void ConsoleOutputUTF8(const wxString &line)
+{
+	ByteBuffer buff(line + wxT("\n"));
+	fwrite(buff.LockRead(), buff.Length(), 1, stdout);
+	buff.Unlock();
 	fflush(stdout);
 }
