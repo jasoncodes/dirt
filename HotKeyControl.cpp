@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HotKeyControl.cpp,v 1.3 2004-05-16 04:42:45 jason Exp $)
+RCS_ID($Id: HotKeyControl.cpp,v 1.4 2004-06-19 02:04:36 jason Exp $)
 
 #include "HotKeyControl.h"
 
@@ -365,6 +365,7 @@ void HotKeyControl::SetValue(int keycode, wxUint8 modifiers)
 
 		case wxMOD_WIN:
 		case wxMOD_WIN|wxMOD_SHIFT:
+		case wxMOD_CONTROL|wxMOD_SHIFT:
 		case wxMOD_CONTROL|wxMOD_ALT:
 		case wxMOD_CONTROL|wxMOD_ALT|wxMOD_SHIFT:
 			m_keycode = keycode;
