@@ -20,7 +20,7 @@ ifeq (,$(BASENAME))
 	BASENAME = $(shell wx-config --libs | tr ' ' '\n' | grep wx_)
 endif
 ifneq (,$(findstring wx_gtk2,$(BASENAME)))
-	GTK_EXTRAS = pkg-config --cflags gtk+-2.0
+	GTK_EXTRAS = `pkg-config --cflags gtk+-2.0`
 else
 	ifneq (,$(findstring wx_gtk,$(BASENAME)))
 		GTK_EXTRAS = `gtk-config --cflags`
