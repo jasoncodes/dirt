@@ -1,3 +1,41 @@
+why is there so much latency in ping yet typing text is so fast
+this applies to /ping and /whois and titlebar
+
+add an option to terminate process if service stopped or cant start (command
+line) and have an additional script file to run dirt with this option
+dirt-service but quit if a certain error code is returned (which will be
+triggered by sending a custom signal). after this is done, create a simple
+init.d style script for dirt with an option in the script to drop priviliges
+to a normal user as well as option to specify config file to use.
+
+full support to control service settings from the console such as admin
+password, user password, public list, max users, etc.
+
+wallops. unknown commands should possibly just broadcast out to
+console@server. use say to force broadcast or a / prefix to force
+command.
+
+optional alert sound if certain words are mentioned (i.e. your name)
+
+---------------------------
+Dirt Error
+---------------------------
+can't open file '\sentry\jason\dirtlogs\Client 20031118190259.dirtlog' (error 3: the system cannot find the path specified.)
+---------------------------
+OK   
+---------------------------
+
+public list updates stopped working in gtk ver. i have a feeling it blocked and never
+timed out. check that there is a hard timeout on all operations
+
+add size hints for mdi children
+
+[10:24] <Jason[Work]> i guess it's probably the destructor which is delaying
+until next idle that doesnt get called because there is heaps of WM_HOTKEY
+msgs in the queue still
+
+investigate missing ppp0 ip on dirt server
+
 not restoring maximized state from client/windowstate/maximized on startup
 
 console ver shows /quit in the quit message
@@ -88,8 +126,6 @@ not, if we are, replace colour code with nothing
   add some debug feature to log file transfer stuffs to screen?
 
 * white text on black background mode
-
-* DNS broken with proxy enabled
 
 * --config uses home dir instead of current dir if no path
   log dir created in %home% even though ./dirtlogs
@@ -295,6 +331,9 @@ not, if we are, replace colour code with nothing
 * create script to generate crypto++ makefiles and change to crypto++ cvs head
 
 * banning (wxIsWild(), wxMatchWild(), wxString::Matches())
+  ban list. ban a single ip or computername or nickname or username
+  probably via a wildcard in Nick!user@host format.
+  /msg Console@Server BAN n00b!* 2hr Stop being a n00b
 
 * hide /oper password when being typed
 

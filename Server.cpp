@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.66 2003-08-18 02:00:17 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.67 2003-11-24 07:01:46 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -715,33 +715,55 @@ ServerConnection* Server::SendToNick(const wxString &nickname, const wxString &c
 
 bool Server::IsValidNickname(const wxString &nickname)
 {
-    if (nickname.Length() < 1 || nickname.Length() > 16 || nickname == GetServerNickname())
+
+	bool hasAlphaNum = false; /* used to test that the nick has at least one
+								 alpha numeric character */
+								
+	if (nickname.Length() < 1 || nickname.Length() > 32 || nickname == GetServerNickname())
 	{
 		return false;
 	}
+	
 	for (size_t i = 0; i < nickname.Length(); ++i)
 	{
 		wxChar c = nickname[i];
-		if (!wxIsalnum(c))
+		if (wxIsalnum(c))
+		{
+			hasAlphaNum = true;
+		}
+		else
 		{
 			switch (c)
 			{
 				case wxT('_'):
-				case wxT('^'):
-				case wxT('|'):
-				case wxT('\\'):
 				case wxT('-'):
 				case wxT('['):
 				case wxT(']'):
-				case wxT('{'):
-				case wxT('}'):
+				case wxT('\''):
 					break;
+				case wxT(' '):
+					// allow no leading or trailing spaces in nicks
+					if ((i == 0) || (i == (nickname.Length() - 1)))
+					{
+						return false;
+					}
+					else
+					{
+						// do not allow a nick with two consecutive spaces
+						if (nickname[i+1] == ' ')
+						{
+							return false;
+						}
+				    }
+				    break;
 				default:
 					return false;
 			}
 		}
 	}
-	return true;
+
+	return hasAlphaNum;
+	
 }
 
 ByteBuffer Server::GetNickList() const
