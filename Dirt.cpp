@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.57 2004-08-31 19:54:31 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.58 2004-12-08 08:03:31 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -531,36 +531,44 @@ bool DirtApp::ProcessCommandLine()
 void DirtApp::RegisterDirtProtocol()
 {
 
-	#ifdef __WXMSW__
+	#if defined(__WXMSW__)
 
 		wxLogNull supress_log;
 		wxString exe = GetEXEName();
 		int num_actions = 0;
 		wxRegKey reg;
 		reg.SetName(wxRegKey::HKCR, wxT("dirt"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxT("URL:Dirt Secure Chat Protocol"));
 		num_actions += !!MaybeSet(reg, wxT("EditFlags"), 2);
 		num_actions += !!MaybeSet(reg, wxT("URL Protocol"), wxEmptyString);
 		reg.SetName(wxRegKey::HKCR, wxT("dirt\\DefaultIcon"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, exe + wxT(",0"));
 		reg.SetName(wxRegKey::HKCR, wxT("dirt\\shell\\open\\command"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --host=\"%1\""));
 		reg.SetName(wxRegKey::HKCR, wxT(".dirtlog"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxT("DirtSecureChat.LogFile"));
 		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxT("Dirt Secure Chat Log File"));
 		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile\\shell"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxT("open"));
 		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile\\shell\\open\\command"));
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --log=\"%1\""));
 		reg.SetName(wxRegKey::HKLM, wxT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\") + wxFileName(exe).GetFullName());
+		reg.Open(wxRegKey::Write);
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, exe);
 
@@ -569,30 +577,30 @@ void DirtApp::RegisterDirtProtocol()
 			SendMessageTimeout(HWND_BROADCAST, WM_WININICHANGE, 0, 0, 0, 500, 0);
 		}
 
-	#else
+	#elif defined(__WXGTK__)
 
-	wxFileName kde_dirt_protocol(wxFileName::GetHomeDir() + wxT("/.kde/share/services/"));
-	if (kde_dirt_protocol.DirExists())
-	{
-		kde_dirt_protocol.SetFullName(wxT("dirt.protocol"));
-		char self[4096];
-		if (realpath(wxString(argv[0]).mb_str(), self))
+		wxFileName kde_dirt_protocol(wxFileName::GetHomeDir() + wxT("/.kde/share/services/"));
+		if (kde_dirt_protocol.DirExists())
 		{
-			wxFileOutputStream file(kde_dirt_protocol.GetFullPath());
-			wxTextOutputStream text(file);
-			text << wxT("[Protocol]\n");
-			text << wxT("exec=") << wxString(self, wxConvLocal) << wxT(" --host=%u\n");
-			text << wxT("protocol=dirt\n");
-			text << wxT("input=none\n");
-			text << wxT("output=none\n");
-			text << wxT("helper=true\n");
-			text << wxT("listing=false\n");
-			text << wxT("reading=false\n");
-			text << wxT("writing=false\n");
-			text << wxT("makedir=false\n");
-			text << wxT("deleting=false\n");
+			kde_dirt_protocol.SetFullName(wxT("dirt.protocol"));
+			char self[4096];
+			if (realpath(wxString(argv[0]).mb_str(), self))
+			{
+				wxFileOutputStream file(kde_dirt_protocol.GetFullPath());
+				wxTextOutputStream text(file);
+				text << wxT("[Protocol]\n");
+				text << wxT("exec=") << wxString(self, wxConvLocal) << wxT(" --host=%u\n");
+				text << wxT("protocol=dirt\n");
+				text << wxT("input=none\n");
+				text << wxT("output=none\n");
+				text << wxT("helper=true\n");
+				text << wxT("listing=false\n");
+				text << wxT("reading=false\n");
+				text << wxT("writing=false\n");
+				text << wxT("makedir=false\n");
+				text << wxT("deleting=false\n");
+			}
 		}
-	}
 	
 	#endif
 
