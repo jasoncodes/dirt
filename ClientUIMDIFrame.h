@@ -50,7 +50,7 @@ public:
 	void ResetRedLines();
 	wxArrayString* GetNicklist() { return &m_nicklist; }
 	wxDateTime GetLogDate();
-	bool MinToTray();
+	bool MinToTray(bool auto_restore);
 	void RestoreFromTray();
 	void InitLogs();
 	static bool IsHotKeySupported();

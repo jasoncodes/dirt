@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.155 2004-06-11 16:29:31 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.156 2004-06-19 02:34:11 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -400,13 +400,13 @@ void ClientUIMDIFrame::OnTrayRightClick(wxMouseEvent &event)
 	}
 }
 
-bool ClientUIMDIFrame::MinToTray()
+bool ClientUIMDIFrame::MinToTray(bool auto_restore)
 {
 	if (!m_tray)
 	{
 		m_tray = new TrayIcon;
 		m_tray_flash = false;
-		m_tray_auto_restore = wxGetApp().IsShiftDown();
+		m_tray_auto_restore = auto_restore;
 		if (m_tray->Ok())
 		{
 			m_tray->SetEventHandler(this, ID_TRAY);
@@ -436,7 +436,7 @@ void ClientUIMDIFrame::OnIconize(wxIconizeEvent &event)
 {
 	if (event.Iconized() && wxGetApp().IsControlDown())
 	{
-		if (!MinToTray())
+		if (!MinToTray(wxGetApp().IsShiftDown()))
 		{
 			event.Skip();
 		}
@@ -729,7 +729,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("MINTOTRAY"))
 	{
-		if (!MinToTray())
+		if (!MinToTray(false))
 		{
 			Iconize();
 		}
@@ -1003,7 +1003,7 @@ void ClientUIMDIFrame::OnHotKey()
 {
 	if (IsFocused())
 	{
-		if (!MinToTray())
+		if (!MinToTray(false))
 		{
 			Iconize();
 		}
@@ -1750,7 +1750,7 @@ void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 		{
 			if (wParam == 0x1400+768)
 			{
-				MinToTray();
+				MinToTray(false);
 				return 0;
 			}
 		}
