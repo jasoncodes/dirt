@@ -34,7 +34,7 @@ struct ModifierMapping
 
 enum Modifiers
 {
-//  name                     hex         oct dec binary
+	// name                    hex       oct dec binary
 	BoldModifier      = wxT('\x002'), // 002   2 00010
 	ColourModifier    = wxT('\x003'), // 003   3 00011
 	OriginalModifier  = wxT('\x00f'), // 017  15 01111
