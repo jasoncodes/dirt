@@ -2,6 +2,14 @@
 
 include ./Makefile.wx-config
 
+ifeq (,$(shell which $(WXCONFIG)))
+	DUMMY := $(error $(WXCONFIG) not found: Please ensure wxWidgets is correctly installed)
+endif
+
+ifeq (,$(wildcard crypto/cryptlib.cpp))
+	DUMMY := $(error Crypto++ not found: Please read crypto/!readme.txt for details)
+endif
+
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all mac_post_link
