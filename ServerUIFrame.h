@@ -33,6 +33,7 @@ protected:
 	void OnClear(wxCommandEvent& event);
 	void OnTimerUpdateConnections(wxTimerEvent &event);
 	void OnTrayDblClick(wxMouseEvent &event);
+	void OnIconize(wxIconizeEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();

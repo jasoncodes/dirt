@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.30 2003-03-11 07:26:46 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.31 2003-03-11 08:06:26 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -91,6 +91,7 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_BUTTON(ID_CLEAR, ServerUIFrame::OnClear)
 	EVT_TIMER(ID_TIMER_UPDATECONNECTIONS, ServerUIFrame::OnTimerUpdateConnections)
 	EVT_TRAYICON_LEFT_DCLICK(ID_TRAY, ServerUIFrame::OnTrayDblClick)
+	EVT_ICONIZE(ServerUIFrame::OnIconize)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
@@ -253,6 +254,15 @@ static void ForceForegroundWindow(wxFrame *frm)
 void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
 {
 	ForceForegroundWindow(this);
+}
+
+void ServerUIFrame::OnIconize(wxIconizeEvent &event)
+{
+	if (event.Iconized() && m_tray->Ok())
+	{
+		Show(false);
+	}
+	event.Skip();
 }
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)
