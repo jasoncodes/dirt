@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.17 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.18 2004-05-16 08:36:16 jason Exp $)
 
 #include "DNS.h"
 
@@ -95,14 +95,17 @@ DNS::DNS()
 
 DNS::~DNS()
 {
-	CleanUp();
+	CleanUp(true);
 }
 
-void DNS::CleanUp()
+void DNS::CleanUp(bool lock_section)
 {
 	if (!m_worker) return;
 	m_worker->m_no_event = true;
-	m_section.Enter();
+	if (lock_section)
+	{
+		m_section.Enter();
+	}
 	wxLogNull supress_log;
 	if (IsBusy())
 	{
@@ -116,7 +119,10 @@ void DNS::CleanUp()
 	m_worker->Wait();
 	delete m_worker;
 	m_worker = NULL;
-	m_section.Leave();
+	if (lock_section)
+	{
+		m_section.Leave();
+	}
 }
 
 void DNS::SetEventHandler(wxEvtHandler *handler, wxEventType id)
@@ -133,7 +139,7 @@ bool DNS::IsBusy() const
 bool DNS::Cancel()
 {
 	bool x = IsBusy();
-	CleanUp();
+	CleanUp(true);
 	return x;
 }
 
@@ -150,13 +156,13 @@ bool DNS::Lookup(const wxString &hostname, bool block_if_busy)
 		return false;
 	}
 
-	CleanUp();
+	CleanUp(false);
 
 	m_worker = new DNSWorker(this);
 
 	if (m_worker->Create() != wxTHREAD_NO_ERROR)
 	{
-		CleanUp();
+		CleanUp(false);
 		m_section.Leave();
 		return false;
 	}
@@ -169,7 +175,7 @@ bool DNS::Lookup(const wxString &hostname, bool block_if_busy)
 	}
 	else
 	{
-		CleanUp();
+		CleanUp(false);
 		m_section.Leave();
 		return false;
 	}

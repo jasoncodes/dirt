@@ -44,7 +44,7 @@ public:
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
 
 protected:
-	virtual void CleanUp();
+	virtual void CleanUp(bool lock_section);
 
 protected:
 	wxEvtHandler *m_handler;
