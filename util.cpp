@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.36 2003-03-12 05:39:21 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.37 2003-03-12 14:29:41 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -43,6 +43,20 @@ wxArrayString SplitString(const wxString &str, const wxString &sep)
 
 	return lines;
 
+}
+
+wxArrayString SplitQuotedString(const wxString &text, const wxString &sep)
+{
+	HeadTail ht;
+	wxArrayString array;
+	wxString buff(text);
+	while (buff.Trim(false).Trim(true).Length())
+	{
+		ht = SplitQuotedHeadTail(buff, sep);
+		array.Add(ht.head);
+		buff = ht.tail;
+	}
+	return array;
 }
 
 wxString JoinArray(const wxArrayString &array, const wxString &sep, const wxString &prefix, const wxString &postfix)

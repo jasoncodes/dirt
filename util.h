@@ -17,6 +17,7 @@ struct HeadTail
 };
 
 wxArrayString SplitString(const wxString &text, const wxString &sep);
+wxArrayString SplitQuotedString(const wxString &text, const wxString &sep = wxT(" "));
 wxString JoinArray(const wxArrayString &array, const wxString &sep, const wxString &prefix = wxEmptyString, const wxString &postfix = wxEmptyString);
 bool LeftEq(const wxString &text, const wxString &to_match);
 bool RightEq(const wxString &text, const wxString &to_match);
