@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.52 2003-06-30 04:00:55 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.53 2003-07-06 05:26:06 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -653,7 +653,6 @@ void LogControl::OnErase(wxEraseEvent& event)
 	}
 
 	PrepareDC(*pDC);
-
 	OnDraw(*pDC);
 
 	if (bOwnDC)
@@ -687,6 +686,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 
 		wxRect client_area = GetClientRect();
 
+		/*
 		static wxSize BitmapSize = wxSize(
 			wxSystemSettings::GetMetric(wxSYS_SCREEN_X),
 			wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
@@ -704,9 +704,11 @@ void LogControl::OnDraw(wxDC& dcFront)
 			}
 			bmpBack = wxBitmap(BitmapSize.x, BitmapSize.y);
 		}
+		*/
+		wxBitmap bmpBack(client_area.width, client_area.height);
 		wxMemoryDC dcBack;
 		dcBack.SelectObject(bmpBack);
-		ClearRect(dcBack, wxRect(wxPoint(0,0), ClientSize));
+		ClearRect(dcBack, wxRect(wxPoint(0,0), GetClientSize()));
 		PrepareDC(dcBack);
 
 		ClearBlankArea(dcBack);
