@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.34 2003-03-12 06:59:05 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.35 2003-03-12 08:00:45 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -695,6 +695,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 	if (ProcessClientInputExtra(true, true, conn, context, cmd, data))
 	{
+		return;
+	}
+
+	if (cmd == wxT("PING"))
+	{
+		conn->Send(context, wxT("PONG"), data);
 		return;
 	}
 
