@@ -10,7 +10,7 @@ class ClientUIMDICanvas : public SwitchBarCanvas
 
 public:
 
-	ClientUIMDICanvas(SwitchBarParent *parent, wxIcon icon, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
+	ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, wxIcon icon, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
 	virtual ~ClientUIMDICanvas();
 
 	virtual bool IsClosable() { return closable; }
@@ -30,8 +30,6 @@ protected:
 
 	void ResizeChildren();
 	void DoGotFocus();
-
-	static int s_num;
 
 protected:
 	LogControl *m_txtLog;

@@ -25,16 +25,14 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 END_EVENT_TABLE()
 
-int ClientUIMDICanvas::s_num = 0;
-
-ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, wxIcon icon, const wxPoint& pos, const wxSize& size)
+ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, wxIcon icon, const wxPoint& pos, const wxSize& size)
 	: SwitchBarCanvas(parent, pos, size)
 {
 
 	m_txtLog = new LogControl(this, ID_LOG);
 	m_txtInput = new InputControl(this, ID_INPUT);
 
-	SetTitle(wxString::Format("Canvas %d", ++s_num));
+	SetTitle(title);
 	SetIcon(icon);
 
 	closable = true;

@@ -70,9 +70,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	Show();
 
-	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxIcon(channel_xpm));
+	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "[Main]", wxIcon(channel_xpm));
 	NewWindow(canvas, true);
-	canvas->SetTitle("[Main]");
 	canvas->closable = false;
 
 	tmrFocusInputControl = new wxTimer(this, ID_FOCUSINPUTCONTROLTIMER);
@@ -126,8 +125,7 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	}
 	else
 	{
-		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxIcon(query_xpm));
-		canvas->SetTitle(context);
+		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, context, wxIcon(query_xpm));
 		NewWindow(canvas, false);
 		return canvas;
 	}
