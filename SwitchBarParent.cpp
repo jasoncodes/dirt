@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.31 2004-05-22 19:22:04 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.32 2004-07-24 09:36:11 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -36,6 +36,7 @@ RCS_ID($Id: SwitchBarParent.cpp,v 1.31 2004-05-22 19:22:04 jason Exp $)
 
 #include "SwitchBarMDI.h"
 #include "util.h"
+#include "utilgui.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
