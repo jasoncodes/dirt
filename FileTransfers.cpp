@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.55 2003-08-03 12:23:54 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.56 2003-08-05 13:04:37 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -289,11 +289,12 @@ int FileTransfers::FindTransfer(int transferid)
 	return -1;
 }
 
-int FileTransfers::FindRemoteTransfer(int remoteid)
+int FileTransfers::FindRemoteTransfer(const wxString &nick, int remoteid)
 {
 	for (int i = 0; i < GetTransferCount(); ++i)
 	{
-		if (m_transfers.Item(i).remoteid == remoteid)
+		if (m_transfers[i].nickname == nick &&
+			m_transfers[i].remoteid == remoteid)
 		{
 			return i;
 		}
@@ -511,7 +512,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxSt
 					}
 					else
 					{
-						index = FindRemoteTransfer(id);
+						index = FindRemoteTransfer(nick, id);
 					}
 
 					if (index > -1)
@@ -552,7 +553,7 @@ bool FileTransfers::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxSt
 					}
 					else
 					{
-						index = FindRemoteTransfer(id);
+						index = FindRemoteTransfer(nick, id);
 					}
 
 					if (index > -1)

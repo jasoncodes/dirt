@@ -14,14 +14,11 @@
 * when new word filter is added, recheck away msg and nicks
   (keep a copy of the nick/away msg before filtering and it for refiltering)
 
-* User2 cancelling a send caused my client to abort get from User1
-  [15:11] *** Get xxx from User1: Cancelled by remote (Remote error: Transfer cancelled)
-  [15:11] *** Get yyy from User2: Cancelled by remote (Remote error: Cancelled by remote
-    (Remote error: Cancelled by remote (Remote error: Transfer cancelled)))
-
 * some way to limit number of unACK'd bytes
 
-* admin change nick and away messages
+* admin feature to change nicks
+
+* admin feature to change away messages
 
 * can't delete dir last sent from / recv to.
 
@@ -106,7 +103,14 @@
 
 * /dcc accept all
 
-* close all query windows, transfers, completed/failed transfers, pending transfers
+* Window
+	Close
+		Current Ctrl-F4
+		Query Windows
+		Transfers
+			All
+			Pending
+			Completed and Failed
 
 * investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
   for SwitchBar on Windows XP/2003
@@ -128,8 +132,6 @@
 * Win32: fast incoming messages cause FlashWindow() not to work on at least WinXP
   Maybe restrict the time between FlashWindow() calls to say 1 second except if
   the window just got focused/unfocused (wxActivateEvent)
-
-* don't allow empty server name
 
 * ability to search multiple logs
 

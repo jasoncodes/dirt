@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.45 2003-08-01 07:48:03 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.46 2003-08-05 13:04:38 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -530,7 +530,8 @@ bool ServerUIFrameConfig::SaveSettings()
 		ReportError(wxT("Invalid max users per IP"), m_txtMaxUsersIP);
 		return false;
 	}
-	if (!config.SetServerName(m_txtServerName->GetValue()))
+	if (!m_txtServerName->GetValue().Length() ||
+		!config.SetServerName(m_txtServerName->GetValue()))
 	{
 		ReportError(wxT("Invalid server name"), m_txtServerName);
 		return false;

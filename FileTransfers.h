@@ -50,7 +50,7 @@ protected:
 	void Information(const wxString &context, const wxString &text);
 	void Warning(const wxString &context, const wxString &text);
 	void MaybeSendData(FileTransfer &t);
-	int FindRemoteTransfer(int remoteid);
+	int FindRemoteTransfer(const wxString &nick, int remoteid);
 	int FindTransferBySocket(CryptSocketBase *sck);
 	wxArrayString GetMyIPs() const;
 	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
