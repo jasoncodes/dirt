@@ -94,11 +94,36 @@ public:
 	bool ResetToDefaults();
 
 	long GetListenPort() const;
-	bool SetListenPort(long port);
 	wxString GetUserPassword(bool decrypt) const;
-	bool SetUserPassword(const wxString &password);
 	wxString GetAdminPassword(bool decrypt) const;
+	
+	wxString GetServerName() const;
+	wxString GetHostname() const;
+	bool GetPublicListEnabled() const;
+	wxString GetPublicListAuthentication(bool decrypt) const;
+	wxString GetPublicListComment() const;
+	
+	bool GetHTTPProxyEnabled() const;
+	wxString GetHTTPProxyHostname() const;
+	long GetHTTPProxyPort() const;
+	wxString GetHTTPProxyUsername() const;
+	wxString GetHTTPProxyPassword(bool decrypt) const;
+
+	bool SetListenPort(long port);
+	bool SetUserPassword(const wxString &password);
 	bool SetAdminPassword(const wxString &password);
+
+	bool SetServerName(const wxString &server_name);
+	bool SetHostname(const wxString &hostname);
+	bool SetPublicListEnabled(bool enabled);
+	bool SetPublicListAuthentication(const wxString &auth);
+	bool SetPublicListComment(const wxString &comment);
+
+	bool SetHTTPProxyEnabled(bool enabled);
+	bool SetHTTPProxyHostname(const wxString &hostname);
+	bool SetHTTPProxyPort(long port);
+	bool SetHTTPProxyUsername(const wxString &username);
+	bool SetHTTPProxyPassword(const wxString &password);
 
 protected:
 	wxString GetPassword(const wxString &key, bool decrypt) const;

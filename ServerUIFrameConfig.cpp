@@ -6,9 +6,75 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.8 2003-02-22 09:05:35 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.9 2003-03-04 05:35:35 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
+
+class StaticCheckBoxSizerEventHandler : public wxEvtHandler
+{
+
+public:
+
+	StaticCheckBoxSizerEventHandler(wxStaticBox *box, wxCheckBox *chk)
+		: wxEvtHandler(), m_box(box), m_chk(chk)
+	{
+		Connect(wxID_ANY, wxID_ANY, wxEVT_PAINT, (wxObjectEventFunction)(wxEventFunction)(wxPaintEventFunction)&StaticCheckBoxSizerEventHandler::OnPaint);
+	}
+
+	virtual ~StaticCheckBoxSizerEventHandler()
+	{
+	}
+
+protected:
+	void OnPaint(wxPaintEvent &event)
+	{
+		m_chk->Refresh();
+		event.Skip();
+	}
+
+protected:
+	wxStaticBox *m_box;
+	wxCheckBox *m_chk;
+
+};
+
+class StaticCheckBoxSizer : public wxStaticBoxSizer
+{
+
+
+public:
+
+	StaticCheckBoxSizer(wxStaticBox *box, wxCheckBox *chk, int orient)
+		: wxStaticBoxSizer(box, orient), m_box(box), m_chk(chk)
+	{
+		m_evt = new StaticCheckBoxSizerEventHandler(box, chk);
+		m_box->PushEventHandler(m_evt);
+	};
+
+	virtual ~StaticCheckBoxSizer()
+	{
+		delete m_evt;
+	}
+
+    virtual void RecalcSizes()
+	{
+		wxStaticBoxSizer::RecalcSizes();
+		if (m_chk)
+		{
+			wxPoint pos = m_box->GetPosition();
+			pos.x += 8;
+			m_chk->Move(pos);
+			m_box->Lower();
+			m_chk->Raise();
+		}
+	}
+
+protected:
+	wxStaticBox *m_box;
+	wxCheckBox *m_chk;
+	wxEvtHandler *m_evt;
+
+};
 
 enum
 {
@@ -39,11 +105,26 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtListenPort);
 	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(250, m_txtListenPort->GetSize().y), wxTE_PASSWORD);
 	FixBorder(m_txtUserPassword);
 	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
 	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtAdminPassword);
+	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
+	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtServerName);
+	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
+	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtHostname);
+
+	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
+	wxStaticText *lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
+	m_txtPublicListAuthentication = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtPublicListAuthentication);
+	wxStaticText *lblPublicListComment = new wxStaticText(panel, -1, wxT("&Comment:"));
+	m_txtPublicListComment = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtPublicListComment);
+
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
 	{
@@ -59,6 +140,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
 				}
 				szrLeftTop->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
@@ -67,11 +150,34 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
 				}
 				szrLeftTop->Add(szrTextBoxes, 1, wxEXPAND, 0);
 
 			}
 			szrLeft->Add(szrLeftTop, 0, wxEXPAND, 0);
+
+			wxStaticBox *fraLeftPublic = new wxStaticBox(panel, -1, wxEmptyString);
+			wxBoxSizer *szrLeftPublic = new StaticCheckBoxSizer(fraLeftPublic, m_chkPublicListEnabled, wxHORIZONTAL);
+			{
+
+				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
+				{
+					szrLabels->Add(lblPublicListAuthentication, 1, wxBOTTOM, 4);
+					szrLabels->Add(lblPublicListComment, 1, wxTOP, 4);
+				}
+				szrLeftPublic->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
+
+				wxBoxSizer *szrTextBoxes = new wxBoxSizer(wxVERTICAL);
+				{
+					szrTextBoxes->Add(m_txtPublicListAuthentication, 1, wxBOTTOM | wxEXPAND, 4);
+					szrTextBoxes->Add(m_txtPublicListComment, 1, wxTOP | wxEXPAND, 4);
+				}
+				szrLeftPublic->Add(szrTextBoxes, 1, wxEXPAND, 0);
+			
+			}
+			szrLeft->Add(szrLeftPublic, 0, wxEXPAND, 0);
 
 			wxBoxSizer *szrLeftFill = new wxBoxSizer(wxHORIZONTAL);
 			{
@@ -79,7 +185,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			szrLeft->Add(szrLeftFill, 1, wxEXPAND, 0);
 
 		}
-		szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
+		szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxEXPAND, 8);
 
 		wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
 		{
@@ -98,7 +204,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	panel->SetSizer(szrAll);
 	szrAll->SetSizeHints( this );
 
-	SetClientSize(450, 250);
+	//SetClientSize(450, 250);
+	FitInside();
 	CentreOnParent();
 	ShowModal();
 

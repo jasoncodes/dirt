@@ -42,3 +42,15 @@
 * hide /oper password when being typed or at least make sure doesn't go into history
 
 * hold ctrl to copy w/o formatting
+
+	bool SetServerName(const wxString &server_name);
+	bool SetHostname(const wxString &hostname);
+	bool SetPublicListEnabled(bool enabled);
+	bool SetPublicListAuthentication(const wxString &auth);
+	bool SetPublicListComment(const wxString &comment);
+
+	bool SetHTTPProxyEnabled(bool enabled);
+	bool SetHTTPProxyHostname(const wxString &hostname);
+	bool SetHTTPProxyPort(long port);
+	bool SetHTTPProxyUsername(const wxString &username);
+	bool SetHTTPProxyPassword(const wxString &password);
