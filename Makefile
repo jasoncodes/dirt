@@ -44,7 +44,7 @@ ifneq ($(DIRTSERVER_EXE_PERMS),xxx)
 endif
 
 clean:
-	rm -f *.o Dirt DirtGTK.tar.gz
+	rm -f *.o Dirt DirtGTK.tar.bz2
 
 all: clean dirt
 
@@ -75,7 +75,7 @@ crypto/libcryptopp.a:
 	@cd crypto && make
 
 package: dirt
-	test -f DirtGTK.tar.gz && rm DirtGTK.tar.gz || true
+	test -f DirtGTK.tar.bz2 && rm DirtGTK.tar.bz2 || true
 	tar cf DirtGTK.tar Dirt dirt dirtconsole
 	cd res && tar rf ../DirtGTK.tar dirt.xpm
-	gzip -9 DirtGTK.tar
+	bzip2 -9 DirtGTK.tar

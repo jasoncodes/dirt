@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.23 2004-06-01 06:54:06 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.24 2004-06-02 06:42:22 jason Exp $)
 
 #include "DNS.h"
 #include "IPInfo.h"
@@ -36,7 +36,7 @@ RCS_ID($Id: DNS.cpp,v 1.23 2004-06-01 06:54:06 jason Exp $)
 #include <wx/thread.h>
 #include "util.h"
 
-#define DNS_DEBUG 0
+#define DNS_DEBUG 1
 
 #if DNS_DEBUG
 #define DNSDebugMsg(x) DebugMsg(x)
