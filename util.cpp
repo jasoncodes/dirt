@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.43 2003-03-29 07:05:51 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.44 2003-03-31 05:19:51 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -787,7 +787,7 @@ void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized)
 
 }
 
-void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized)
+void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show)
 {
 
 	#ifdef __WIN32__
@@ -796,7 +796,8 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized)
 		WINDOWPLACEMENT wp;
 		memset(&wp, 0, sizeof(wp));
 		wp.length = sizeof(WINDOWPLACEMENT);
-		wp.showCmd = maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
+		wp.flags = 0;
+		wp.showCmd = (show||frm->IsShown()) ? (maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL) : SW_HIDE;
 
 		RECT& rc = wp.rcNormalPosition;
 
@@ -811,6 +812,10 @@ void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized)
 
 		frm->SetSize(r);
 		frm->Maximize(maximized);
+		if (show)
+		{
+			frm->Show();
+		}
 
 	#endif
 
@@ -844,7 +849,7 @@ void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name
 
 }
 
-void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name)
+void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name, bool show)
 {
 
 	wxString path;
@@ -867,7 +872,7 @@ void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name)
 	cfg->Read(wxT("Height"), &r.height, r.height);
 	cfg->Read(wxT("Maximized"), &maximized, maximized);
 
-	SetWindowState(frm, r, maximized);
+	SetWindowState(frm, r, maximized, show);
 
 	cfg->SetPath(old_path);
 

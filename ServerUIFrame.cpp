@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.43 2003-03-29 05:30:09 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.44 2003-03-31 05:19:51 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -197,8 +197,8 @@ ServerUIFrame::ServerUIFrame()
 	OnServerStateChange();
 	m_server->Start();
 
+	m_size_set = false;
 	ResetWindowPos();
-	RestoreWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"));
 
 	if (!m_server->IsRunning() || !m_tray->Ok())
 	{
@@ -242,10 +242,24 @@ void ServerUIFrame::OnClose(wxCloseEvent &event)
 	event.Skip();
 }
 
-void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
+void ServerUIFrame::SetPositionAndShow()
 {
+	if (!m_size_set)
+	{
+		RestoreWindowState(this, m_server->GetConfig().GetConfig(), wxT("Server"), true);
+		m_size_set = true;
+	}
+	else
+	{
+		Show();
+	}
 	ForceForegroundWindow(this);
 	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
+}
+
+void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
+{
+	SetPositionAndShow();
 }
 
 void ServerUIFrame::OnIconize(wxIconizeEvent &event)
@@ -276,8 +290,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 
 void ServerUIFrame::OnRestore(wxCommandEvent &event)
 {
-	ForceForegroundWindow(this);
-	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
+	SetPositionAndShow();
 }
 
 void ServerUIFrame::OnIdle(wxIdleEvent &event)

@@ -15,6 +15,7 @@ public:
 	virtual ~ServerUIFrame();
 
 	virtual void Output(const wxString &line);
+	void SetPositionAndShow();
 
 protected:
 	virtual bool OnServerPreprocess(wxString &cmd, wxString &params);
@@ -63,6 +64,7 @@ protected:
 	wxString m_last_tooltip;
 	bool m_hide_self;
 	ServerConnection *m_right_click_conn;
+	bool m_size_set;
 
 private:
 	DECLARE_EVENT_TABLE()
