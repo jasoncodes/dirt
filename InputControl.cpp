@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.8 2003-02-26 05:39:18 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.9 2003-03-05 02:33:23 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -288,6 +288,15 @@ void InputControl::AddToHistory(const wxString &line)
 		history.Add(line);
 	}
 	history_pos = history.GetCount();
+}
+
+void InputControl::RemoveLastHistoryEntry()
+{
+	int count = history.GetCount();
+	if (count > 0)
+	{
+		history.Remove(count - 1);
+	}
 }
 
 void InputControl::OnKeyUp(wxKeyEvent& event)

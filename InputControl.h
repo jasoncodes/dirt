@@ -19,20 +19,17 @@ public:
 
 	virtual ~InputControl();
 
+	void ClosePopup();
+	void RemoveLastHistoryEntry();
+
+protected:
 	void OnChange(wxCommandEvent &event);
 	void OnEnterPress(wxCommandEvent &event);	
 	void OnKeyDown(wxKeyEvent& event);
 	void OnKeyUp(wxKeyEvent& event);
 	void OnChar(wxKeyEvent& event);
-	void ClosePopup();
 
 protected:
-	wxArrayString history;
-	size_t history_pos;
-	InputControlColourPopup *popup;
-	wxTextCtrl *txtBestSize;
-	bool m_ctrl_down;
-
 	void AddToHistory(const wxString &line);
 	bool ModifierCheck(wxKeyEvent& event);
 	void AddModifier(const wxString &modifier, bool alternate_caret_pos);
@@ -42,6 +39,13 @@ protected:
 	void ShowPopup();
 	void MaybeClosePopup(wxKeyEvent& event);
 	bool IsPrintable(const wxString &text);
+
+protected:
+	wxArrayString history;
+	size_t history_pos;
+	InputControlColourPopup *popup;
+	wxTextCtrl *txtBestSize;
+	bool m_ctrl_down;
 
 private:
 	DECLARE_EVENT_TABLE()

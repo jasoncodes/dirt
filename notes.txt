@@ -8,7 +8,7 @@
 
 * mdi child icon sometimes doesn't show
 
-* copy w/o formatting, find text, etc
+* hold ctrl for copy w/o formatting, find text via ctrl-f, etc
 
 * dcc send/recv dialog
 
@@ -34,9 +34,7 @@
 
 * make dns requests non-blocking (in Client::Connect() and HTTP::Connect())
 
-* hide /oper password when being typed or at least make sure doesn't go into history
-
-* hold ctrl to copy w/o formatting
+* hide /oper password when being typed
 
 * tray icon support
 * tab completion

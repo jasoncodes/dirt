@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.35 2003-03-05 01:11:04 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.36 2003-03-05 02:33:23 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -305,6 +305,10 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 		context = GetTitle();
 	}
 	m_txtLog->ResetRedLine();
+	if (LeftEq(event.GetString().Lower(), wxT("/oper ")))
+	{
+		m_txtInput->RemoveLastHistoryEntry();
+	}
 	GetClient()->ProcessConsoleInput(context, event.GetString());
 }
 
