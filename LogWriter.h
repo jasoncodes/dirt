@@ -5,6 +5,7 @@
 #include "ByteBuffer.h"
 #include "Crypt.h"
 #include "Util.h"
+#include <wx/file.h>
 #include <wx/datetime.h>
 
 class LogWriter
@@ -12,7 +13,6 @@ class LogWriter
 
 public:
 	LogWriter(const wxString &filename);
-	LogWriter(const wxDateTime &date = wxDateTime::Now(), const wxString &name = wxEmptyString);
 	virtual ~LogWriter();
 
 	static wxString GenerateFilename(const wxDateTime &date = wxDateTime::Now(), const wxString &name = wxEmptyString);
@@ -29,7 +29,6 @@ public:
 	virtual void AddSeparator();
 
 protected:
-	virtual void Init(const wxString &filename);
 	virtual void Write(const ByteBuffer &data);
 
 protected:

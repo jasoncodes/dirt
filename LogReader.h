@@ -5,6 +5,7 @@
 #include "ByteBuffer.h"
 #include "Crypt.h"
 #include "Util.h"
+#include <wx/file.h>
 
 class LogReader
 {
@@ -32,7 +33,6 @@ public:
 	virtual wxString GetText();
 
 protected:
-	virtual void Init(const wxString &filename);
 	virtual ByteBuffer Read();
 
 protected:

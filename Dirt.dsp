@@ -319,7 +319,15 @@ SOURCE=.\LogControl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\LogReader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\LogReader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LogWriter.cpp
 # End Source File
 # Begin Source File
 
