@@ -193,6 +193,6 @@ void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &
 
 void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)
 {
-	wxString context = is_private ? nick : wxEmptyString;
+	wxString context = is_private ? nick : (const wxString)wxEmptyString;
 	AddLine(context, "<" + nick + "> " + text);
 }
