@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.55 2003-04-30 02:47:17 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.56 2003-04-30 07:04:29 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -435,7 +435,6 @@ void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 void ServerUIFrame::OnClient(wxCommandEvent& event)
 {
 	wxASSERT(m_server && m_server->IsRunning());
-	wxASSERT(wxTheApp->argc > 0);
 	wxString param;
 	param << wxT("--host=dirt://localhost:") << m_server->GetListenPort() << wxT("/");
 	const wxChar *argv[3];
