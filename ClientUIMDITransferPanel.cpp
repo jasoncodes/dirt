@@ -50,6 +50,8 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_lblCPS = AddRow("CPS:");
 	m_lblSent = AddRow("Sent:");
 
+	AddRow("");
+
 	m_pnlLeft->SetAutoLayout( TRUE );
 	m_pnlLeft->SetSizer( m_szrLeft );
 	m_szrLeft->Fit( m_pnlLeft );
@@ -101,7 +103,7 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 	m_pnlRight->SetSize( size.x, -1 );
 	
 	int gauge_y = size.y - gauge_height - 8;
-	int min_gauge_y = m_pnlLeft->GetRect().GetBottom() + 16 + status_height;
+	int min_gauge_y = m_pnlLeft->GetRect().GetBottom() + 8 + status_height;
 	gauge_y = wxMax(gauge_y, min_gauge_y);
 
 	m_lblStatus->Move(8, gauge_y - 8 - status_height);
