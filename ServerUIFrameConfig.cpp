@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.43 2003-06-27 11:34:45 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.44 2003-06-30 05:29:47 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -453,7 +453,9 @@ void ServerUIFrameConfig::LoadSettings()
 	m_txtMaxUsers->SetValue(wxString()<<config.GetMaxUsers());
 	m_txtMaxUsersIP->SetValue(wxString()<<config.GetMaxUsersIP());
 	m_txtSoundConnection->SetValue(config.GetSoundConnection());
+	m_cmdSoundConnectionPreview->Enable(m_txtSoundConnection->GetValue().Length() > 0);
 	m_txtSoundJoin->SetValue(config.GetSoundJoin());
+	m_cmdSoundJoinPreview->Enable(m_txtSoundJoin->GetValue().Length() > 0);
 	m_txtServerName->SetValue(config.GetServerName());
 	m_txtHostname->SetValue(config.GetHostname());
 
