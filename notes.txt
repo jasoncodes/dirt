@@ -20,7 +20,22 @@
 		-- optional ip/port pairs for firewall traversal
 		-- sender decides which connection to keep if multiple succeed
 
-* dcc send/recv dialog
+	* recv sending THANKS after complete and then sender closes connection
+	  (when sender closes, it sets ftsSendComplete)
+	  (when recv gets LOST, it sets ftsGetComplete)
+
+	* handling of CRYPTSOCKET_LOST
+
+	* context menu options
+		* accept to $last_dir/file.ext
+		* open file.ext
+		* open file.ext when complete
+		* open containing folder
+		* open containing folder when complete
+
+	* resume/overwrite option on /dcc accept
+
+	* firewall traversal
 
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)
