@@ -262,7 +262,7 @@ void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxStri
 
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
 {
-	if (GetContext(nick, false) != GetContext(wxEmptyString))
+	if (nick.Length() == 0 || GetContext(nick, false) != GetContext(wxEmptyString))
 	{
 		AddLine(nick, "<" + m_client->GetNickname() + "> " + text, *wxBLACK, true, true);
 	}

@@ -15,6 +15,7 @@ enum
 	ID_WINDOW_WINDOWS = ID_SWITCHBARPARENT_FIRST,
 	ID_SWITCHBAR = ID_WINDOW_WINDOWS + 1000,
 	ID_UPDATEWINDOWMENUTIMER,
+	ID_WINDOW_MINIMIZE,
 	ID_WINDOW_CLOSE,
 	ID_WINDOW_CASCADE,
 	ID_WINDOW_TILE,
@@ -35,6 +36,7 @@ BEGIN_EVENT_TABLE(SwitchBarParent, wxMDIParentFrame)
 	EVT_MENU(ID_SWITCHBAR, SwitchBarParent::OnSwitchBarMenu)
 	EVT_TIMER(ID_UPDATEWINDOWMENUTIMER, SwitchBarParent::OnUpdateWindowMenuTimer)
 	EVT_IDLE(SwitchBarParent::OnUpdateWindowMenuIdle)
+	EVT_MENU(ID_WINDOW_MINIMIZE, SwitchBarParent::OnWindowMinimize)
 	EVT_MENU(ID_WINDOW_CLOSE, SwitchBarParent::OnWindowClose)
 	EVT_MENU(ID_WINDOW_CASCADE, SwitchBarParent::OnWindowCascade)
 	EVT_MENU(ID_WINDOW_TILE, SwitchBarParent::OnWindowTile)
@@ -62,6 +64,7 @@ SwitchBarParent::SwitchBarParent(
 	tmrUpdateWindowMenu = new wxTimer(this, ID_UPDATEWINDOWMENUTIMER);
 
 	mnuWindow = new wxMenu;
+	mnuWindow->Append(ID_WINDOW_MINIMIZE, "Mi&nimize\tEsc");
 	mnuWindow->Append(ID_WINDOW_CLOSE, "Cl&ose\tCtrl-F4");
 	mnuWindow->AppendSeparator();
 	mnuWindow->Append(ID_WINDOW_CASCADE, "&Cascade");
@@ -72,12 +75,13 @@ SwitchBarParent::SwitchBarParent(
 	mnuWindow->AppendSeparator();
 	num_window_menus = 0;
 
-	wxAcceleratorEntry entries[4];
+	wxAcceleratorEntry entries[5];
 	entries[0].Set(wxACCEL_CTRL, WXK_TAB, ID_WINDOW_NEXT);
 	entries[1].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_TAB, ID_WINDOW_PREV);
 	entries[2].Set(wxACCEL_CTRL, WXK_F6, ID_WINDOW_NEXT);
 	entries[3].Set(wxACCEL_CTRL | wxACCEL_SHIFT, WXK_F6, ID_WINDOW_PREV);
-	wxAcceleratorTable accel(4, entries);
+	entries[4].Set(0, WXK_ESCAPE, ID_WINDOW_MINIMIZE);
+	wxAcceleratorTable accel(5, entries);
 	SetAcceleratorTable(accel);
 
 }
@@ -173,6 +177,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 	int iNumChildren = m_switchbar->GetButtonCount();
 	bool bIsChildren = (iNumChildren > 0);
 	
+	GetMenuBar()->Enable(ID_WINDOW_MINIMIZE, bIsActiveChild);
 	GetMenuBar()->Enable(ID_WINDOW_CLOSE, bIsActiveChild);
 	GetMenuBar()->Enable(ID_WINDOW_CASCADE, bIsChildren);
 	GetMenuBar()->Enable(ID_WINDOW_TILE, bIsChildren);
@@ -241,6 +246,15 @@ void SwitchBarParent::DoUpdateWindowMenu()
 
 	}
 
+}
+
+void SwitchBarParent::OnWindowMinimize(wxCommandEvent& event)
+{
+	if (GetActiveChild() != NULL)
+	{
+		int button_index = m_switchbar->GetIndexFromUserData(GetActiveCanvas());
+		m_switchbar->SimulateClick(button_index);
+	}
 }
 
 void SwitchBarParent::OnWindowClose(wxCommandEvent& event)
@@ -394,11 +408,24 @@ void SwitchBarParent::FocusCanvas(SwitchBarCanvas *canvas)
 	}
 }
 
+SwitchBarCanvas *SwitchBarParent::GetActiveCanvas()
+{
+	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
+	if (child)
+	{
+		return child->GetCanvas();
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
 void SwitchBarParent::OnSwitchBarMinimize(wxCommandEvent& event)
 {
 	m_switchbar->SelectButton(-1);
 	m_switchbar->RaiseEvent(switchbar_popup_button_index, false);
-	int new_index = m_switchbar->GetIndexFromUserData(GetActiveChild());
+	int new_index = m_switchbar->GetIndexFromUserData(GetActiveCanvas());
 	m_switchbar->SelectButton(new_index);
 }
 

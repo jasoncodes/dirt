@@ -27,6 +27,7 @@ protected:
 	void OnSwitchBar(wxCommandEvent& event);
 	void OnSwitchBarMenu(wxCommandEvent& event);
 
+	void OnWindowMinimize(wxCommandEvent& event);
 	void OnWindowClose(wxCommandEvent& event);
 	void OnWindowCascade(wxCommandEvent& event);
 	void OnWindowTile(wxCommandEvent& event);
@@ -46,6 +47,7 @@ protected:
 	void NextChild(bool bPrevious);
 	void DoUpdateWindowMenu();
 	void UpdateCheckMenuItem(int id, const wxString &label, bool enabled, bool checked);
+	SwitchBarCanvas *GetActiveCanvas();
 
 	virtual SwitchBarChild* OnCreateNewChild(wxPoint pos, wxSize size, bool bMaximized, SwitchBarCanvas *canvas);
 
