@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.56 2003-05-07 01:59:56 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.57 2003-05-11 15:12:03 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -237,6 +237,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
+				if (!conn->m_authkey.Length())
 				{
 					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
 					if (m_config.GetPublicListComment().Length())
