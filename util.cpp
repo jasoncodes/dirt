@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.78 2003-08-24 15:35:31 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.79 2003-08-24 15:52:15 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1245,7 +1245,7 @@ wxString GetOSDescription()
 		return wxEmptyString;
 	}
 	wxString str;
-	str << uname.sysname << wxT(" ") << uname.release;
+	str << name.sysname << wxT(" ") << name.release;
 	return str;
 #else
 	return wxGetOsDescription();
