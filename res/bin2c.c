@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			sprintf(tmp, "\\x%03x", c);
+			sprintf(tmp, "\\x%02x", c);
 		}
 		if (strlen(tmp) + strlen(buff) < 70)
 		{
