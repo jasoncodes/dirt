@@ -43,7 +43,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
-	mnuFile->Append(ID_FILE_EXIT, "&Exit\tAlt-F4", "Quit the program");
+	mnuFile->Append(ID_FILE_EXIT, "E&xit\tAlt-F4", "Quit the program");
 	mnu->Append(mnuFile, "&File");
 
 	mnu->Append(GetWindowMenu(), "&Window");

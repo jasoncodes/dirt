@@ -21,3 +21,9 @@
 * HIGH PRIORITY: minimizing channel window on gtk breaks totally w/ splitter
 
 * research that log control gdi thing in 9x
+
+* ideas for server: banning, motd
+
+* type /lizard and it says (Lizard support is not available at this time)
+
+* tooltips for switchbar (maybe nick list)
