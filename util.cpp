@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.49 2003-04-01 07:37:11 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.50 2003-04-02 12:50:31 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -906,4 +906,40 @@ void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name, b
 
 	cfg->SetPath(old_path);
 
+}
+
+wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future)
+{
+	wxDateTime dt;
+	HeadTail ht = SplitHeadTail(str);
+	bool has_colon[2] = { ht.head.Contains(wxT(':')), ht.tail.Contains(wxT(':')) };
+	if (!has_colon[0] && !has_colon[1])
+	{
+		return wxInvalidDateTime;
+	}
+	if (has_colon[0] && !has_colon[1])
+	{
+		wxString tmp;
+		tmp = ht.head;
+		ht.head = ht.tail;
+		ht.tail = tmp;
+	}
+	ht.head.Trim(true).Trim(false);
+	ht.tail.Trim(true).Trim(false);
+	if (ht.head.Length())
+	{
+		dt.ParseDate(ht.head);
+	}
+	if (ht.tail.Length())
+	{
+		dt.ParseTime(ht.tail);
+	}
+	if (!ht.head.Length() && okay_to_presume_future)
+	{
+		if (dt < wxDateTime::Now())
+		{
+			dt += wxTimeSpan::Day();
+		}
+	}
+	return dt;
 }
