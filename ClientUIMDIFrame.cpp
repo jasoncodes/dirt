@@ -163,6 +163,21 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	}
 }
 
+ClientUIMDITransferPanel* ClientUIMDIFrame::GetContext(const long transferid)
+{
+	wxASSERT(m_switchbar->GetButtonCount() >= 1);
+	for (int i = 1; i < m_switchbar->GetButtonCount(); ++i)
+	{
+		ClientUIMDICanvas *canvas = (ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+		ClientUIMDITransferPanel *transfer = canvas->GetTransferPanel();
+		if (transfer && transfer->GetTransferId() == transferid)
+		{
+			return transfer;
+		}
+	}
+	return NULL;
+}
+
 void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert, bool convert_urls)
 {
 
@@ -222,6 +237,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	{
 		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, TransferSendCanvas);
 		ClientUIMDITransferPanel *transfer = canvas->GetTransferPanel();
+		transfer->SetTransferId(1);
 		transfer->SetNickname("Jason");
 		transfer->SetFilename("D:\\Archive\\Stuff\\Dirt.exe");
 		transfer->SetFileSize(363520);

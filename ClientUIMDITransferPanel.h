@@ -16,6 +16,7 @@ public:
 
 	virtual ~ClientUIMDITransferPanel();
 
+	long GetTransferId();
 	wxString GetNickname();
 	wxString GetFilename();
 	off_t GetFileSize();
@@ -25,6 +26,7 @@ public:
 	off_t GetFileSent();
 	wxString GetStatus();
 
+	void SetTransferId(long id);
 	void SetNickname(const wxString &nickname);
 	void SetFilename(const wxString &filename);
 	void SetFileSize(off_t bytes);
@@ -62,6 +64,7 @@ protected:
 	wxGauge *m_gauge;
 
 protected:
+	long m_transferid;
 	wxString m_nickname;
 	wxString m_filename;
 	off_t m_filesize;

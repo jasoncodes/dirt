@@ -67,6 +67,7 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 		wxDefaultPosition, wxSize(256, 24),
 		wxGA_SMOOTH | wxNO_BORDER);
 
+	m_transferid = -1;
 	m_nickname = wxEmptyString;
 	m_filename = wxEmptyString;
 	m_filesize = 0;
@@ -152,6 +153,11 @@ wxString ClientUIMDITransferPanel::GetShortFilename()
 	return result;
 }
 
+long ClientUIMDITransferPanel::GetTransferId()
+{
+	return m_transferid;
+}
+
 wxString ClientUIMDITransferPanel::GetNickname()
 {
 	return m_nickname;
@@ -190,6 +196,11 @@ off_t ClientUIMDITransferPanel::GetFileSent()
 wxString ClientUIMDITransferPanel::GetStatus()
 {
 	return m_status;
+}
+
+void ClientUIMDITransferPanel::SetTransferId(long id)
+{
+	m_transferid = id;
 }
 
 void ClientUIMDITransferPanel::SetNickname(const wxString &nickname)
