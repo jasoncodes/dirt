@@ -74,6 +74,7 @@ protected:
 
 protected:
 	virtual void OnProxyInput(const ByteBuffer &data);
+	virtual void OnConnectedToRemote();
 	virtual void ProxySendData(const ByteBuffer &data);
 
 protected:

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.39 2003-06-07 12:46:16 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.40 2003-06-27 11:34:44 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -56,9 +56,9 @@ void ClientDefault::NewProxySettings()
 	}
 }
 
-const CryptSocketProxySettings* ClientDefault::GetProxySettings() const
+const CryptSocketProxySettings ClientDefault::GetProxySettings() const
 {
-	return m_sck->GetProxySettings();
+	return CryptSocketProxySettings(const_cast<ClientConfig&>(m_config));
 }
 
 void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action)

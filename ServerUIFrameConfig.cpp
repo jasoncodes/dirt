@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.42 2003-05-30 11:27:44 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.43 2003-06-27 11:34:45 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -162,10 +162,10 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLeftTopLeft->Add(m_txtHostname, 0, wxEXPAND);
 
 					szrLeftTopLeft->Add(lblUserPassword, 0, wxALIGN_CENTER_VERTICAL);
-					szrLeftTopLeft->Add(m_txtAdminPassword, 0, wxEXPAND);
+					szrLeftTopLeft->Add(m_txtUserPassword, 0, wxEXPAND);
 
 					szrLeftTopLeft->Add(lblAdminPassword, 0, wxALIGN_CENTER_VERTICAL);
-					szrLeftTopLeft->Add(m_txtUserPassword, 0, wxEXPAND);
+					szrLeftTopLeft->Add(m_txtAdminPassword, 0, wxEXPAND);
 
 					szrLeftTopLeft->Add(lblSoundConnection, 0, wxALIGN_CENTER_VERTICAL);
 					wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);

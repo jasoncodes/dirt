@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.20 2003-06-06 02:53:14 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.21 2003-06-27 11:34:45 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -71,8 +71,7 @@ public:
 				if (header.GetStatusCode() == 200)
 				{
 					m_connected_to_remote = true;
-					m_buff = m_buff.Mid(pos + separator.Length());
-					ForwardInputToClient(m_buff);
+					ProxyConnected(m_buff.Mid(pos + separator.Length()));
 					m_buff = ByteBuffer();
 				}
 				else
@@ -108,14 +107,15 @@ class CryptSocketProxySOCKS4 : public CryptSocketProxy
 {
 
 public:
-	CryptSocketProxySOCKS4(CryptSocketBase *sck)
-		: CryptSocketProxy(sck)
+	CryptSocketProxySOCKS4(CryptSocketBase *sck, bool is_connect)
+		: CryptSocketProxy(sck), m_is_connect(is_connect)
 	{
 		m_connected_to_remote = false;
 	}
 
 	virtual void OnConnect()
 	{
+		wxASSERT_MSG(m_is_connect, wxT("Listen not supported yet"));
 		ByteBuffer request;
 		request += ByteBuffer(1, 4); // SOCKS 4
 		request += ByteBuffer(1, 1); // CONNECT
@@ -128,6 +128,7 @@ public:
 
 	virtual void OnInput(const ByteBuffer &data)
 	{
+		wxASSERT_MSG(m_is_connect, wxT("Listen not supported yet"));
 		m_buff += data;
 		if (m_buff.Length() >= 8)
 		{
@@ -137,7 +138,7 @@ public:
 				{
 					case 90:
 						m_connected_to_remote = true;
-						ForwardInputToClient(m_buff.Mid(8));
+						ProxyConnected(m_buff.Mid(8));
 						m_buff = ByteBuffer();
 						break;
 					case 91: 
@@ -167,6 +168,7 @@ public:
 	}
 
 protected:
+	bool m_is_connect;
 	bool m_connected_to_remote;
 	ByteBuffer m_buff;
 
@@ -178,8 +180,8 @@ class CryptSocketProxySOCKS5 : public CryptSocketProxy
 {
 
 public:
-	CryptSocketProxySOCKS5(CryptSocketBase *sck)
-		: CryptSocketProxy(sck)
+	CryptSocketProxySOCKS5(CryptSocketBase *sck, bool is_connect)
+		: CryptSocketProxy(sck), m_is_connect(is_connect)
 	{
 		m_connected_to_remote = false;
 		m_state = stateUnknown;
@@ -187,6 +189,7 @@ public:
 
 	virtual void OnConnect()
 	{
+		wxASSERT_MSG(m_is_connect, wxT("Listen not supported yet"));
 		bool has_pass =
 			m_settings.GetUsername().Length() ||
 			m_settings.GetPassword(true).Length();
@@ -204,6 +207,7 @@ public:
 
 	virtual void OnInput(const ByteBuffer &data)
 	{
+		wxASSERT_MSG(m_is_connect, wxT("Listen not supported yet"));
 
 		m_buff += data;
 
@@ -282,7 +286,7 @@ public:
 										//ByteBuffer remote_ip_bytes = m_buff.Mid(4,4);
 										//ByteBuffer remote_port_bytes = m_buff.Mid(8,2);
 										m_connected_to_remote = true;
-										ForwardInputToClient(m_buff.Mid(10));
+										ProxyConnected(m_buff.Mid(10));
 										m_buff = ByteBuffer();
 									}
 									else
@@ -371,6 +375,7 @@ protected:
 	}
 
 protected:
+	bool m_is_connect;
 	bool m_connected_to_remote;
 	ByteBuffer m_buff;
 	enum
@@ -382,14 +387,6 @@ protected:
 	} m_state;
 
 };
-
-//////// CryptSocketProxySOCKS4Listen ////////
-
-// not implemented yet
-
-//////// CryptSocketProxySOCKS5Listen ////////
-
-// not implemented yet
 
 //////// CryptSocketProxySettings ////////
 
@@ -555,7 +552,7 @@ bool CryptSocketProxySettings::DoesProtocolSupportConnectionType(CryptSocketProx
 	{
 
 		case ppSOCKS4:
-			return (type != pctDCCListen); //true; // DCC listens not supported yet
+			return true;
 
 		case ppSOCKS5:
 			return (type != pctDCCListen); //true; // DCC listens not supported yet
@@ -935,11 +932,11 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck
 	{
 
 		case ppSOCKS4:
-			proxy = new CryptSocketProxySOCKS4(sck);
+			proxy = new CryptSocketProxySOCKS4(sck, true);
 			break;
 
 		case ppSOCKS5:
-			proxy = new CryptSocketProxySOCKS5(sck);
+			proxy = new CryptSocketProxySOCKS5(sck, true);
 			break;
 
 		case ppHTTP:
@@ -965,20 +962,20 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyListen(CryptSocketBase *sck)
 
 	wxASSERT(sck);
 
-//	switch (GetProtocol())
-//	{
+	switch (GetProtocol())
+	{
 
-//		case ppSOCKS4:
-//			return new CryptSocketProxySOCKS4Listen(sck);
+		case ppSOCKS4:
+			return new CryptSocketProxySOCKS4(sck, false);
 
-//		case ppSOCKS5:
-//			return new CryptSocketProxySOCKS5Listen(sck);
+		case ppSOCKS5:
+			return new CryptSocketProxySOCKS5(sck, false);
 
-//		default:
+		default:
 			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyListen"));
 			return NULL;
 
-//	}
+	}
 
 }
 
@@ -1008,4 +1005,10 @@ void CryptSocketProxy::SendData(const ByteBuffer &data)
 void CryptSocketProxy::ConnectionError(const wxString &msg)
 {
 	m_sck->OnSocketConnectionError(wxT("Proxy error: ") + msg);
+}
+
+void CryptSocketProxy::ProxyConnected(const ByteBuffer &data_to_forward)
+{
+	m_sck->OnConnectedToRemote();
+	ForwardInputToClient(data_to_forward);
 }

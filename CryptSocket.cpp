@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.39 2003-06-19 07:26:53 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.40 2003-06-27 11:34:44 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -248,6 +248,15 @@ void CryptSocketBase::OnProxyInput(const ByteBuffer &data)
 {
 	m_buffIn += data;
 	DispatchIncoming();
+}
+
+void CryptSocketBase::OnConnectedToRemote()
+{
+	if (m_handler)
+	{
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION, this);
+		m_handler->AddPendingEvent(evt);
+	}
 }
 
 void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
@@ -590,9 +599,8 @@ bool CryptSocketBase::InitProxyConnect(wxString &dest_ip, wxUint16 dest_port)
 		m_proxy_settings->DoesDestPortMatch(dest_port))
 	{
 		m_proxy = m_proxy_settings->NewProxyConnect(this, dest_ip, dest_port);
-		return true;
 	}
-	return false;
+	return (m_proxy != NULL);
 }
 
 bool CryptSocketBase::InitProxyListen()
@@ -603,9 +611,8 @@ bool CryptSocketBase::InitProxyListen()
 	if (m_proxy_settings)
 	{
 		m_proxy = m_proxy_settings->NewProxyListen(this);
-		return true;
 	}
-	return false;
+	return (m_proxy != NULL);
 }
 
 void CryptSocketBase::RaiseSocketEvent(wxSocketNotify type)
@@ -670,11 +677,9 @@ void CryptSocketClient::OnSocketConnection()
 	{
 		m_proxy->OnConnect();
 	}
-
-	if (m_handler)
+	else
 	{
-		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION, this);
-		m_handler->AddPendingEvent(evt);
+		OnConnectedToRemote();
 	}
 
 }
@@ -739,32 +744,58 @@ CryptSocketServer::~CryptSocketServer()
 
 void CryptSocketServer::Listen(const wxString &host, wxUint16 port)
 {
+
 	Destroy();
-	wxIPV4address addr;
-	bool ok = true;
-	if (host.Length())
+
+	if (InitProxyListen())
 	{
-		if (!addr.Hostname(host))
+
+		if (host.Length() || port)
 		{
-			ok = false;
+			CryptSocketEvent evt(m_id, CRYPTSOCKET_ERROR, this, wxString(wxT("Proxy listen doesn't support binding")));
+			m_handler->AddPendingEvent(evt);
+			return;
 		}
+
+		CryptSocketEvent evt(m_id, CRYPTSOCKET_ERROR, this, wxString(wxT("Proxy listen not implemented yet")));
+		m_handler->AddPendingEvent(evt);
+
 	}
 	else
 	{
-		addr.AnyAddress();
+
+		wxIPV4address addr;
+		
+		bool ok = true;
+
+		if (host.Length())
+		{
+			if (!addr.Hostname(host))
+			{
+				ok = false;
+			}
+		}
+		else
+		{
+			addr.AnyAddress();
+		}
+
+		if (ok)
+		{
+			addr.Service(port);
+			m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
+			InitSocketEvents();
+			ok = m_sck->Ok();
+		}
+
+		if (m_handler)
+		{
+			CryptSocketEvent evt(m_id, ok?CRYPTSOCKET_LISTEN:CRYPTSOCKET_ERROR, this);
+			m_handler->AddPendingEvent(evt);
+		}
+
 	}
-	if (ok)
-	{
-		addr.Service(port);
-		m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
-		InitSocketEvents();
-		ok = m_sck->Ok();
-	}
-	if (m_handler)
-	{
-		CryptSocketEvent evt(m_id, ok?CRYPTSOCKET_LISTEN:CRYPTSOCKET_ERROR, this);
-		m_handler->AddPendingEvent(evt);
-	}
+
 }
 
 CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType id, void *userdata)

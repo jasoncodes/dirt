@@ -135,7 +135,7 @@ public:
 	virtual ByteBuffer GetKeyLocalPublic() const = 0;
 	virtual ByteBuffer GetKeyLocalPrivate() const = 0;
 	virtual void NewProxySettings() = 0;
-	virtual const CryptSocketProxySettings* GetProxySettings() const = 0;
+	virtual const CryptSocketProxySettings GetProxySettings() const = 0;
 
 protected:
 	void OnTimerPing(wxTimerEvent &event);

@@ -196,6 +196,7 @@ protected:
 	virtual void ForwardInputToClient(const ByteBuffer &data);
 	virtual void SendData(const ByteBuffer &data);
 	virtual void ConnectionError(const wxString &msg);
+	virtual void ProxyConnected(const ByteBuffer &data_to_forward);
 
 protected:
 	CryptSocketBase *m_sck;

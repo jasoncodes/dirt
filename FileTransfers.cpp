@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.49 2003-06-19 07:26:53 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.50 2003-06-27 11:34:45 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -148,14 +148,11 @@ void FileTransfers::AppendMyIPs(ByteBufferArray &data, CryptSocketServer *sckSer
 
 void FileTransfers::SetProxyOnSocket(CryptSocketBase *sck, bool is_connect) const
 {
-	const CryptSocketProxySettings *proxy_settings = m_client->GetProxySettings();
-	if (proxy_settings)
+	const CryptSocketProxySettings &proxy_settings = m_client->GetProxySettings();
+	if ((is_connect && proxy_settings.IsEnabledForConnectionType(pctDCCConnect)) ||
+		(!is_connect && proxy_settings.IsEnabledForConnectionType(pctDCCListen)))
 	{
-		if ((is_connect && proxy_settings->IsEnabledForConnectionType(pctDCCConnect)) ||
-			(!is_connect && proxy_settings->IsEnabledForConnectionType(pctDCCListen)))
-		{
-			sck->SetProxySettings(proxy_settings);
-		}
+		sck->SetProxySettings(&proxy_settings);
 	}
 }
 
@@ -962,6 +959,33 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 
 		wxASSERT(&m_transfers[index] == t);
 
+		wxString type;
+		switch (event.GetSocketEvent())
+		{
+			case CRYPTSOCKET_INPUT:
+				type = wxT("CRYPTSOCKET_INPUT");
+				break;
+			case CRYPTSOCKET_OUTPUT:
+				type = wxT("CRYPTSOCKET_OUTPUT");
+				break;
+			case CRYPTSOCKET_CONNECTION:
+				type = wxT("CRYPTSOCKET_CONNECTION");
+				break;
+			case CRYPTSOCKET_LISTEN:
+				type = wxT("CRYPTSOCKET_LISTEN");
+				break;
+			case CRYPTSOCKET_LOST:
+				type = wxT("CRYPTSOCKET_LOST");
+				break;
+			case CRYPTSOCKET_ERROR:
+				type = wxT("CRYPTSOCKET_ERROR");
+				break;
+		}
+		wxString msg;
+		msg << t->transferid << wxT(" ") << wxString::Format(wxT("%x"),event.GetSocket()) << wxT(" ") << type;
+		OutputDebugString((msg+wxT("\n")).c_str());
+	//	m_client->m_event_handler->OnClientDebug(wxEmptyString, msg);
+
 		switch (event.GetSocketEvent())
 		{
 
@@ -1062,6 +1086,10 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 					{
 						t->state = ftsSendFail;
 						t->status = wxT("Error opening listen socket");
+						if (event.GetData().Length())
+						{
+							t->status << wxT(" (") << event.GetData() << wxT(")");
+						}
 						m_client->m_event_handler->OnClientTransferState(*t);
 						DeleteTransfer(t->transferid, false);
 					}

@@ -29,7 +29,7 @@ public:
 	virtual ByteBuffer GetKeyLocalPublic() const;
 	virtual ByteBuffer GetKeyLocalPrivate() const;
 	virtual void NewProxySettings();
-	virtual const CryptSocketProxySettings* GetProxySettings() const;
+	virtual const CryptSocketProxySettings GetProxySettings() const;
 
 protected:
 	virtual void SendToServer(const ByteBuffer &msg);
