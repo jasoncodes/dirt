@@ -465,7 +465,7 @@ public:
 
 bool LogControl::s_bInitDone = false;
 
-BEGIN_EVENT_TABLE(LogControl, wxPanel)
+BEGIN_EVENT_TABLE(LogControl, wxHtmlWindow)
 	EVT_SIZE(LogControl::OnSize)
 	EVT_ERASE_BACKGROUND(LogControl::OnErase)
 	EVT_IDLE(LogControl::OnIdle)
