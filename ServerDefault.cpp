@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.74 2004-05-30 10:04:48 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.75 2004-05-30 12:46:41 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -45,8 +45,9 @@ const long http_update_good = 5*60;
 const long http_update_bad1 = 30;
 const long http_update_bad2 = 15*60;
 
-ServerDefaultConnection::ServerDefaultConnection()
+ServerDefaultConnection::ServerDefaultConnection(ServerDefault *server)
 {
+	m_server = server;
 	m_auth_fail_count = 0;
 	m_nextping = GetMillisecondTicks() + initial_ping_delay;
 	m_pingid = wxEmptyString;
@@ -73,6 +74,15 @@ void ServerDefaultConnection::Terminate(const ByteBuffer &reason)
 	{
 		if (m_sck->Ok() && GetNickname().Length())
 		{
+			if (m_server->m_log_public_messages)
+			{
+				m_server->m_log_public_messages->AddText(wxString()
+					<< GetLongTimestamp()
+					<< GetNickname()
+					<< wxT(" (") << GetInlineDetails()
+					<< wxT(") has left the chat (")
+					<< m_quitmsg << wxT(")"), colours[3]);
+			}
 			Send(wxEmptyString, wxT("PART"), Pack(GetNickname(), GetInlineDetails(), m_quitmsg));
 		}
 		m_sck->CloseWithEvent();
@@ -153,7 +163,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_CONNECTION:
 			{
-				ServerDefaultConnection *conn = new ServerDefaultConnection;
+				ServerDefaultConnection *conn = new ServerDefaultConnection(this);
 				conn->m_sck = m_sckListen->Accept(this, ID_SOCKET, conn);
 				m_connections.Add(conn);
 				m_event_handler->OnServerConnectionChange();
@@ -284,6 +294,10 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					if (m_filtered_words_list.GetCount())
 					{
 						conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server has content filtering enabled.")));
+					}
+					if (m_log_public_messages != NULL)
+					{
+						conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server has public message logging enabled.")));
 					}
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);

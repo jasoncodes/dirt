@@ -73,6 +73,8 @@ protected:
 
 	TristateConfigPanel *m_pnlLog;
 
+	wxCheckBox *m_chkLogPublicMessages;
+
 	wxCheckBox *m_chkPublicListEnabled;
 	wxStaticText *m_lblPublicListAuthentication;
 	wxTextCtrl *m_txtPublicListAuthentication;

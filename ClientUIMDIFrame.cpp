@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.151 2004-05-25 07:28:46 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.152 2004-05-30 12:46:40 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -1675,7 +1675,12 @@ void ClientUIMDIFrame::OnClose(wxCloseEvent &event)
 	if (m_client)
 	{
 
+		bool locked = m_client->GetConfig().GetConfig()->BeginBatch();
 		SaveWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
+		if (locked)
+		{
+			m_client->GetConfig().GetConfig()->EndBatch();
+		}
 
 		ClientUIMDICanvas *canvas = GetContext(wxEmptyString);
 		int nicklist_width = canvas->GetNickList()->GetParent()->GetSize().x;

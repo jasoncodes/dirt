@@ -28,13 +28,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.73 2004-05-27 21:42:24 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.74 2004-05-30 12:46:40 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
 #include "LogControl.h"
 #include "IPInfo.h"
+#include "Modifiers.h"
 
 //////// ServerConnection ////////
 
@@ -161,6 +162,13 @@ wxString ServerConfig::GetSoundJoin() const
 	return m_config->Read(wxT("/Server/Sound/Join"), default_sound);
 }
 
+bool ServerConfig::GetLogPublicMessages() const
+{
+	bool value;
+	bool success = m_config->Read(wxT("/Server/Log Public Messages"), &value, false);
+	return success?value:false;
+}
+
 wxString ServerConfig::GetServerName() const
 {
 	wxString name = m_config->Read(wxT("/Server/Server Name"));
@@ -259,6 +267,11 @@ bool ServerConfig::SetSoundJoin(const wxString &filename)
 		m_config->Write(wxT("/Server/Sound/Join"), filename);
 }
 
+bool ServerConfig::SetLogPublicMessages(bool log_public_messages)
+{
+	return m_config->Write(wxT("/Server/Log Public Messages"), log_public_messages);
+}
+
 bool ServerConfig::SetServerName(const wxString &server_name)
 {
 	return m_config->Write(wxT("/Server/Server Name"), server_name);
@@ -327,6 +340,7 @@ Server::Server(ServerEventHandler *event_handler)
 {
 	m_config.SetEventHandler(this, ID_CONFIG);
 	m_log = NULL;
+	m_log_public_messages = NULL;
 	InitLog();
 	m_connections.Alloc(10);
 	m_peak_users = 0;
@@ -338,6 +352,7 @@ Server::~Server()
 {
 	CloseAllConnections();
 	delete m_log;
+	delete m_log_public_messages;
 }
 
 void Server::InitLog()
@@ -354,6 +369,33 @@ void Server::InitLog()
 	else
 	{
 		m_log = NULL;
+	}
+	if (m_log_filename != log_filename)
+	{
+		m_log_filename = log_filename;
+		InitLogPublicMessages(true);
+	}
+}
+
+void Server::InitLogPublicMessages(bool force)
+{
+	bool new_state = m_config.GetLogPublicMessages();
+	if (new_state != (m_log_public_messages != NULL) || force)
+	{
+		if (new_state)
+		{
+			wxFileName fn(m_log_filename);
+			fn.SetName(fn.GetName() + wxT(" public messages"));
+			wxString log_filename = fn.GetFullPath();
+			m_log_public_messages = new LogWriter(log_filename);
+			SendToAll(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server now has public message logging enabled.")), false);
+		}
+		else
+		{
+			SendToAll(wxEmptyString, wxT("INFO"), wxString(wxT("Note: This server now has public message logging disabled.")), false);
+			delete m_log_public_messages;
+			m_log_public_messages = NULL;
+		}
 	}
 }
 
@@ -995,7 +1037,26 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 	if (cmd == wxT("PUBMSG") || cmd == wxT("PUBACTION"))
 	{
-		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), ProcessWordFilters(data)), true);
+		ByteBuffer msg = ProcessWordFilters(data);
+		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), msg), true);
+		if (m_log_public_messages)
+		{
+			if (cmd == wxT("PUBMSG"))
+			{
+				m_log_public_messages->AddText(wxString()
+					<< GetLongTimestamp() << wxT("<")
+					<< conn->GetNickname() << wxT("> ")
+					<< msg);
+			}
+			else
+			{
+				wxString sep = (msg.Left(2)==wxT("'s")) ? wxT("") : wxT(" ");
+				m_log_public_messages->AddText(wxString()
+					<< GetLongTimestamp() << wxT("* ")
+					<< conn->GetNickname() << sep
+					<< msg, colours[6]);
+			}
+		}
 	}
 	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION") || cmd == wxT("CTCP") || cmd == wxT("CTCPREPLY"))
 	{
@@ -1164,6 +1225,14 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					conn->Send(context, wxT("NICK"), new_nick);
 					conn->m_nickname = new_nick;
 					Information(conn->GetId() + wxT(" has entered the chat"));
+					if (m_log_public_messages)
+					{
+						m_log_public_messages->AddText(wxString()
+							<< GetLongTimestamp()
+							<< conn->GetNickname()
+							<< wxT(" (") << conn->GetInlineDetails()
+							<< wxT(") has joined the chat"), colours[3]);
+					}
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(new_nick, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
 					size_t m_user_count = GetUserCount();
@@ -1194,6 +1263,14 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 				}
 				else
 				{
+					if (m_log_public_messages)
+					{
+						m_log_public_messages->AddText(wxString()
+							<< GetLongTimestamp()
+							<< conn->GetNickname()
+							<< wxT(" is now known as ")
+							<< new_nick, colours[3]);
+					}
 					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, new_nick), true);
 					Information(conn->GetId() + wxT(" is now known as ") + new_nick);
 					conn->m_nickname = new_nick;
@@ -1242,6 +1319,7 @@ void Server::PopulateFilteredWords()
 void Server::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
 {
 	PopulateFilteredWords();
+	InitLogPublicMessages(false);
 }
 
 wxString Server::ProcessWordFilters(const wxString &text) const

@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.29 2004-05-22 19:22:04 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.30 2004-05-30 12:46:40 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -312,7 +312,7 @@ void InputControl::ShowPopup()
 		m_popup->Show(true);
 
 #ifdef __WXGTK20__
-                gdk_window_focus(GetGDKWindow(m_popup->GetControlFrame()), 0);
+		gdk_window_focus(GetGDKWindow(m_popup->GetControlFrame()), 0);
 		gdk_window_raise(GetGDKWindow(m_popup));
 #endif
 

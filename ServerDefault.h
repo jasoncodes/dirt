@@ -40,7 +40,7 @@ class ServerDefaultConnection : public ServerConnection
 	friend class ServerDefault;
 
 protected:
-	ServerDefaultConnection();
+	ServerDefaultConnection(ServerDefault *server);
 
 public:
 	virtual ~ServerDefaultConnection();
@@ -50,6 +50,7 @@ protected:
 	virtual void Terminate(const ByteBuffer &reason);
 
 protected:
+	ServerDefault *m_server;
 	CryptSocketClient *m_sck;
 	ByteBuffer m_authkey;
 	int m_auth_fail_count;

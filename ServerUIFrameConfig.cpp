@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.50 2004-05-23 06:01:10 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.51 2004-05-30 12:46:41 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -128,6 +128,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	FixBorder(m_txtMaxUsersIP);
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log Directory"));
+
+	m_chkLogPublicMessages = new wxCheckBox(panel, wxID_ANY, wxT("Log public messages"));
 
 	#if wxUSE_SOUND
 	#else
@@ -229,6 +231,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLeftTopRight->Add(szrLeftTopRightTop, 0, wxEXPAND | wxBOTTOM, 8);
 				
 					szrLeftTopRight->Add(m_pnlLog, 0, wxEXPAND, 0);
+
+					szrLeftTopRight->Add(m_chkLogPublicMessages, 0, wxEXPAND|wxTOP|wxBOTTOM, 8);
 
 				}
 				szrLeftTop->Add(szrLeftTopRight, 2, 0, 0);
@@ -486,6 +490,8 @@ void ServerUIFrameConfig::LoadSettings()
 		m_pnlLog->SetPath(config.GetActualLogDir());
 	}
 
+	m_chkLogPublicMessages->SetValue(config.GetLogPublicMessages());
+
 	m_chkPublicListEnabled->SetValue(config.GetPublicListEnabled());
 	m_txtPublicListAuthentication->SetValue(config.GetPublicListAuthentication(false));
 	m_txtPublicListComment->SetValue(config.GetPublicListComment());
@@ -625,6 +631,11 @@ bool ServerUIFrameConfig::SaveSettings()
 			return false;
 		}
 		m_server->InitLog();
+	}
+	if (!config.SetLogPublicMessages(m_chkLogPublicMessages->GetValue()))
+	{
+		ReportError(wxT("Error setting log public messages"), m_chkLogPublicMessages);
+		return false;
 	}
 	config.Flush();
 	m_cmdApply->Enable(false);

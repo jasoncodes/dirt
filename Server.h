@@ -133,6 +133,8 @@ public:
 	wxString GetSoundConnection() const;
 	wxString GetSoundJoin() const;
 
+	bool GetLogPublicMessages() const;
+
 	wxString GetServerName() const;
 	wxString GetHostname() const;
 	bool GetPublicListEnabled() const;
@@ -153,6 +155,8 @@ public:
 
 	bool SetSoundConnection(const wxString &filename);
 	bool SetSoundJoin(const wxString &filename);
+
+	bool SetLogPublicMessages(bool log_public_messages);
 
 	bool SetServerName(const wxString &server_name);
 	bool SetHostname(const wxString &hostname);
@@ -200,6 +204,7 @@ public:
 	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
 	virtual wxArrayString GetSupportedCommands() const;
 	virtual void InitLog();
+	virtual void InitLogPublicMessages(bool force);
 	static bool IsValidNickname(const wxString &nickname);
 	static ByteBuffer MakeNicknameValid(const ByteBuffer &src);
 	void LogConsoleInput(const wxString &cmd, const wxString &params, const wxString &nick);
@@ -230,6 +235,8 @@ protected:
 		wxSound m_sound;
 	#endif
 	LogWriter *m_log;
+	LogWriter *m_log_public_messages;
+	wxString m_log_filename;
 	bool m_log_warning_given;
 	wxArrayString m_filtered_words_list;
 
