@@ -68,6 +68,7 @@ protected:
 
 protected:
 	wxFileConfig *m_base;
+	ConfigFileHelper *m_helper;
 	wxString m_filename;
 	Mutex *m_mutex;
 	size_t m_batch_depth;

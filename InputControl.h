@@ -22,6 +22,7 @@ public:
 	void ClosePopup();
 	void RemoveLastHistoryEntry();
 	void SetTabCompletionList(wxArrayString *tab_completion_list);
+	virtual bool SetFont(const wxFont &font);
 
 protected:
 	void OnChange(wxCommandEvent &event);

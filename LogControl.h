@@ -37,6 +37,7 @@ public:
 	void ResetRedLine();
 	void ShowFindDialog(bool show);
 	void AddSeparator();
+	bool SetFont(const wxFont &font);
 
 	void AddHtmlLine(const wxString &line, bool split_long_words = false, bool red_line = false);
 	void AddTextLine(const wxString &line, const wxColour &line_colour = *wxBLACK, TextModifierMode mode = tmmParse, bool convert_urls = true, bool split_long_words = true, bool red_line = false);
@@ -48,6 +49,7 @@ public:
 	static bool IsEmail(const wxString &token);
 	static void ClearRect(wxDC& dc, const wxRect &rect);
 	static void SetHtmlParserFonts(wxHtmlWinParser *parser);
+	static wxFont GetDefaultFixedWidthFont();
 
 protected:
 	void OnSize(wxSizeEvent& event);
@@ -80,6 +82,7 @@ protected:
 
 protected:
 	wxHtmlContainerCell *m_Cell;
+	wxString m_buff;
 
 	int m_iYOffset;
 	bool m_Resizing;

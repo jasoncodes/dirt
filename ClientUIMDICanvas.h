@@ -50,6 +50,7 @@ public:
 	void LogControlTest();
 	void SendFiles(const wxString &nickname, const wxArrayString &filenames);
 	void InitLog();
+	bool SetFont(const wxFont &font);
 
 protected:
 	void OnSize(wxSizeEvent &event);

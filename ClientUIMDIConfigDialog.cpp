@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.22 2003-08-14 03:01:53 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.23 2003-08-22 17:29:08 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -16,6 +16,7 @@ RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.22 2003-08-14 03:01:53 jason Exp $)
 #include "CryptSocketProxy.h"
 #include "HotKeyControl.h"
 #include <wx/notebook.h>
+#include "FontControl.h"
 
 static const wxString choices[] = { wxT("Any"), wxT("Allow only"), wxT("Exclude only") };
 static const wxString tray_icon_options[] = { wxT("Flash"), wxT("Always Image"), wxT("Always Blank") };
@@ -168,11 +169,14 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_HotKey[0] = new HotKeyControl(pnlGeneral, wxID_ANY);
 	wxStaticText *lblHotKey2 = new wxStaticText(pnlGeneral, wxID_ANY, wxT("Alternate:"));
 	m_HotKey[1] = new HotKeyControl(pnlGeneral, wxID_ANY);
+	if (!ClientUIMDIFrame::IsHotKeySupported())
+	{
+		m_HotKey[0]->Enable(false);
+		m_HotKey[1]->Enable(false);
+	}
 
-#ifndef __WXMSW__
-	m_HotKey[0]->Enable(false);
-	m_HotKey[1]->Enable(false);
-#endif
+	m_fraFont = new wxStaticBox(pnlGeneral, wxID_ANY, wxT("Font"));
+	m_font = new FontControl(pnlGeneral, wxID_ANY);
 
 	m_fraNotification = new wxStaticBox(pnlGeneral, wxID_ANY, wxT("Message Notification"));
 	m_chkTaskbarNotification = new wxCheckBox(pnlGeneral, wxID_ANY, wxT("Taskbar Notification Flash"));
@@ -243,7 +247,15 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 				szrHotKey->Add(szrHotKey2, 0, wxEXPAND, 0);
 
 			}
-			szrGeneralLeft->Add(szrHotKey, 0, wxEXPAND, 0);
+			szrGeneralLeft->Add(szrHotKey, 0, wxBOTTOM | wxEXPAND, 8);
+
+			wxStaticBoxSizer *szrFont = new wxStaticBoxSizer(m_fraFont, wxVERTICAL);
+			{
+				
+				szrFont->Add(m_font, 0, wxEXPAND, 0);
+
+			}
+			szrGeneralLeft->Add(szrFont, 0, wxEXPAND, 0);
 
 		}
 		szrGeneral->Add(szrGeneralLeft, 1, wxALL, 8);
@@ -411,19 +423,31 @@ void ClientUIMDIConfigDialog::LoadSettings()
 
 	m_config->BeginBatch();
 
+	m_txtNickname->SetValue(m_config->GetNickname());
+
 	m_pnlLog->SetMode(m_config->GetLogDirType());
 	if (m_config->GetLogDirType() == Config::tsmCustom)
 	{
 		m_pnlLog->SetPath(m_config->GetActualLogDir());
 	}
 
+	for (int i = 0; i < 2; ++i)
+	{
+		m_HotKey[i]->SetValue(m_config->GetHotKey(i, false), m_config->GetHotKey(i, true));
+	}
+
+	m_font->SetFont(m_config->GetFont());
+
+	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
+	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
+	m_cmbSystemTrayIcon->SetSelection(m_config->GetSystemTrayIconMode());
+
 	m_pnlSound->SetMode(m_config->GetSoundType());
 	if (m_config->GetSoundType() == Config::tsmCustom)
 	{
 		m_pnlSound->SetPath(m_config->GetActualSoundFile());
 	}
-	#if wxUSE_WAVE
-	#else
+	#if !wxUSE_WAVE
 		m_pnlSound->Enable(Config::tsmCustom, false);
 		if (m_pnlSound->GetMode() == Config::tsmCustom)
 		{
@@ -454,17 +478,6 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	m_pnlDestPorts->SetSelection(m_proxy_settings->GetDestPortsMode());
 	m_pnlDestPorts->SetString(m_proxy_settings->GetDestPortRanges());
 
-	m_txtNickname->SetValue(m_config->GetNickname());
-
-	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
-	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
-	m_cmbSystemTrayIcon->SetSelection(m_config->GetSystemTrayIconMode());
-
-	for (int i = 0; i < 2; ++i)
-	{
-		m_HotKey[i]->SetValue(m_config->GetHotKey(i, false), m_config->GetHotKey(i, true));
-	}
-
 	wxCommandEvent evt;
 	OnProxy(evt);
 
@@ -485,6 +498,15 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 
 	m_config->BeginBatch();
 
+	if (success)
+	{
+		if (!m_config->SetNickname(m_txtNickname->GetValue()))
+		{
+			ErrMsg(wxT("Error setting nickname"));
+			success = false;
+		}
+	}
+
 	bool bLogChanged = (m_config->GetLogDirType() != m_pnlLog->GetMode());
 	if (!bLogChanged && m_config->GetLogDirType() == Config::tsmCustom)
 	{
@@ -503,6 +525,57 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		}
 	}
 	
+	for (int i = 0; i < 2; ++i)
+	{
+		if (success)
+		{
+			if (!m_config->SetHotKey(i, false, m_HotKey[i]->GetKeyCode()) ||
+				!m_config->SetHotKey(i, true, m_HotKey[i]->GetModifiers()))
+			{
+				ErrMsg(wxString() << wxT("Error setting Hot Key ") << (i+1));
+				success = false;
+			}
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetFont(m_font->GetFont()))
+		{
+			ErrMsg(wxT("Error setting font"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetTaskbarNotification(m_chkTaskbarNotification->GetValue()))
+		{
+			ErrMsg(wxT("Error setting Taskbar Notification"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		if (!m_config->SetFileTransferStatus(m_chkFileTransferStatus->GetValue()))
+		{
+			ErrMsg(wxT("Error setting File Transfer Status"));
+			success = false;
+		}
+	}
+
+	if (success)
+	{
+		ClientConfig::SystemTrayIconMode mode =
+			(ClientConfig::SystemTrayIconMode)m_cmbSystemTrayIcon->GetSelection();
+		if (!m_config->SetSystemTrayIconMode(mode))
+		{
+			ErrMsg(wxT("Error setting System Tray Icon Mode"));
+			success = false;
+		}
+	}
+
 	if (success)
 	{
 		if (!m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath()))
@@ -511,7 +584,7 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 			success = false;
 		}
 	}
-
+	
 	if (success)
 	{
 		if (!m_proxy_settings->SetEnabled(m_chkProxy->GetValue()))
@@ -648,57 +721,6 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 		else
 		{
 			((ClientUIMDIFrame*)GetParent())->GetClient()->NewProxySettings();
-		}
-	}
-
-	if (success)
-	{
-		if (!m_config->SetNickname(m_txtNickname->GetValue()))
-		{
-			ErrMsg(wxT("Error setting nickname"));
-			success = false;
-		}
-	}
-
-	if (success)
-	{
-		if (!m_config->SetTaskbarNotification(m_chkTaskbarNotification->GetValue()))
-		{
-			ErrMsg(wxT("Error setting Taskbar Notification"));
-			success = false;
-		}
-	}
-
-	if (success)
-	{
-		if (!m_config->SetFileTransferStatus(m_chkFileTransferStatus->GetValue()))
-		{
-			ErrMsg(wxT("Error setting File Transfer Status"));
-			success = false;
-		}
-	}
-
-	if (success)
-	{
-		ClientConfig::SystemTrayIconMode mode =
-			(ClientConfig::SystemTrayIconMode)m_cmbSystemTrayIcon->GetSelection();
-		if (!m_config->SetSystemTrayIconMode(mode))
-		{
-			ErrMsg(wxT("Error setting System Tray Icon Mode"));
-			success = false;
-		}
-	}
-
-	for (int i = 0; i < 2; ++i)
-	{
-		if (success)
-		{
-			if (!m_config->SetHotKey(i, false, m_HotKey[i]->GetKeyCode()) ||
-				!m_config->SetHotKey(i, true, m_HotKey[i]->GetModifiers()))
-			{
-				ErrMsg(wxString() << wxT("Error setting Hot Key ") << (i+1));
-				success = false;
-			}
 		}
 	}
 

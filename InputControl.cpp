@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.20 2003-08-05 05:05:56 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.21 2003-08-22 17:29:08 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -202,8 +202,6 @@ END_EVENT_TABLE()
 
 
 
-#include <wx/html/htmlwin.h>
-
 BEGIN_EVENT_TABLE(InputControl, wxTextCtrl)
 	EVT_TEXT(wxID_ANY, InputControl::OnChange)
 	EVT_TEXT_ENTER(wxID_ANY, InputControl::OnEnterPress)
@@ -222,36 +220,28 @@ InputControl::InputControl(
 	m_ctrl_down(false), m_tab_completion_list(NULL), m_ignore_change(false)
 {
 
-	// a whole lot of messing around to get the same font as wxHtmlWindow uses
+	m_txtBestSize = new wxTextCtrl(GetParent(), wxID_ANY);
+	m_txtBestSize->Show(false);
+	m_txtBestSize->SetFont(GetFont());
+
 	// this is currently broken on GTK 2.x (but works fine on Win32 & GTK 1.x)
 	#ifndef __WXGTK20__
 	{
-		wxHtmlWindow *html = new wxHtmlWindow(GetParent());
-		wxHtmlWinParser *parser = html->GetParser();
-		LogControl::SetHtmlParserFonts(parser);
-		wxClientDC *pDC = new wxClientDC(html);
-		parser->SetFontFixed(TRUE);
-		parser->SetDC(pDC);
-		wxFont *font = parser->CreateCurrentFont();
-		SetFont(*font);
-		delete pDC;
-		html->Destroy();
+		SetFont(LogControl::GetDefaultFixedWidthFont());
 	}
 	#endif
 
-	m_txtBestSize = new wxTextCtrl(GetParent(), -1);
-	m_txtBestSize->Show(false);
-	m_txtBestSize->SetFont(GetFont());
 	SetSize(GetBestSize());
 
 	#ifdef __WXMSW__
 	{
 		HWND hWnd = (HWND)GetHandle();
-		LONG dwStyle = ::GetWindowLong((HWND)GetHandle(),GWL_STYLE);
+		LONG dwStyle = ::GetWindowLong((HWND)GetHandle(), GWL_STYLE);
 		dwStyle &= ~WS_VSCROLL;
-		::SetWindowLong(hWnd,GWL_STYLE, dwStyle);
+		::SetWindowLong(hWnd, GWL_STYLE, dwStyle);
 	}
 	#endif
+
 	FixBorder(this);
 
 }
@@ -680,4 +670,9 @@ void InputControl::ProcessInput()
 wxSize InputControl::DoGetBestSize() const
 {
 	return m_txtBestSize->GetBestSize();
+}
+
+bool InputControl::SetFont(const wxFont &font)
+{
+	return wxTextCtrl::SetFont(font) && m_txtBestSize->SetFont(font);
 }

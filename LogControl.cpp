@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.57 2003-08-06 14:45:34 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.58 2003-08-22 17:29:09 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -21,6 +21,7 @@ RCS_ID($Id: LogControl.cpp,v 1.57 2003-08-06 14:45:34 jason Exp $)
 #include "Modifiers.h"
 #include <wx/fdrepdlg.h>
 #include <wx/textbuf.h>
+#include <wx/html/htmlwin.h>
 
 DECLARE_APP(DirtApp)
 
@@ -504,13 +505,23 @@ void LogControl::SetHtmlParserFonts(wxHtmlWinParser *parser)
 		#endif
 	#endif
 
-	#ifdef __WXMSW__
-		//parser->SetFonts(wxEmptyString, wxT("Fixedsys"), default_sizes);
-		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
-	#else
-		parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
-	#endif
+	parser->SetFonts(wxEmptyString, wxEmptyString, default_sizes);
 
+}
+
+wxFont LogControl::GetDefaultFixedWidthFont()
+{
+	wxFrame *frm = new wxFrame(NULL, wxID_ANY, wxEmptyString);
+	wxHtmlWindow *html = new wxHtmlWindow(frm);
+	wxHtmlWinParser *parser = html->GetParser();
+	SetHtmlParserFonts(parser);
+	wxClientDC *pDC = new wxClientDC(html);
+	parser->SetFontFixed(TRUE);
+	parser->SetDC(pDC);
+	wxFont font = *(parser->CreateCurrentFont());
+	delete pDC;
+	frm->Destroy();
+	return font;
 }
 
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
@@ -552,6 +563,8 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	FixBorder(this);
 
 	m_Cell = NULL;
+
+	SetFont(GetDefaultFixedWidthFont());
 
 	Clear();
 
@@ -1380,6 +1393,7 @@ void LogControl::ScrollToBottom()
 
 void LogControl::Clear()
 {
+	m_buff.Clear();
 	m_red_line = NULL;
 	m_separators.Empty();
 	m_last_start_end_valid = false;
@@ -1400,6 +1414,25 @@ void LogControl::Clear()
 	Refresh();
 }
 
+class LogControlParser : public wxHtmlWinParser
+{
+
+public:
+	LogControlParser(const wxFont &font)
+		: m_font(font)
+	{
+	}
+
+	virtual wxFont* CreateCurrentFont()
+	{
+		return &m_font;
+	}
+
+protected:
+	wxFont m_font;
+
+};
+
 void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool red_line)
 {
 
@@ -1407,22 +1440,28 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 	
 	if (!m_first_line)
 	{
-		source = wxT("<br><code>") + line + wxT("</code>");
+		source = wxT("<br>") + line;
 	}
 	else
 	{
-		source = wxT("<code>") + line + wxT("</code>");
+		source = line;
 		m_first_line = false;
 	}
 
+	if ((double)m_buff.capacity() < m_buff.size() * 1.25)
+	{
+		m_buff.reserve(m_buff.size() * 2);
+	}
+	m_buff << source;
+
 	wxClientDC *dc = new wxClientDC(this);
 	dc->SetMapMode(wxMM_TEXT);
+	dc->SetFont(GetFont());
 	SetBackgroundColour(wxColour(0xFF, 0xFF, 0xFF));
 
-	wxHtmlWinParser *p2 = new wxHtmlWinParser;
+	wxHtmlWinParser *p2 = new LogControlParser(GetFont());
 	p2->SetDC(dc);
 	p2->AddTagHandler(new SpanTagHandler());
-	SetHtmlParserFonts(p2);
 	wxHtmlContainerCell *c2 = (wxHtmlContainerCell*)p2->Parse(source);
 
 	if (split_long_words)
@@ -1551,6 +1590,19 @@ void LogControl::AddSeparator()
 	wxHtmlCell *last = ((LogControlContainerCell*)m_Cell)->GetLastCell();
 	m_separators.Add(last);
 	Refresh();
+}
+
+bool LogControl::SetFont(const wxFont &font)
+{
+	if (font != wxScrolledWindow::GetFont())
+	{
+		bool ok = wxScrolledWindow::SetFont(font);
+		wxString buff = m_buff;
+		Clear();
+		AddHtmlLine(buff, true, false);
+		return ok;
+	}
+	return true;
 }
 
 wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_mode)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.57 2003-08-01 07:47:59 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.58 2003-08-22 17:29:07 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -543,6 +543,24 @@ void ClientUIMDICanvas::ProcessInput(const wxString &text)
 	wxCommandEvent evt(wxEVT_COMMAND_TEXT_ENTER, ID_INPUT);
 	evt.SetString(text);
 	AddPendingEvent(evt);
+}
+
+bool ClientUIMDICanvas::SetFont(const wxFont &font)
+{
+	if (m_txtLog)
+	{
+		m_txtLog->SetFont(font);
+	}
+	if (m_lstNickList)
+	{
+		m_lstNickList->SetFont(font);
+	}
+	if (m_txtInput)
+	{
+		m_txtInput->SetFont(font);
+	}
+	ResizeChildren();
+	return SwitchBarCanvas::SetFont(font);
 }
 
 void ClientUIMDICanvas::LogControlTest()

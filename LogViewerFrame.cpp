@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogViewerFrame.cpp,v 1.23 2003-08-12 10:24:29 jason Exp $)
+RCS_ID($Id: LogViewerFrame.cpp,v 1.24 2003-08-22 17:29:09 jason Exp $)
 
 #include "LogViewerFrame.h"
 #include "LogReader.h"
@@ -47,7 +47,8 @@ protected:
 
 enum
 {
-	ID_SASH1 = 1,
+	ID_CONFIG = 1,
+	ID_SASH1,
 	ID_SASH2,
 	ID_TREECTRL,
 	ID_LOG,
@@ -56,6 +57,7 @@ enum
 };
 
 BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
+	EVT_CONFIG_FILE_CHANGED(ID_CONFIG, LogViewerFrame::OnConfigFileChanged)
 	EVT_CLOSE(LogViewerFrame::OnClose)
 	EVT_SIZE(LogViewerFrame::OnSize)
 	EVT_SASH_DRAGGED(ID_SASH1, LogViewerFrame::OnSashDragged)
@@ -71,6 +73,8 @@ LogViewerFrame::LogViewerFrame()
 	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(720, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL)
 {
 
+	m_config.SetEventHandler(this, ID_CONFIG);
+
 	m_is_busy = false;
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -83,7 +87,8 @@ LogViewerFrame::LogViewerFrame()
 	m_sash2->SetSashVisible(wxSASH_BOTTOM, true);
 	
 	m_log = new LogControl(panel, ID_LOG);
-	
+	m_log->SetFont(m_config.GetFont());
+
 	m_tree = new wxTreeCtrl(m_sash1, ID_TREECTRL, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT);
 	m_tree->AddRoot(wxEmptyString);
 	
@@ -104,11 +109,16 @@ LogViewerFrame::LogViewerFrame()
 	SetSizeHints(300,200);
 	CentreOnScreen();
 
-	RestoreWindowState(this, &m_config, wxT("Log Viewer"), true, true);
+	bool ok = m_config.BeginBatch();
+	RestoreWindowState(this, m_config.GetConfig(), wxT("Log Viewer"), true, true);
 	int sash1pos = m_sash1->GetSize().x;
 	int sash2pos = m_sash2->GetSize().y;
-	m_config.Read(wxT("/Log Viewer/WindowState/Sash1"), &sash1pos, sash1pos);
-	m_config.Read(wxT("/Log Viewer/WindowState/Sash2"), &sash2pos, sash2pos);
+	m_config.GetConfig()->Read(wxT("/Log Viewer/WindowState/Sash1"), &sash1pos, sash1pos);
+	m_config.GetConfig()->Read(wxT("/Log Viewer/WindowState/Sash2"), &sash2pos, sash2pos);
+	if (ok)
+	{
+		m_config.EndBatch();
+	}
 	m_sash1->SetSize(sash1pos, -1);
 	m_sash2->SetSize(-1, sash2pos);
 	ResizeChildren();
@@ -119,6 +129,11 @@ LogViewerFrame::~LogViewerFrame()
 {
 }
 
+void LogViewerFrame::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
+{
+	m_log->SetFont(m_config.GetFont());
+}
+
 wxString LogViewerFrame::GetLogDirectory()
 {
 	Config cfg(wxT("Client"));
@@ -127,11 +142,16 @@ wxString LogViewerFrame::GetLogDirectory()
 
 void LogViewerFrame::OnClose(wxCloseEvent &event)
 {
-	SaveWindowState(this, &m_config, wxT("Log Viewer"));
+	bool ok = m_config.BeginBatch();
+	SaveWindowState(this, m_config.GetConfig(), wxT("Log Viewer"));
 	int sash1pos = m_sash1->GetSize().x;
 	int sash2pos = m_sash2->GetSize().y;
-	m_config.Write(wxT("/Log Viewer/WindowState/Sash1"), sash1pos);
-	m_config.Write(wxT("/Log Viewer/WindowState/Sash2"), sash2pos);
+	m_config.GetConfig()->Write(wxT("/Log Viewer/WindowState/Sash1"), sash1pos);
+	m_config.GetConfig()->Write(wxT("/Log Viewer/WindowState/Sash2"), sash2pos);
+	if (ok)
+	{
+		m_config.EndBatch();
+	}
 	event.Skip();
 }
 

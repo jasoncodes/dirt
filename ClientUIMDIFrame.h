@@ -29,6 +29,7 @@ public:
 	bool MinToTray();
 	void RestoreFromTray();
 	void InitLogs();
+	static bool IsHotKeySupported();
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
@@ -85,8 +86,8 @@ protected:
 	void NickPrompt(const wxString &nick);
 	void DoAlert();
 	void DoFlashWindow();
+	void SetFonts();
 	void SetHotKey();
-	static bool IsHotKeySupported();
 	bool SetHotKey(int keycode, wxUint8 mods);
 	void OnHotKey();
 	int GetHotKeyKeyCode() const;

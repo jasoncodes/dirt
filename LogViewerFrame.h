@@ -4,7 +4,7 @@
 #include <wx/sashwin.h>
 #include <wx/dirctrl.h>
 #include <wx/treectrl.h>
-#include "ConfigFile.h"
+#include "Client.h"
 
 class LogControl;
 
@@ -27,6 +27,7 @@ protected:
 	void OnItemRightClick(wxTreeEvent &event);
 	void OnDelete(wxCommandEvent &event);
 	void OnLinkClicked(wxCommandEvent &event);
+	void OnConfigFileChanged(wxCommandEvent &event);
 
 protected:
 	virtual void ResizeChildren();
@@ -47,7 +48,7 @@ protected:
 
 	wxString m_last_filename;
 
-	ConfigFile m_config;
+	ClientConfig m_config;
 	bool m_is_busy;
 
 private:

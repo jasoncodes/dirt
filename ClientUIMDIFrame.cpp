@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.136 2003-08-15 05:53:09 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.137 2003-08-22 17:29:08 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -139,6 +139,8 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_hotkey_mods = 0;
 #endif
 	SetHotKey();
+
+	SetFonts();
 
 	ResetWindowPos();
 	RestoreWindowState(this, m_client->GetConfig().GetConfig(), wxT("Client"));
@@ -279,6 +281,7 @@ void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent &WXUNUSED(event))
 	ClientUIMDIConfigDialog dlg(this);
 	if (dlg.ShowModal() == wxID_OK)
 	{
+		SetFonts();
 		SetHotKey();
 		UpdateCaption();
 	}
@@ -414,6 +417,7 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 	else
 	{
 		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, context, QueryCanvas);
+		canvas->SetFont(m_client->GetConfig().GetFont());
 		NewWindow(canvas, false);
 		return canvas;
 	}
@@ -1501,8 +1505,20 @@ wxDateTime ClientUIMDIFrame::GetLogDate()
 	return m_log_date;
 }
 
+void ClientUIMDIFrame::SetFonts()
+{
+	wxFont font = m_client->GetConfig().GetFont();
+	for (int i = 0; i < m_switchbar->GetButtonCount(); ++i)
+	{
+		ClientUIMDICanvas *canvas =
+			(ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+		canvas->SetFont(font);
+	}
+}
+
 void ClientUIMDIFrame::OnConfigFileChanged(wxCommandEvent &WXUNUSED(event))
 {
+	SetFonts();
 	SetHotKey();
 }
 

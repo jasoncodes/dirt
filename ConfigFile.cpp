@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.13 2003-08-20 02:13:46 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.14 2003-08-22 17:29:08 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -91,11 +91,13 @@ ConfigFile::ConfigFile()
 	m_batch_depth = 0;
 	m_filename = GetConfigFilename();
 	m_mutex = new Mutex(m_filename+wxT(".lock"));
+	m_helper = new ConfigFileHelper(this);
 	ReInit();
 }
 
 ConfigFile::~ConfigFile()
 {
+	delete m_helper;
 	wxASSERT_MSG(!m_batch_depth, wxT("EndBatch() not called before destroying ConfigFile"));
 	wxASSERT_MSG(!m_mutex->IsLocked(), wxT("Config mutex locked in destructor"));
 	bool lock_ok = MutexLock();

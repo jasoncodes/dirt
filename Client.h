@@ -111,6 +111,9 @@ public:
 	virtual int GetHotKey(int index, bool mod) const;
 	virtual bool SetHotKey(int index, bool mod, int value);
 
+	virtual wxFont GetFont() const;
+	virtual bool SetFont(const wxFont &font);
+
 protected:
 	virtual wxString GetSoundFileKey() const;
 

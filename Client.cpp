@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.79 2003-08-20 02:01:15 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.80 2003-08-22 17:29:07 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -17,6 +17,7 @@ RCS_ID($Id: Client.cpp,v 1.79 2003-08-20 02:01:15 jason Exp $)
 #include "URL.h"
 #include <wx/filename.h>
 #include "Server.h"
+#include "LogControl.h"
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -245,6 +246,22 @@ int ClientConfig::GetHotKey(int index, bool mod) const
 bool ClientConfig::SetHotKey(int index, bool mod, int value)
 {
 	return m_config->Write(GetHotKeyKey(index, mod), value);
+}
+
+wxFont ClientConfig::GetFont() const
+{
+	wxString str = m_config->Read(wxT("Client/Font"));
+	wxFont font = LogControl::GetDefaultFixedWidthFont();
+	if (str.Length())
+	{
+		font.SetNativeFontInfo(str);
+	}
+	return font;
+}
+
+bool ClientConfig::SetFont(const wxFont &font)
+{
+	return m_config->Write(wxT("Client/Font"), font.GetNativeFontInfoDesc());
 }
 
 enum
