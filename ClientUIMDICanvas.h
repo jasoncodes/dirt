@@ -7,6 +7,7 @@
 #include "ClientUIMDITransferPanel.h"
 
 class NickListControl;
+class Client;
 
 enum CanvasType
 {
@@ -45,6 +46,7 @@ protected:
 
 	void ResizeChildren();
 	void DoGotFocus();
+	Client* GetClient();
 
 protected:
 	CanvasType m_type;

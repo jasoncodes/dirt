@@ -30,14 +30,23 @@ void NickListControl::Add(const wxString &nick)
 
 void NickListControl::Remove(const wxString &nick)
 {
+	int index = GetNickIndex(nick);
+	if (index > -1)
+	{
+		Delete(index);
+	}
+}
+
+int NickListControl::GetNickIndex(const wxString &nick)
+{
 	for (int i = 0; i < GetCount(); ++i)
 	{
 		if (GetNick(i) == nick)
 		{
-			Delete(i);
-			break;
+			return i;
 		}
 	}
+	return -1;
 }
 
 void NickListControl::Clear()

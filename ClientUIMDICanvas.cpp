@@ -185,12 +185,16 @@ void ClientUIMDICanvas::OnInputEnter(wxCommandEvent& event)
 	{
 		context = GetTitle();
 	}
-	((ClientUIMDIFrame*)m_parent)->GetClient()->ProcessInput(context, event.GetString());
+	GetClient()->ProcessInput(context, event.GetString());
+}
+
+Client *ClientUIMDICanvas::GetClient()
+{
+	return ((ClientUIMDIFrame*)m_parent)->GetClient();
 }
 
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
-
 
 	#ifdef __WXMSW__
 
@@ -228,10 +232,18 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 	#endif
 
 }
-
+//#include <wx/textdlg.h>
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 {
-	wxMessageBox("dbl click on " + m_lstNickList->GetNick(event.GetInt()));
+	wxString nick = m_lstNickList->GetNick(event.GetInt());
+	if (nick.Length() > 0)
+	{
+		wxString msg = ::wxGetTextFromUser("Message to send to " + nick + ":", "Dirt Secure Chat");
+		if (msg.Length() > 0)
+		{
+			GetClient()->SendMessage(nick, msg);
+		}
+	}
 }
 
 void ClientUIMDICanvas::LogControlTest()

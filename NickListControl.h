@@ -14,6 +14,7 @@ public:
 	virtual void Clear();
 	virtual wxString GetNick(int index);
 	virtual int GetCount();
+	virtual int GetNickIndex(const wxString &nick);
 
 };
 
