@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.14 2003-02-16 13:18:12 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.15 2003-02-17 07:00:39 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -19,7 +19,7 @@ ServerDefaultConnection::~ServerDefaultConnection()
 	delete m_sck;
 }
 
-void ServerDefaultConnection::Send(const ByteBuffer &data)
+void ServerDefaultConnection::SendData(const ByteBuffer &data)
 {
 	m_sck->Send(data);
 }
@@ -130,16 +130,14 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_INPUT:
 				{
-					m_event_handler->OnServerInformation(wxT("Input on socket: ") + event.GetData());
-					conn->ResetIdleTime();
-					conn->Send(event.GetData());
+					ProcessClientInput(conn, event.GetData());
 				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
 				{
 					m_event_handler->OnServerInformation(wxT("Ready to output"));
-					conn->Send(wxString(wxT("Welcome!")));
+					conn->Send(wxEmptyString, wxT("DEBUG"), wxString(wxT("Welcome!")));
 				}
 				break;
 

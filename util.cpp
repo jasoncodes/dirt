@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.19 2003-02-16 05:09:04 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.20 2003-02-17 07:00:40 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -63,7 +63,7 @@ void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const w
 	else
 	{
 		head = text;
-		tail = wxT("");
+		tail = wxEmptyString;
 	}
 }
 
@@ -71,6 +71,49 @@ HeadTail SplitHeadTail(const wxString &text, const wxString &sep)
 {
 	HeadTail result;
 	SplitHeadTail(text, result.head, result.tail, sep);
+	return result;
+}
+
+void SplitQuotedHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep)
+{
+	if (text.Length() > 1 && text[0] == wxT('"'))
+	{
+		size_t i = text.find(wxT('"'), 1);
+		while (i+1 < text.Length())
+		{
+			if (text[i+1] != wxT('"')) break;
+			i = text.find(wxT('"'), i + 2);
+		}
+		if (i < text.Length())
+		{
+			head = text.Mid(1, i-1);
+			if (i+1 < text.Length() && text[i+1] == ' ')
+			{
+				tail = text.Mid(i + 2);
+			}
+			else
+			{
+				tail = text.Mid(i + 1);
+			}
+		}
+		else
+		{
+			head = text.Mid(1);
+			tail = wxEmptyString;
+		}
+		head.Replace("\"\"", "\"");
+
+	}
+	else
+	{
+		SplitHeadTail(text, head, tail, sep);
+	}
+}
+
+HeadTail SplitQuotedHeadTail(const wxString &text, const wxString &sep)
+{
+	HeadTail result;
+	SplitQuotedHeadTail(text, result.head, result.tail, sep);
 	return result;
 }
 
@@ -294,4 +337,90 @@ void ShowAbout()
 		<< wxT("\n")
 		<< wxT("http://dirtchat.sourceforge.net/"),
 		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
+}
+
+ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data)
+{
+
+	ByteBuffer context_buff(context);
+	ByteBuffer cmd_buff(cmd.Upper());
+
+	ByteBuffer msg(context_buff.Length() + cmd_buff.Length() + data.Length() + 2);
+	
+	byte *msgptr = msg.Lock();
+
+	memcpy(msgptr, context_buff.Lock(), context_buff.Length());
+	context_buff.Unlock();
+	msgptr += context_buff.Length() + 1;
+
+	memcpy(msgptr, cmd_buff.Lock(), cmd_buff.Length());
+	cmd_buff.Unlock();
+	msgptr += cmd_buff.Length() + 1;
+
+	ByteBuffer tmp(data);
+	memcpy(msgptr, tmp.Lock(), tmp.Length());
+	tmp.Unlock();
+
+	msg.Unlock();
+
+	return msg;
+
+}
+
+bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data)
+{
+
+	ByteBuffer msg2(msg);
+	byte *dataptr = msg2.Lock();
+	size_t datalen = msg2.Length();
+	byte *sep1 = (byte*)memchr(dataptr, 0, datalen);
+	if (!sep1)
+	{
+		msg2.Unlock();
+		return false;
+	}
+	byte *sep2 = (byte*)memchr(sep1+1, 0, datalen - (sep1-dataptr) - 2);
+	if (!sep2)
+	{
+		msg2.Unlock();
+		return false;
+	}
+	
+	context = ByteBuffer(dataptr, sep1 - dataptr);
+	cmd = ByteBuffer(sep1+1, sep2-sep1-1);
+	data = ByteBuffer(sep2+1, datalen - (sep2-dataptr) - 1);
+
+	msg2.Unlock();
+
+	return true;
+
+}
+
+ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y)
+{
+	ByteBuffer x2(x), y2(y);
+	ByteBuffer data(x.Length() + y.Length() + 1);
+	byte *ptr = data.Lock();
+	memcpy(ptr, x2.Lock(), x2.Length());
+	x2.Unlock();
+	memcpy(ptr+x2.Length()+1, y2.Lock(), y2.Length());
+	y2.Unlock();
+	data.Unlock();
+	return data;
+}
+
+bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y)
+{
+	ByteBuffer data2(data);
+	byte *ptr = data2.Lock();
+	byte *sep = (byte*)memchr(ptr, 0, data2.Length());
+	if (!sep)
+	{
+		data2.Unlock();
+		return false;
+	}
+	x = ByteBuffer(ptr, sep - ptr);
+	y = ByteBuffer(ptr+1, data2.Length() - (sep-ptr) - 1);
+	data2.Unlock();
+	return true;
 }

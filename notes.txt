@@ -35,3 +35,5 @@
 * win32: click mdi minimize button on maximized mdi child, child doesnt disappear
 
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
+
+* todo before sourceforge: pubmsg, privmsg, nicklist, password

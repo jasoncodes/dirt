@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.13 2003-02-17 03:21:57 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.14 2003-02-17 07:00:39 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
 #include "CryptSocket.h"
+#include "util.h"
 
 #define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(wxEmptyString, wxT("Not connected")); return; } }
 
@@ -49,20 +50,17 @@ ClientDefault::~ClientDefault()
 
 void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 {
-	//m_event_handler->OnClientMessageOut(nick, message);
-	//m_event_handler->OnClientMessageIn(
-	//	is_private?nick:wxT("EVERYONE"), 
-	//	wxString() << wxT("You sent me \"") << message << (wxChar)OriginalModifier << wxT("\""),
-	//	is_private);
 	ASSERT_CONNECTED();
+	ByteBuffer msg;
 	if (nick.Length() > 0)
 	{
-		m_sck->Send(wxString() << wxT("PRIVMSG \"") << nick << wxT("\" ") << message);
+		msg = EncodeMessage(wxEmptyString, "PRIVMSG", Pack(nick, message));
 	}
 	else
 	{
-		m_sck->Send(wxString() << wxT("PUBMSG ") << message);
+		msg = EncodeMessage(wxEmptyString, "PUBMSG", message);
 	}
+	m_sck->Send(msg);
 }
 
 wxString ClientDefault::GetNickname()

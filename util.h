@@ -15,6 +15,8 @@ bool LeftEq(const wxString &text, const wxString &to_match);
 bool RightEq(const wxString &text, const wxString &to_match);
 void SplitHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = wxT(" "));
 HeadTail SplitHeadTail(const wxString &text, const wxString &sep = wxT(" "));
+void SplitQuotedHeadTail(const wxString &text, wxString &head, wxString &tail, const wxString &sep = wxT(" "));
+HeadTail SplitQuotedHeadTail(const wxString &text, const wxString &sep = wxT(" "));
 wxString GetLongTimestamp();
 wxString GetShortTimestamp();
 wxString FormatISODateTime(const wxDateTime &datetime);
@@ -31,5 +33,9 @@ ByteBuffer Uint16ToBytes(wxUint16 num);
 wxUint16 BytesToUint16(const byte *data, int len);
 wxString AppTitle(const wxString &suffix = wxEmptyString);
 void ShowAbout();
+ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data);
+bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data);
+ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y);
+bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y);
 
 #endif

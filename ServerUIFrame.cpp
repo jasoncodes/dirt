@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.17 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.18 2003-02-17 07:00:40 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -142,7 +142,7 @@ ServerUIFrame::~ServerUIFrame()
 
 void ServerUIFrame::OnInput(wxCommandEvent &event)
 {
-	m_server->ProcessInput(event.GetString());
+	m_server->ProcessConsoleInput(event.GetString());
 }
 
 void ServerUIFrame::OnServerInformation(const wxString &line)

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.7 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.8 2003-02-17 07:00:39 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -38,12 +38,12 @@ void ServerUIConsole::OnServerWarning(const wxString &line)
 
 void ServerUIConsole::OnInput(const wxString &line)
 {
-	m_server->ProcessInput(line);
+	m_server->ProcessConsoleInput(line);
 }
 
 void ServerUIConsole::OnEOF()
 {
-	m_server->ProcessInput(wxT("/exit"));
+	m_server->ProcessConsoleInput(wxT("/exit"));
 }
 
 bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &params)

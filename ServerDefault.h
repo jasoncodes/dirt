@@ -11,13 +11,14 @@ class ServerDefaultConnection : public ServerConnection
 
 	friend ServerDefault;
 
+protected:
+	ServerDefaultConnection();
+
 public:
 	virtual ~ServerDefaultConnection();
 
-	virtual void Send(const ByteBuffer &data);
-
 protected:
-	ServerDefaultConnection();
+	virtual void SendData(const ByteBuffer &data);
 
 protected:
 	CryptSocketClient *m_sck;

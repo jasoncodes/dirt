@@ -16,8 +16,12 @@ public:
 
 };
 
+class Server;
+
 class ServerConnection
 {
+
+	friend Server;
 
 protected:
 	ServerConnection();
@@ -39,9 +43,9 @@ public:
 	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
 	virtual operator wxString() const;
 
-	virtual void Send(const ByteBuffer &data) = 0;
-
 protected:
+	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual void SendData(const ByteBuffer &data) = 0;
 	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }
 
 protected:
@@ -66,16 +70,21 @@ public:
 	Server(ServerEventHandler *event_handler);
 	virtual ~Server();
 
-	virtual void ProcessInput(const wxString &input);
+	virtual void ProcessConsoleInput(const wxString &input);
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
 	virtual bool IsRunning() = 0;
 	virtual int GetListenPort() = 0;
 	virtual size_t GetConnectionCount() { return m_connections.GetCount(); }
-	virtual const ServerConnection& GetConnection(size_t index) { return *m_connections.Item(index); }
+	virtual ServerConnection& GetConnection(size_t index) { return *m_connections.Item(index); }
+	virtual ServerConnection* GetConnection(const wxString &nickname);
+	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	virtual void CloseAllConnections();
+	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &data);
+	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	ServerEventHandler *m_event_handler;
