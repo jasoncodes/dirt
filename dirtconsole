@@ -18,10 +18,14 @@ fi
 
 if which usleep > /dev/null 2> /dev/null;
 then
-	true
+	SLEEP_CMD="usleep 250"
 else
-	echo dirtconsole: usleep not found!
-	exit 1
+	if sleep --version | grep "GNU" > /dev/null;
+	then
+		SLEEP_CMD="sleep 0.25"
+	else
+		SLEEP_CMD="sleep 1"
+	fi
 fi
 
 DISPLAY=499
@@ -42,7 +46,7 @@ do
 			TRIES=0
 			while [ \( ! -f $LOCK_FILE \) -a \( $TRIES -lt 25 \) ]
 			do
-				usleep 250
+				$SLEEP_CMD
 				TRIES=$(($TRIES+1))
 			done
 

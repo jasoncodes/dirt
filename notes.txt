@@ -1,3 +1,5 @@
+not restoring maximized state from client/windowstate/maximized on startup
+
 console ver shows /quit in the quit message
 
 auto complete should work on the last 10 lines of chat msgs from that window as well
