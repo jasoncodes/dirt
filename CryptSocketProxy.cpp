@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.18 2003-06-05 14:44:37 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.19 2003-06-05 16:14:22 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -150,7 +150,7 @@ public:
 						ConnectionError(wxT("Client and identd report different user-ids"));
 						break;
 					default:
-						ConnectionError(wxT("Unknown SOCKS4 reply code"));
+						ConnectionError(wxString() << wxT("Unknown SOCKS4 reply code: ") << (int)m_buff[1]);
 						break;
 				}
 			}
