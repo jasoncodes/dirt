@@ -6,11 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.43 2003-03-29 01:54:44 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.44 2003-03-31 06:04:07 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
 #include "util.h"
+#include "Dirt.h"
+
+DECLARE_APP(DirtApp)
 
 //////// ServerConnection ////////
 
@@ -79,7 +82,7 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 
 ServerConfig::ServerConfig()
 {
-	m_config = new wxFileConfig(wxT("dirt"));
+	m_config = new wxFileConfig(wxT("dirt"), wxT(""), wxGetApp().GetConfigFilename());
 	m_config->SetUmask(0077);
 }
 

@@ -21,9 +21,12 @@ public:
 
 	bool IsConsole();
 	void RegisterDirtProtocol();
+
 	bool IsControlDown() const { return m_control_down; }
 	bool IsAltDown() const { return m_alt_down; }
 	bool IsShiftDown() const { return m_shift_down; }
+
+	wxString GetConfigFilename() { return m_config_filename; }
 
 protected:
 	bool ProcessCommandLine();
@@ -38,7 +41,8 @@ protected:
 	bool m_control_down;
 	bool m_alt_down;
 	bool m_shift_down;
-		
+	wxString m_config_filename;
+
 };
 
 #endif

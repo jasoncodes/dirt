@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.37 2003-03-29 05:30:07 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.38 2003-03-31 06:04:07 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -289,6 +289,7 @@ bool DirtApp::ProcessCommandLine()
 	m_cmdline->AddOption(wxEmptyString, wxT("host"), wxT("Remote host to connect to (implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 	m_cmdline->AddSwitch(wxEmptyString, wxT("logs"), wxT("Log Mode (GUI only)"), 0);
 	m_cmdline->AddOption(wxEmptyString, wxT("log"), wxT("Log file to view (implies log mode)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddOption(wxEmptyString, wxT("config"), wxT("Alternate config filename"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
 	if (m_cmdline->Parse() != 0)
 	{
@@ -323,6 +324,11 @@ bool DirtApp::ProcessCommandLine()
 			m_cmdline->Usage();
 			return false;
 		}
+		if (!m_host.Length())
+		{
+			m_cmdline->Usage();
+			return false;
+		}
 	}
 
 	if (m_cmdline->Found(wxT("log"), &m_logfile))
@@ -336,9 +342,27 @@ bool DirtApp::ProcessCommandLine()
 			m_cmdline->Usage();
 			return false;
 		}
+		if (!m_logfile.Length())
+		{
+			m_cmdline->Usage();
+			return false;
+		}
 	}
 
 	m_no_input = m_cmdline->Found(wxT("no-input"));
+
+	if (m_cmdline->Found(wxT("config"), &m_config_filename))
+	{
+		if (!m_config_filename.Length())
+		{
+			m_cmdline->Usage();
+			return false;
+		}
+	}
+	else
+	{
+		m_config_filename = wxEmptyString;
+	}
 
 	return true;
 

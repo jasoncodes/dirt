@@ -1,5 +1,3 @@
-* add --config=... to change the config file used by dirt
-
 * when colour popup shows on GTK cannot programmically focus back to main window
 
 * flickering when ctrl-tab
@@ -33,3 +31,7 @@
 * dirt:// protocol registration for mozilla on X11
 
 * file transfers
+
+* save size of nicklist sash, log viewer frame pos/size, log viewer sashes
+
+* at least win32: holding down the mouse button on logcontrol scrollbar stops network traffic
