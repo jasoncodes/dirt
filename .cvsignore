@@ -8,7 +8,7 @@ Release
 *.opt
 *.plg
 Dirt
-*.kdevses
+Dirt.res
 *.aps
 *.d
 *.layout
