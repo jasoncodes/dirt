@@ -33,3 +33,5 @@
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
 * gtk: focus problem on right click, query (get a beep and no focus to input)
+
+* win32: move mouse slowly over splitter to nick list, cursor stays as sizer
