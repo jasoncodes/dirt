@@ -43,6 +43,6 @@ bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y);
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y, const ByteBuffer &z);
 bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y, ByteBuffer &z);
 ByteBuffer Pack(const ByteBufferArray &array);
-ByteBufferArray Unpack(const ByteBuffer &packed_array);
+ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments = 0);
 
 #endif

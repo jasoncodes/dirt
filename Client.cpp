@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.19 2003-02-18 13:30:58 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.20 2003-02-18 23:29:14 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -247,15 +247,11 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	else if (cmd == wxT("NICKLIST"))
 	{
 		wxArrayString nicks;
-		m_event_handler->OnClientDebug(wxEmptyString, wxT("Got NICKLIST. Lets see how our Unpack() function is doing :)"));
-		m_event_handler->OnClientDebug(wxEmptyString, data.GetHexDump());
 		ByteBufferArray nickbuff = Unpack(data);
 		for (size_t i = 0; i < nickbuff.GetCount(); ++i)
 		{
-			m_event_handler->OnClientDebug(wxEmptyString, nickbuff.Item(i).GetHexDump());
 			nicks.Add(nickbuff.Item(i));
 		}
-		m_event_handler->OnClientDebug(wxEmptyString, wxT("END"));
 		m_event_handler->OnClientUserList(nicks);
 	}
 	else

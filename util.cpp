@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.22 2003-02-18 13:31:00 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.23 2003-02-18 23:29:14 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -398,46 +398,38 @@ bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, Byte
 
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y)
 {
-	ByteBuffer x2(x), y2(y);
-	ByteBuffer data(x.Length() + y.Length() + 1);
-	byte *ptr = data.Lock();
-	memcpy(ptr, x2.Lock(), x2.Length());
-	x2.Unlock();
-	memcpy(ptr+x2.Length()+1, y2.Lock(), y2.Length());
-	y2.Unlock();
-	data.Unlock();
-	return data;
+	ByteBufferArray tmp;
+	tmp.Alloc(2);
+	tmp.Add(x);
+	tmp.Add(y);
+	return Pack(tmp);
 }
 
 bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y)
 {
-	ByteBuffer data2(data);
-	byte *ptr = data2.Lock();
-	byte *sep = (byte*)memchr(ptr, 0, data2.Length());
-	if (!sep)
-	{
-		data2.Unlock();
-		return false;
-	}
-	x = ByteBuffer(ptr, sep - ptr);
-	y = ByteBuffer(sep+1, data2.Length() - (sep-ptr) - 1);
-	data2.Unlock();
-	return true;
+	ByteBufferArray tmp = Unpack(data, 2);
+	x = (tmp.GetCount() > 0) ? tmp.Item(0) : ByteBuffer();
+	y = (tmp.GetCount() > 1) ? tmp.Item(1) : ByteBuffer();
+	return (tmp.GetCount() == 2);
 }
 
-// faster implementation of this should be written
-// use a mod of EncodeMessage then change DecodeMessage to use new func
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y, const ByteBuffer &z)
 {
-	return Pack(Pack(x, y), z);
+	ByteBufferArray tmp;
+	tmp.Alloc(3);
+	tmp.Add(x);
+	tmp.Add(y);
+	tmp.Add(z);
+	return Pack(tmp);
 }
 
-// faster implementation of this should be written
-// use a mod of DecodeMessage then change DecodeMessage to use new func
 bool Unpack(const ByteBuffer &data, ByteBuffer &x, ByteBuffer &y, ByteBuffer &z)
 {
-	ByteBuffer tmp;
-	return Unpack(data, x, tmp) && Unpack(tmp, y, z);
+	ByteBufferArray tmp = Unpack(data, 3);
+	x = (tmp.GetCount() > 0) ? tmp.Item(0) : ByteBuffer();
+	y = (tmp.GetCount() > 1) ? tmp.Item(1) : ByteBuffer();
+	z = (tmp.GetCount() > 2) ? tmp.Item(2) : ByteBuffer();
+	return (tmp.GetCount() == 3);
 }
 
 ByteBuffer Pack(const ByteBufferArray &array)
@@ -465,7 +457,7 @@ ByteBuffer Pack(const ByteBufferArray &array)
 	return buff;
 }
 
-ByteBufferArray Unpack(const ByteBuffer &packed_array)
+ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 {
 
 	if (packed_array.Length() == 0)
@@ -474,6 +466,9 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array)
 	}
 	else
 	{
+		
+		OutputDebugString(wxString() << "Unpacking " << packed_array.GetHexDump() << "\n");
+		OutputDebugString(wxString() << "Max segments" << max_segments << "\n");
 	
 		ByteBufferArray array;
 		ByteBuffer src(packed_array);
@@ -481,22 +476,30 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array)
 		size_t len = src.Length();
 
 		byte *sep = (byte*)memchr(ptr, 0, len);
-		while (sep)
+		while (sep && ((max_segments == 0) || (array.GetCount() < max_segments-1)))
 		{
 			size_t seglen = sep-ptr;
 			ByteBuffer b(ptr, seglen);
 			array.Add(b);
-			ptr += (seglen + 1);
-			len -= (seglen + 1);
-			if (len<=0) break;
+			OutputDebugString(wxString() << b.GetHexDump() << "\n");
+			ptr += seglen;
+			len -= seglen;
+			if (!len)
+			{
+				break;
+			}
+			ptr++; len--;
+			if (!len)
+			{
+				break;
+			}
 			sep = (byte*)memchr(ptr, 0, len);
 		}
 
-		if (len)
-		{
-			ByteBuffer b(ptr, len);
-			array.Add(b);
-		}
+		ByteBuffer b(ptr, len);
+		array.Add(b);
+		OutputDebugString(wxString() << b.GetHexDump() << "\n");
+		OutputDebugString(wxString() << "END\n");
 		
 		src.Unlock();
 		return array;
