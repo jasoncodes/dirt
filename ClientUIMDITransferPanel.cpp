@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.23 2003-05-11 09:55:12 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.24 2003-05-13 06:11:43 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -52,8 +52,8 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 		wxString() << wxT("DCC ") << GetTypeString() << wxT(" Session"),
 		wxPoint(8,8));
 
-	m_pnlLeft = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
-	m_pnlRight = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
+	m_pnlLeft = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN | wxNO_BORDER);
+	m_pnlRight = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN | wxNO_BORDER);
 
 	m_szrLeft = new wxBoxSizer( wxVERTICAL );
 	m_szrRight = new wxBoxSizer( wxVERTICAL );

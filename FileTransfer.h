@@ -57,7 +57,7 @@ public:
 	operator wxString() const;
 
 protected:
-	bool OnTimer();
+	bool OnTimer(wxLongLong_t now);
 
 protected:
 	FileTransfers *m_transfers;
@@ -65,6 +65,7 @@ protected:
 	CPSCalc m_cps;
 	CryptSocketBase *m_sck;
 	bool m_connect_ok;
+	wxLongLong_t m_last_tick;
 
 	//  get only
 	wxString m_ip;

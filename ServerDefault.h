@@ -34,6 +34,7 @@ protected:
 	wxString m_pingid;
 	wxLongLong_t m_lastping;
 	wxString m_quitmsg;
+	wxLongLong_t m_last_auth_time;
 
 };
 

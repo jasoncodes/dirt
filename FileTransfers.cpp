@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.27 2003-05-11 10:40:01 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.28 2003-05-13 06:11:43 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -53,12 +53,13 @@ FileTransfers::~FileTransfers()
 
 void FileTransfers::OnTimer(wxTimerEvent &event)
 {
+	wxLongLong_t now = GetMillisecondTicks();
 	for (int i = GetTransferCount() - 1; i >= 0; --i)
 	{
 		FileTransfer &transfer = m_transfers.Item(i);
 		if (transfer.transferid > -1)
 		{
-			if (transfer.OnTimer())
+			if (transfer.OnTimer(now))
 			{
 				m_client->m_event_handler->OnClientTransferTimer(transfer);
 			}
@@ -119,6 +120,8 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	t->filesent = 0;
 	t->m_cps.Reset(t->filesent);
 	t->status = wxT("Waiting for accept...");
+	t->m_last_tick = GetMillisecondTicks();
+	t->OnTimer(t->m_last_tick);
 
 	if (!t->m_file.Open(t->filename, File::read))
 	{
@@ -333,6 +336,8 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				t->status = wxT("Accept pending...");
 				t->m_ip = ip;
 				t->m_port = port;
+				t->m_last_tick = GetMillisecondTicks();
+				t->OnTimer(t->m_last_tick);
 
 				m_transfers.Add(t);
 				m_client->m_event_handler->OnClientTransferNew(*t);
@@ -654,6 +659,7 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		t.state = ftsGetConnecting;
 		t.filesent = resume ? File::Length(t.filename) : 0;
 		t.status = wxT("Connecting...");
+		t.m_last_tick = GetMillisecondTicks();
 		
 		CryptSocketClient *sck = new CryptSocketClient;
 		t.m_sck = sck;
@@ -778,6 +784,7 @@ void FileTransfers::OnGetConnection(FileTransfer &t)
 	t.state = ftsGetStarting;
 	t.status = wxT("Connected");
 	m_client->m_event_handler->OnClientTransferState(t);
+	t.m_last_tick = GetMillisecondTicks();
 }
 
 void FileTransfers::OnRemoteCancel(FileTransfer &t)
@@ -815,6 +822,7 @@ void FileTransfers::OnClose(FileTransfer &t)
 
 void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data)
 {
+	t.m_last_tick = GetMillisecondTicks();
 	if (cmd == wxT("THANKS"))
 	{
 		wxASSERT(t.filesent == t.filesize);
@@ -831,6 +839,7 @@ void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteB
 
 void FileTransfers::OnGetData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data)
 {
+	t.m_last_tick = GetMillisecondTicks();
 	if (cmd == wxT("DATA"))
 	{
 		if (t.state != ftsSendTransfer)
@@ -878,6 +887,7 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 		if (t.m_sck && t.m_sck->Ok() &&
 			!t.m_sck->IsSendBufferFull() && t.filesent < t.filesize)
 		{
+			t.m_last_tick = GetMillisecondTicks();
 			const off_t max_block_size = 4096;
 			off_t block_size = wxMin(t.filesize - t.filesent, max_block_size);
 			wxASSERT(block_size > 0);
@@ -917,6 +927,7 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 			m_client->m_event_handler->OnClientTransferState(t);
 		}
 		t.status = wxT("Handshaking...");
+		t.m_last_tick = GetMillisecondTicks();
 	}
 	else if (!t.m_connect_ok && t.m_got_accept)
 	{
@@ -927,6 +938,7 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 			t.status = wxT("Connecting...");
 			m_client->m_event_handler->OnClientTransferState(t);
 		}
+		t.m_last_tick = GetMillisecondTicks();
 	}
 	else
 	{

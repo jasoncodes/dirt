@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.57 2003-05-11 15:12:03 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.58 2003-05-13 06:11:43 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -173,6 +173,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_remotehostandport =
 						wxString() << conn->m_remotehost << wxT(':') << (int)addr.Service();
 					conn->m_remoteipstring = ::GetIPV4AddressString(addr);
+					conn->m_last_auth_time = GetMillisecondTicks();
 					Information(wxT("Incoming connection from ") + conn->GetId());
 					if (GetConnectionCount() > (size_t)m_config.GetMaxUsers())
 					{
@@ -309,8 +310,8 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 		}
 		if (!conn->m_authenticated)
 		{
-			wxTimeSpan t = wxDateTime::Now() - conn->GetJoinTime();
-			if (t > wxTimeSpan(0,1,0))
+			wxLongLong_t time_since_last_auth = now - conn->m_last_auth_time;
+			if (time_since_last_auth > 60 * 1000)
 			{
 				conn->Terminate(wxT("Failed to authenticate in 1 minute"));
 			}
@@ -541,6 +542,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 		}
 		else if (cmd == wxT("AUTH"))
 		{
+			conn2->m_last_auth_time = GetMillisecondTicks();
 			bool success;
 			try
 			{

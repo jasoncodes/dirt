@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.18 2003-05-10 07:18:05 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.19 2003-05-13 06:11:43 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -33,10 +33,14 @@ FileTransfer::~FileTransfer()
 	delete m_sck;
 }
 
-bool FileTransfer::OnTimer()
+static const wxLongLong_t s_timeout_pending = 180000;
+static const wxLongLong_t s_timeout_transfer = 60000;
+
+bool FileTransfer::OnTimer(wxLongLong_t now)
 {
 	cps = 0;
 	timeleft = 0;
+	wxLongLong_t timeout_tick;
 	if (state == ftsSendTransfer || state == ftsGetTransfer)
 	{
 		if (filesent < filesize)
@@ -53,6 +57,33 @@ bool FileTransfer::OnTimer()
 				timeleft = -1;
 			}
 		}
+		timeout_tick = m_last_tick + s_timeout_transfer;
+	}
+	else
+	{
+		timeout_tick = m_last_tick + s_timeout_pending;
+	}
+	if (now >= timeout_tick)
+	{
+		state = issend ? ftsSendFail : ftsGetFail;
+		status = wxT("Transfer timed out");
+		m_transfers->m_client->m_event_handler->OnClientTransferState(*this);
+		m_transfers->DeleteTransfer(transferid, false);
+		return false;
+	}
+	if (state == ftsSendListening || state == ftsGetPending)
+	{
+		if (state == ftsSendListening)
+		{
+			status = wxT("Waiting for accept");
+		}
+		else
+		{
+			status = wxT("Accept pending");
+		}
+		status << wxT("... [")
+			<< SecondsToMMSS((timeout_tick - now) / 1000)
+			<< wxT("]");
 	}
 	return true;
 }
