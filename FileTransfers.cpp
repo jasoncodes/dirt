@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.50 2003-06-27 11:34:45 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.51 2003-06-30 04:12:35 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -983,7 +983,7 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 		}
 		wxString msg;
 		msg << t->transferid << wxT(" ") << wxString::Format(wxT("%x"),event.GetSocket()) << wxT(" ") << type;
-		OutputDebugString((msg+wxT("\n")).c_str());
+	//	OutputDebugString((msg+wxT("\n")).c_str());
 	//	m_client->m_event_handler->OnClientDebug(wxEmptyString, msg);
 
 		switch (event.GetSocketEvent())
