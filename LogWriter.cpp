@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.5 2003-03-18 13:37:06 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.6 2003-03-19 01:05:57 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -85,7 +85,7 @@ void LogWriter::AddText(const wxString &line, const wxColour &line_colour, bool 
 	ptr[2] = line_colour.Blue();
 	ptr[3] = (convert_urls ? 1 : 0);
 	data.Unlock();
-	data += Uint16ToBytes(4) + Uint16ToBytes(line.Length()) + ByteBuffer(line);
+	data = Uint16ToBytes(data.Length()) + data + Uint16ToBytes(line.Length()) + ByteBuffer(line);
 	if (m_public_key.Length())
 	{
 		data = m_crypt.AESEncrypt(data);
@@ -101,7 +101,8 @@ void LogWriter::AddSeparator()
 void LogWriter::Write(const ByteBuffer &data)
 {
 	wxASSERT(Ok());
+	ByteBuffer tmp = Uint16ToBytes(data.Length()) + data;
 	m_file.SeekEnd();
-	m_file.Write(data.LockRead(), data.Length());
-	data.Unlock();
+	m_file.Write(tmp.LockRead(), tmp.Length());
+	tmp.Unlock();
 }
