@@ -39,7 +39,7 @@ ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
 	COMPILE_FLAGS = -g -DDEBUG
 	STRIP = true||strip
 else
-	COMPILE_FLAGS = -O1 -DNDEBUG
+	COMPILE_FLAGS = -DNDEBUG
 	STRIP = strip
 endif
 
