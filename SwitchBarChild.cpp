@@ -52,10 +52,6 @@ void SwitchBarChild::OnActivate(wxActivateEvent& event)
 			m_canvas->SetFocus();
 			m_canvas->OnActivate();
 		}
-		else
-		{
-			m_canvas->Show(false);
-		}
 	}
 
 	int button_index = m_parent->GetSwitchBar()->GetIndexFromUserData(m_canvas);

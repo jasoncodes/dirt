@@ -22,3 +22,5 @@
   underneath the line (visible when highlighting and using background colour)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
+
+* consecutive spaces that seperated by formatting (ctrl-k) get stripped
