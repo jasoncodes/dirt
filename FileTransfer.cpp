@@ -6,12 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.7 2003-05-05 09:29:07 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.8 2003-05-06 05:14:18 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
 #include "CPSCalc.h"
 #include "Client.h"
+
+#include <wx/filename.h>
 
 FileTransfer::FileTransfer(FileTransfers *transfers)
 	:
@@ -60,4 +62,66 @@ bool FileTransfer::OnTimer()
 		m_transfers->DeleteTransfer(transferid);
 		return false;
 	}
+}
+
+wxString FileTransfer::GetPrefixString() const
+{
+	if (filename.Length() && nickname.Length())
+	{
+		wxString str;
+		str << (issend ? wxT("Send ") : wxT("Get "))
+			<< wxFileName(filename).GetFullName()
+			<< (issend ? wxT(" to ") : wxT(" from "))
+			<< nickname
+			<< wxT(": ");
+		return str;
+	}
+	return wxEmptyString;
+}
+
+wxString FileTransfer::GetStateString() const
+{
+
+	wxString str;
+
+	str << status << wxT(" (");
+
+	str << SizeToString(filesent);
+	str << wxT(" of ");
+	str << SizeToString(filesize);
+
+	str << wxT(" @ ");
+
+	if (cps > -1)
+	{
+		str << SizeToString(cps);
+	}
+	else
+	{
+		str << wxT("??? KB");
+	}
+	str << wxT("/sec, ");
+	
+	if (timeleft > -1)
+	{
+		str << SecondsToMMSS(timeleft);
+	}
+	else
+	{
+		str << wxT("??:??");
+	}
+	str << wxT(" left");
+	
+	str << wxT(")");
+
+	return str;
+
+}
+
+FileTransfer::operator wxString() const
+{
+	wxString str;
+	str	<< transferid << wxT(": ")
+		<< GetPrefixString() << GetStateString();
+	return str;
 }

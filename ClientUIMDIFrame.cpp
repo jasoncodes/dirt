@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.102 2003-05-05 09:29:07 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.103 2003-05-06 05:14:18 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -978,11 +978,11 @@ void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 	bool bIsError = ((transfer.state == ftsSendFail) || (transfer.state == ftsGetFail));
 	if (bIsError)
 	{
-		OnClientWarning(wxEmptyString, transfer.status);
+		OnClientWarning(wxEmptyString, transfer.GetPrefixString() + transfer.status);
 	}
 	else
 	{
-		OnClientInformation(wxEmptyString, transfer.status);
+		OnClientInformation(wxEmptyString, transfer.GetPrefixString() + transfer.status);
 	}
 }
 

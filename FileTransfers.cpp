@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.10 2003-05-06 04:13:50 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.11 2003-05-06 05:14:19 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -179,19 +179,31 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 {
 	if (cmd == wxT("HELP"))
 	{
-		m_client->m_event_handler->OnClientInformation(context, wxT("Supported DCC commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
+		Information(context, wxT("Supported DCC commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
 	}
 	else if (cmd == wxT("TEST"))
 	{
 		Test();
 	}
-	else if (cmd == wxT(""))
+	else if (cmd == wxT("STATUS") || cmd == wxT(""))
 	{
-		ProcessConsoleInput(context, wxT("HELP"), wxT(""));
+		if (GetTransferCount())
+		{
+			Information(context, wxString() << wxT("There are ") << GetTransferCount() << wxT(" active transfers:"));
+			for (int i = 0; i < GetTransferCount(); ++i)
+			{
+				const FileTransfer& t = GetTransferByIndex(i);
+				Information(context, wxT("    ") + t);
+			}
+		}
+		else
+		{
+			Information(context, wxT("No active transfers"));
+		}
 	}
 	else
 	{
-		m_client->m_event_handler->OnClientWarning(context, wxT("Unrecognized DCC command: ") + cmd);
+		Warning(context, wxT("Unrecognized DCC command: ") + cmd);
 	}
 }
 
@@ -213,4 +225,14 @@ bool FileTransfers::OnClientPreprocess(const wxString &context, const wxString &
 wxArrayString FileTransfers::OnClientSupportedCommands()
 {
 	return SplitString(wxT("DCC"), wxT(" "));
+}
+
+void FileTransfers::Information(const wxString &context, const wxString &text)
+{
+	m_client->m_event_handler->OnClientInformation(context, text);
+}
+
+void FileTransfers::Warning(const wxString &context, const wxString &text)
+{
+	m_client->m_event_handler->OnClientWarning(context, text);
 }

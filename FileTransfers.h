@@ -37,6 +37,8 @@ protected:
 	int GetNewId();
 	wxArrayString GetSupportedCommands();
 	void ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params);
+	void Information(const wxString &context, const wxString &text);
+	void Warning(const wxString &context, const wxString &text);
 
 protected:
 	virtual bool OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);

@@ -45,6 +45,11 @@ public:
 	off_t filesent;
 	wxString status;
 
+public:
+	wxString GetPrefixString() const;
+	wxString GetStateString() const;
+	operator wxString() const;
+
 protected:
 	FileTransfer(FileTransfers *transfers);
 
