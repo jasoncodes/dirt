@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.29 2003-02-21 03:04:58 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.30 2003-02-21 07:53:13 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -432,7 +432,7 @@ void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
 				
 				if (msg.Length() > 0)
 				{
-					GetClient()->SendMessage(wxEmptyString, nick, msg);
+					GetClient()->SendMessage(wxEmptyString, nick, msg, false);
 				}
 
 			}

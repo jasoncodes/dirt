@@ -19,11 +19,16 @@ public:
 
 protected:
 	virtual void SendData(const ByteBuffer &data);
+	virtual void Terminate(const wxString &reason);
 
 protected:
 	CryptSocketClient *m_sck;
 	ByteBuffer m_authkey;
 	int m_auth_fail_count;
+	wxLongLong_t m_nextping;
+	wxString m_pingid;
+	wxLongLong_t m_lastping;
+	wxString m_quitmsg;
 
 };
 
@@ -44,9 +49,11 @@ public:
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
+	void OnTimerPing(wxTimerEvent &event);
 
 protected:
 	CryptSocketServer *m_sckListen;
+	wxTimer *m_tmrPing;
 
 private:
 	DECLARE_EVENT_TABLE()

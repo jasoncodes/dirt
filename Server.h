@@ -51,6 +51,7 @@ protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual void SendData(const ByteBuffer &data) = 0;
 	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }
+	virtual void Terminate(const wxString &reason) = 0;
 
 protected:
 	wxString m_nickname;

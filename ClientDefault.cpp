@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.20 2003-02-21 04:40:38 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.21 2003-02-21 07:53:13 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -38,17 +38,18 @@ ClientDefault::~ClientDefault()
 	delete m_sck;
 }
 
-void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message)
+void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action)
 {
 	ASSERT_CONNECTED();
 	ByteBuffer msg;
+	wxString type = is_action?wxT("ACTION"):wxT("MSG");
 	if (nick.Length() > 0)
 	{
-		msg = EncodeMessage(context, "PRIVMSG", Pack(nick, message));
+		msg = EncodeMessage(context, wxT("PRIV") + type, Pack(nick, message));
 	}
 	else
 	{
-		msg = EncodeMessage(context, "PUBMSG", message);
+		msg = EncodeMessage(context, wxT("PUB") + type, message);
 	}
 	m_sck->Send(msg);
 }
@@ -163,6 +164,14 @@ bool ClientDefault::ProcessServerInputExtra(bool preprocess, const wxString &con
 		else if (cmd == wxT("AUTHBAD"))
 		{
 			m_event_handler->OnClientAuthBad(data);
+			return true;
+		}
+		else if (cmd == wxT("PING"))
+		{
+			if (IsConnected())
+			{
+				SendToServer(EncodeMessage(context, wxT("PONG"), data));
+			}
 			return true;
 		}
 		else

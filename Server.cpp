@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.15 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.16 2003-02-21 07:53:13 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -214,8 +214,7 @@ ServerConnection* Server::SendToNick(const wxString &nickname, const wxString &c
 
 bool Server::IsValidNickname(const wxString &nickname)
 {
-	return true;
-    /*if (nickname.Length() < 1 || nickname.Length() > 9)
+    if (nickname.Length() < 1 || nickname.Length() > 16)
 	{
 		return false;
 	}
@@ -241,7 +240,7 @@ bool Server::IsValidNickname(const wxString &nickname)
 			}
 		}
 	}
-	return true;*/
+	return true;
 }
 
 ByteBuffer Server::GetNickList()
@@ -261,7 +260,10 @@ ByteBuffer Server::GetNickList()
 void Server::ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
 
-	conn->ResetIdleTime();
+	if (cmd != wxT("PING") && cmd != wxT("PONG"))
+	{
+		conn->ResetIdleTime();
+	}
 
 	if (ProcessClientInputExtra(true, true, conn, context, cmd, data))
 	{
@@ -285,30 +287,21 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		return;
 	}
 
-	if (cmd == wxT("PUBMSG"))
+	if (cmd == wxT("PUBMSG") || cmd == wxT("PUBACTION"))
 	{
 		SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
 	}
-	else if (cmd == wxT("USERDETAILS"))
-	{
-		conn->m_userdetails = data;
-		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
-	}
-	else if (cmd == wxT("USERAGENT"))
-	{
-		conn->m_useragent = data;
-		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
-	}
-	else if (cmd == wxT("PRIVMSG"))
+	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION"))
 	{
 		ByteBuffer nick;
 		ByteBuffer msg;
 		if (Unpack(data, nick, msg))
 		{
-			const ServerConnection *dest = SendToNick(nick, wxEmptyString, cmd, Pack(conn->GetNickname(), msg));
+			ServerConnection *dest = GetConnection(nick);
 			if (dest)
 			{
-				conn->Send(context, wxT("PRIVMSGOK"), Pack(dest->GetNickname(), msg));
+				conn->Send(context, cmd + wxT("OK"), Pack(dest->GetNickname(), msg));
+				dest->Send(wxEmptyString, cmd, Pack(conn->GetNickname(), msg));
 			}
 			else
 			{
@@ -319,6 +312,16 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		{
 			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("MALFORMED")), wxT("Malformed data in ") + cmd));
 		}
+	}
+	else if (cmd == wxT("USERDETAILS"))
+	{
+		conn->m_userdetails = data;
+		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
+	}
+	else if (cmd == wxT("USERAGENT"))
+	{
+		conn->m_useragent = data;
+		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
 	}
 	else if (cmd == wxT("NICK"))
 	{

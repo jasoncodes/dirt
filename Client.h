@@ -20,8 +20,8 @@ public:
 	virtual void OnClientAuthNeeded(const wxString &text) = 0;
 	virtual void OnClientAuthDone(const wxString &text) = 0;
 	virtual void OnClientAuthBad(const wxString &text) = 0;
-	virtual void OnClientMessageOut(const wxString &nick, const wxString &text) = 0;
-	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private) = 0;
+	virtual void OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action) = 0;
+	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private) = 0;
 	virtual void OnClientUserList(const wxArrayString &nicklist) = 0;
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
@@ -45,7 +45,7 @@ public:
 	virtual void ProcessConsoleInput(const wxString &context, const wxString &input);
 	virtual void Debug(const wxString &context, const wxString &text);
 
-	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message) = 0;
+	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action) = 0;
 	virtual bool Connect(const URL &url) = 0;
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;

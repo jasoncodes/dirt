@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.30 2003-02-21 01:31:04 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.31 2003-02-21 07:53:13 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -115,28 +115,56 @@ void ClientUIConsole::OnClientAuthBad(const wxString &text)
 	m_passmode = true;
 }
 
-void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &text)
+void ClientUIConsole::OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action)
 {
 	bool is_private = (nick.Length() > 0);
 	if (is_private)
 	{
-		Output(wxString() << wxT("-> *") + nick + wxT("* ") + text);
+		if (is_action)
+		{
+			Output(wxString() << wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + wxT(" ") + text);
+		}
+		else
+		{
+			Output(wxString() << wxT("-> *") + nick + wxT("* ") + text);
+		}
 	}
 	else
 	{
-		Output(wxString() << wxT("<") + m_client->GetNickname() + wxT("> ") + text);
+		if (is_action)
+		{
+			Output(wxString() << wxT("* ") + m_client->GetNickname() + wxT(" ") + text);
+		}
+		else
+		{
+			Output(wxString() << wxT("<") + m_client->GetNickname() + wxT("> ") + text);
+		}
 	}
 }
 
-void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)
+void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private)
 {
 	if (is_private)
 	{
-		Output(wxString() << wxT("*") + nick + wxT("* ") + text);
+		if (is_action)
+		{
+			Output(wxString() << wxT("* *") + nick + wxT("* ") + text);
+		}
+		else
+		{
+			Output(wxString() << wxT("*") + nick + wxT("* ") + text);
+		}
 	}
 	else
 	{
-		Output(wxString() << wxT("<") + nick + wxT("> ") + text);
+		if (is_action)
+		{
+			Output(wxString() << wxT("* ") + m_client->GetNickname() + wxT(" ") + text);
+		}
+		else
+		{
+			Output(wxString() << wxT("<") + m_client->GetNickname() + wxT("> ") + text);
+		}
 	}
 }
 

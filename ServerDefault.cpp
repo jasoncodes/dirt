@@ -6,13 +6,30 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.23 2003-02-21 04:40:38 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.24 2003-02-21 07:53:14 jason Exp $)
 
 #include "ServerDefault.h"
+
+const wxLongLong_t initial_ping_delay = 5000;
+const wxLongLong_t ping_interval = 30000;
+const wxLongLong_t ping_timeout_delay = 45000;
+const long ping_timer_interval = 2500;
+
+static wxLongLong_t GetMillisecondTicks()
+{
+	#ifdef __WXMSW__
+		return ::timeGetTime();
+	#else
+		return wxGetLocalTimeMillis().GetValue();
+	#endif
+}
 
 ServerDefaultConnection::ServerDefaultConnection()
 {
 	m_auth_fail_count = 0;
+	m_nextping = GetMillisecondTicks() + initial_ping_delay;
+	m_pingid = wxEmptyString;
+	m_lastping = 0;
 }
 
 ServerDefaultConnection::~ServerDefaultConnection()
@@ -25,13 +42,21 @@ void ServerDefaultConnection::SendData(const ByteBuffer &data)
 	m_sck->Send(data);
 }
 
+void ServerDefaultConnection::Terminate(const wxString &reason)
+{
+	m_quitmsg = reason;
+	m_sck->CloseWithEvent();
+}
+
 enum
 {
-	ID_SOCKET = 1
+	ID_SOCKET = 1,
+	ID_TIMER_PING
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
 	EVT_CRYPTSOCKET(ID_SOCKET, ServerDefault::OnSocket)
+	EVT_TIMER(ID_TIMER_PING, ServerDefault::OnTimerPing)
 END_EVENT_TABLE()
 
 ServerDefault::ServerDefault(ServerEventHandler *event_handler)
@@ -39,11 +64,13 @@ ServerDefault::ServerDefault(ServerEventHandler *event_handler)
 {
 	m_sckListen = new CryptSocketServer;
 	m_sckListen->SetEventHandler(this, ID_SOCKET);
+	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 }
 
 ServerDefault::~ServerDefault()
 {
 	delete m_sckListen;
+	delete m_tmrPing;
 }
 
 void ServerDefault::Start()
@@ -57,6 +84,7 @@ void ServerDefault::Start()
 		m_sckListen->GetLocal(addr);
 		m_event_handler->OnServerInformation(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
+		m_tmrPing->Start(ping_timer_interval);
 	}
 	else
 	{
@@ -71,6 +99,7 @@ void ServerDefault::Stop()
 	CloseAllConnections();
 	m_event_handler->OnServerInformation(wxT("Server stopped"));
 	m_event_handler->OnServerStateChange();
+	m_tmrPing->Stop();
 }
 
 bool ServerDefault::IsRunning()
@@ -122,8 +151,19 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					wxIPV4address addr;
 					event.GetSocket()->GetPeer(addr);
 					m_connections.Remove(conn);
-					m_event_handler->OnServerInformation(wxT("Connection to ") + conn->GetId() + wxT(" lost"));
-					SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), wxString(wxT("Connection lost"))), true);
+					if (conn->m_quitmsg.Length() == 0)
+					{
+						conn->m_quitmsg = wxString(wxT("Connection lost"));
+					}
+					if (conn->GetNickname().Length())
+					{
+						m_event_handler->OnServerInformation(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + wxT(")"));
+						SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), conn->m_quitmsg), true);
+					}
+					else
+					{
+						m_event_handler->OnServerInformation(conn->GetId() + wxT(" disconnected (") + conn->m_quitmsg + wxT(")"));
+					}
 					delete conn;
 					m_event_handler->OnServerConnectionChange();
 				}
@@ -141,6 +181,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
 					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);
 					conn->m_authenticated = false;
+					conn->m_nextping = 0;
 					if (conn->m_authenticated)
 					{
 						conn->m_authenticated = true;
@@ -162,6 +203,39 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 
 }
 
+void ServerDefault::OnTimerPing(wxTimerEvent &event)
+{
+	wxLongLong_t now = GetMillisecondTicks();
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		ServerDefaultConnection *conn = (ServerDefaultConnection*)GetConnection(i);
+		if (conn->m_pingid.Length())
+		{
+			if ((now-conn->m_lastping) > ping_timeout_delay)
+			{
+				conn->Terminate(wxT("Ping timeout"));
+			}
+		}
+		else
+		{
+			if (conn->m_nextping < now)
+			{
+				conn->m_lastping = now;
+				conn->m_pingid = Crypt::Random(8).GetHexDump(false, false);
+				conn->Send(wxEmptyString, wxT("PING"), conn->m_pingid);
+			}
+		}
+		if (!conn->m_authenticated)
+		{
+			wxTimeSpan t = wxDateTime::Now() - conn->GetJoinTime();
+			if (t > wxTimeSpan(0,1,0))
+			{
+				conn->Terminate(wxT("Failed to authenticate in 1 minute"));
+			}
+		}
+	}
+}
+
 int ServerDefault::GetListenPort()
 {
 	wxASSERT(m_sckListen);
@@ -175,7 +249,18 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 	ServerDefaultConnection *conn2 = (ServerDefaultConnection*)conn;
 	if (prenickauthcheck)
 	{
-		if (cmd == wxT("AUTH"))
+		if (cmd == wxT("PONG"))
+		{
+			if (conn2->m_pingid == data)
+			{
+				wxLongLong_t now = GetMillisecondTicks();
+				conn2->m_nextping = now + ping_interval;
+				conn2->m_pingid.Empty();
+				conn2->m_latency = (now - conn2->m_lastping);
+			}
+			return true;
+		}
+		else if (cmd == wxT("AUTH"))
 		{
 			bool success;
 			try
@@ -205,8 +290,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 				else
 				{
 					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Failed to authenticate %d times. Disconnecting"), max_attempts));
-					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (attempt %d, disconnecting)"), conn2->m_auth_fail_count));
-					conn2->m_sck->CloseWithEvent();
+					conn2->Terminate(wxString::Format(wxT("Authentication failed after %d attempts"), max_attempts));
 				}
 			}
 			return true;

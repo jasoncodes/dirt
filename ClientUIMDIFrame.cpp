@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.49 2003-02-21 04:40:38 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.50 2003-02-21 07:53:13 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -348,22 +348,43 @@ void ClientUIMDIFrame::OnClientAuthBad(const wxString &text)
 	GetContext(wxEmptyString)->SetPasswordMode(true);
 }
 
-void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)
+void ClientUIMDIFrame::OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action)
 {
-	if (nick.Length() == 0 || GetContext(nick, false) != GetContext(wxEmptyString))
+	if (GetContext(nick, false, true))
 	{
-		AddLine(nick, wxT("<") + m_client->GetNickname() + wxT("> ") + text, *wxBLACK, true, true);
+		if (is_action)
+		{
+			AddLine(nick, wxT("* ") + m_client->GetNickname() + wxT(" ") + text, colours[6], true, true);
+		}
+		else
+		{
+			AddLine(nick, wxT("<") + m_client->GetNickname() + wxT("> ") + text, *wxBLACK, true, true);
+		}
 	}
 	else
 	{
-		AddLine(wxEmptyString, wxT("-> *") + nick + wxT("* ") + text, *wxBLACK, true, true);
+		if (is_action)
+		{
+			AddLine(context, wxT("-> *") + nick + wxT("* * ") + m_client->GetNickname() + wxT(" ") + text, colours[6], true, true);
+		}
+		else
+		{
+			AddLine(context, wxT("-> *") + nick + wxT("* ") + text, *wxBLACK, true, true);
+		}
 	}
 }
 
-void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private)
+void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private)
 {
 	wxString context = is_private ? nick : (const wxString)wxEmptyString;
-	AddLine(context, wxT("<") + nick + wxT("> ") + text);
+	if (is_action)
+	{
+		AddLine(context, wxT("* ") + nick + wxT(" ") + text, colours[6]);
+	}
+	else
+	{
+		AddLine(context, wxT("<") + nick + wxT("> ") + text);
+	}
 }
 
 void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)

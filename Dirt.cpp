@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.21 2003-02-20 12:29:13 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.22 2003-02-21 07:53:13 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -162,6 +162,10 @@ bool DirtApp::OnInit()
 	m_console = NULL;
 	m_cmdline = NULL;
 
+	#ifdef __WXMSW__
+		::timeBeginPeriod(1);
+	#endif
+
 	if (!ProcessCommandLine())
 	{
 		return false;
@@ -234,9 +238,15 @@ bool DirtApp::OnInit()
 
 int DirtApp::OnExit()
 {
+
+	#ifdef __WXMSW__
+		::timeEndPeriod(1);
+	#endif
+
 	delete m_console;
 	delete m_cmdline;
 	return wxApp::OnExit();
+
 }
 
 bool DirtApp::ProcessCommandLine()

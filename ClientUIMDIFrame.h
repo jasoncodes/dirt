@@ -37,8 +37,8 @@ protected:
 	virtual void OnClientAuthNeeded(const wxString &text);
 	virtual void OnClientAuthDone(const wxString &text);
 	virtual void OnClientAuthBad(const wxString &text);
-	virtual void OnClientMessageOut(const wxString &nick, const wxString &text);
-	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_private);
+	virtual void OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action);
+	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private);
 	virtual void OnClientUserList(const wxArrayString &nicklist);
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);

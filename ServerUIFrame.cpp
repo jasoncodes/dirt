@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.19 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.20 2003-02-21 07:53:14 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -58,7 +58,7 @@ ServerUIFrame::ServerUIFrame()
 	FixBorder(m_lstConnections);
 	m_lstConnections->InsertColumn(0, wxT("Nickname"),     wxLIST_FORMAT_LEFT, 96);
 	m_lstConnections->InsertColumn(1, wxT("Host"),         wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(2, wxT("User Details"), wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(2, wxT("User Details"), wxLIST_FORMAT_LEFT, 160);
 	m_lstConnections->InsertColumn(3, wxT("Away Message"), wxLIST_FORMAT_LEFT, 96);
 	m_lstConnections->InsertColumn(4, wxT("Idle Time"),    wxLIST_FORMAT_LEFT, 60);
 	m_lstConnections->InsertColumn(5, wxT("Latency"),      wxLIST_FORMAT_LEFT, 60);

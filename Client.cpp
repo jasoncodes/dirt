@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.24 2003-02-21 04:40:37 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.25 2003-02-21 07:53:12 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -64,12 +64,12 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		return;
 	}
 
-	if (cmd == wxT("SAY"))
+	if (cmd == wxT("SAY") || cmd == wxT("ME"))
 	{
 		ASSERT_CONNECTED();
-		SendMessage(context, context, params);
+		SendMessage(context, context, params, cmd == wxT("ME"));
 	}
-	else if (cmd == wxT("MSG"))
+	else if (cmd == wxT("MSG") || cmd == wxT("MSGME"))
 	{
 		ASSERT_CONNECTED();
 		wxString nick, msg;
@@ -80,7 +80,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		}
 		else if (msg.Length() > 0)
 		{
-			SendMessage(context, nick, msg);
+			SendMessage(context, nick, msg, cmd == wxT("MSGME"));
 		}
 	}
 	else if (cmd == wxT("CONNECT") || cmd == wxT("SERVER"))
@@ -117,7 +117,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG NICK RECONNECT SAY SERVER"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
@@ -153,7 +153,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		return;
 	}
 
-	if (cmd == wxT("PUBMSG"))
+	if (cmd == wxT("PUBMSG") || cmd == wxT("PUBACTION"))
 	{
 		ByteBuffer nick, text;
 		if (!Unpack(data, nick, text))
@@ -161,9 +161,9 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			text = ByteBuffer();
 		}
-		m_event_handler->OnClientMessageIn(nick, text, false);
+		m_event_handler->OnClientMessageIn(nick, text, cmd == wxT("PUBACTION"), false);
 	}
-	else if (cmd == wxT("PRIVMSG"))
+	else if (cmd == wxT("PRIVMSG") || cmd == wxT("PRIVACTION"))
 	{
 		ByteBuffer nick, text;
 		if (!Unpack(data, nick, text))
@@ -171,9 +171,9 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			text = ByteBuffer();
 		}
-		m_event_handler->OnClientMessageIn(nick, text, true);
+		m_event_handler->OnClientMessageIn(nick, text, cmd == wxT("PRIVACTION"), true);
 	}
-	else if (cmd == wxT("PRIVMSGOK"))
+	else if (cmd == wxT("PRIVMSGOK") || cmd == wxT("PRIVACTIONOK"))
 	{
 		ByteBuffer nick, text;
 		if (!Unpack(data, nick, text))
@@ -181,7 +181,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			nick = data;
 			text = ByteBuffer();
 		}
-		m_event_handler->OnClientMessageOut(nick, text);
+		m_event_handler->OnClientMessageOut(context, nick, text, cmd == wxT("PRIVACTIONOK"));
 	}
 	else if (cmd == wxT("ERROR"))
 	{
@@ -271,12 +271,12 @@ void Client::OnConnect()
 {
 	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
 	m_event_handler->OnClientStateChange();
-	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
 	wxString userdetails;
 	userdetails << ::wxGetUserId() << wxT('@') << ::wxGetHostName();
 	userdetails << wxT(" (\"") << ::wxGetUserName() << wxT("\")");
 	userdetails << wxT(" on ") << ::wxGetOsDescription();
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
+	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
 }
 
 wxString Client::GetNickname()
