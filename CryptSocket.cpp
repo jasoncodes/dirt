@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.32 2003-06-04 10:27:11 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.33 2003-06-04 12:05:18 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -41,7 +41,6 @@ enum MessageTypes
 
 BEGIN_EVENT_TABLE(CryptSocketBase, wxEvtHandler)
 	EVT_SOCKET(ID_SOCKET, CryptSocketBase::OnSocket)
-	EVT_DNS(ID_DNS, CryptSocketBase::OnDNS)
 END_EVENT_TABLE()
 
 CryptSocketBase::CryptSocketBase()
@@ -197,11 +196,6 @@ void CryptSocketBase::OnSocket(wxSocketEvent &event)
 
 	}
 
-}
-
-void CryptSocketBase::OnDNS(DNSEvent &event)
-{
-	wxFAIL_MSG(wxT("CryptSocketBase::OnDNS not implemented"));
 }
 
 void CryptSocketBase::OnSocketInput()
@@ -534,9 +528,18 @@ void CryptSocketBase::InitProxyListen()
 	}
 }
 
+void CryptSocketBase::RaiseSocketEvent(wxSocketNotify type)
+{
+	wxSocketEvent event;
+	event.SetEventObject(m_sck);
+	event.SetEventType(wxSOCKET_LOST);
+	OnSocket(event);
+}
+
 //////// CryptSocketClient ////////
 
 BEGIN_EVENT_TABLE(CryptSocketClient, CryptSocketBase)
+	EVT_DNS(ID_DNS, CryptSocketClient::OnDNS)
 END_EVENT_TABLE()
 
 CryptSocketClient::CryptSocketClient()
@@ -555,31 +558,15 @@ void CryptSocketClient::Connect(const wxString &host, wxUint16 port)
 	m_sck = new wxSocketClient;
 	InitBuffers();
 	InitSocketEvents();
-	//InitProxyConnect();
 
-	wxIPV4address addr;
-	if (host.Length())
-	{
-		if (!addr.Hostname(host))
-		{
-			wxSocketEvent event;
-			event.SetEventObject(m_sck);
-			event.SetEventType(wxSOCKET_LOST);
-			OnSocket(event);
-		}
-	}
-	else
-	{
-		addr.AnyAddress();
-	}
-	addr.Service(port);
+	m_host = host;
+	m_port = port;
 
-	if (((wxSocketClient*)m_sck)->Connect(addr, false))
+	m_DNS = new DNS;
+	m_DNS->SetEventHandler(this, ID_DNS);
+	if (!m_DNS->Lookup(m_host))
 	{
-		wxSocketEvent event;
-		event.SetEventObject(m_sck);
-		event.SetEventType(wxSOCKET_CONNECTION);
-		OnSocket(event);
+		RaiseSocketEvent(wxSOCKET_LOST);
 	}
 
 }
@@ -602,6 +589,35 @@ void CryptSocketClient::OnSocketConnection()
 	{
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_CONNECTION, this);
 		m_handler->AddPendingEvent(evt);
+	}
+
+}
+
+void CryptSocketClient::OnDNS(DNSEvent &event)
+{
+
+	if (event.IsSuccess())
+	{
+
+		wxSockAddress *addr = event.GetAddress().Clone();
+		wxASSERT(addr->Type() == wxSockAddress::IPV4);
+		((wxIPV4address*)addr)->Service(m_port);
+
+		//InitProxyConnect();
+
+		if (((wxSocketClient*)m_sck)->Connect(*addr, false))
+		{
+			RaiseSocketEvent(wxSOCKET_CONNECTION);
+		}
+
+		delete addr;
+
+	}
+	else
+	{
+
+		RaiseSocketEvent(wxSOCKET_LOST);
+
 	}
 
 }

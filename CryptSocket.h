@@ -62,9 +62,9 @@ protected:
 	virtual void EncryptPendingSends();
 	virtual void InitProxyConnect(wxString &dest_ip, wxUint16 dest_port);
 	virtual void InitProxyListen();
+	virtual void RaiseSocketEvent(wxSocketNotify type);
 
 protected:
-	void OnDNS(DNSEvent &event);
 	void OnSocket(wxSocketEvent &event);
 	virtual void OnSocketInput();
 	virtual void OnSocketOutput();
@@ -130,7 +130,14 @@ public:
 	virtual CryptSocketType GetType() const { return cstClient; }
 
 protected:
+	void OnDNS(DNSEvent &event);
+
+protected:
 	virtual void OnSocketConnection();
+
+protected:
+	wxString m_host;
+	wxUint16 m_port;
 
 private:
 	DECLARE_EVENT_TABLE()
