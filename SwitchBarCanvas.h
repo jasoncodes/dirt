@@ -44,6 +44,9 @@ private:
 };
 
 #include <wx/dynarray.h>
+#ifndef WX_DEFINE_ARRAY_PTR
+	#define WX_DEFINE_ARRAY_PTR WX_DEFINE_ARRAY
+#endif
 WX_DEFINE_ARRAY_PTR(SwitchBarCanvas*, SwitchBarCanvasArray);
 
 #endif
