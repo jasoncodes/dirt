@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.2 2003-02-14 04:39:57 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.3 2003-02-14 12:43:01 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -42,9 +42,31 @@ void Server::ProcessInput(const wxString &input)
 		return;
 	}
 
-	if (cmd == "HELP")
+	if (cmd == "START")
 	{
-		m_event_handler->OnServerInformation("Supported commands: HELP");
+		if (IsRunning())
+		{
+			m_event_handler->OnServerWarning("Server is already running");
+		}
+		else
+		{
+			Start();
+		}
+	}
+	else if (cmd == "STOP")
+	{
+		if (IsRunning())
+		{
+			Stop();
+		}
+		else
+		{
+			m_event_handler->OnServerWarning("Server is not running");
+		}
+	}
+	else if (cmd == "HELP")
+	{
+		m_event_handler->OnServerInformation("Supported commands: HELP START STOP");
 	}
 	else
 	{

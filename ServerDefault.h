@@ -2,6 +2,7 @@
 #define ServerDefault_H_
 
 #include "Server.h"
+#include "CryptSocket.h"
 
 class ServerDefault : public Server
 {
@@ -9,6 +10,16 @@ class ServerDefault : public Server
 public:
 	ServerDefault(ServerEventHandler *event_handler);
 	virtual ~ServerDefault();
+
+	virtual void Start();
+	virtual void Stop();
+	virtual bool IsRunning();
+
+protected:
+	void OnSocket(CryptSocketEvent &event);
+
+protected:
+	CryptSocketServer *m_sckListen;
 
 private:
 	DECLARE_EVENT_TABLE()

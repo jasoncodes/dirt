@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.9 2003-02-14 06:21:55 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.10 2003-02-14 12:43:02 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -22,12 +22,20 @@ enum
 	ID_INPUT,
 	ID_FILE_EXIT,
 	ID_HELP_ABOUT,
+	ID_STARTSTOP,
+	ID_CONFIGURATION,
+	ID_CLIENT,
+	ID_CLEAR
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_TEXT_ENTER(ID_INPUT, ServerUIFrame::OnInput)
 	EVT_MENU(ID_HELP_ABOUT, ServerUIFrame::OnHelpAbout)
 	EVT_MENU(ID_FILE_EXIT, ServerUIFrame::OnFileExit)
+	EVT_BUTTON(ID_STARTSTOP, ServerUIFrame::OnStartStop)
+	EVT_BUTTON(ID_CONFIGURATION, ServerUIFrame::OnConfiguration)
+	EVT_BUTTON(ID_CLIENT, ServerUIFrame::OnClient)
+	EVT_BUTTON(ID_CLEAR, ServerUIFrame::OnClear)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
@@ -45,27 +53,32 @@ ServerUIFrame::ServerUIFrame()
 	FixBorder(m_txtLog);
 	m_txtLog->SetFont(m_txtInput->GetFont());
 
-	wxBoxSizer *szrLog = new wxBoxSizer(wxVERTICAL);
+	wxStaticBox *boxConsole = new wxStaticBox(panel, -1, "Console");
+	wxBoxSizer *szrConsole = new wxStaticBoxSizer(boxConsole, wxVERTICAL);
 	{
-		szrLog->Add(m_txtLog, 1, wxEXPAND);
-		szrLog->Add(m_txtInput, 0, wxEXPAND);
+		szrConsole->Add(m_txtLog, 1, wxEXPAND);
+		szrConsole->Add(m_txtInput, 0, wxEXPAND);
 	}
 
-	wxButton *m_cmdStartStop = new wxButton(panel, -1, "&Start");
-	wxButton *m_cmdConfiguration = new wxButton(panel, -1, "&Configuration");
-	wxButton *m_cmdClient = new wxButton(panel, -1, "&Launch Client");
-	wxButton *m_cmdClearLog = new wxButton(panel, -1, "Clear Lo&g");
+	m_cmdStartStop = new wxButton(panel, ID_STARTSTOP, "&Start");
+	m_cmdConfiguration = new wxButton(panel, ID_CONFIGURATION, "&Configuration");
+	m_cmdClient = new wxButton(panel, ID_CLIENT, "&Launch Client");
+	m_cmdClear = new wxButton(panel, ID_CLEAR, "Clear Lo&g");
+
+	m_cmdConfiguration->Enable(false);
+	m_cmdClient->Enable(false);
+	m_cmdClear->Enable(false);
 
 	wxBoxSizer *szrButtons = new wxBoxSizer(wxVERTICAL);
 	{
 		szrButtons->Add(m_cmdStartStop, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
 		szrButtons->Add(m_cmdConfiguration, 0, wxBOTTOM | wxEXPAND, 8);
 		szrButtons->Add(m_cmdClient, 0, wxBOTTOM | wxEXPAND, 8);
-		szrButtons->Add(m_cmdClearLog, 0, wxBOTTOM | wxEXPAND, 8);
+		szrButtons->Add(m_cmdClear, 0, wxBOTTOM | wxEXPAND, 8);
 	}
 
 	wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
-	szrLeft->Add(szrLog, 1, wxEXPAND);
+	szrLeft->Add(szrConsole, 1, wxEXPAND);
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
 	szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
@@ -185,4 +198,31 @@ void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
 		<< "\n"
 		<< "http://dirtchat.sourceforge.net/",
 		"About Dirt Secure Chat", wxICON_INFORMATION);
+}
+
+void ServerUIFrame::OnStartStop(wxCommandEvent& event)
+{
+	if (m_server->IsRunning())
+	{
+		m_server->Stop();
+	}
+	else
+	{
+		m_server->Start();
+	}
+}
+
+void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
+{
+	// not implemented
+}
+
+void ServerUIFrame::OnClient(wxCommandEvent& event)
+{
+	// not implemented
+}
+
+void ServerUIFrame::OnClear(wxCommandEvent& event)
+{
+	// not implemented
 }

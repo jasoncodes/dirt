@@ -19,7 +19,7 @@ public:
 	virtual void Close();
 	virtual void Send(const ByteBuffer &data);
 	virtual bool IsSendBufferFull() const;
-	virtual bool Ok() const { return m_sck->Ok(); }
+	virtual bool Ok() const { return m_sck ? m_sck->Ok() : false; }
 	virtual bool GetLocal(wxSockAddress &addr) const { return m_sck->GetLocal(addr); }
 	virtual bool GetPeer(wxSockAddress &addr) const { return m_sck->GetPeer(addr); }
 	

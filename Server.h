@@ -19,6 +19,9 @@ public:
 	virtual ~Server();
 
 	virtual void ProcessInput(const wxString &input);
+	virtual void Start() = 0;
+	virtual void Stop() = 0;
+	virtual bool IsRunning() = 0;
 
 protected:
 	ServerEventHandler *m_event_handler;

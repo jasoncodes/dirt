@@ -23,6 +23,10 @@ protected:
 	void OnInput(wxCommandEvent &event);
 	void OnFileExit(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
+	void OnStartStop(wxCommandEvent& event);
+	void OnConfiguration(wxCommandEvent& event);
+	void OnClient(wxCommandEvent& event);
+	void OnClear(wxCommandEvent& event);
 
 protected:
 	virtual bool ResetWindowPos();
@@ -31,6 +35,10 @@ protected:
 	Server *m_server;
 	wxTextCtrl *m_txtLog;
 	InputControl *m_txtInput;
+	wxButton *m_cmdStartStop;
+	wxButton *m_cmdConfiguration;
+	wxButton *m_cmdClient;
+	wxButton *m_cmdClear;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.2 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.3 2003-02-14 12:43:01 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -56,22 +56,24 @@ void CryptSocketBase::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 
 void CryptSocketBase::Destroy()
 {
+	Close();
 	if (m_sck)
 	{
-		Close();
 		m_sck->Destroy();
 		m_sck = NULL;
-		m_keyRemotePublic = ByteBuffer();
 	}
+	m_keyRemotePublic = ByteBuffer();
 }
 
 void CryptSocketBase::Close()
 {
 	if (m_sck)
 	{
-		m_sck->Close();
-		InitBuffers();
+		m_sck->Destroy();
+		m_sck = NULL;
 	}
+	wxASSERT(!Ok());
+	InitBuffers();
 }
 
 void CryptSocketBase::InitBuffers()
