@@ -18,8 +18,6 @@
 
 * slow clients freeze when faster clients send to them
 
-* option to auto /back if talk in main window or talk in any window
-
 * recheck away msg and nicks in PopulateFilteredWords()
   (keep a copy of the nick/away msg before filtering and use it for refiltering)
 
@@ -28,6 +26,11 @@
 * admin feature to change nicks
 
 * admin feature to change away messages
+
+* option to auto /back if talk in main window or talk in any window
+  ("don't do it if been away for less than x seconds" option too)
+
+* "Show user is typing cue", "Send user is typing cue"
 
 * can't delete dir last sent from / recv to.
 
@@ -87,6 +90,8 @@
 * nice about screen (wxHtmlWindow maybe?)
 
 * /lock
+
+* /sms with address book in tools menu
 
 * WTS event bindings: Terminal_Connect, Disconnect, Lock, Unlock
 
