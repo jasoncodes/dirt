@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.41 2003-04-18 10:23:01 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.42 2003-04-28 08:18:16 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -700,7 +700,6 @@ void LogControl::OnDraw(wxDC& dcFront)
 				BitmapSize.y = ClientSize.y;
 			}
 			bmpBack = wxBitmap(BitmapSize.x, BitmapSize.y);
-			wxBell();
 		}
 		wxMemoryDC dcBack;
 		dcBack.SelectObject(bmpBack);
