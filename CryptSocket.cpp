@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.13 2003-02-20 06:48:13 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.14 2003-02-24 07:31:09 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -345,8 +345,6 @@ void CryptSocketBase::EncryptPendingSends()
 
 void CryptSocketBase::MaybeSendData()
 {
-
-	wxCHECK_RET(m_sck && m_sck->IsConnected(), wxT("Socket not connected"));
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
