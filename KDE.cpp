@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: KDE.cpp,v 1.3 2003-05-27 17:02:20 jason Exp $)
+RCS_ID($Id: KDE.cpp,v 1.4 2003-06-12 13:44:09 jason Exp $)
 
 #ifdef KDE_AVAILABLE
 
@@ -14,6 +14,7 @@ RCS_ID($Id: KDE.cpp,v 1.3 2003-05-27 17:02:20 jason Exp $)
 
 #include <kapplication.h>
 #include <wx/thread.h>
+#include <wx/module.h>
 #include <dcopclient.h>
 #include <wx/filename.h>
 #include <kcrash.h>
