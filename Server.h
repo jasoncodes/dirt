@@ -2,7 +2,7 @@
 #define Server_H_
 
 #include <wx/datetime.h>
-#include <wx/wave.h>
+#include <wx/sound.h>
 #include "ByteBuffer.h"
 #include "util.h"
 #include "LogWriter.h"
@@ -200,8 +200,8 @@ protected:
 	size_t m_peak_users;
 	long m_last_active;
 	wxArrayString m_ip_list;
-	#if wxUSE_WAVE
-		wxWave m_wave;
+	#if wxUSE_SOUND
+		wxSound m_sound;
 	#endif
 	LogWriter *m_log;
 	bool m_log_warning_given;

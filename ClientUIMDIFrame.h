@@ -4,7 +4,7 @@
 #include "SwitchBarParent.h"
 #include "Client.h"
 #include <wx/datetime.h>
-#include <wx/wave.h>
+#include <wx/sound.h>
 
 class ClientUIMDICanvas;
 class NickListControl;
@@ -114,8 +114,8 @@ protected:
 	bool m_tray_auto_restore;
 	wxDateTime m_log_date;
 	bool m_log_date_okay;
-	#if wxUSE_WAVE
-		wxWave m_wave;
+	#if wxUSE_SOUND
+		wxSound m_sound;
 	#endif
 	#ifdef __WXMSW__
 		wxLongLong_t m_last_flash_window;

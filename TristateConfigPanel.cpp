@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.7 2003-08-01 07:48:04 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.8 2004-02-14 02:56:21 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
@@ -18,22 +18,22 @@ enum
 {
 	ID_TEXT = 1,
 	ID_BROWSE,
-	ID_WAVE_PREVIEW
+	ID_SOUND_PREVIEW
 };
 
 BEGIN_EVENT_TABLE(TristateConfigPanel, RadioBoxPanel)
 	EVT_TEXT(ID_TEXT, TristateConfigPanel::OnText)
 	EVT_BUTTON(ID_BROWSE, TristateConfigPanel::OnBrowse)
-	EVT_BUTTON(ID_WAVE_PREVIEW, TristateConfigPanel::OnWavePreview)
+	EVT_BUTTON(ID_SOUND_PREVIEW, TristateConfigPanel::OnSoundPreview)
 END_EVENT_TABLE()
 
 wxString choices[3] = { wxT("None"), wxT("Default"), wxT("Custom") }; 
 
 TristateConfigPanel::TristateConfigPanel(
 	wxWindow *parent, wxWindowID id, const wxString &caption,
-	const wxString &filespec, bool wave_preview, const wxPoint& pos)
+	const wxString &filespec, bool sound_preview, const wxPoint& pos)
 	: RadioBoxPanel(parent, id, caption, pos, WXSIZEOF(choices), choices),
-		m_filespec(filespec), m_wave_preview(wave_preview)
+		m_filespec(filespec), m_sound_preview(sound_preview)
 {
 
 	wxPanel *pnl = GetPanel();
@@ -48,18 +48,18 @@ TristateConfigPanel::TristateConfigPanel(
 		m_cmdBrowse = new wxButton(pnl, ID_BROWSE, wxT("..."), wxDefaultPosition, size_button);
 		m_cmdBrowse->Enable(false);
 		szrPanel->Add(m_cmdBrowse, 0, wxEXPAND, 0);
-		wxASSERT(!m_wave_preview || (m_wave_preview == (m_filespec.Length() > 0)));
-		if (m_wave_preview)
+		wxASSERT(!m_sound_preview || (m_sound_preview == (m_filespec.Length() > 0)));
+		if (m_sound_preview)
 		{
 			wxBitmap bmpSound(sound_xpm);
-			m_cmdWavePreview = new wxBitmapButton(pnl, ID_WAVE_PREVIEW, bmpSound, wxDefaultPosition, size_button);
-			m_cmdWavePreview->SetBitmapDisabled(wxBitmap(sound_disabled_xpm));
-			m_cmdWavePreview->Enable(false);
-			szrPanel->Add(m_cmdWavePreview, 0, wxEXPAND, 0);
+			m_cmdSoundPreview = new wxBitmapButton(pnl, ID_SOUND_PREVIEW, bmpSound, wxDefaultPosition, size_button);
+			m_cmdSoundPreview->SetBitmapDisabled(wxBitmap(sound_disabled_xpm));
+			m_cmdSoundPreview->Enable(false);
+			szrPanel->Add(m_cmdSoundPreview, 0, wxEXPAND, 0);
 		}
 		else
 		{
-			m_cmdWavePreview = NULL;
+			m_cmdSoundPreview = NULL;
 		}
 	}
 	pnl->SetSizer(szrPanel);
@@ -77,24 +77,24 @@ void TristateConfigPanel::OnSelectionChanged(int n)
 	bool b = (n == 2);
 	m_txt->Enable(b);
 	m_cmdBrowse->Enable(b);
-	if (m_cmdWavePreview)
+	if (m_cmdSoundPreview)
 	{
-		#if wxUSE_WAVE
-			m_cmdWavePreview->Enable(b && m_txt->GetValue().Length());
+		#if wxUSE_SOUND
+			m_cmdSoundPreview->Enable(b && m_txt->GetValue().Length());
 		#else
-			m_cmdWavePreview->Enable(false);
+			m_cmdSoundPreview->Enable(false);
 		#endif
 	}
 }
 
 void TristateConfigPanel::OnText(wxCommandEvent &WXUNUSED(event))
 {
-	if (m_cmdWavePreview)
+	if (m_cmdSoundPreview)
 	{
-		#if wxUSE_WAVE
-			m_cmdWavePreview->Enable(m_txt->IsEnabled() && m_txt->GetValue().Length());
+		#if wxUSE_SOUND
+			m_cmdSoundPreview->Enable(m_txt->IsEnabled() && m_txt->GetValue().Length());
 		#else
-			m_cmdWavePreview->Enable(false);
+			m_cmdSoundPreview->Enable(false);
 		#endif
 	}
 	SendChangeEvent();
@@ -128,20 +128,20 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &WXUNUSED(event))
 	}
 }
 
-void TristateConfigPanel::OnWavePreview(wxCommandEvent &WXUNUSED(event))
+void TristateConfigPanel::OnSoundPreview(wxCommandEvent &WXUNUSED(event))
 {
-	#if wxUSE_WAVE
+	#if wxUSE_SOUND
 		if (wxFileName(GetPath()).FileExists())
 		{
-			m_wave.Create(GetPath(), false);
-			if (m_wave.IsOk() && m_wave.Play())
+			m_sound.Create(GetPath(), false);
+			if (m_sound.IsOk() && m_sound.Play())
 			{
 				return;
 			}
 		}
-		wxMessageBox(wxT("Error playing wave file: ") + GetPath(), wxT("Unable to play wave file"), wxICON_ERROR);
+		wxMessageBox(wxT("Error playing sound file: ") + GetPath(), wxT("Unable to play sound file"), wxICON_ERROR);
 	#else
-		wxMessageBox(wxT("Wave file support not available"), wxT("Unable to play wave file"), wxICON_ERROR);
+		wxMessageBox(wxT("Sound file support not available"), wxT("Unable to play sound file"), wxICON_ERROR);
 	#endif
 }
 

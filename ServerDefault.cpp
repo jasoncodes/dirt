@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.70 2003-08-12 07:43:05 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.71 2004-02-14 02:56:21 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -214,12 +214,12 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config.GetServerName());
 					conn->Send(wxEmptyString, wxT("IPLIST"), Pack(m_ip_list));
 					conn->Send(wxEmptyString, wxT("IPSELF"), conn->m_remoteipstring);
-					#if wxUSE_WAVE
+					#if wxUSE_SOUND
 						wxString filename = m_config.GetSoundConnection();
 						if (filename.Length() && wxFileName(filename).FileExists())
 						{
-							m_wave.Create(filename, false);
-							if (!m_wave.IsOk() || !m_wave.Play())
+							m_sound.Create(filename, false);
+							if (!m_sound.IsOk() || !m_sound.Play())
 							{
 								Warning(wxT("Error playing ") + filename);
 							}

@@ -5,7 +5,7 @@ class ServerUIFrame;
 class Server;
 class TristateConfigPanel;
 
-#include <wx/wave.h>
+#include <wx/sound.h>
 
 class ServerUIFrameConfig : public wxDialog
 {
@@ -33,8 +33,8 @@ protected:
 protected:
 	Server *m_server;
 
-	#if wxUSE_WAVE
-		wxWave m_wave;
+	#if wxUSE_SOUND
+		wxSound m_sound;
 	#endif
 
 	wxTextCtrl *m_txtListenPort;

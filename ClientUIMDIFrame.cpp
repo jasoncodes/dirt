@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.138 2003-08-26 05:51:58 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.139 2004-02-14 02:56:20 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -523,12 +523,12 @@ void ClientUIMDIFrame::DoAlert()
 
 			case Config::tsmCustom:
 				{
-					#if wxUSE_WAVE
+					#if wxUSE_SOUND
 						wxString filename = config.GetActualSoundFile();
 						if (wxFileName(filename).FileExists())
 						{
-							m_wave.Create(filename, false);
-							if (m_wave.IsOk() && m_wave.Play())
+							m_sound.Create(filename, false);
+							if (m_sound.IsOk() && m_sound.Play())
 							{
 								break;
 							}

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.23 2003-08-22 17:29:08 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.24 2004-02-14 02:56:20 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -183,7 +183,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_chkFileTransferStatus = new wxCheckBox(pnlGeneral, wxID_ANY, wxT("Show File Transfer Status Messages"));
 	wxStaticText *m_lblSystemTrayIcon = new wxStaticText(pnlGeneral, wxID_ANY, wxT("System Tray Icon:"));
 	m_cmbSystemTrayIcon = new wxComboBox(pnlGeneral, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, tray_icon_option_count, tray_icon_options, wxCB_READONLY);
-	m_pnlSound = new TristateConfigPanel(pnlGeneral, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
+	m_pnlSound = new TristateConfigPanel(pnlGeneral, ID_SOUND, wxT("Notification Sound"), wxT("Sound Files|*.wav|All Files|*"), true);
 
 	wxPanel *pnlProxy = new wxPanel(notebook, wxID_ANY);
 
@@ -447,7 +447,7 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	{
 		m_pnlSound->SetPath(m_config->GetActualSoundFile());
 	}
-	#if !wxUSE_WAVE
+	#if !wxUSE_SOUND
 		m_pnlSound->Enable(Config::tsmCustom, false);
 		if (m_pnlSound->GetMode() == Config::tsmCustom)
 		{

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.46 2003-08-05 13:04:38 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.47 2004-02-14 02:56:21 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -108,7 +108,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log Directory"));
 
-	#if wxUSE_WAVE
+	#if wxUSE_SOUND
 	#else
 		lblSoundConnection->Enable(false);
 		m_txtSoundConnection->Enable(false);
@@ -405,7 +405,7 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 		(event.GetId()==ID_BROWSE_SOUND_CONNECTION) ?
 		m_txtSoundConnection : m_txtSoundJoin;
 	wxFileName fn(txt->GetValue());
-	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
+	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), wxT("Sound Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		txt->SetValue(dlg.GetPath());
@@ -415,7 +415,7 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 void ServerUIFrameConfig::OnPreview(wxCommandEvent &event)
 {
 
-	#if wxUSE_WAVE
+	#if wxUSE_SOUND
 
 		wxTextCtrl *txt =
 			(event.GetId()==ID_PREVIEW_SOUND_CONNECTION) ?
@@ -425,18 +425,18 @@ void ServerUIFrameConfig::OnPreview(wxCommandEvent &event)
 
 		if (wxFileName(filename).FileExists())
 		{
-			m_wave.Create(filename, false);
-			if (m_wave.IsOk() && m_wave.Play())
+			m_sound.Create(filename, false);
+			if (m_sound.IsOk() && m_sound.Play())
 			{
 				return;
 			}
 		}
 
-		wxMessageBox(wxT("Error playing wave file: ") + filename, wxT("Unable to play wave file"), wxICON_ERROR);
+		wxMessageBox(wxT("Error playing sound file: ") + filename, wxT("Unable to play sound file"), wxICON_ERROR);
 
 	#else
 
-		wxMessageBox(wxT("Wave file support not available"), wxT("Unable to play wave file"), wxICON_ERROR);
+		wxMessageBox(wxT("Sound file support not available"), wxT("Unable to play sound file"), wxICON_ERROR);
 
 	#endif
 
