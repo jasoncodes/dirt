@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.54 2003-05-20 05:37:09 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.55 2003-05-22 01:46:22 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -465,6 +465,8 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Append(ID_NICKLIST_QUERY, wxT("&Query"));
 	menu.Append(ID_NICKLIST_WHOIS, wxT("&Who Is"));
 	menu.Append(ID_NICKLIST_PING, wxT("&Ping"));
+
+	SetDefaultMenuItem(menu, ID_NICKLIST_QUERY);
 
 	wxPoint pos = ScreenToClient(wxGetMousePosition());
 	PopupMenu(&menu, pos);

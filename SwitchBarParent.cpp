@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.19 2003-05-07 05:15:16 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.20 2003-05-22 01:46:23 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
 #include "SwitchBarChild.h"
 #include "SwitchBarCanvas.h"
+#include "util.h"
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -397,6 +398,10 @@ void SwitchBarParent::OnSwitchBarMenu(wxCommandEvent& event)
 	menu.Enable(ID_SWITCHBAR_RESTORE, m_switchbar->GetSelectedIndex() != switchbar_popup_button_index);
 	menu.Enable(ID_SWITCHBAR_MINIMIZE, switchbar_popup_canvas->IsAttached());
 	menu.Enable(ID_SWITCHBAR_CLOSE, switchbar_popup_canvas->IsClosable());
+
+	SetDefaultMenuItem(menu, menu.IsEnabled(ID_SWITCHBAR_RESTORE) ?
+		ID_SWITCHBAR_RESTORE :
+		ID_SWITCHBAR_MINIMIZE);
 
 	if (switchbar_popup_canvas->OnPopupMenu(menu))
 	{

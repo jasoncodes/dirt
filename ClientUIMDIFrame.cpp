@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.117 2003-05-20 05:37:10 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.118 2003-05-22 01:46:23 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -302,6 +302,7 @@ void ClientUIMDIFrame::OnTrayRightClick(wxMouseEvent &event)
 		mnu.Append(ID_RESTORE, wxT("&Restore"));
 		mnu.AppendSeparator();
 		mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+		SetDefaultMenuItem(mnu, ID_RESTORE);
 		m_tray->PopupMenu(&mnu, event.GetPosition());
 	}
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.63 2003-05-14 17:15:04 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.64 2003-05-22 01:46:23 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1173,4 +1173,36 @@ bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 	#else
 		return OpenBrowser(parent, wxT("file://") + folder, show_error);
 	#endif
+}
+
+bool SetDefaultMenuItem(wxMenu &mnu, int id)
+{
+
+	#ifdef __WXMSW__
+
+		HMENU hMenu = (HMENU)mnu.GetHMenu();
+		wxMenuItem *item = mnu.FindItem(id);
+		if (item)
+		{
+			int real_id = item->GetRealId();
+			MENUITEMINFO mii;
+			mii.cbSize = sizeof MENUITEMINFO;
+			mii.fMask = MIIM_STATE;
+			if (GetMenuItemInfo(hMenu, real_id, FALSE, &mii))
+			{
+				mii.fState |= MFS_DEFAULT;
+				if (SetMenuItemInfo(hMenu, real_id, FALSE, &mii))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+
+	#else
+
+		return false;
+
+	#endif
+
 }

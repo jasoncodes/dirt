@@ -75,5 +75,6 @@ wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future = fals
 wxString GetSelf();
 bool StringToLongLong(const wxString &str, wxLongLong_t *x);
 bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x);
+bool SetDefaultMenuItem(wxMenu &mnu, int id);
 
 #endif

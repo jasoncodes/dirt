@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.56 2003-04-30 07:04:29 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.57 2003-05-22 01:46:23 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -298,6 +298,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 	mnu.Enable(ID_CLIENT, m_cmdClient->IsEnabled());
 	mnu.AppendSeparator();
 	mnu.Append(ID_FILE_EXIT, wxT("E&xit"));
+	SetDefaultMenuItem(mnu, ID_RESTORE);
 	m_tray->PopupMenu(&mnu, event.GetPosition());
 }
 
