@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocketProxy.cpp,v 1.16 2003-06-05 14:13:10 jason Exp $)
+RCS_ID($Id: CryptSocketProxy.cpp,v 1.17 2003-06-05 14:43:10 jason Exp $)
 
 #include "CryptSocketProxy.h"
 #include "IPInfo.h"
@@ -120,7 +120,7 @@ public:
 		request += ByteBuffer(1, 4); // SOCKS 4
 		request += ByteBuffer(1, 1); // CONNECT
 		request += Uint16ToBytes(m_dest_port); // PORT
-		request += Uint32ToBytes(wxUINT32_SWAP_ALWAYS(GetIPV4Address(m_dest_ip))); // IP
+		request += Uint32ToBytes(wxUINT32_SWAP_ON_LE(GetIPV4Address(m_dest_ip))); // IP
 		request += m_settings.GetUsername(); // USERID
 		request += ByteBuffer(1, 0); // NULL
 		ProxySendData(request);
@@ -728,13 +728,13 @@ CryptSocketProxy* CryptSocketProxySettings::NewProxyConnect(CryptSocketBase *sck
 	{
 
 		case ppSOCKS4:
-			return new CryptSocketProxySOCKS4(sck);
+			proxy = new CryptSocketProxySOCKS4(sck);
 
 //		case ppSOCKS5:
-//			return new CryptSocketProxySOCKS5(sck);
+//			proxy = new CryptSocketProxySOCKS5(sck);
 
 		case ppHTTP:
-			return new CryptSocketProxyHTTP(sck);
+			proxy = new CryptSocketProxyHTTP(sck);
 
 		default:
 			wxFAIL_MSG(wxT("Unsupported protocol in CryptSocketProxySettings::NewProxyConnect"));
