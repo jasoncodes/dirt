@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.2 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.3 2003-02-16 07:19:51 jason Exp $)
 
 #include "Crypt.h"
 
@@ -68,7 +68,15 @@ ByteBuffer Crypt::Random(size_t len)
 {
 	ByteBuffer data(len);
 	byte *ptr = data.Lock();
-	GetRNG().GenerateBlock(ptr, len);
+	try
+	{
+		GetRNG().GenerateBlock(ptr, len);
+	}
+	catch (...)
+	{
+		data.Unlock();
+		throw;
+	}
 	data.Unlock();
 	return data;
 }
@@ -78,9 +86,19 @@ void Crypt::RSAGenerateKey(unsigned int key_length, ByteBuffer &public_key, Byte
 
 	ByteBuffer private_key_temp = ByteBuffer(key_length * 10);
 	ArraySink private_sink(private_key_temp.Lock(), key_length * 10);
-	RSAES_OAEP_SHA_Decryptor priv(GetRNG(), key_length);
-	priv.DEREncode(private_sink);
-	private_sink.MessageEnd();
+	RSAES_OAEP_SHA_Decryptor *priv = NULL;
+	try
+	{
+		priv = new RSAES_OAEP_SHA_Decryptor(GetRNG(), key_length);
+		priv->DEREncode(private_sink);
+		private_sink.MessageEnd();
+	}
+	catch (...)
+	{
+		private_key_temp.Unlock();
+		delete priv;
+		throw;
+	}
 	private_key_temp.Unlock();
 	wxASSERT(private_sink.TotalPutLength() <= private_key_temp.Length());
 	private_key = ByteBuffer(private_key_temp.Lock(), private_sink.TotalPutLength());
@@ -88,13 +106,24 @@ void Crypt::RSAGenerateKey(unsigned int key_length, ByteBuffer &public_key, Byte
 
 	ByteBuffer public_key_temp = ByteBuffer(key_length * 10);
 	ArraySink public_sink(public_key_temp.Lock(), key_length * 10);
-	RSAES_OAEP_SHA_Encryptor pub(priv);
-	pub.DEREncode(public_sink);
-	public_sink.MessageEnd();
+	try
+	{
+		RSAES_OAEP_SHA_Encryptor pub(*priv);
+		pub.DEREncode(public_sink);
+		public_sink.MessageEnd();
+	}
+	catch (...)
+	{
+		public_key_temp.Unlock();
+		delete priv;
+		throw;
+	}
 	public_key_temp.Unlock();
 	wxASSERT(public_sink.TotalPutLength() <= public_key_temp.Length());
 	public_key = ByteBuffer(public_key_temp.Lock(), public_sink.TotalPutLength());
 	public_key_temp.Unlock();
+
+	delete priv;
 
 }
 
@@ -108,11 +137,20 @@ ByteBuffer Crypt::RSAEncrypt(ByteBuffer &public_key, ByteBuffer &plain_text)
 
 	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
 	
-	PK_EncryptorFilter *filter = new PK_EncryptorFilter(GetRNG(), pub, sink);
-
-	StringSource src(plain_text.Lock(), plain_text.Length(), true, filter);
-	plain_text.Unlock();
+	try
+	{
+		PK_EncryptorFilter *filter = new PK_EncryptorFilter(GetRNG(), pub, sink);
+		StringSource src(plain_text.Lock(), plain_text.Length(), true, filter);
+	}
+	catch (...)
+	{
+		plain_text.Unlock();
+		buff.Unlock();
+		public_key.Unlock();
+		throw;
+	}
 	
+	plain_text.Unlock();
 	buff.Unlock();
 	wxASSERT(sink->TotalPutLength() <= buff.Length());
 
@@ -134,9 +172,20 @@ ByteBuffer Crypt::RSADecrypt(ByteBuffer &private_key, ByteBuffer &cither_text)
 	ByteBuffer buff(cither_text.Length());
 	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
 
-	StringSource src(cither_text.Lock(), cither_text.Length(), true, new PK_DecryptorFilter(priv, sink));
-	cither_text.Unlock();
+	try
+	{
+		PK_DecryptorFilter *filter = new PK_DecryptorFilter(priv, sink);
+		StringSource src(cither_text.Lock(), cither_text.Length(), true, filter);
+	}
+	catch (...)
+	{
+		cither_text.Unlock();
+		buff.Unlock();
+		buff.Unlock();
+		throw;
+	}
 
+	cither_text.Unlock();
 	buff.Unlock();
 	wxASSERT(sink->TotalPutLength() <= buff.Length());
 
@@ -153,7 +202,15 @@ void Crypt::SetAESEncryptKey(const ByteBuffer &key)
 {
 	wxASSERT(key.Length() == 32);
 	ByteBuffer tmp(key);
-	m_priv->enc.SetKey(tmp.Lock(), tmp.Length());
+	try
+	{
+		m_priv->enc.SetKey(tmp.Lock(), tmp.Length());
+	}
+	catch (...)
+	{
+		tmp.Unlock();
+		throw;
+	}
 	tmp.Unlock();
 	m_priv->enc_keyset = true;
 }
@@ -162,7 +219,15 @@ void Crypt::SetAESDecryptKey(const ByteBuffer &key)
 {
 	wxASSERT(key.Length() == 32);
 	ByteBuffer tmp(key);
-	m_priv->dec.SetKey(tmp.Lock(), tmp.Length());
+	try
+	{
+		m_priv->dec.SetKey(tmp.Lock(), tmp.Length());
+	}
+	catch (...)
+	{
+		tmp.Unlock();
+		throw;
+	}
 	tmp.Unlock();
 	m_priv->dec_keyset = true;
 }
@@ -186,7 +251,17 @@ ByteBuffer Crypt::AESEncrypt(const ByteBuffer &data)
 
 	ByteBuffer buff(src.Length());
 
-	m_priv->enc.ProcessAndXorMultipleBlocks(src.Lock(), NULL, buff.Lock(), num_blocks);
+	try
+	{
+		m_priv->enc.ProcessAndXorMultipleBlocks(src.Lock(), NULL, buff.Lock(), num_blocks);
+	}
+	catch (...)
+	{
+		src.Unlock();
+		buff.Unlock();
+		throw;
+	}
+
 	src.Unlock();
 	buff.Unlock();
 
@@ -206,7 +281,17 @@ ByteBuffer Crypt::AESDecrypt(const ByteBuffer &data)
 
 	ByteBuffer buff(src.Length());
 
-	m_priv->dec.ProcessAndXorMultipleBlocks(src.Lock(), NULL, buff.Lock(), num_blocks);
+	try
+	{
+		m_priv->dec.ProcessAndXorMultipleBlocks(src.Lock(), NULL, buff.Lock(), num_blocks);
+	}
+	catch (...)
+	{
+		src.Unlock();
+		buff.Unlock();
+		throw;
+	}
+
 	src.Unlock();
 	buff.Unlock();
 

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.9 2003-02-16 05:09:02 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.10 2003-02-16 07:21:59 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -451,7 +451,7 @@ bool CryptSocketServer::Listen(wxSockAddress& address)
 	return m_sck->Ok();
 }
 
-CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType id)
+CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType id, void *userdata)
 {
 	CryptSocketClient *sck = new CryptSocketClient;
 	wxCHECK_MSG(!sck->m_sck, NULL, wxT("Socket is not initialised"));
@@ -460,6 +460,7 @@ CryptSocketClient* CryptSocketServer::Accept(wxEvtHandler *handler, wxEventType 
 	sck->InitBuffers();
 	sck->InitSocketEvents();
 	sck->SetEventHandler(handler?handler:m_handler, (id!=wxID_ANY)?id:m_id);
+	sck->SetUserData(userdata);
 	bool success = ((wxSocketServer*)m_sck)->AcceptWith(*sck->m_sck);
 	if (success)
 	{

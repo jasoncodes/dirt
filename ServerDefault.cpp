@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.11 2003-02-16 05:09:03 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.12 2003-02-16 07:21:16 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -81,8 +81,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 		if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION)
 		{
 			ServerDefaultConnection *conn = new ServerDefaultConnection;
-			conn->m_sck = m_sckListen->Accept();
-			conn->m_sck->SetUserData(conn);
+			conn->m_sck = m_sckListen->Accept(this, ID_SOCK, conn);
 			m_connections.Add(conn);
 			m_event_handler->OnServerConnectionChange();
 		}
@@ -96,6 +95,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 	{
 
 		ServerDefaultConnection *conn = (ServerDefaultConnection*)event.GetUserData();
+		wxASSERT(conn);
 
 		switch (event.GetSocketEvent())
 		{

@@ -108,7 +108,7 @@ public:
 	virtual ~CryptSocketServer();
 
 	virtual bool Listen(wxSockAddress& address);
-	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY);
+	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY, void *userdata = NULL);
 
 protected:
 	virtual void OnSocketConnection();

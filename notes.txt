@@ -36,9 +36,4 @@
 
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
 
-* investigate possibilty of exceptions being raised in Crypto++. Should catch any that
-  are raised and call CRYPTSOCKET_CHECK_RET().
-
-* CRYPTSOCKET_OUTPUT should not be sent until a block key is recv'd
-
-* make Sends() buffer in unencrypted buffer until a block key is recv'd
+* Should catch any that are raised by Crypt.cpp in crypt socket and call CRYPTSOCKET_CHECK_RET()
