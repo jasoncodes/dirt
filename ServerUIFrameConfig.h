@@ -10,9 +10,18 @@ public:
 	ServerUIFrameConfig(ServerUIFrame *parent, Server *server);
 	virtual ~ServerUIFrameConfig();
 
+protected:
+	void OnOK(wxCommandEvent &event);
+
+protected:
+	virtual void LoadSettings();
+	virtual bool SaveSettings();
+
+protected:
+	Server *m_server;
+
 private:
 	DECLARE_EVENT_TABLE()
-	Server *m_server;
 
 };
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.1 2003-02-21 12:30:58 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.2 2003-02-22 02:57:47 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -15,6 +15,8 @@ enum
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
+	EVT_BUTTON(wxID_OK, ServerUIFrameConfig::OnOK)
+	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -48,6 +50,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 		szrAll->Add(szrRight, 0, wxALL | wxEXPAND, 8);
 	}
 
+	LoadSettings();
+
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);
 	szrAll->SetSizeHints( this );
@@ -60,4 +64,24 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 ServerUIFrameConfig::~ServerUIFrameConfig()
 {
+}
+
+void ServerUIFrameConfig::OnOK(wxCommandEvent &event)
+{
+	if (SaveSettings())
+	{
+		event.Skip();
+	}
+}
+
+void ServerUIFrameConfig::LoadSettings()
+{
+
+}
+
+bool ServerUIFrameConfig::SaveSettings()
+{
+	//wxMessageBox(wxT("Not implemented"));
+	//return false;
+	return true;
 }
