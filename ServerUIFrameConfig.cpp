@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.24 2003-03-05 01:05:14 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.25 2003-03-11 00:21:39 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -99,8 +99,8 @@ BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(wxID_OK, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(wxID_APPLY, ServerUIFrameConfig::OnOK)
 	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
-	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChange)
-	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChange)
+	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChangeText)
+	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChangeCheck)
 	EVT_TIMER(ID_TIMER, ServerUIFrameConfig::OnTimer)
 END_EVENT_TABLE()
 
@@ -143,24 +143,24 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	FixBorder(m_txtHostname);
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
-	wxStaticText *lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
+	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
 	m_txtPublicListAuthentication = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtPublicListAuthentication);
-	wxStaticText *lblPublicListComment = new wxStaticText(panel, -1, wxT("&Comment:"));
+	m_lblPublicListComment = new wxStaticText(panel, -1, wxT("&Comment:"));
 	m_txtPublicListComment = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtPublicListComment);
 
 	m_chkHTTPProxyEnabled = new wxCheckBox(panel, -1, wxT("&HTTP Proxy"));
-	wxStaticText *lblHTTPProxyHostname = new wxStaticText(panel, -1, wxT("Hostname:"));
+	m_lblHTTPProxyHostname = new wxStaticText(panel, -1, wxT("Hostname:"));
 	m_txtHTTPProxyHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHTTPProxyHostname);
-	wxStaticText *lblHTTPProxyPort = new wxStaticText(panel, -1, wxT("Port:"));
+	m_lblHTTPProxyPort = new wxStaticText(panel, -1, wxT("Port:"));
 	m_txtHTTPProxyPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(48, m_txtHTTPProxyHostname->GetSize().y), 0);
 	FixBorder(m_txtHTTPProxyPort);
-	wxStaticText *lblHTTPProxyUsername = new wxStaticText(panel, -1, wxT("Username:"));
+	m_lblHTTPProxyUsername = new wxStaticText(panel, -1, wxT("Username:"));
 	m_txtHTTPProxyUsername = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHTTPProxyUsername);
-	wxStaticText *lblHTTPProxyPassword = new wxStaticText(panel, -1, wxT("Password:"));
+	m_lblHTTPProxyPassword = new wxStaticText(panel, -1, wxT("Password:"));
 	m_txtHTTPProxyPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtHTTPProxyPassword);
 
@@ -206,8 +206,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 				wxBoxSizer *szrLabels = new wxBoxSizer(wxVERTICAL);
 				{
-					szrLabels->Add(lblPublicListAuthentication, 1, wxBOTTOM, 4);
-					szrLabels->Add(lblPublicListComment, 1, wxTOP, 4);
+					szrLabels->Add(m_lblPublicListAuthentication, 1, wxBOTTOM, 4);
+					szrLabels->Add(m_lblPublicListComment, 1, wxTOP, 4);
 				}
 				szrLeftPublic->Add(szrLabels, 0, wxEXPAND | wxRIGHT, 8);
 
@@ -227,18 +227,18 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 				wxBoxSizer *szrRow1 = new wxBoxSizer(wxHORIZONTAL);
 				{
-					szrRow1->Add(lblHTTPProxyHostname, 0, wxRIGHT, 8);
+					szrRow1->Add(m_lblHTTPProxyHostname, 0, wxRIGHT, 8);
 					szrRow1->Add(m_txtHTTPProxyHostname, 1, wxRIGHT, 8);
-					szrRow1->Add(lblHTTPProxyPort, 0, wxRIGHT, 8);
+					szrRow1->Add(m_lblHTTPProxyPort, 0, wxRIGHT, 8);
 					szrRow1->Add(m_txtHTTPProxyPort, 0, 0, 0);
 				}
 				szrLeftProxy->Add(szrRow1, 0, wxEXPAND | wxBOTTOM, 8);
 
 				wxBoxSizer *szrRow2 = new wxBoxSizer(wxHORIZONTAL);
 				{
-					szrRow2->Add(lblHTTPProxyUsername, 0, wxRIGHT, 8);
+					szrRow2->Add(m_lblHTTPProxyUsername, 0, wxRIGHT, 8);
 					szrRow2->Add(m_txtHTTPProxyUsername, 1, wxRIGHT, 8);
-					szrRow2->Add(lblHTTPProxyPassword, 0, wxRIGHT, 8);
+					szrRow2->Add(m_lblHTTPProxyPassword, 0, wxRIGHT, 8);
 					szrRow2->Add(m_txtHTTPProxyPassword, 1, 0, 0);
 				}
 				szrLeftProxy->Add(szrRow2, 0, wxEXPAND, 0);
@@ -315,9 +315,26 @@ void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
 	}
 }
 
-void ServerUIFrameConfig::OnChange(wxCommandEvent &event)
+void ServerUIFrameConfig::OnChangeText(wxCommandEvent &event)
 {
 	m_cmdApply->Enable(true);
+}
+
+void ServerUIFrameConfig::OnChangeCheck(wxCommandEvent &event)
+{
+	m_cmdApply->Enable(true);
+	m_lblPublicListAuthentication->Enable(m_chkPublicListEnabled->IsChecked());
+	m_txtPublicListAuthentication->Enable(m_chkPublicListEnabled->IsChecked());
+	m_lblPublicListComment->Enable(m_chkPublicListEnabled->IsChecked());
+	m_txtPublicListComment->Enable(m_chkPublicListEnabled->IsChecked());
+	m_lblHTTPProxyHostname->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_txtHTTPProxyHostname->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_lblHTTPProxyPort->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_txtHTTPProxyPort->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_lblHTTPProxyUsername->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_txtHTTPProxyUsername->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_lblHTTPProxyPassword->Enable(m_chkHTTPProxyEnabled->IsChecked());
+	m_txtHTTPProxyPassword->Enable(m_chkHTTPProxyEnabled->IsChecked());
 }
 
 void ServerUIFrameConfig::OnTimer(wxTimerEvent &event)
@@ -354,6 +371,8 @@ void ServerUIFrameConfig::LoadSettings()
 	m_txtHTTPProxyPort->SetValue(wxString()<<config->GetHTTPProxyPort());
 	m_txtHTTPProxyUsername->SetValue(config->GetHTTPProxyUsername());
 	m_txtHTTPProxyPassword->SetValue(config->GetHTTPProxyPassword(false));
+	wxCommandEvent evt;
+	OnChangeCheck(evt);
 	m_cmdApply->Enable(false);
 }
 

@@ -13,7 +13,8 @@ public:
 protected:
 	void OnOK(wxCommandEvent &event);
 	void OnReset(wxCommandEvent &event);
-	void OnChange(wxCommandEvent &event);
+	void OnChangeText(wxCommandEvent &event);
+	void OnChangeCheck(wxCommandEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
 protected:
@@ -34,13 +35,19 @@ protected:
 	wxTextCtrl *m_txtHostname;
 
 	wxCheckBox *m_chkPublicListEnabled;
+	wxStaticText *m_lblPublicListAuthentication;
 	wxTextCtrl *m_txtPublicListAuthentication;
+	wxStaticText *m_lblPublicListComment;
 	wxTextCtrl *m_txtPublicListComment;
 
 	wxCheckBox *m_chkHTTPProxyEnabled;
+	wxStaticText *m_lblHTTPProxyHostname;
 	wxTextCtrl *m_txtHTTPProxyHostname;
+	wxStaticText *m_lblHTTPProxyPort;
 	wxTextCtrl *m_txtHTTPProxyPort;
+	wxStaticText *m_lblHTTPProxyUsername;
 	wxTextCtrl *m_txtHTTPProxyUsername;
+	wxStaticText *m_lblHTTPProxyPassword;
 	wxTextCtrl *m_txtHTTPProxyPassword;
 
 	wxButton *m_cmdApply;
