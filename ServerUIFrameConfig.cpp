@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.37 2003-05-20 07:19:25 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.38 2003-05-22 09:09:20 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -127,18 +127,18 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *m_lblNextUpdateLabel = new wxStaticText(panel, -1, wxT("Next update:"));
 	m_lblNextUpdate = new wxStaticText(panel, -1, wxT("N/A"));
 
-	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
-	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(m_txtUserPassword);
-	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
-	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-	FixBorder(m_txtAdminPassword);
 	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
 	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtServerName);
 	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHostname);
+	wxStaticText *lblUserPassword = new wxStaticText(panel, -1, wxT("&User Password:"));
+	m_txtUserPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtUserPassword);
+	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
+	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	FixBorder(m_txtAdminPassword);
 	wxStaticText *lblSoundConnection = new wxStaticText(panel, -1, wxT("Connection Sound:"));
 	m_txtSoundConnection = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtSoundConnection);
@@ -205,10 +205,10 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 					wxBoxSizer *szrLeftTopLeftLabels = new wxBoxSizer(wxVERTICAL);
 					{
-						szrLeftTopLeftLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
-						szrLeftTopLeftLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
 						szrLeftTopLeftLabels->Add(lblServerName, 1, wxBOTTOM, 8);
 						szrLeftTopLeftLabels->Add(lblHostname, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
+						szrLeftTopLeftLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
 						szrLeftTopLeftLabels->Add(lblSoundConnection, 1, wxBOTTOM, 8);
 						szrLeftTopLeftLabels->Add(lblSoundJoin, 1, wxBOTTOM, 8);
 					}
@@ -216,10 +216,10 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 					wxBoxSizer *szrLeftTopLeftTextBoxes = new wxBoxSizer(wxVERTICAL);
 					{
-						szrLeftTopLeftTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
-						szrLeftTopLeftTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
 						szrLeftTopLeftTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
 						szrLeftTopLeftTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
+						szrLeftTopLeftTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
 						wxBoxSizer *szrSoundConnection = new wxBoxSizer(wxHORIZONTAL);
 						{
 							szrSoundConnection->Add(m_txtSoundConnection, 1, wxEXPAND, 0);

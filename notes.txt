@@ -1,3 +1,35 @@
+* ctcp time
+
+* /dcc open
+
+* /run
+
+* /new (if any param and no -- then prepend --host=)
+
+* /servers
+
+* /about
+
+* nice about screen (wxHtmlWindow)
+
+* Create patch for EF BB BF ignore in wxMBConvUTF8 (or wxTextFile if can't do in UTF8)
+
+* /notice
+
+* /lock
+
+* WTS event bindings: Terminal_Connect, Disconnect, Lock, Unlock
+
+* other scriptable bindings: Dirt_AuthPrompt, Connect, Disconnect
+
+* default server name of computer name
+
+* Win32: fast incoming messages cause FlashWindow() not to work on at least WinXP
+  Maybe restrict the time between FlashWindow() calls to say 1 second except if
+  the window just got focused/unfocused (wxActivateEvent)
+
+* don't allow empty server name
+
 * ability to search multiple logs
 
 * force full line selection if holding control when highlighting in logcontrol
@@ -51,6 +83,9 @@
 * hotkey for minimize to tray
 
 * prefix caption with number in brackets showing how many msgs are waiting?
+
+* /font (wxHtmlWindow::SetFonts() and maybe also drop <code/> usage)
+	Use wxWin 2.5's default sizes if avail else use hardcoded for wxWin 2.4
 
 * use Arial Unicode MS to display CJK characters if current font doesn't support
 
