@@ -15,6 +15,9 @@ extern const wxString PUBLIC_LIST_URL;
 WX_DECLARE_STRING_HASH_MAP(wxString, StringHashMap);
 WX_DECLARE_STRING_HASH_MAP(ByteBuffer, ByteBufferHashMap);
 
+#include <wx/dynarray.h>
+WX_DECLARE_OBJARRAY(wxUint16, Uint16Array);
+
 struct HeadTail
 {
 	wxString head, tail;

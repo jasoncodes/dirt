@@ -5,6 +5,9 @@
 #include "ByteBuffer.h"
 #include "Crypt.h"
 
+class CryptSocketProxy;
+class CryptSocketProxySettings;
+
 //////// CryptSocketBase ////////
 
 enum CryptSocketType
@@ -39,6 +42,9 @@ public:
 	virtual void SetKey(const ByteBuffer &public_key, const ByteBuffer &private_key);
 
 	virtual CryptSocketType GetType() const = 0;
+
+	virtual void SetProxySettings(const CryptSocketProxySettings &settings);
+	virtual const CryptSocketProxySettings* GetProxySettings() const;
 
 protected:
 	virtual void InitBuffers();
@@ -80,6 +86,9 @@ protected:
 	ByteBuffer m_keyRemotePublic;
 
 	Crypt m_crypt;
+
+	CryptSocketProxySettings *m_proxy_settings;
+	CryptSocketProxy *m_proxy;
 
 private:
 	DECLARE_EVENT_TABLE()

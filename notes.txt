@@ -1,4 +1,20 @@
 * proxy support for client
+	ProxySettings
+		holds settings for proxys (with get/set methods)
+		readconfig/writeconfig methods for use with wxConfigBase
+		CryptSocket holds an instance of this class which is
+		used to create a Proxy instance
+	Proxy
+		abstract base class for which handles proxy negotiation
+		contains functionality common to all proxy clients
+	ProxyNull
+		null proxy client
+	ProxyHTTP
+		http connect proxy client (supports connect, auth)
+	ProxySOCKS4
+		socks 4 proxy client (supports connect, bind)
+	ProxySOCKS5
+		socks 5 proxy client (supports connect, bind, auth)
 
 * Mutex (win32 + unix)
 	use same OS API as wxSingleInstanceChecker

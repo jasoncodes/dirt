@@ -349,6 +349,14 @@ SOURCE=.\CryptSocket.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CryptSocketProxy.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CryptSocketProxy.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Dirt.cpp
 # End Source File
 # Begin Source File

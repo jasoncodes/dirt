@@ -4,9 +4,7 @@
 #include "CPSCalc.h"
 #include "File.h"
 #include "CryptSocket.h"
-
-#include <wx/dynarray.h>
-WX_DECLARE_OBJARRAY(wxUint16, Uint16Array);
+#include "util.h"
 
 class FileTransfers;
 

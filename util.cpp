@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.70 2003-05-27 17:02:20 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.71 2003-05-31 04:25:33 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -21,6 +21,9 @@ RCS_ID($Id: util.cpp,v 1.70 2003-05-27 17:02:20 jason Exp $)
 #elif defined(__UNIX__)
 	#include <unistd.h>
 #endif
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(Uint16Array)
 
 const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 

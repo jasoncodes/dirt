@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.5 2003-05-19 13:27:10 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.6 2003-05-31 04:25:31 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -74,7 +74,7 @@ bool Config::ResetToDefaults()
 
 static const wxString EncodedPrefix = wxT("Encoded:");
 
-static wxString DecodePassword(const wxString &value, bool decrypt)
+wxString Config::DecodePassword(const wxString &value, bool decrypt) const
 {
 
 	if (!decrypt || value.Length() == 0 || !LeftEq(value, EncodedPrefix))
@@ -133,12 +133,29 @@ wxString Config::GetPassword(const wxString &key, bool decrypt) const
 
 bool Config::SetPassword(const wxString &key, const wxString &password)
 {
+	if (password.Length())
+	{
+		wxString data = EncodePassword(password);
+		return data.Length() && m_config->Write(key, data);
+	}
+	else
+	{
+		return m_config->Write(key, wxEmptyString);
+	}
+}
+
+wxString Config::EncodePassword(const wxString &password) const
+{
 	ByteBuffer data;
+	wxASSERT(password.Length());
 	if (password.Length() > 0)
 	{
 		if (LeftEq(password, EncodedPrefix))
 		{
-			return (DecodePassword(password, true).Length() > 0);
+			if (DecodePassword(password, true).Length() > 0)
+			{
+				data = password;
+			}
 		}
 		else
 		{
@@ -153,7 +170,7 @@ bool Config::SetPassword(const wxString &key, const wxString &password)
 			data = EncodedPrefix + Crypt::Base64Encode(data, false);
 		}
 	}
-	return m_config->Write(key, data);
+	return data;
 }
 
 wxString Config::GetTristateString(const wxString &key, bool is_dir) const

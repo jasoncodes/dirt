@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.25 2003-05-09 13:44:48 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.27 2003-05-31 04:30:15 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
 #include "util.h"
 #include <wx/datetime.h>
+#include "CryptSocketProxy.h"
 
 //////// CryptSocketBase ////////
 
@@ -45,6 +46,8 @@ CryptSocketBase::CryptSocketBase()
 	m_handler = NULL;
 	m_id = 0;
 	m_sck = NULL;
+	m_proxy = NULL;
+	m_proxy_settings = NULL;
 	m_userdata = NULL;
 	m_bOutputOkay = false;
 	m_bInitialOutputEventSent = false;
@@ -53,6 +56,7 @@ CryptSocketBase::CryptSocketBase()
 CryptSocketBase::~CryptSocketBase()
 {
 	Destroy();
+	delete m_proxy_settings;
 }
 
 void CryptSocketBase::SetEventHandler(wxEvtHandler *handler, wxEventType id)
@@ -79,6 +83,8 @@ void CryptSocketBase::Close()
 		m_sck->Destroy();
 		m_sck = NULL;
 	}
+	delete m_proxy;
+	m_proxy = NULL;
 	wxASSERT(!Ok());
 	InitBuffers();
 }
@@ -455,6 +461,17 @@ void CryptSocketBase::OnSocketLost()
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_LOST, this);
 		m_handler->AddPendingEvent(evt);
 	}
+}
+
+void CryptSocketBase::SetProxySettings(const CryptSocketProxySettings &settings)
+{
+	delete m_proxy_settings;
+	m_proxy_settings = new CryptSocketProxySettings(settings);
+}
+
+const CryptSocketProxySettings* CryptSocketBase::GetProxySettings() const
+{
+	return m_proxy_settings;
 }
 
 //////// CryptSocketClient ////////
