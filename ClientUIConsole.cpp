@@ -12,13 +12,6 @@
 #include "util.h"
 #include "FileTransfer.h"
 
-enum
-{
-};
-
-BEGIN_EVENT_TABLE(ClientUIConsole, Console)
-END_EVENT_TABLE()
-
 ClientUIConsole::ClientUIConsole()
 {
 	m_client = new ClientDefault(this);
