@@ -1,3 +1,5 @@
+mintotray on non-supporting build should minimize if possible otherwise "Not supported"
+
 prompt when pasting multiple lines
 
 implement digest auth in http.cpp
@@ -161,9 +163,6 @@ not, if we are, replace colour code with nothing
 
 * change ctrl/shift/alt detection to use ::GetKeyState() for __WXMSW__ and
   GetCurrentKeyModifiers() for __WXMAC__
-
-* colour codes in the urls (ctrl-k 4 test.com) is highly broke
-  in convert to html func
 
 * if a url ends in . or ? then strip it from the url
 

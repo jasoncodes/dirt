@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.62 2003-11-22 02:01:49 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.63 2004-03-07 18:20:16 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1626,6 +1626,11 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 
 	wxString html = FormatTextAsHtml(line);
 
+	if (convert_urls)
+	{
+		html = ConvertUrlsToLinks(html);
+	}
+
 	switch (mode)
 	{
 
@@ -1645,11 +1650,6 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 			wxFAIL_MSG(wxT("Invalid TextModifierMode for AddTextLine"));
 			break;
 
-	}
-
-	if (convert_urls)
-	{
-		html = ConvertUrlsToLinks(html);
 	}
 
 	html = wxT("<font color='") + ColourToString(line_colour) + wxT("'>") + html + wxT("</font>");
@@ -1816,7 +1816,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 			if (url.Length() > 0)
 			{
-				token = wxT("<a href=\"") + url + wxT("\">") + token + wxT("</a>");
+				token = wxT("<a href=\"") + ConvertModifiersIntoHtml(url, true) + wxT("\">") + token + wxT("</a>");
 			}
 
 			output += token;
