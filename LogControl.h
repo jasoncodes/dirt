@@ -56,7 +56,7 @@ protected:
 
 	void HighlightCells(wxDC &dc, wxHtmlCell *start_cell, wxHtmlCell *end_cell);
 	void HighlightCellsDiff(wxDC &dc, wxHtmlCell *start_cell1, wxHtmlCell *end_cell1, wxHtmlCell *start_cell2, wxHtmlCell *end_cell2);
-	wxString GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell);
+	wxString GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell, bool strip_prefix);
 
 	static void InitDCForHighlighting(wxDC &dc);
 

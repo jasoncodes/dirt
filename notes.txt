@@ -2,8 +2,6 @@
 
 * flickering when ctrl-tab
 
-* hold ctrl for copy w/o formatting
-
 * find text via ctrl-f
 
 * dcc send/recv dialog

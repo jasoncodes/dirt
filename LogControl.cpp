@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.28 2003-03-13 03:22:25 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.29 2003-03-17 05:54:13 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -15,11 +15,12 @@ RCS_ID($Id: LogControl.cpp,v 1.28 2003-03-13 03:22:25 jason Exp $)
 #include <ctype.h>
 #include <wx/clipbrd.h>
 #include "util.h"
-
+#include "Dirt.h"
 #include "LogControl.h"
 #include "SpanTag.h"
 #include "Modifiers.h"
 
+DECLARE_APP(DirtApp)
 
 struct ModifierParserTag
 {
@@ -890,11 +891,12 @@ static void FirstCellFirst(wxHtmlCell **start_cell, wxHtmlCell **end_cell)
 	}
 }
 
-wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell)
+wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_cell, bool strip_prefix)
 {
 	wxString buffer;
 	wxHtmlCell *cell = start_cell;
 	bool last_was_new_line = false;
+	const wxString CRLF = wxT("\r\n");
 	while (cell != NULL)
 	{
 		if (cell->IsTerminalCell())
@@ -917,12 +919,39 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 		{
 			if (!last_was_new_line)
 			{
-				buffer += wxT("\r\n");
+				buffer += CRLF;
 				last_was_new_line = true;
 			}
 		}
 		if (cell == end_cell) break;
 		cell = FindNext(cell);
+	}
+	if (strip_prefix)
+	{
+		wxArrayString lines = SplitString(buffer, CRLF);
+		for (size_t i = 0; i < lines.GetCount(); ++i)
+		{
+			wxString line = lines[i];
+			line.Trim(true);
+			line.Trim(false);
+			if (line.Length() > 7 &&
+				line[0] == wxT('[') && wxIsdigit(line[1]) && wxIsdigit(line[2]) &&
+				line[3] == wxT(':') && wxIsdigit(line[4]) && wxIsdigit(line[5]) &&
+				line[6] == wxT(']') && line[7] == wxT(' '))
+			{
+				line = line.Mid(8);
+			}
+			if (line.Length() > 2 && line[0] == wxT('<'))
+			{
+				int j = line.Find(wxT('>'));
+				if (j > 0 && line.Length() > (size_t)j + 1 && line[j+1] == wxT(' '))
+				{
+					line = line.Mid(j+2);
+				}
+			}
+			lines[i] = line;
+		}
+		buffer = JoinArray(lines, CRLF);
 	}
 	return buffer; 
 }
@@ -1092,7 +1121,7 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 		{
 			if (wxTheClipboard->Open())
 			{
-				wxString text = GetTextFromRange(last_start_cell, last_end_cell);
+				wxString text = GetTextFromRange(last_start_cell, last_end_cell, wxGetApp().IsControlDown());
 				wxTheClipboard->Clear();
 				wxTheClipboard->SetData(new wxTextDataObject(text));
 				wxTheClipboard->Flush();
