@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientTimers.cpp,v 1.2 2003-08-01 07:47:59 jason Exp $)
+RCS_ID($Id: ClientTimers.cpp,v 1.3 2004-04-25 18:41:55 jason Exp $)
 
 #include "ClientTimers.h"
 #include "util.h"
@@ -195,6 +195,14 @@ void ClientTimers::OnTimer(wxTimerEvent &WXUNUSED(event))
 					{
 						remove_any = true;
 					}
+				}
+				else if (tmr.m_times_remaining == -1)
+				{
+					tmr.m_next_tick = now + tmr.m_interval;
+				}
+				else
+				{
+					wxFAIL_MSG(wxT("uh oh.. ClientTimers are broken."));
 				}
 			}
 		}
