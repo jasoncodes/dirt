@@ -6,13 +6,16 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.11 2003-02-14 13:00:30 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.12 2003-02-15 00:36:43 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "InputControl.h"
 #include "util.h"
+
+#include "Dirt.h"
+DECLARE_APP(DirtApp)
 
 #include "res/dirt.xpm"
 
@@ -65,10 +68,6 @@ ServerUIFrame::ServerUIFrame()
 	m_cmdClient = new wxButton(panel, ID_CLIENT, "&Launch Client");
 	m_cmdClear = new wxButton(panel, ID_CLEAR, "Clear Lo&g");
 
-	m_cmdConfiguration->Enable(false);
-	m_cmdClient->Enable(false);
-	m_cmdClear->Enable(false);
-
 	wxBoxSizer *szrButtons = new wxBoxSizer(wxVERTICAL);
 	{
 		szrButtons->Add(m_cmdStartStop, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
@@ -88,8 +87,6 @@ ServerUIFrame::ServerUIFrame()
 	panel->SetSizer(szrAll);
 	szrAll->SetSizeHints( this );
 
-	m_server = new ServerDefault(this);
-
 	wxMenuBar *mnu = new wxMenuBar;
 
 	wxMenu *mnuFile = new wxMenu;
@@ -101,6 +98,10 @@ ServerUIFrame::ServerUIFrame()
 	mnu->Append(mnuHelp, "&Help");
 
 	SetMenuBar(mnu);
+
+	m_server = new ServerDefault(this);
+	OnServerStateChange();
+	m_server->Start();
 
 	ResetWindowPos();
 	Show();
@@ -158,14 +159,19 @@ void ServerUIFrame::Output(const wxString &line)
 
 bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
 {
-	if (cmd == "EXIT")
+	if (cmd == "CLEAR")
+	{
+		m_txtLog->Clear();
+		return true;
+	}
+	else if (cmd == "EXIT")
 	{
 		Close();
 		return true;
 	}
 	else if (cmd == "HELP")
 	{
-		OnServerInformation("Supported commands: EXIT");
+		OnServerInformation("Supported commands: CLEAR EXIT");
 		return false;
 	}
 	else
@@ -196,13 +202,13 @@ void ServerUIFrame::OnFileExit(wxCommandEvent& event)
 void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	wxMessageBox(wxString()
-		<< "Dirt Secure Chat 3.0.0 Alpha 0\n"
-		<< "\n"
-		<< "Last revision date: " << GetRCSDate() << " UTC\n"
-		<< "Last revision author: " << GetRCSAuthor() << "\n"
-		<< "\n"
-		<< "http://dirtchat.sourceforge.net/",
-		"About Dirt Secure Chat", wxICON_INFORMATION);
+		<< wxT("Dirt Secure Chat 3.0.0 Alpha 0\n")
+		<< wxT("\n")
+		<< wxT("Last revision date: ") << GetRCSDate() << wxT(" UTC\n")
+		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
+		<< wxT("\n")
+		<< wxT("http://dirtchat.sourceforge.net/"),
+		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
 }
 
 void ServerUIFrame::OnStartStop(wxCommandEvent& event)
@@ -224,15 +230,26 @@ void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 
 void ServerUIFrame::OnClient(wxCommandEvent& event)
 {
-	// not implemented
+	wxASSERT(m_server->IsRunning());
+	wxASSERT(wxGetApp().argc > 0);
+	wxString url;
+	url << wxT("dirt://localhost:") << m_server->GetListenPort() << wxT("/");
+	const wxChar *argv[4];
+	argv[0] = wxGetApp().argv[0];
+	argv[1] = wxT("--client");
+	argv[2] = url.c_str();
+	argv[3] = NULL;
+	::wxExecute((wxChar**)argv);
 }
 
 void ServerUIFrame::OnClear(wxCommandEvent& event)
 {
-	// not implemented
+	m_txtLog->Clear();
 }
 
 void ServerUIFrame::OnServerStateChange()
 {
-	m_cmdStartStop->SetLabel(m_server->IsRunning() ? "&Stop" : "&Start");
+	m_cmdStartStop->SetLabel(m_server->IsRunning() ? wxT("&Stop") : wxT("&Start"));
+	m_cmdConfiguration->Enable(false); // not implemented
+	m_cmdClient->Enable(m_server->IsRunning());
 }

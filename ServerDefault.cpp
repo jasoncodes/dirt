@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.4 2003-02-14 13:00:29 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.5 2003-02-15 00:36:43 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -65,4 +65,12 @@ bool ServerDefault::IsRunning()
 void ServerDefault::OnSocket(CryptSocketEvent &event)
 {
 	wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+}
+
+int ServerDefault::GetListenPort()
+{
+	wxASSERT(m_sckListen);
+	wxIPV4address addr;
+	m_sckListen->GetLocal(addr);
+	return addr.Service();
 }

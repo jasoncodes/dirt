@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.4 2003-02-14 13:00:29 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.5 2003-02-15 00:36:43 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -13,6 +13,7 @@ RCS_ID($Id: ServerUIConsole.cpp,v 1.4 2003-02-14 13:00:29 jason Exp $)
 ServerUIConsole::ServerUIConsole()
 {
 	m_server = new ServerDefault(this);
+	m_server->Start();
 }
 
 ServerUIConsole::~ServerUIConsole()

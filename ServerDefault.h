@@ -14,6 +14,7 @@ public:
 	virtual void Start();
 	virtual void Stop();
 	virtual bool IsRunning();
+	virtual int GetListenPort();
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
