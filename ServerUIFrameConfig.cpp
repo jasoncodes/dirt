@@ -1,0 +1,63 @@
+#include "wx/wxprec.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+#ifndef WX_PRECOMP
+	#include "wx/wx.h"
+#endif
+#include "RCS.h"
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.1 2003-02-21 12:30:58 jason Exp $)
+
+#include "ServerUIFrameConfig.h"
+
+enum
+{
+};
+
+BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
+END_EVENT_TABLE()
+
+ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
+	: wxDialog(parent, -1, wxT("Server Configuration"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL)
+{
+	
+	m_server = server;
+	
+	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
+
+	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
+	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
+	wxButton *cmdApply = new wxButton(panel, wxID_APPLY, wxT("Apply"));
+
+	wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
+	{
+		szrRight->Add(cmdOK, 0, wxTOP | wxBOTTOM | wxEXPAND, 8);
+		szrRight->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
+		szrRight->Add(cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
+	}
+	
+	wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
+	{
+		//szrLeft->Add(szrConnections, 1, wxEXPAND);
+		//szrLeft->Add(szrConsole, 1, wxEXPAND);
+	}
+
+	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
+	{
+		szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
+		szrAll->Add(szrRight, 0, wxALL | wxEXPAND, 8);
+	}
+
+	panel->SetAutoLayout(TRUE);
+	panel->SetSizer(szrAll);
+	szrAll->SetSizeHints( this );
+
+	SetClientSize(450, 250);
+	CentreOnParent();
+	ShowModal();
+
+}
+
+ServerUIFrameConfig::~ServerUIFrameConfig()
+{
+}

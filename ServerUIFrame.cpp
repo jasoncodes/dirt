@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.20 2003-02-21 07:53:14 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.21 2003-02-21 12:30:57 jason Exp $)
 
 #include "ServerUIFrame.h"
+#include "ServerUIFrameConfig.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "InputControl.h"
@@ -97,12 +98,16 @@ ServerUIFrame::ServerUIFrame()
 	}
 
 	wxBoxSizer *szrLeft = new wxBoxSizer(wxVERTICAL);
-	szrLeft->Add(szrConnections, 1, wxEXPAND);
-	szrLeft->Add(szrConsole, 1, wxEXPAND);
+	{
+		szrLeft->Add(szrConnections, 1, wxEXPAND);
+		szrLeft->Add(szrConsole, 1, wxEXPAND);
+	}
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
-	szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
-	szrAll->Add(szrButtons, 0, wxALL | wxEXPAND, 8);
+	{
+		szrAll->Add(szrLeft, 1, wxLEFT | wxTOP | wxBOTTOM | wxEXPAND, 8);
+		szrAll->Add(szrButtons, 0, wxALL | wxEXPAND, 8);
+	}
 
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);
@@ -243,7 +248,8 @@ void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 
 void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 {
-	// not implemented
+	wxDialog *dlg = new ServerUIFrameConfig(this, m_server);
+	dlg->Destroy();
 }
 
 void ServerUIFrame::OnClient(wxCommandEvent& event)
@@ -267,7 +273,6 @@ void ServerUIFrame::OnClear(wxCommandEvent& event)
 void ServerUIFrame::OnServerStateChange()
 {
 	m_cmdStartStop->SetLabel(m_server->IsRunning() ? wxT("&Stop") : wxT("&Start"));
-	m_cmdConfiguration->Enable(false); // not implemented
 	m_cmdClient->Enable(m_server->IsRunning());
 }
 
