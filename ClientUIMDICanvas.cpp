@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.63 2004-05-22 17:08:47 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.64 2004-05-22 18:58:26 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarMDI.h"
@@ -121,6 +121,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 	{
 		m_txtInput = new InputControl(this, ID_INPUT);
 		m_txtInput->SetTabCompletionList(((ClientUIMDIFrame*)parent)->GetNicklist());
+		ConnectScrollWheel(m_txtInput);
 		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtPassword = NULL;
 		if (type == QueryCanvas)
@@ -161,17 +162,23 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 		m_pnlTransfer = NULL;
 	}
 
-	m_txtInput->Connect(
-		wxID_ANY, wxEVT_MOUSEWHEEL,
-		(wxObjectEventFunction) (wxEventFunction)
-			wxStaticCastEvent( wxMouseEventFunction, & ClientUIMDICanvas::OnMouseWheel ),
-		NULL, this);
-
 }
 
 ClientUIMDICanvas::~ClientUIMDICanvas()
 {
 	delete m_log;
+}
+
+void ClientUIMDICanvas::ConnectScrollWheel(wxWindow *wnd)
+{
+	if (wnd)
+	{
+		wnd->Connect(
+			wxID_ANY, wxEVT_MOUSEWHEEL,
+			(wxObjectEventFunction) (wxEventFunction)
+				wxStaticCastEvent( wxMouseEventFunction, & ClientUIMDICanvas::OnMouseWheel ),
+			NULL, this);
+	}
 }
 
 void ClientUIMDICanvas::InitLog()
@@ -373,6 +380,7 @@ void ClientUIMDICanvas::SetPasswordMode(bool value)
 		m_txtInput->Show(false);
 		m_txtPassword = new wxTextCtrl(this, ID_PASSWORD, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_PASSWORD);
 		FixBorder(m_txtPassword);
+		ConnectScrollWheel(m_txtPassword);
 		ResizeChildren();
 		DoGotFocus();
 	}

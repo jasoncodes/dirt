@@ -97,6 +97,7 @@ protected:
 	virtual bool OnPopupMenuItem(wxCommandEvent &event);
 
 	void DoGotFocus();
+	void ConnectScrollWheel(wxWindow *wnd);
 
 protected:
 	CanvasType m_type;
