@@ -52,6 +52,10 @@ protected:
 	virtual void OnClientAuthBad(const wxString &text);
 	virtual void OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action);
 	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private);
+	virtual void OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual void OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual void OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual void OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual void OnClientUserList(const wxArrayString &nicklist);
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details);
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.42 2003-03-29 05:45:43 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.43 2003-04-01 08:26:13 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -197,6 +197,57 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 			Output(wxString() << wxT("<") + nick + wxT("> ") + text);
 		}
 	}
+}
+
+void ClientUIConsole::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	wxString msg;
+	msg << wxT('[') << nick;
+	if (type.Length())
+	{
+		msg << wxT(' ') << type;
+	}
+	msg << wxT(']');
+	if (data.Length())
+	{
+		msg << wxT(' ') << data;
+	}
+	Output(msg);
+}
+
+void ClientUIConsole::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	wxString msg;
+	msg << wxT("-> [") << nick << wxT(']');
+	if (type.Length())
+	{
+		msg << wxT(' ') << type;
+	}
+	if (data.Length())
+	{
+		msg << wxT(' ') << data;
+	}
+	Output(msg);
+}
+
+void ClientUIConsole::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	wxString msg;
+	msg << wxT('[') << nick;
+	if (type.Length())
+	{
+		msg << wxT(' ') << type;
+	}
+	msg << wxT(" reply]");
+	if (data.Length())
+	{
+		msg << wxT(": ") << data;
+	}
+	Output(msg);
+}
+
+void ClientUIConsole::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
 }
 
 void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)

@@ -26,6 +26,10 @@ public:
 	virtual void OnClientAuthBad(const wxString &text) = 0;
 	virtual void OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action) = 0;
 	virtual void OnClientMessageIn(const wxString &nick, const wxString &text, bool is_action, bool is_private) = 0;
+	virtual void OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data) = 0;
+	virtual void OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data) = 0;
+	virtual void OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data) = 0;
+	virtual void OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data) = 0;
 	virtual void OnClientUserList(const wxArrayString &nicklist) = 0;
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
@@ -75,6 +79,8 @@ public:
 	virtual void Quit(const wxString &msg);
 	virtual void Away(const wxString &msg);
 	virtual void Back() { Away(wxEmptyString); }
+	virtual void CTCP(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual void CTCPReply(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual long GetLatency() const { return m_latency; }
 	virtual void ProcessAlias(const wxString &context, const wxString &cmds, const wxString &params);
 	wxArrayString GetAliasList() const;

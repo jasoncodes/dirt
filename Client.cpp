@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.41 2003-04-01 07:37:11 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.42 2003-04-01 08:26:39 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -64,7 +64,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT HELP ME MSG MSGME NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -156,6 +156,17 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		WhoIs(context, params);
+	}
+	else if (cmd == wxT("CTCP"))
+	{
+		ASSERT_CONNECTED();
+		wxString nick, type, data;
+		HeadTail ht = SplitQuotedHeadTail(params);
+		nick = ht.head;
+		ht = SplitQuotedHeadTail(ht.tail);
+		type = ht.head;
+		data = ht.tail;
+		CTCP(context, nick, type, data);
 	}
 	else if (cmd == wxT("OPER"))
 	{
@@ -288,6 +299,32 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			text = ByteBuffer();
 		}
 		m_event_handler->OnClientMessageOut(context, nick, text, cmd == wxT("PRIVACTIONOK"));
+	}
+	else if (cmd == wxT("CTCP") || cmd == wxT("CTCPOK") || cmd == wxT("CTCPREPLY") || cmd == wxT("CTCPREPLYOK"))
+	{
+		ByteBuffer nick, type, ctcp_data;
+		if (!Unpack(data, nick, type, ctcp_data))
+		{
+			return;
+		}
+		wxString type_str = ((wxString)type).Upper();
+		
+		if (cmd == wxT("CTCP"))
+		{
+			m_event_handler->OnClientCTCPIn(context, nick, type_str, ctcp_data);
+		}
+		else if (cmd == wxT("CTCPOK"))
+		{
+			m_event_handler->OnClientCTCPOut(context, nick, type_str, ctcp_data);
+		}
+		else if (cmd == wxT("CTCPREPLY"))
+		{
+			m_event_handler->OnClientCTCPReplyIn(context, nick, type_str, ctcp_data);
+		}
+		else if (cmd == wxT("CTCPREPLYOK"))
+		{
+			m_event_handler->OnClientCTCPReplyOut(context, nick, type_str, ctcp_data);
+		}
 	}
 	else if (cmd == wxT("PONG"))
 	{
@@ -429,6 +466,18 @@ void Client::Away(const wxString &msg)
 	wxString context = wxEmptyString;
 	ASSERT_CONNECTED();
 	SendToServer(EncodeMessage(context, msg.Length()?wxT("AWAY"):wxT("BACK"), msg));
+}
+
+void Client::CTCP(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	ASSERT_CONNECTED();
+	SendToServer(EncodeMessage(context, wxT("CTCP"), Pack(nick.Upper(), type, data)));
+}
+
+void Client::CTCPReply(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+{
+	ASSERT_CONNECTED();
+	SendToServer(EncodeMessage(context, wxT("CTCPREPLY"), Pack(nick.Upper(), type, data)));
 }
 
 void Client::OnConnect()
