@@ -24,10 +24,12 @@ BUNDLE = Dirt.app/Contents
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
 	CXXFLAGS_EXTRA = `pkg-config --cflags gtk+-2.0`
 	EXTRAS_TO_COMPILE=dirtlogs.cgi
+	EXTRA_CLEAN=dirtlogs.cgi
 else
 	ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 		CXXFLAGS_EXTRA = `gtk-config --cflags`
 		EXTRAS_TO_COMPILE=dirtlogs.cgi
+		EXTRA_CLEAN=dirtlogs.cgi
 	endif
 endif
 
