@@ -10,10 +10,10 @@
 #include <wx/html/winpars.h>
 
 #include <wx/dynarray.h>
-#ifndef WX_DEFINE_ARRAY_NO_PTR
-	#define WX_DEFINE_ARRAY_NO_PTR WX_DEFINE_ARRAY
+#ifndef WX_DEFINE_ARRAY_PTR
+	#define WX_DEFINE_ARRAY_PTR WX_DEFINE_ARRAY
 #endif
-WX_DEFINE_ARRAY_NO_PTR(wxHtmlCell*, HtmlCellPointerArray);
+WX_DEFINE_ARRAY_PTR(wxHtmlCell*, HtmlCellPointerArray);
 
 enum TextModifierMode
 {

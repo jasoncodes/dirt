@@ -114,10 +114,10 @@ private:
 };
 
 #include <wx/dynarray.h>
-#ifndef WX_DEFINE_ARRAY_NO_PTR
-	#define WX_DEFINE_ARRAY_NO_PTR WX_DEFINE_ARRAY
+#ifndef WX_DEFINE_ARRAY_PTR
+	#define WX_DEFINE_ARRAY_PTR WX_DEFINE_ARRAY
 #endif
-WX_DEFINE_ARRAY_NO_PTR(CryptSocketBase*, CryptSocketArray);
+WX_DEFINE_ARRAY_PTR(CryptSocketBase*, CryptSocketArray);
 
 //////// CryptSocketClient ////////
 
