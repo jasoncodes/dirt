@@ -1,3 +1,5 @@
+GTK2: TristateConfigPanel does not render correctly
+
 mintotray on non-supporting build should minimize if possible otherwise "Not supported"
 
 prompt when pasting multiple lines

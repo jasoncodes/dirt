@@ -49,7 +49,7 @@ wxUint32 BytesToUint32(const byte *data, int len);
 ByteBuffer Uint16ToBytes(wxUint16 num);
 wxUint16 BytesToUint16(const byte *data, int len);
 wxString AppTitle(const wxString &suffix = wxEmptyString);
-void ShowAbout();
+void ShowAbout(wxWindow *parent);
 ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 bool DecodeMessage(const ByteBuffer &msg, wxString &context, wxString &cmd, ByteBuffer &data);
 ByteBuffer Pack(const ByteBuffer &x, const ByteBuffer &y);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.83 2004-03-02 10:03:16 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.84 2004-03-14 00:21:33 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -423,7 +423,7 @@ wxString AppTitle(const wxString &suffix)
 		GetProductVersion();
 }
 
-void ShowAbout()
+void ShowAbout(wxWindow *parent)
 {
 	wxMessageBox(wxString()
 		<< wxT("Dirt Secure Chat ") << GetProductVersion() << wxT("\n")
@@ -434,7 +434,9 @@ void ShowAbout()
 		<< wxT("Last revision author: ") << GetRCSAuthor() << wxT("\n")
 		<< wxT("\n")
 		<< wxT("http://dirt.gslabs.com.au/"),
-		wxT("About Dirt Secure Chat"), wxICON_INFORMATION);
+		wxT("About Dirt Secure Chat"),
+		wxOK | wxICON_INFORMATION,
+		parent);
 }
 
 ByteBuffer EncodeMessage(const wxString &context, const wxString &cmd, const ByteBuffer &data)

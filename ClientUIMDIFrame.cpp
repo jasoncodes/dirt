@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.139 2004-02-14 02:56:20 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.140 2004-03-14 00:21:32 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -289,7 +289,7 @@ void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent &WXUNUSED(event))
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
 {
-	ShowAbout();
+	ShowAbout(this);
 }
 
 void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &WXUNUSED(event))
@@ -688,7 +688,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("ABOUT"))
 	{
-		ShowAbout();
+		ShowAbout(this);
 		return true;
 	}
 	else if (cmd == wxT("SERVERS"))

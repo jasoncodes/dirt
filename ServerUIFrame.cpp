@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.60 2003-08-01 07:48:03 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.61 2004-03-14 00:21:33 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -401,7 +401,7 @@ void ServerUIFrame::OnFileExit(wxCommandEvent &WXUNUSED(event))
 
 void ServerUIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
 {
-	ShowAbout();
+	ShowAbout(this);
 }
 
 void ServerUIFrame::OnStartStop(wxCommandEvent &WXUNUSED(event))
