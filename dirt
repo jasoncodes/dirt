@@ -2,7 +2,7 @@
 
 if [ "$DISPLAY" == "" ];
 then
-	dirtconsole "$@"
+	exec dirtconsole "$@"
 else
-	Dirt "$@"
+	exec Dirt "$@"
 fi
