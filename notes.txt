@@ -4,22 +4,6 @@
 
 * away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
 
-* file transfers
-	SEND filename size id NULL ip port [ip port] [ip port]...
-		-- sent by sender to announce send request
-		-- first ip should be IPSELF
-		-- recv should map each ip to ip used to connect to server if in IPLIST
-	CANCELGET id
-		-- sent by recv to cancel
-	CANCELSEND id
-		-- sent by sender to cancel
-	ACCEPT id resumepos NULL [ip port] [ip port]
-		-- sent by recv to accept send
-		-- optional ip/port pairs for firewall traversal
-		-- sender decides which connection to keep if multiple succeed
-
-	* resume/overwrite option on /dcc accept
-
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)
 

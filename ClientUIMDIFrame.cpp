@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.112 2003-05-14 07:53:14 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.113 2003-05-15 00:46:23 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -565,14 +565,14 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 					for (size_t i = 0; i < paths.GetCount(); ++i)
 					{
 						m_client->ProcessConsoleInput(context,
-							wxT("/dcc send \"") + ht.head + wxT("\" \"") +
+							wxT("/DCC SEND \"") + ht.head + wxT("\" \"") +
 							paths[i] + wxT("\""));
 					}
 				}
 				return true;
 			}
 		}
-		else if (dcc_cmd == wxT("ACCEPT"))
+		else if (dcc_cmd == wxT("ACCEPT") || dcc_cmd == wxT("RESUME") || dcc_cmd == wxT("OVERWRITE"))
 		{
 			ht = SplitQuotedHeadTail(ht.tail);
 			if (ht.tail.Length() == 0)
@@ -594,7 +594,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 						if (dlg.ShowModal() == wxID_OK)
 						{
 							m_client->ProcessConsoleInput(context,
-								wxT("/dcc accept ") + ht.head + wxT(" \"") +
+								wxT("/DCC ") + dcc_cmd + wxT(" ") + ht.head + wxT(" \"") +
 								dlg.GetPath() + wxT("\""));
 						}
 						return true;

@@ -20,7 +20,8 @@ enum ResumeState
 {
 	rsResume = wxID_YES,
 	rsOverwrite = wxID_NO,
-	rsCancel = wxID_CANCEL
+	rsCancel = wxID_CANCEL,
+	rsNotSupported = wxID_DEFAULT
 };
 
 class ClientEventHandler

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.33 2003-05-15 00:16:17 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.34 2003-05-15 00:46:23 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -54,7 +54,7 @@ FileTransfers::FileTransfers(Client *client)
 FileTransfers::~FileTransfers()
 {
 	delete tmr;
-	#ifdef __WXMWSW__
+	#ifdef __WXMSW__
 		delete tmrIdleEventFaker;
 	#endif
 }
@@ -580,7 +580,7 @@ bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString
 
 wxArrayString FileTransfers::GetSupportedCommands()
 {
-	return SplitString(wxT("ACCEPT CANCEL HELP SEND"), wxT(" "));
+	return SplitString(wxT("ACCEPT CANCEL HELP SEND RESUME OVERWRITE"), wxT(" "));
 }
 
 void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
@@ -627,7 +627,7 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 			Warning(context, wxT("No such nick: ") + ht.head);
 		}
 	}
-	else if (cmd == wxT("ACCEPT"))
+	else if (cmd == wxT("ACCEPT") || cmd == wxT("RESUME") || cmd == wxT("OVERWRITE"))
 	{
 		ASSERT_CONNECTED();
 		HeadTail ht = SplitQuotedHeadTail(params);
@@ -637,11 +637,55 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 		{
 			ht.tail = StripQuotes(ht.tail);
 			const FileTransfer &t = GetTransferByIndex(i);
+			if (t.state != ftsGetPending)
+			{
+				Warning(context, wxT("Transfer is not a pending get"));
+				return;
+			}
 			ResumeState resume = rsOverwrite;
+			if (!ht.tail.Length())
+			{
+				Warning(context, wxT("No filename specified"));
+				return;
+			}
 			if (wxFileName(ht.tail).FileExists())
 			{
-				off_t size = File::Length(ht.tail);
-				resume = m_client->m_event_handler->OnClientTransferResumePrompt(t, ht.tail, size < t.filesize);
+				bool can_resume = File::Length(ht.tail) < t.filesize;
+				if (cmd == wxT("ACCEPT"))
+				{
+					resume = m_client->m_event_handler->OnClientTransferResumePrompt(t, ht.tail, can_resume);
+				}
+				else if (cmd == wxT("RESUME"))
+				{
+					if (can_resume)
+					{
+						resume = rsResume;
+					}
+					else
+					{
+						Warning(context, wxT("Cannot resume to existing file. Please use /dcc overwrite or choose a new filename."));
+						return;
+					}
+				}
+				else if (cmd == wxT("OVERWRITE"))
+				{
+					resume = rsOverwrite;
+				}
+				else
+				{
+					wxFAIL_MSG(wxT("Unexpected command (")+cmd+wxT(") in FileTransfers::ProcessConsoleInput"));
+					return;
+				}
+				if (resume == rsNotSupported)
+				{
+					Warning(context, wxT("File already exists. Please use /dcc resume or /dcc overwrite."));
+					return;
+				}
+			}
+			else if (cmd == wxT("RESUME"))
+			{
+				Warning(context, wxT("Cannot resume to not existant file. Please use /dcc accept."));
+				return;
 			}
 			if ((resume != rsCancel) && !AcceptTransfer(x, ht.tail, resume == rsResume))
 			{
@@ -774,7 +818,12 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 	if (index > -1)
 	{
 
-		m_client->GetConfig().SetLastGetDir(wxFileName(filename).GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+		wxFileName dir(filename);
+		dir.SetFullName(wxEmptyString);
+		if (dir.DirExists())
+		{
+			m_client->GetConfig().SetLastGetDir(fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+		}
 
 		FileTransfer &t = m_transfers[index];
 		
