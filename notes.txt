@@ -1,7 +1,8 @@
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
   reproduces in unmodified controls sample
 
-* wxBug: each line read with wxTextInputStream has a null char on the end
+* wxBug: each line read with wxTextFile has a null char on the end
+  string_fix.patch is in Jason's local wxWindows checkout
 
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
