@@ -3,7 +3,7 @@
 
 #include "Client.h"
 
-class ClientUIConsole : public ClientEventHandler
+class ClientUIConsole : public wxEvtHandler, public ClientEventHandler
 {
 
 public:
@@ -22,6 +22,13 @@ protected:
 
 protected:
 	Client *m_client;
+	wxThread *read_thread;
+
+protected:
+	void OnTextEnter(wxCommandEvent& event);
+
+private:
+	DECLARE_EVENT_TABLE()
 
 };
 

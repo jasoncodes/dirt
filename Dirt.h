@@ -1,7 +1,7 @@
-#ifndef _TestApp_H
-#define _TestApp_H
+#ifndef _DirtApp_H
+#define _DirtApp_H
 
-class TestApp : public wxApp
+class DirtApp : public wxApp
 {
 public:
 	virtual bool OnInit();

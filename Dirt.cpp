@@ -10,7 +10,7 @@
 #include "ClientUIMDIFrame.h"
 #include "ClientUIConsole.h"
 
-IMPLEMENT_APP(TestApp)
+IMPLEMENT_APP(DirtApp)
 
 static bool IsConsole()
 {
@@ -21,11 +21,12 @@ static bool IsConsole()
 			return false;
 		#endif
 	#else
-		wxFAIL_MSG("Your platform is not supported yet :)");
+		// no generic detection yet.. using GUI
+		return false;
 	#endif
 }
 
-bool TestApp::OnInit()
+bool DirtApp::OnInit()
 {
 	if (IsConsole())
 	{
