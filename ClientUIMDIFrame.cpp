@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.105 2003-05-07 01:59:55 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.106 2003-05-07 04:56:02 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -988,10 +988,10 @@ void ClientUIMDIFrame::OnClientTransferNew(const FileTransfer &transfer)
 	ClientUIMDITransferPanel *pnl = canvas->GetTransferPanel();
 	pnl->SetTransferId(transfer.transferid);
 	pnl->Update(transfer);
-	NewWindow(canvas, true);
+	NewWindow(canvas, false);
 }
 
-void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer)
+void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated)
 {
 	ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
 	if (pnl)
@@ -1001,6 +1001,10 @@ void ClientUIMDIFrame::OnClientTransferDelete(const FileTransfer &transfer)
 		if (index > -1)
 		{
 			GetSwitchBar()->SetButtonHighlight(index, true);
+		}
+		if (user_initiated)
+		{
+			CloseCanvas((SwitchBarCanvas*)pnl->GetParent());
 		}
 	}
 }
@@ -1016,6 +1020,7 @@ void ClientUIMDIFrame::OnClientTransferState(const FileTransfer &transfer)
 	{
 		OnClientInformation(wxEmptyString, transfer.GetPrefixString() + transfer.status);
 	}
+	OnClientTransferTimer(transfer);
 }
 
 void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)

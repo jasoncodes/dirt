@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.17 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.18 2003-05-07 04:56:02 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -166,7 +166,7 @@ void ClientUIMDITransferPanel::OnClose()
 {
 	if (GetTransferId() > -1)
 	{
-		m_canvas->GetClient()->GetFileTransfers()->DeleteTransfer(GetTransferId());
+		m_canvas->GetClient()->GetFileTransfers()->DeleteTransfer(GetTransferId(), true);
 	}
 }
 

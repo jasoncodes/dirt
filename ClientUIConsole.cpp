@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.48 2003-05-07 02:52:04 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.49 2003-05-07 04:56:02 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -390,7 +390,7 @@ void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)
 {
 }
 
-void ClientUIConsole::OnClientTransferDelete(const FileTransfer &transfer)
+void ClientUIConsole::OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated)
 {
 }
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.14 2003-05-07 04:23:48 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.15 2003-05-07 04:56:03 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -100,6 +100,7 @@ void FileTransfers::Test()
 	m_transfers.Add(t);
 	
 	m_client->m_event_handler->OnClientTransferNew(t);
+	m_client->m_event_handler->OnClientTransferState(t);
 
 	if (!tmr->IsRunning())
 	{
@@ -108,20 +109,23 @@ void FileTransfers::Test()
 
 }
 
-void FileTransfers::DeleteTransfer(int transferid)
+void FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 {
 	
 	int index = FindTransfer(transferid);
 	
 	wxASSERT(index > -1);
 	
-	// scope to prevent invalid reference when remove below
+	FileTransfer &transfer = m_transfers.Item(index);
+	if (transfer.state != ftsSendComplete && transfer.state != ftsGetComplete)
 	{
-		const FileTransfer &transfer = m_transfers.Item(index);
-		m_client->m_event_handler->OnClientTransferDelete(transfer);
+		transfer.state = transfer.issend ? ftsSendFail : ftsGetFail;
+		transfer.status = wxT("Transfer cancelled");
+		m_client->m_event_handler->OnClientTransferState(transfer);
 	}
+	m_client->m_event_handler->OnClientTransferDelete(transfer, user_initiated);
 	
-	m_transfers.RemoveAt(index);
+ 	m_transfers.RemoveAt(index);
 	
 	if (GetTransferCount() == 0)
 	{
@@ -192,7 +196,7 @@ bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString
 
 wxArrayString FileTransfers::GetSupportedCommands()
 {
-	return SplitString(wxT("HELP TEST"), wxT(" "));
+	return SplitString(wxT("CANCEL HELP TEST"), wxT(" "));
 }
 
 void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
@@ -200,6 +204,19 @@ void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString 
 	if (cmd == wxT("HELP"))
 	{
 		Information(context, wxT("Supported DCC commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
+	}
+	else if (cmd == wxT("CANCEL"))
+	{
+		long x;
+		int i;
+		if (params.ToLong(&x) && (i = FindTransfer(x)) > -1)
+		{
+			DeleteTransfer(x, true);
+		}
+		else
+		{
+			Warning(context, wxT("No such transfer: ") + params);
+		}
 	}
 	else if (cmd == wxT("TEST"))
 	{

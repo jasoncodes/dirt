@@ -43,7 +43,7 @@ public:
 	virtual void OnClientUserBack(const wxString &nick, const wxString &msg) = 0;
 	virtual void OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details) = 0;
 	virtual void OnClientTransferNew(const FileTransfer &transfer) = 0;
-	virtual void OnClientTransferDelete(const FileTransfer &transfer) = 0;
+	virtual void OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated) = 0;
 	virtual void OnClientTransferState(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferTimer(const FileTransfer &transfer) = 0;
 

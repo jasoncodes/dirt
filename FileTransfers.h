@@ -28,7 +28,7 @@ public:
 
 	void Test();
 
-	void DeleteTransfer(int transferid);
+	void DeleteTransfer(int transferid, bool user_initiated);
 
 protected:
 	void OnTimer(wxTimerEvent &event);

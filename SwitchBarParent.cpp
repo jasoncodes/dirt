@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.17 2003-05-06 06:58:13 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.18 2003-05-07 04:56:03 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -443,17 +443,21 @@ void SwitchBarParent::OnSwitchBarMinimize(wxCommandEvent& event)
 
 void SwitchBarParent::OnSwitchBarClose(wxCommandEvent& event)
 {
-	if (switchbar_popup_canvas->IsAttached())
+	CloseCanvas(switchbar_popup_canvas);
+}
+
+void SwitchBarParent::CloseCanvas(SwitchBarCanvas *canvas)
+{
+	if (canvas->IsAttached())
 	{
-		SwitchBarChild *child = (SwitchBarChild*)switchbar_popup_canvas->GetParent();
+		SwitchBarChild *child = (SwitchBarChild*)canvas->GetParent();
 		child->Close();
 	}
 	else
 	{
-		switchbar_popup_canvas->Destroy();
+		canvas->Destroy();
 	}
 }
-
 
 void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 {

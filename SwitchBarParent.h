@@ -50,6 +50,7 @@ protected:
 	void DoUpdateWindowMenu();
 	void UpdateCheckMenuItem(int id, const wxString &label, bool enabled, bool checked);
 	SwitchBarCanvas *GetActiveCanvas();
+	void CloseCanvas(SwitchBarCanvas *canvas);
 	size_t GetAcceleratorCount() const { return m_accelerator_count; }
 	wxAcceleratorEntry *GetAccelerators() const { return m_accelerators; }
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.9 2003-05-07 01:59:56 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.10 2003-05-07 04:56:02 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -66,7 +66,7 @@ bool FileTransfer::OnTimer()
 		status = wxT("Transfer complete");
 		m_transfers->m_client->m_event_handler->OnClientTransferState(*this);
 		m_transfers->m_client->m_event_handler->OnClientTransferTimer(*this);
-		m_transfers->DeleteTransfer(transferid);
+		m_transfers->DeleteTransfer(transferid, false);
 		return false;
 	}
 }
