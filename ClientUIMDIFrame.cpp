@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.69 2003-03-13 01:19:57 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.70 2003-03-13 01:30:35 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -73,7 +73,7 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	mnu->Append(GetWindowMenu(), wxT("&Window"));
 
 	wxMenu *mnuHelp = new wxMenu;
-	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About\tF1"));
+	mnuHelp->Append(ID_HELP_ABOUT, wxT("&About"));
 	mnu->Append(mnuHelp, wxT("&Help"));
 
 	SetMenuBar(mnu);
@@ -93,9 +93,10 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_client = new ClientDefault(this);
 
-	size_t num_accel = 1;
+	size_t num_accel = 2;
 	wxAcceleratorEntry *entries = new wxAcceleratorEntry[GetAcceleratorCount()+num_accel];
 	entries[0].Set(0, WXK_F1, ID_BINDING);
+	entries[1].Set(0, WXK_F2, ID_BINDING);
 	for (size_t i = num_accel; i < GetAcceleratorCount()+num_accel; ++i)
 	{
 		entries[i] = GetAccelerators()[i-num_accel];
