@@ -11,8 +11,12 @@ libcryptopp.a
 *.h
 *.cpp
 *.dat
+cryptopp.rc
 cryptest.dsw
 cryptest.dsp
+cryptlib.dsp
+cryptdll.dsp
+dlltest.dsp
 License.txt
 Readme.txt
 Doxyfile

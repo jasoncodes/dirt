@@ -126,7 +126,7 @@ Dirt.res: Dirt.rc
 	$(WINDRES) $(WINDRES_FLAGS) -i Dirt.rc -J rc -o Dirt.res -O coff
 
 crypto/libcryptopp.a:
-	@cd crypto && make
+	@cd crypto && make libcryptopp.a
 
 package: dirt
 ifneq (,$(findstring wx_msw,$(WX_BASENAME)))

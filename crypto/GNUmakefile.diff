@@ -1,0 +1,38 @@
+--- GNUmakefile-521-org	2005-01-02 20:42:46.000000000 +1000
++++ GNUmakefile	2005-01-02 21:27:02.000000000 +1000
+@@ -1,11 +1,6 @@
+-# can't use -fno-rtti yet because it causes problems with exception handling in GCC 2.95.2
+-CXXFLAGS = -g
+-# Uncomment the following two lines to do a release build.
+-# Note that you must define NDEBUG for your own application if you define it for Crypto++.
+-# Make sure you run the validation tests and test your own program thoroughly
+-# after turning on -O2. The GCC optimizer may have bugs that cause it to generate incorrect code.
+-# Try removing -fdata-sections if you get "undefined external reference" errors.
+-# CXXFLAGS = -O2 -DNDEBUG -ffunction-sections -fdata-sections
+-# LDFLAGS = -Wl,--gc-sections
++# these flags are overwritten below if wx is in debug mode
++CXXFLAGS = -O1 -DNDEBUG
++LDFLAGS =
++
+ ARFLAGS = -cr	# ar needs the dash on OpenBSD
+ RANLIB = ranlib
+@@ -18,6 +13,17 @@
+ endif
+ 
+-ISMINGW=1
+-CXX=i586-mingw32msvc-g++
++-include ../Makefile.config
++include ../Makefile.wx-config
++include ../Makefile.cross-compile
++
++# the gcc that comes with OSX seems to die hard on optimizations
++ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
++        CXXFLAGS := $(subst -O1,,$(CXXFLAGS))
++endif
++
++# overwrite CXXFLAGS with debug mode stuff if wx is debug version
++ifneq (,$(findstring __WXDEBUG__,$(shell $(WXCONFIG) --cxxflags)))
++        CXXFLAGS = -g -DDEBUG
++endif
+ 
+ ifeq ($(ISX86),1)

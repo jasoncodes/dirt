@@ -7,6 +7,7 @@ ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
         BINARY_SUFFIX = .exe
 	EXTRA_DEPENDS = Dirt.res
 	WINDRES_FLAGS := $(subst $(COMPILE_FLAGS),,$(CXXFLAGS)) -D$(shell $(WXCONFIG) --basename)
+	ISMINGW=1
 endif
 
 ifneq (,$(HOST))
