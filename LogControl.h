@@ -50,6 +50,7 @@ protected:
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnIdle(wxIdleEvent& event);
 	void OnFindDialog(wxFindDialogEvent &event);
+	void OnScroll(wxScrollWinEvent &event);
 	
 	virtual void OnLinkClicked(const wxHtmlLinkInfo& link);
 

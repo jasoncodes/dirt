@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.38 2003-03-29 05:30:08 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.39 2003-04-03 03:28:43 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -479,6 +479,7 @@ BEGIN_EVENT_TABLE(LogControl, wxHtmlWindow)
 	EVT_FIND_REPLACE(wxID_ANY, LogControl::OnFindDialog)
 	EVT_FIND_REPLACE_ALL(wxID_ANY, LogControl::OnFindDialog)
 	EVT_FIND_CLOSE(wxID_ANY, LogControl::OnFindDialog)
+	EVT_SCROLLWIN(LogControl::OnScroll)
 END_EVENT_TABLE()
 
 LogControl::LogControl(wxWindow *parent, wxWindowID id,
@@ -1832,4 +1833,10 @@ void LogControl::EnsureVisible(wxHtmlCell *cell)
 	{
 		Scroll(-1, y - (current_max_y - current_min_y) + 1);
 	}
+}
+
+void LogControl::OnScroll(wxScrollWinEvent &event)
+{
+	m_tmpMouseMoved = true;
+	event.Skip();
 }
