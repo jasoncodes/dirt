@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.113 2003-05-15 00:46:23 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.114 2003-05-15 10:41:18 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -962,21 +962,41 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 }
 
-void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg)
+void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
 {
 	bool bIsSelf = (nick == m_client->GetNickname());
-	AddLine(wxEmptyString,
-		wxT("*** ") + nick + wxT(" is away: ") + msg,
-		wxColour(0,0,128), true, bIsSelf);
+	wxString text;
+	text << wxT("*** ") << nick;
+	if (away_time_diff > 0)
+	{
+		text << wxT(" has been away for ") << SecondsToMMSS(away_time_diff);
+	}
+	else
+	{
+		text << wxT(" is away");
+	}
+	if (msg.Length())
+	{
+		text << wxT(": ") << msg;
+	}
+	AddLine(wxEmptyString, text, wxColour(0,0,128), true, bIsSelf);
 	m_lstNickList->SetAway(nick, true);
 }
 
-void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &msg)
+void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
 {
 	bool bIsSelf = (nick == m_client->GetNickname());
-	AddLine(wxEmptyString,
-		wxT("*** ") + nick + wxT(" has returned (msg: ") + msg + (wxChar)OriginalModifier + wxT(")"),
-		wxColour(0,0,128), true, bIsSelf);
+	wxString text;
+	text << wxT("*** ") << nick << wxT(" has returned");
+	if (msg.Length())
+	{
+		text << wxT(" (msg: ") << msg << (wxChar)OriginalModifier << wxT(")");
+	}
+	if (away_time_diff >= 0)
+	{
+		text << wxT(" (away for ") << SecondsToMMSS(away_time_diff) << wxT(")");
+	}
+	AddLine(wxEmptyString, text, wxColour(0,0,128), true, bIsSelf);
 	m_lstNickList->SetAway(nick, false);
 }
 
@@ -994,6 +1014,10 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHa
 	{
 		AddLine(context, nickname + wxT(" is away: ") + details2[wxT("AWAY")]);
 	}
+	if (details2.find(wxT("AWAYTIMEDIFFSTRING")) != details2.end())
+	{
+		AddLine(context, nickname + wxT(" has been away for: ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
+	}
 	AddLine(context, nickname + wxT(" is using ") + details2[wxT("AGENT")]);
 	AddLine(context, nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
 	AddLine(context, nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")]);
@@ -1002,6 +1026,9 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHa
 	details2.erase(wxT("HOSTNAME"));
 	details2.erase(wxT("ISADMIN"));
 	details2.erase(wxT("AWAY"));
+	details2.erase(wxT("AWAYTIME"));
+	details2.erase(wxT("AWAYTIMEDIFF"));
+	details2.erase(wxT("AWAYTIMEDIFFSTRING"));
 	details2.erase(wxT("AGENT"));
 	details2.erase(wxT("IDLE"));
 	details2.erase(wxT("IDLESTRING"));

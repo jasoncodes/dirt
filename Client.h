@@ -48,8 +48,8 @@ public:
 	virtual void OnClientUserJoin(const wxString &nick, const wxString &details) = 0;
 	virtual void OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message) = 0;
 	virtual void OnClientUserNick(const wxString &old_nick, const wxString &new_nick) = 0;
-	virtual void OnClientUserAway(const wxString &nick, const wxString &msg) = 0;
-	virtual void OnClientUserBack(const wxString &nick, const wxString &msg) = 0;
+	virtual void OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff) = 0;
+	virtual void OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff) = 0;
 	virtual void OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details) = 0;
 	virtual void OnClientTransferNew(const FileTransfer &transfer) = 0;
 	virtual void OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated) = 0;
@@ -181,12 +181,15 @@ public:
 	wxString GetNickname() const { return m_nickname; }
 	bool IsSelf() const { return m_client->GetNickname() == GetNickname(); }
 	bool IsAway() const { return m_is_away; }
+	long GetAwayTime() const { return m_away_time; }
 	wxString GetAwayMessage() const { return m_away_message; }
 
 protected:
 	Client *m_client;
 	wxString m_nickname;
 	bool m_is_away;
+	long m_away_time;
+	long m_server_clock_diff;
 	wxString m_away_message;
 	ByteBufferHashMap m_whois_cache;
 	wxLongLong_t m_whois_cache_time;

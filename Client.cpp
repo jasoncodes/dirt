@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.63 2003-05-14 07:53:14 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.64 2003-05-15 10:41:18 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -702,26 +702,40 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	}
 	else if (cmd == wxT("AWAY") || cmd == wxT("BACK"))
 	{
-		ByteBuffer nick, text;
-		if (!Unpack(data, nick, text))
+		ByteBufferArray params = Unpack(data);
+		ByteBuffer nick =
+			(params.GetCount() > 0) ? params[0u] : ByteBuffer();
+		ByteBuffer text =
+			(params.GetCount() > 1) ? params[1u] : ByteBuffer();
+		ByteBuffer away_time_buff =
+			(params.GetCount() > 2) ? params[2u] : ByteBuffer();
+		ByteBuffer away_time_diff_buff =
+			(params.GetCount() > 3) ? params[3u] : ByteBuffer();
+		long away_time = 0, away_time_diff = -1;
+		if (!wxString(away_time_buff).ToLong(&away_time))
 		{
-			nick = data;
-			text = ByteBuffer();
+			away_time = 0;
+		}
+		if (!wxString(away_time_diff_buff).ToLong(&away_time_diff))
+		{
+			away_time_diff = -1;
 		}
 		bool bIsAway = (cmd == wxT("AWAY"));
 		ClientContact *contact = GetContact(nick);
 		if (contact)
 		{
 			contact->m_is_away = bIsAway;
+			contact->m_away_time = away_time;
+			contact->m_server_clock_diff = wxGetUTCTime() - away_time;
 			contact->m_away_message = text;
 		}
 		if (bIsAway)
 		{
-			m_event_handler->OnClientUserAway(nick, text);
+			m_event_handler->OnClientUserAway(nick, text, away_time, away_time_diff);
 		}
 		else
 		{
-			m_event_handler->OnClientUserBack(nick, text);
+			m_event_handler->OnClientUserBack(nick, text, away_time, away_time_diff);
 		}
 	}
 	else if (cmd == wxT("JOIN"))

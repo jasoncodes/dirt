@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.49 2003-05-14 07:53:15 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.50 2003-05-15 10:41:18 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -774,14 +774,15 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		{
 			conn->m_isaway = true;
 			conn->m_awaymessage = data;
-			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data), true);
+			conn->m_awaytime = ::wxGetUTCTime();
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), data, Pack(wxString() << conn->m_awaytime, wxString() << 0)), true);
 		}
 	}
 	else if (cmd == wxT("BACK"))
 	{
-		if (conn->m_awaymessage.Length() > 0)
+		if (conn->m_isaway)
 		{
-			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage), true);
+			SendToAll(wxEmptyString, cmd, Pack(conn->GetNickname(), conn->m_awaymessage, Pack(wxString()<<conn->m_awaytime, wxString() << (::wxGetUTCTime()-conn->m_awaytime))), true);
 			conn->m_isaway = false;
 			conn->m_awaymessage = ByteBuffer();
 		}
@@ -802,6 +803,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			if (user->IsAway())
 			{
 				map[wxT("AWAY")] = user->GetAwayMessage();
+				map[wxT("AWAYTIME")] = wxString() << user->GetAwayTime();
+				long away_time_diff = wxGetUTCTime() - user->GetAwayTime();
+				map[wxT("AWAYTIMEDIFF")] = wxString() << away_time_diff;
+				map[wxT("AWAYTIMEDIFFSTRING")] = SecondsToMMSS(away_time_diff);
 			}
 			map[wxT("IDLE")] = wxString() << user->GetIdleTime();
 			map[wxT("IDLESTRING")] = user->GetIdleTimeString();
@@ -863,7 +868,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 						ServerConnection *conn2 = GetConnection(i);
 						if (conn2->IsAway())
 						{
-							conn->Send(wxEmptyString, wxT("AWAY"), Pack(conn2->GetNickname(), conn2->GetAwayMessage()));
+							conn->Send(wxEmptyString, wxT("AWAY"), Pack(conn2->GetNickname(), conn2->GetAwayMessage(), Pack(wxString()<<conn2->GetAwayTime(), wxString()<<(::wxGetUTCTime()-conn2->GetAwayTime()))));
 						}
 					}
 				}

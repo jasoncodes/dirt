@@ -44,6 +44,7 @@ public:
 	virtual wxString GetRemoteIPString() const { return m_remoteipstring; }
 	virtual wxString GetUserDetails() const { return m_userdetails; }
 	virtual bool IsAway() const { return m_isaway; }
+	virtual long GetAwayTime() const { return m_awaytime; }
 	virtual ByteBuffer GetAwayMessage() const { return m_awaymessage; }
 	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }
 	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : wxT("N/A"); }
@@ -71,6 +72,7 @@ protected:
 	wxString m_remoteipstring;
 	wxString m_userdetails;
 	bool m_isaway;
+	long m_awaytime;
 	ByteBuffer m_awaymessage;
 	long m_lastactive;
 	time_t m_latency;

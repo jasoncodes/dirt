@@ -1,7 +1,5 @@
 * add kde extension for /resetwindowpos
 
-* away since tick in serverconn, output in whois, send w/ AWAY to client, store in client's db
-
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably be okay)
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.52 2003-05-15 00:46:23 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.53 2003-05-15 10:41:18 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -351,14 +351,38 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 
 }
 
-void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg)
+void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
 {
-	OnClientInformation(wxEmptyString, nick + wxT(" is away: ") + msg);
+	wxString text;
+	text << wxT("*** ") << nick;
+	if (away_time_diff > 0)
+	{
+		text << wxT(" has been away for ") << SecondsToMMSS(away_time_diff);
+	}
+	else
+	{
+		text << wxT(" is away");
+	}
+	if (msg.Length())
+	{
+		text << wxT(": ") << msg;
+	}
+	Output(text);
 }
 
-void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg)
+void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
 {
-	OnClientInformation(wxEmptyString, nick + wxT(" has returned (msg: ") + msg + (wxChar)OriginalModifier + wxT(")"));
+	wxString text;
+	text << wxT("*** ") << nick << wxT(" has returned");
+	if (msg.Length())
+	{
+		text << wxT(" (msg: ") << msg << (wxChar)OriginalModifier << wxT(")");
+	}
+	if (away_time_diff >= 0)
+	{
+		text << wxT(" (away for ") << SecondsToMMSS(away_time_diff) << wxT(")");
+	}
+	Output(text);
 }
 
 void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details)
@@ -375,6 +399,10 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHas
 	{
 		Output(nickname + wxT(" is away: ") + details2[wxT("AWAY")]);
 	}
+	if (details2.find(wxT("AWAYTIMEDIFFSTRING")) != details2.end())
+	{
+		Output(nickname + wxT(" has been away for: ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
+	}
 	Output(nickname + wxT(" is using ") + details2[wxT("AGENT")]);
 	Output(nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
 	Output(nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")]);
@@ -383,6 +411,9 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHas
 	details2.erase(wxT("HOSTNAME"));
 	details2.erase(wxT("ISADMIN"));
 	details2.erase(wxT("AWAY"));
+	details2.erase(wxT("AWAYTIME"));
+	details2.erase(wxT("AWAYTIMEDIFF"));
+	details2.erase(wxT("AWAYTIMEDIFFSTRING"));
 	details2.erase(wxT("AGENT"));
 	details2.erase(wxT("IDLE"));
 	details2.erase(wxT("IDLESTRING"));
