@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.22 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.23 2003-02-21 01:12:53 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -281,3 +281,4 @@ wxString Client::GetDefaultNick()
 	}
 	return nick;
 }
+
