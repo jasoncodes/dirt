@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.6 2003-02-15 01:31:30 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.7 2003-02-15 01:37:31 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -103,10 +103,20 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 		{
 
 			case CRYPTSOCKET_CONNECTION:
+				{
+					wxIPV4address addr;
+					event.GetSocket()->GetPeer(addr);
+					m_event_handler->OnServerInformation("Incoming connection from " + ::GetIPV4String(addr));
+				}
 				break;
 
 			case CRYPTSOCKET_LOST:
-				m_connections.Remove((ServerDefaultConnection*)event.GetUserData());
+				{
+					wxIPV4address addr;
+					event.GetSocket()->GetPeer(addr);
+					m_event_handler->OnServerInformation("Connection to " + ::GetIPV4String(addr) + " lost");
+					m_connections.Remove((ServerDefaultConnection*)event.GetUserData());
+				}
 				break;
 
 			case CRYPTSOCKET_INPUT:
