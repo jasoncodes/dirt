@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.62 2003-06-07 12:46:16 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.63 2003-06-16 03:10:33 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -216,6 +216,10 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					if (conn->m_quitmsg.Length() == 0)
 					{
 						conn->m_quitmsg = wxString(wxT("Connection lost"));
+						if (event.GetData().Length())
+						{
+							conn->m_quitmsg << wxT(": ") << event.GetData();
+						}
 					}
 					if (conn->GetNickname().Length())
 					{

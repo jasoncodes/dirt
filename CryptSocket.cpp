@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.35 2003-06-07 12:46:16 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.36 2003-06-16 03:10:32 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -18,7 +18,7 @@ RCS_ID($Id: CryptSocket.cpp,v 1.35 2003-06-07 12:46:16 jason Exp $)
 
 //////// CryptSocketBase ////////
 
-#define CRYPTSOCKET_CHECK_RET(cond,msg) wxCHECK2_MSG(cond, {CloseWithEvent();return;}, msg)
+#define CRYPTSOCKET_CHECK_RET(cond,msg) wxCHECK2_MSG(cond, { if (!m_fail_msg.Length()) { m_fail_msg = wxString() << wxT("Assertion failed: ") << msg; } CloseWithEvent(); return; }, msg)
 
 const size_t CryptSocketBase::s_maxBlockKeyAgeBytes = 1024 * 512; // 512 KB
 const time_t CryptSocketBase::s_maxBlockKeyAgeSeconds = 300; // 5 minutes
@@ -34,7 +34,7 @@ enum
 	ID_DNS
 };
 
-enum MessageTypes
+enum CryptSocketMessageTypes
 {
 	mtNewPublicKey,
 	mtNewBlockKey
@@ -184,12 +184,13 @@ void CryptSocketBase::OnSocket(wxSocketEvent &event)
 		case wxSOCKET_LOST:
 			if (m_has_connected)
 			{
-				OnSocketConnectionLost();
+				OnSocketConnectionLost(m_fail_msg);
 			}
 			else
 			{
-				OnSocketConnectionError();
+				OnSocketConnectionError(m_fail_msg);
 			}
+			m_fail_msg.Clear();
 			break;
 		
 		default:
@@ -209,6 +210,10 @@ void CryptSocketBase::OnSocketInput()
 	
 	if (m_sck->Error())
 	{
+		if (!m_fail_msg.Length())
+		{
+			m_fail_msg = wxT("Error reading from socket");
+		}
 		CloseWithEvent();
 	}
 	else if (m_sck->LastCount())
@@ -252,7 +257,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	
 	if (data_len > 0)
 	{
-		
+
 		CRYPTSOCKET_CHECK_RET(m_keyRemote.Length() > 0, wxT("No remote public key"));
 		ByteBuffer enc(ptr, len);
 		ByteBuffer dec;
@@ -264,8 +269,10 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 		{
 			CRYPTSOCKET_CHECK_RET(wxAssertFailure, wxT("Error decryping message"));
 		}
+		CRYPTSOCKET_CHECK_RET(data_len <= dec.Length(), wxT("Data length greater than packet length"));
 		ByteBuffer plain(dec.LockRead(), data_len);
 		dec.Unlock();
+		// do decompression here
 		CryptSocketEvent evt(m_id, CRYPTSOCKET_INPUT, this, plain);
 		m_handler->AddPendingEvent(evt);
 
@@ -274,7 +281,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	{
 		
 		CRYPTSOCKET_CHECK_RET(len >= 2, wxT("Message length must be at least 2 bytes long"));
-		MessageTypes type = (MessageTypes)BytesToUint16(ptr, 2);
+		CryptSocketMessageTypes type = (CryptSocketMessageTypes)BytesToUint16(ptr, 2);
 		ptr += 2;
 		len -= 2;
 		
@@ -419,6 +426,10 @@ void CryptSocketBase::MaybeSendData()
 		{
 			if (m_sck->LastError() != wxSOCKET_WOULDBLOCK)
 			{
+				if (!m_fail_msg.Length())
+				{
+					m_fail_msg = wxT("Error writing to socket");
+				}
 				CloseWithEvent();
 			}
 			m_bOutputOkay = false;
@@ -464,6 +475,7 @@ void CryptSocketBase::Send(const ByteBuffer &data)
 		CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, wxT("No local block key"));
 		try
 		{
+			// do compression here
 			AddToSendQueue(Uint16ToBytes(data.Length()) + m_crypt.AESEncrypt(data));
 		}
 		catch (...)
@@ -624,6 +636,7 @@ void CryptSocketClient::OnSocketConnection()
 {
 
 	InitBuffers();
+
 	if (m_keyLocalPublic.Length() == 0 || m_keyLocalPrivate.Length() == 0)
 	{
 		wxCHECK2_MSG(m_keyLocalPublic.Length() == 0 && m_keyLocalPrivate.Length() == 0, {}, wxT("One of the local public or private keys is empty"));

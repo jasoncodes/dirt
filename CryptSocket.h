@@ -83,6 +83,7 @@ protected:
 	wxSocketBase *m_sck;
 	DNS *m_DNS;
 	bool m_has_connected;
+	wxString m_fail_msg;
 	ByteBuffer m_buffIn;
 	ByteBuffer m_buffOut;
 	ByteBuffer m_buffOutProxy;
