@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.30 2004-05-26 18:26:06 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.31 2004-05-26 21:45:44 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -192,13 +192,15 @@ BEGIN_EVENT_TABLE(SplashPanel, wxPanel)
 	EVT_SIZE(SplashPanel::OnSize)
 END_EVENT_TABLE()
 
-class SplashButton : public wxPanel
+class SplashButton : public wxControl
 {
 
 public:
 	SplashButton(SplashPanel *parent, int id, const wxString &caption, int mnemonic_pos = -1)
-		: wxPanel(parent, id, wxDefaultPosition, wxSize(67, 26))
+		: wxControl(parent, id, wxDefaultPosition, wxSize(67, 26), wxNO_BORDER)
 	{
+
+		SetBestSize(GetSize());
 
 		m_caption = caption;
 		m_mnemonic_pos = mnemonic_pos;
@@ -324,6 +326,21 @@ protected:
 		event.Skip();
 	}
 
+	const inline bool IsMouseInside(const wxMouseEvent &event)
+	{
+		return
+			(event.GetX() >= 0) &&
+			(event.GetY() >= 0) &&
+			(event.GetX() < GetSize().x) &&
+			(event.GetY() < GetSize().y);
+	}
+
+	void RaiseEvent()
+	{
+		wxCommandEvent evt(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+		AddPendingEvent(evt);
+	}
+
 	void OnLeftDown(wxMouseEvent &WXUNUSED(event))
 	{
 		SetFocus();
@@ -332,7 +349,7 @@ protected:
 		Refresh();
 	}
 
-	void OnLeftUp(wxMouseEvent &WXUNUSED(event))
+	void OnLeftUp(wxMouseEvent &event)
 	{
 		if (HasCapture())
 		{
@@ -340,23 +357,72 @@ protected:
 		}
 		m_depressed = false;
 		Refresh();
+		if (IsMouseInside(event))
+		{
+			RaiseEvent();
+		}
 	}
 
 	void OnMotion(wxMouseEvent &event)
 	{
 		if (event.LeftIsDown())
 		{
-			bool new_depressed =
-				(event.GetX() >= 0) &&
-				(event.GetY() >= 0) &&
-				(event.GetX() < GetSize().x) &&
-				(event.GetY() < GetSize().y);
+			bool new_depressed = IsMouseInside(event);
 			if (m_depressed != new_depressed)
 			{
 				m_depressed = new_depressed;
 				Refresh();
 			}
 		}
+	}
+
+	void OnKeyDown(wxKeyEvent &event)
+	{
+
+		switch (event.GetKeyCode())
+		{
+			
+			case WXK_RETURN:
+				RaiseEvent();
+				break;
+
+			case WXK_SPACE:
+				if (!m_depressed)
+				{
+					m_depressed = true;
+					Refresh();
+				}
+				break;
+
+			case WXK_ESCAPE:
+				if (m_depressed)
+				{
+					m_depressed = false;
+					Refresh();
+				}
+				break;
+
+		}
+
+	}
+
+	void OnKeyUp(wxKeyEvent &event)
+	{
+
+		switch (event.GetKeyCode())
+		{
+
+			case WXK_SPACE:
+				if (m_depressed)
+				{
+					m_depressed = false;
+					Refresh();
+					RaiseEvent();
+				}
+				break;
+
+		}
+
 	}
 
 protected:
@@ -371,7 +437,7 @@ private:
 
 };
 
-BEGIN_EVENT_TABLE(SplashButton, wxPanel)
+BEGIN_EVENT_TABLE(SplashButton, wxControl)
 	EVT_ERASE_BACKGROUND(SplashButton::OnEraseBackground)
 	EVT_PAINT(SplashButton::OnPaint)
 	EVT_SET_FOCUS(SplashButton::OnSetFocus)
@@ -380,6 +446,8 @@ BEGIN_EVENT_TABLE(SplashButton, wxPanel)
 	EVT_LEFT_DCLICK(SplashButton::OnLeftDown)
 	EVT_LEFT_UP(SplashButton::OnLeftUp)
 	EVT_MOTION(SplashButton::OnMotion)
+	EVT_KEY_DOWN(SplashButton::OnKeyDown)
+	EVT_KEY_UP(SplashButton::OnKeyUp)
 END_EVENT_TABLE()
 
 enum
