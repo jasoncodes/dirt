@@ -10,7 +10,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.13 2003-06-16 08:32:24 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.14 2003-08-01 07:48:00 jason Exp $)
 
 #include "Crypt.h"
 #include "ByteBuffer.h"
@@ -45,7 +45,7 @@ class ByteBufferSink : public Bufferless<Sink>
 {
 
 public:
-	unsigned int Put2(const byte *begin, unsigned int length, int messageEnd, bool blocking)
+	unsigned int Put2(const byte *begin, unsigned int length, int WXUNUSED(messageEnd), bool WXUNUSED(blocking))
 	{
 		if (length)
 		{

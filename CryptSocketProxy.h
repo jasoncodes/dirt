@@ -95,7 +95,7 @@ protected:
 		return true;
 	}
 
-	inline bool Read(const wxString &key, bool (CryptSocketProxySettings::*fn)(const wxString&), const wxString &dummy)
+	inline bool Read(const wxString &key, bool (CryptSocketProxySettings::*fn)(const wxString&), const wxString &)
 	{
 		wxString x;
 		bool b = m_config.m_config->Read(m_config.m_path + wxT("/Proxy/") + key, &x);
@@ -176,6 +176,8 @@ protected:
 	CryptSocketProxyDestMode m_dest_port_ranges_mode;
 	Uint16Array m_dest_port_ranges_low;
 	Uint16Array m_dest_port_ranges_high;
+
+	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxySettings)
 	
 };
 
@@ -203,6 +205,8 @@ protected:
 	const CryptSocketProxySettings &m_settings;
 	wxString m_dest_ip;
 	wxUint16 m_dest_port;
+
+	DECLARE_NO_ASSIGN_CLASS(CryptSocketProxy)
 
 };
 

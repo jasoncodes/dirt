@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.25 2003-07-26 07:09:48 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.26 2003-08-01 07:48:04 jason Exp $)
 
 #include "SwitchBar.h"
 #include "SwitchBarParent.h"
@@ -149,12 +149,12 @@ void SwitchBarParent::UpdateWindowMenu()
 	}
 }
 
-void SwitchBarParent::OnUpdateWindowMenuIdle(wxIdleEvent &event)
+void SwitchBarParent::OnUpdateWindowMenuIdle(wxIdleEvent &WXUNUSED(event))
 {
 	DoUpdateWindowMenu();
 }
 
-void SwitchBarParent::OnUpdateWindowMenuTimer(wxTimerEvent &event)
+void SwitchBarParent::OnUpdateWindowMenuTimer(wxTimerEvent &WXUNUSED(event))
 {
 	DoUpdateWindowMenu();
 }
@@ -259,7 +259,7 @@ void SwitchBarParent::DoUpdateWindowMenu()
 
 }
 
-void SwitchBarParent::OnWindowMinimize(wxCommandEvent& event)
+void SwitchBarParent::OnWindowMinimize(wxCommandEvent &WXUNUSED(event))
 {
 	if (GetActiveChild() != NULL)
 	{
@@ -268,29 +268,29 @@ void SwitchBarParent::OnWindowMinimize(wxCommandEvent& event)
 	}
 }
 
-void SwitchBarParent::OnWindowClose(wxCommandEvent& event)
+void SwitchBarParent::OnWindowClose(wxCommandEvent &WXUNUSED(event))
 {
 	wxASSERT(GetActiveChild() != NULL);
 	GetActiveChild()->Close();
 	UpdateWindowMenu();
 }
 
-void SwitchBarParent::OnWindowCascade(wxCommandEvent& event)
+void SwitchBarParent::OnWindowCascade(wxCommandEvent &WXUNUSED(event))
 {
 	Cascade();
 }
 
-void SwitchBarParent::OnWindowTile(wxCommandEvent& event)
+void SwitchBarParent::OnWindowTile(wxCommandEvent &WXUNUSED(event))
 {
 	Tile();
 }
 
-void SwitchBarParent::OnWindowNext(wxCommandEvent& event)
+void SwitchBarParent::OnWindowNext(wxCommandEvent &WXUNUSED(event))
 {
 	NextChild(false);
 }
 
-void SwitchBarParent::OnWindowPrev(wxCommandEvent& event)
+void SwitchBarParent::OnWindowPrev(wxCommandEvent &WXUNUSED(event))
 {
 	NextChild(true);
 }
@@ -360,7 +360,7 @@ SwitchBarChild* SwitchBarParent::OnCreateNewChild(wxPoint pos, wxSize size, bool
 		canvas);
 }
 
-void SwitchBarParent::OnSize(wxSizeEvent& event)
+void SwitchBarParent::OnSize(wxSizeEvent &WXUNUSED(event))
 {
 
 	int w, h;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RadioBoxPanel.cpp,v 1.2 2003-05-31 07:36:56 jason Exp $)
+RCS_ID($Id: RadioBoxPanel.cpp,v 1.3 2003-08-01 07:48:02 jason Exp $)
 
 #include "RadioBoxPanel.h"
 
@@ -53,7 +53,7 @@ void RadioBoxPanel::SetSizes()
 	SetSize(size);
 }
 
-void RadioBoxPanel::OnSize(wxSizeEvent &event)
+void RadioBoxPanel::OnSize(wxSizeEvent &WXUNUSED(event))
 {
 	wxASSERT_MSG(m_sizes_set,
 		wxT("You need to call SetSizes() in the subclass constructor"));

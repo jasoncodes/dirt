@@ -36,6 +36,8 @@ protected:
 	wxString m_quitmsg;
 	wxLongLong_t m_last_auth_time;
 
+	DECLARE_NO_COPY_CLASS(ServerDefaultConnection)
+
 };
 
 class ServerDefault : public Server
@@ -83,6 +85,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(ServerDefault)
 
 };
 

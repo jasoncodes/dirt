@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileDropTarget.cpp,v 1.1 2003-05-11 04:38:23 jason Exp $)
+RCS_ID($Id: FileDropTarget.cpp,v 1.2 2003-08-01 07:48:01 jason Exp $)
 
 #include "FileDropTarget.h"
 
@@ -21,7 +21,7 @@ FileDropTarget::~FileDropTarget()
 {
 }
 
-bool FileDropTarget::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+bool FileDropTarget::OnDropFiles(wxCoord WXUNUSED(x), wxCoord WXUNUSED(y), const wxArrayString& filenames)
 {
 	if (m_handler)
 	{

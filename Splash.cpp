@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.25 2003-05-14 11:58:23 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.26 2003-08-01 07:48:03 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -39,11 +39,11 @@ public:
 	}
 
 protected:
-	void OnErase(wxEraseEvent &event)
+	void OnErase(wxEraseEvent &WXUNUSED(event))
 	{
 	}
 
-	void OnPaint(wxPaintEvent &event)
+	void OnPaint(wxPaintEvent &WXUNUSED(event))
 	{
 		wxPaintDC dc(this);
 		dc.DrawBitmap(*m_bmp, 0, 0);
@@ -54,6 +54,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(SplashPanel)
 
 };
 

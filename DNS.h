@@ -31,6 +31,8 @@ protected:
 	wxString m_hostname;
 	wxCriticalSection m_section;
 
+	DECLARE_NO_COPY_CLASS(DNS)
+
 };
 
 extern const wxEventType wxEVT_DNS;
@@ -97,6 +99,8 @@ protected:
 	wxIPV4address *m_addr;
 	wxUint32 m_ip;
 	void *m_userdata;
+
+	DECLARE_NO_ASSIGN_CLASS(DNSEvent)
 
 };
 

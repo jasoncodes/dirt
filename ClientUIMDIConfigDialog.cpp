@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.14 2003-07-06 14:35:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.15 2003-08-01 07:47:59 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -73,6 +73,8 @@ protected:
 	wxStaticText *m_lblSubnet;
 	wxTextCtrl *m_txtSubnet;
 
+	DECLARE_NO_COPY_CLASS(DestNetworkPanel)
+
 };
 
 class DestPortsPanel : public RadioBoxPanel
@@ -118,6 +120,8 @@ protected:
 protected:
 	wxStaticText *m_lblPorts;
 	wxTextCtrl *m_txtPorts;
+
+	DECLARE_NO_COPY_CLASS(DestPortsPanel)
 
 };
 
@@ -294,7 +298,7 @@ void ClientUIMDIConfigDialog::OnOK(wxCommandEvent &event)
 	}
 }
 
-void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &event)
+void ClientUIMDIConfigDialog::OnProxy(wxCommandEvent &WXUNUSED(event))
 {
 	
 	bool enabled = m_chkProxy->IsChecked();

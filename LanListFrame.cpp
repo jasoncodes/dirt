@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.7 2003-06-21 10:21:20 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.8 2003-08-01 07:48:02 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -99,7 +99,7 @@ void LanListFrame::OnSize(wxSizeEvent &event)
 	event.Skip();
 }
 
-void LanListFrame::OnTimer(wxTimerEvent &event)
+void LanListFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
 	DoPing();
 	wxLongLong_t now = GetMillisecondTicks();
@@ -217,7 +217,7 @@ void LanListFrame::ProcessPong(const wxString &ip, wxUint16 port, wxLongLong_t l
 	Sort();
 }
 
-static int wxCALLBACK LanListItemCompareFunc(long item1, long item2, long sortData)
+static int wxCALLBACK LanListItemCompareFunc(long item1, long item2, long WXUNUSED(sortData))
 {
 	LanListItemData *data1 = (LanListItemData*)(void*)item1;
 	LanListItemData *data2 = (LanListItemData*)(void*)item2;

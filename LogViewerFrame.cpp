@@ -194,13 +194,13 @@ void LogViewerFrame::ResizeChildren()
 
 }
 
-void LogViewerFrame::OnDirSelChange(wxTreeEvent &event)
+void LogViewerFrame::OnDirSelChange(wxTreeEvent &WXUNUSED(event))
 {
 	wxString temp = m_dir->GetPath();
 	PopulateTree(temp);
 }
 
-void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &event)
+void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &WXUNUSED(event))
 {
 
 	if (m_is_busy) return;
@@ -228,7 +228,7 @@ wxString LogViewerFrame::GetItemFilename(const wxTreeItemId& id) const
 
 void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename)
 {
-	wxTreeItemIdValue cookie;
+	wxTreeItemIdValue cookie = 0;
 	EnsureItemSelected(idParent, filename, cookie, true);
 }
 
@@ -494,7 +494,7 @@ void LogViewerFrame::PopulateTree(const wxString &dirname)
 
 }
 
-void LogViewerFrame::OnCtrlF(wxCommandEvent &event)
+void LogViewerFrame::OnCtrlF(wxCommandEvent &WXUNUSED(event))
 {
 	m_log->ShowFindDialog(true);
 }
@@ -513,7 +513,7 @@ void LogViewerFrame::OnItemRightClick(wxTreeEvent &event)
 	}
 }
 
-void LogViewerFrame::OnDelete(wxCommandEvent &event)
+void LogViewerFrame::OnDelete(wxCommandEvent &WXUNUSED(event))
 {
 
 	wxTreeItemId id = m_tree->GetSelection();

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBar.cpp,v 1.13 2003-07-06 06:09:27 jason Exp $)
+RCS_ID($Id: SwitchBar.cpp,v 1.14 2003-08-01 07:48:04 jason Exp $)
 
 #include "SwitchBar.h"
 #include <wx/image.h>
@@ -152,7 +152,7 @@ void SwitchBar::OnErase(wxEraseEvent &event)
 
 }
 
-void SwitchBar::OnSysColourChanged(wxSysColourChangedEvent &event)
+void SwitchBar::OnSysColourChanged(wxSysColourChangedEvent &WXUNUSED(event))
 {
 	LoadSystemColours();
 	Refresh();
@@ -166,7 +166,7 @@ void SwitchBar::LoadSystemColours()
 	m_pen_shadow = wxPen(m_colour_shadow, 1, wxSOLID);
 }
 
-void SwitchBar::OnPaint(wxPaintEvent &event)
+void SwitchBar::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
 	
 	wxPaintDC dc(this);

@@ -114,7 +114,7 @@ private:
 };
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(CryptSocketBase*, CryptSocketArray);
+WX_DEFINE_ARRAY_NO_PTR(CryptSocketBase*, CryptSocketArray);
 
 //////// CryptSocketClient ////////
 
@@ -144,6 +144,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(CryptSocketClient)
 
 };
 
@@ -169,6 +170,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(CryptSocketServer)
 
 };
 
@@ -242,6 +244,8 @@ protected:
 	CryptSocketNotify m_event;
 	ByteBuffer m_data;
 	void *m_userdata;
+
+	DECLARE_NO_ASSIGN_CLASS(CryptSocketEvent)
 
 };
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.56 2003-05-23 13:18:53 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.57 2003-08-01 07:47:59 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -195,7 +195,7 @@ void ClientUIMDICanvas::DoGotFocus()
 	}
 }
 
-void ClientUIMDICanvas::OnFocus(wxFocusEvent &event)
+void ClientUIMDICanvas::OnFocus(wxFocusEvent &WXUNUSED(event))
 {
 	DoGotFocus();
 }
@@ -330,7 +330,7 @@ void ClientUIMDICanvas::SetPasswordMode(bool value)
 	}
 }
 
-void ClientUIMDICanvas::OnPasswordEnter(wxCommandEvent &event)
+void ClientUIMDICanvas::OnPasswordEnter(wxCommandEvent &WXUNUSED(event))
 {
 	wxString context = wxEmptyString;
 	if (m_parent->GetSwitchBar()->GetIndexFromUserData(this) > 0)
@@ -412,7 +412,7 @@ void ClientUIMDICanvas::ResizeChildren()
 
 }
 
-void ClientUIMDICanvas::OnSize(wxSizeEvent& event)
+void ClientUIMDICanvas::OnSize(wxSizeEvent &WXUNUSED(event))
 {
 	ResizeChildren();
 }
@@ -440,7 +440,7 @@ Client *ClientUIMDICanvas::GetClient()
 	return ((ClientUIMDIFrame*)m_parent)->GetClient();
 }
 
-void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
+void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent &event)
 {
 	OpenBrowser(this, event.GetString());
 }
@@ -451,7 +451,7 @@ void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 	OnNickListMenuItem(event);
 }
 
-void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
+void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &WXUNUSED(event))
 {
 
 	wxString nick = m_lstNickList->GetSelectedNick();

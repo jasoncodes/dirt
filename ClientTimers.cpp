@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientTimers.cpp,v 1.1 2003-04-03 02:08:47 jason Exp $)
+RCS_ID($Id: ClientTimers.cpp,v 1.2 2003-08-01 07:47:59 jason Exp $)
 
 #include "ClientTimers.h"
 #include "util.h"
@@ -164,7 +164,7 @@ bool ClientTimers::Clear()
 	return false;
 }
 
-void ClientTimers::OnTimer(wxTimerEvent &event)
+void ClientTimers::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
 	bool remove_any = false;
 	wxLongLong_t now = GetMillisecondTicks();

@@ -15,6 +15,8 @@ public:
 	static wxString ExtractStyle(const wxString &style_tag, const wxString &style);
 	virtual bool HandleTag(const wxHtmlTag& tag);
 
+	DECLARE_NO_COPY_CLASS(SpanTagHandler)
+
 };
 
 #endif

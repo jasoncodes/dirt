@@ -14,6 +14,8 @@ protected:
 	wxCheckBox *m_chk;
 	wxEvtHandler *m_evt;
 
+	DECLARE_NO_COPY_CLASS(StaticCheckBoxSizer)
+
 };
 
 #endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.59 2003-07-08 05:57:20 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.60 2003-08-01 07:48:03 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -270,7 +270,7 @@ void ServerUIFrame::SetPositionAndShow(bool force_foreground)
 	m_txtLog->ShowPosition(m_txtLog->GetLastPosition());
 }
 
-void ServerUIFrame::OnTrayDblClick(wxMouseEvent &event)
+void ServerUIFrame::OnTrayDblClick(wxMouseEvent &WXUNUSED(event))
 {
 	SetPositionAndShow(true);
 }
@@ -302,7 +302,7 @@ void ServerUIFrame::OnTrayRightClick(wxMouseEvent &event)
 	m_tray->PopupMenu(&mnu, event.GetPosition());
 }
 
-void ServerUIFrame::OnRestore(wxCommandEvent &event)
+void ServerUIFrame::OnRestore(wxCommandEvent &WXUNUSED(event))
 {
 	SetPositionAndShow(true);
 }
@@ -357,7 +357,7 @@ void ServerUIFrame::Output(const wxString &line)
 	m_txtLog->SetInsertionPoint(m_txtLog->GetInsertionPoint() - i);
 }
 
-bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
+bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &WXUNUSED(params))
 {
 	if (cmd == wxT("CLEAR"))
 	{
@@ -394,17 +394,17 @@ bool ServerUIFrame::ResetWindowPos()
 	return true;
 }
 
-void ServerUIFrame::OnFileExit(wxCommandEvent& event)
+void ServerUIFrame::OnFileExit(wxCommandEvent &WXUNUSED(event))
 {
 	Close();
 }
 
-void ServerUIFrame::OnHelpAbout(wxCommandEvent& event)
+void ServerUIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
 {
 	ShowAbout();
 }
 
-void ServerUIFrame::OnStartStop(wxCommandEvent& event)
+void ServerUIFrame::OnStartStop(wxCommandEvent &WXUNUSED(event))
 {
 	if (!m_server) return;
 	if (m_server->IsRunning())
@@ -417,7 +417,7 @@ void ServerUIFrame::OnStartStop(wxCommandEvent& event)
 	}
 }
 
-void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
+void ServerUIFrame::OnConfiguration(wxCommandEvent &WXUNUSED(event))
 {
 	if (m_server)
 	{
@@ -433,7 +433,7 @@ void ServerUIFrame::OnConfiguration(wxCommandEvent& event)
 	}
 }
 
-void ServerUIFrame::OnClient(wxCommandEvent& event)
+void ServerUIFrame::OnClient(wxCommandEvent &WXUNUSED(event))
 {
 	wxASSERT(m_server && m_server->IsRunning());
 	wxString param;
@@ -446,7 +446,7 @@ void ServerUIFrame::OnClient(wxCommandEvent& event)
 	::wxExecute((wxChar**)argv);
 }
 
-void ServerUIFrame::OnClear(wxCommandEvent& event)
+void ServerUIFrame::OnClear(wxCommandEvent &WXUNUSED(event))
 {
 	m_txtLog->Clear();
 }
@@ -561,7 +561,7 @@ void ServerUIFrame::UpdateConnectionList()
 	}
 }
 
-void ServerUIFrame::OnTimerUpdateConnections(wxTimerEvent &event)
+void ServerUIFrame::OnTimerUpdateConnections(wxTimerEvent &WXUNUSED(event))
 {
 	UpdateConnectionList();
 }
@@ -585,7 +585,7 @@ void ServerUIFrame::OnConnectionRClick(wxListEvent &event)
 	}
 }
 
-void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
+void ServerUIFrame::OnConnectionKick(wxCommandEvent &WXUNUSED(event))
 {
 	wxTextEntryDialog dialog(this, wxT("Kick message for ") + m_right_click_conn->GetId() + wxT(":"), wxT("Dirt Secure Chat"));
 	if (dialog.ShowModal() == wxID_OK)

@@ -52,7 +52,7 @@ protected:
 	FileTransfer(FileTransfers *transfers);
 
 public:
-	FileTransfer(const FileTransfer &other) { wxFAIL; }
+	FileTransfer(const FileTransfer &) { wxFAIL; }
 	~FileTransfer();
 	wxString GetPrefixString() const;
 	wxString GetStateString() const;
@@ -80,6 +80,8 @@ protected:
 	bool m_got_accept;
 	bool m_more_idle;
 	wxLongLong_t m_pos;
+
+	DECLARE_NO_ASSIGN_CLASS(FileTransfer)
 
 };
 

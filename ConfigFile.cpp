@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.7 2003-06-26 06:13:19 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.8 2003-08-01 07:48:00 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -30,8 +30,9 @@ wxString ConfigFile::GetConfigFilename()
 		{
 			return fn.GetFullPath();
 		}
+		return wxFileConfig::GetLocalFileName(wxT("dirt"));
 	}
-	return wxFileConfig::GetLocalFileName(wxT("dirt"));
+	return filename;
 }
 
 ConfigFile::ConfigFile()

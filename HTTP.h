@@ -127,6 +127,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(HTTP)
 
 };
 
@@ -209,6 +210,8 @@ protected:
 	HTTPHeader m_header;
 	bool m_is_redirecting;
 	void *m_userdata;
+
+	DECLARE_NO_ASSIGN_CLASS(HTTPEvent)
 
 };
 

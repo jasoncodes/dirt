@@ -13,7 +13,7 @@ class ServerEventHandler
 {
 
 public:
-	virtual bool OnServerPreprocess(wxString &cmd, wxString &params) { return false; }
+	virtual bool OnServerPreprocess(wxString &WXUNUSED(cmd), wxString &WXUNUSED(params)) { return false; }
 	virtual wxArrayString OnServerSupportedCommands() { return wxArrayString(); }
 	virtual void OnServerStateChange() = 0;
 	virtual void OnServerConnectionChange() = 0;
@@ -86,7 +86,7 @@ private:
 };
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(ServerConnection*, ServerConnectionArray);
+WX_DEFINE_ARRAY_NO_PTR(ServerConnection*, ServerConnectionArray);
 
 //////// ServerConfig ////////
 

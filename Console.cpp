@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.14 2003-06-30 13:06:12 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.15 2003-08-01 07:48:00 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -145,6 +145,8 @@ public:
 
 protected:
 	Console *m_console;
+
+	DECLARE_NO_COPY_CLASS(ConsoleReadThread)
 
 };
 

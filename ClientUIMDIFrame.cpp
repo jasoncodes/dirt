@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.125 2003-07-06 22:57:55 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.126 2003-08-01 07:48:00 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -228,7 +228,7 @@ static inline bool IsWin32()
 	#endif
 }
 
-void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
+void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 {
 	if (IsFocused() || !IsWin32())
 	{
@@ -245,22 +245,22 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent& event)
 	}
 }
 
-void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
+void ClientUIMDIFrame::OnFileExit(wxCommandEvent &WXUNUSED(event))
 {
 	Close();
 }
 
-void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent& event)
+void ClientUIMDIFrame::OnToolsOptions(wxCommandEvent &WXUNUSED(event))
 {
 	ClientUIMDIConfigDialog dlg(this);
 }
 
-void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
+void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent &WXUNUSED(event))
 {
 	ShowAbout();
 }
 
-void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &event)
+void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &WXUNUSED(event))
 {
 	ForceForegroundWindow(this);
 	m_tmrTray->Stop();
@@ -268,7 +268,7 @@ void ClientUIMDIFrame::OnTrayDblClick(wxMouseEvent &event)
 	m_tray = NULL;
 }
 
-void ClientUIMDIFrame::OnRestore(wxCommandEvent &event)
+void ClientUIMDIFrame::OnRestore(wxCommandEvent &WXUNUSED(event))
 {
 	ForceForegroundWindow(this);
 	m_tmrTray->Stop();
@@ -276,7 +276,7 @@ void ClientUIMDIFrame::OnRestore(wxCommandEvent &event)
 	m_tray = NULL;
 }
 
-void ClientUIMDIFrame::OnTrayTimer(wxTimerEvent &event)
+void ClientUIMDIFrame::OnTrayTimer(wxTimerEvent &WXUNUSED(event))
 {
 	if (m_tray && m_tray->Ok())
 	{
@@ -908,7 +908,7 @@ void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &t
 	}
 }
 
-void ClientUIMDIFrame::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIMDIFrame::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	wxString msg;
 	msg << wxT('[') << nick;
@@ -955,7 +955,7 @@ void ClientUIMDIFrame::OnClientCTCPReplyIn(const wxString &context, const wxStri
 	AddLine(context, msg, *wxRED, false, false);
 }
 
-void ClientUIMDIFrame::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIMDIFrame::OnClientCTCPReplyOut(const wxString &WXUNUSED(context), const wxString &WXUNUSED(nick), const wxString &WXUNUSED(type), const ByteBuffer &WXUNUSED(data))
 {
 }
 
@@ -1071,7 +1071,7 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 
 }
 
-void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
+void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
 {
 	bool bIsSelf = (nick == m_client->GetNickname());
 	wxString text;
@@ -1092,7 +1092,7 @@ void ClientUIMDIFrame::OnClientUserAway(const wxString &nick, const wxString &ms
 	m_lstNickList->SetAway(nick, true);
 }
 
-void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
+void ClientUIMDIFrame::OnClientUserBack(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
 {
 	bool bIsSelf = (nick == m_client->GetNickname());
 	wxString text;
@@ -1249,7 +1249,7 @@ void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
 	event.Skip();
 }
 
-void ClientUIMDIFrame::OnCtrlF(wxCommandEvent &event)
+void ClientUIMDIFrame::OnCtrlF(wxCommandEvent &WXUNUSED(event))
 {
 	SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 	if (child)

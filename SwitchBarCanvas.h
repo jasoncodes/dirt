@@ -26,8 +26,8 @@ public:
 	virtual void OnDetach() {}
 	virtual void OnActivate() {}
 	virtual void OnClose() {}
-	virtual bool OnPopupMenu(wxMenu &menu) { return true; }
-	virtual bool OnPopupMenuItem(wxCommandEvent &event) { return true; }
+	virtual bool OnPopupMenu(wxMenu &WXUNUSED(menu)) { return true; }
+	virtual bool OnPopupMenuItem(wxCommandEvent &WXUNUSED(event)) { return true; }
 
 	SwitchBar* GetSwitchBar();
 
@@ -39,6 +39,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(SwitchBarCanvas)
 
 };
 

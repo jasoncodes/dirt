@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.68 2003-07-10 02:19:14 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.69 2003-08-01 07:48:02 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -319,7 +319,7 @@ void ServerDefault::OnBroadcast(BroadcastSocketEvent &event)
 	}
 }
 
-void ServerDefault::OnTimerPing(wxTimerEvent &event)
+void ServerDefault::OnTimerPing(wxTimerEvent &WXUNUSED(event))
 {
 	wxLongLong_t now = GetMillisecondTicks();
 	for (size_t i = 0; i < GetConnectionCount(); ++i)
@@ -555,7 +555,7 @@ wxLongLong_t ServerDefault::GetNextPublicListUpdateTick() const
 	return (IsRunning() && m_public_server)?m_next_list_update:0;
 }
 
-bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
+bool ServerDefault::ProcessClientInputExtra(bool WXUNUSED(preprocess), bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
 	ServerDefaultConnection *conn2 = (ServerDefaultConnection*)conn;
 	if (prenickauthcheck)

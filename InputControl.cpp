@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.18 2003-07-26 06:48:36 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.19 2003-08-01 07:48:01 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
@@ -30,7 +30,7 @@ public:
 	}
 
 protected:
-	void OnPaint(wxPaintEvent& event)
+	void OnPaint(wxPaintEvent &WXUNUSED(event))
 	{
 		
 		wxPaintDC dc(this);
@@ -53,6 +53,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(InputControlColourPanel)
 
 };
 
@@ -67,7 +68,7 @@ class InputControlColourPopup : public wxMiniFrame
 
 public:
 	InputControlColourPopup(InputControl* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr)
-		: wxMiniFrame(parent, id, title, pos, size, wxCAPTION | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT, name)
+		: wxMiniFrame(parent, id, title, pos, size, wxCAPTION | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT | style, name)
 	{
 		
 		wxSize static_size(20,20);
@@ -161,7 +162,7 @@ public:
 		}
 	}
 
-	void OnTimer(wxTimerEvent& event)
+	void OnTimer(wxTimerEvent &WXUNUSED(event))
 	{
 
 		PositionSelf();
@@ -190,6 +191,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(InputControlColourPopup)
 
 };
 
@@ -615,7 +617,7 @@ void InputControl::OnIdle(wxIdleEvent &event)
 	event.Skip();
 }
 
-void InputControl::OnChange(wxCommandEvent &event)
+void InputControl::OnChange(wxCommandEvent &WXUNUSED(event))
 {
 	if (!m_ignore_change)
 	{

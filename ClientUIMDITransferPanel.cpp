@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.27 2003-07-26 06:36:26 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.28 2003-08-01 07:48:00 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -111,7 +111,7 @@ ClientUIMDITransferPanel::~ClientUIMDITransferPanel()
 {
 }
 
-void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
+void ClientUIMDITransferPanel::OnSize(wxSizeEvent &WXUNUSED(event))
 {
 	
 	wxSize size = GetClientSize();

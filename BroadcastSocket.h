@@ -4,7 +4,7 @@
 class BroadcastSocketData;
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(BroadcastSocketData*, BroadcastSocketDataArray);
+WX_DEFINE_ARRAY_NO_PTR(BroadcastSocketData*, BroadcastSocketDataArray);
 
 #include "IPInfo.h"
 #include "ByteBuffer.h"
@@ -82,6 +82,8 @@ protected:
 	wxString m_ip;
 	wxUint16 m_port;
 	ByteBuffer m_data;
+
+	DECLARE_NO_ASSIGN_CLASS(BroadcastSocketEvent)
 
 };
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: BroadcastSocket.cpp,v 1.5 2003-05-06 06:58:11 jason Exp $)
+RCS_ID($Id: BroadcastSocket.cpp,v 1.6 2003-08-01 07:47:59 jason Exp $)
 
 #include "BroadcastSocket.h"
 #include "ByteBuffer.h"
@@ -98,7 +98,7 @@ void BroadcastSocket::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 	m_id = id;
 }
 
-void BroadcastSocket::OnIPCheck(wxTimerEvent &event)
+void BroadcastSocket::OnIPCheck(wxTimerEvent &WXUNUSED(event))
 {
 	CheckForIPs();
 }

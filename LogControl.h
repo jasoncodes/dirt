@@ -9,7 +9,7 @@
 #include <wx/fdrepdlg.h>
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(wxHtmlCell*, HtmlCellPointerArray);
+WX_DEFINE_ARRAY_NO_PTR(wxHtmlCell*, HtmlCellPointerArray);
 
 enum TextModifierMode
 {
@@ -107,6 +107,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(LogControl)
 
 };
 

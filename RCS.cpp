@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: RCS.cpp,v 1.11 2003-04-13 06:08:42 jason Exp $)
+RCS_ID($Id: RCS.cpp,v 1.12 2003-08-01 07:48:02 jason Exp $)
 
 #include "version.h"
 
@@ -14,7 +14,7 @@ static wxString m_latest_rcs_date = wxEmptyString;
 static wxString m_latest_rcs_author = wxEmptyString;
 static bool m_init_done = false;
 
-static wxString extract_date(const wxChar *x, const wxChar *y)
+static wxString extract_date(const wxChar *WXUNUSED_UNLESS_DEBUG(x), const wxChar *y)
 {
 	wxASSERT(x[0] == wxT('$') && x[1] == wxT('I') && x[2] == wxT('d'));
 	wxASSERT(y[0] == wxT('v') && y[1] == wxT(' '));
@@ -25,7 +25,7 @@ static wxString extract_date(const wxChar *x, const wxChar *y)
 	return tmp;
 }
 
-static wxString extract_author(const wxChar *x, const wxChar *y)
+static wxString extract_author(const wxChar *WXUNUSED_UNLESS_DEBUG(x), const wxChar *y)
 {
 	wxASSERT(x[0] == wxT('$') && x[1] == wxT('I') && x[2] == wxT('d'));
 	wxASSERT(y[0] == wxT('v') && y[1] == wxT(' '));

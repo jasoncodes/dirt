@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.15 2003-07-06 06:09:27 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.16 2003-08-01 07:48:04 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
@@ -96,7 +96,7 @@ void SwitchBarChild::OnMove(wxMoveEvent& event)
 
 }
 
-void SwitchBarChild::OnSize(wxSizeEvent& event)
+void SwitchBarChild::OnSize(wxSizeEvent &WXUNUSED(event))
 {
 
 	m_parent->UpdateWindowMenu();

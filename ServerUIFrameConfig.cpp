@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.44 2003-06-30 05:29:47 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.45 2003-08-01 07:48:03 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -322,7 +322,7 @@ void ServerUIFrameConfig::OnOK(wxCommandEvent &event)
 	}
 }
 
-void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
+void ServerUIFrameConfig::OnReset(wxCommandEvent &WXUNUSED(event))
 {
 	if (wxMessageBox(wxT("Warning: This will reset the server configuration to default values. This operation is not undoable.\n\nAre you sure you want to reset to defaults?"), wxT("Reset Confirmation"), wxOK|wxCANCEL|wxICON_QUESTION, this) == wxOK)
 	{
@@ -338,12 +338,12 @@ void ServerUIFrameConfig::OnReset(wxCommandEvent &event)
 	}
 }
 
-void ServerUIFrameConfig::OnChangeText(wxCommandEvent &event)
+void ServerUIFrameConfig::OnChangeText(wxCommandEvent &WXUNUSED(event))
 {
 	m_cmdApply->Enable(true);
 }
 
-void ServerUIFrameConfig::OnChangeCheck(wxCommandEvent &event)
+void ServerUIFrameConfig::OnChangeCheck(wxCommandEvent &WXUNUSED(event))
 {
 	m_cmdApply->Enable(true);
 	m_lblPublicListAuthentication->Enable(m_chkPublicListEnabled->IsChecked());
@@ -360,7 +360,7 @@ void ServerUIFrameConfig::OnChangeCheck(wxCommandEvent &event)
 	m_txtHTTPProxyPassword->Enable(m_chkHTTPProxyEnabled->IsChecked());
 }
 
-void ServerUIFrameConfig::OnTimer(wxTimerEvent &event)
+void ServerUIFrameConfig::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
 	wxLongLong_t next_tick = m_server->GetNextPublicListUpdateTick();
 	wxLongLong_t now = GetMillisecondTicks();

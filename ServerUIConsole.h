@@ -29,6 +29,8 @@ protected:
 	Server *m_server;
 	bool m_quit_on_stop;
 
+	DECLARE_NO_COPY_CLASS(ServerUIConsole)
+
 };
 
 #endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.12 2003-06-30 13:06:12 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.13 2003-08-01 07:48:01 jason Exp $)
 
 #include "DNS.h"
 
@@ -57,6 +57,8 @@ protected:
 	DNS *m_dns;
 	bool m_no_event;
 	static wxCriticalSection s_section_lookup;
+
+	DECLARE_NO_COPY_CLASS(DNSWorker)
 
 };
 

@@ -15,7 +15,7 @@ class CryptSocketProxySettings;
 class ClientContact;
 
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY(ClientContact*, ClientContactArray);
+WX_DEFINE_ARRAY_NO_PTR(ClientContact*, ClientContactArray);
 
 enum ResumeState
 {
@@ -29,7 +29,7 @@ class ClientEventHandler
 {
 
 public:
-	virtual bool OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params) { return false; }
+	virtual bool OnClientPreprocess(const wxString &WXUNUSED(context), wxString &WXUNUSED(cmd), wxString &WXUNUSED(params)) { return false; }
 	virtual wxArrayString OnClientSupportedCommands() { return wxArrayString(); }
 	virtual void OnClientDebug(const wxString &context, const wxString &text) = 0;
 	virtual void OnClientWarning(const wxString &context, const wxString &text) = 0;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.73 2003-07-09 03:31:01 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.74 2003-08-01 07:48:04 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -388,7 +388,7 @@ ByteBuffer Uint64ToBytes(unsigned wxLongLong_t num)
 	return Uint32ToBytes(ull.GetHi()) + Uint32ToBytes(ull.GetLo());
 }
 
-unsigned wxLongLong_t BytesToUint64(const byte *data, int len)
+unsigned wxLongLong_t BytesToUint64(const byte *data, int WXUNUSED_UNLESS_DEBUG(len))
 {
 	wxASSERT((len == 8) && (len == sizeof (wxUint64)) && (len == sizeof (wxULongLong)));
 	wxUint32 hi = BytesToUint32(data + 0, 4);
@@ -408,7 +408,7 @@ ByteBuffer Uint32ToBytes(wxUint32 num)
 	return bytes;
 }
 
-wxUint32 BytesToUint32(const byte *data, int len)
+wxUint32 BytesToUint32(const byte *data, int WXUNUSED_UNLESS_DEBUG(len))
 {
 	wxASSERT((len == 4) && (len == sizeof (wxUint32)));
 	return
@@ -428,7 +428,7 @@ ByteBuffer Uint16ToBytes(wxUint16 num)
 	return bytes;
 }
 
-wxUint16 BytesToUint16(const byte *data, int len)
+wxUint16 BytesToUint16(const byte *data, int WXUNUSED_UNLESS_DEBUG(len))
 {
 	wxASSERT((len == 2) && (len == sizeof (wxUint16)));
 	return

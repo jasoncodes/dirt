@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.53 2003-07-06 05:26:06 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.54 2003-08-01 07:48:02 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -26,6 +26,7 @@ DECLARE_APP(DirtApp)
 
 struct ModifierParserTag
 {
+
 	const wxString name;
 	bool active;
 
@@ -33,6 +34,9 @@ struct ModifierParserTag
 		: name(the_name), active(initially_active)
 	{
 	}
+
+	DECLARE_NO_ASSIGN_CLASS(ModifierParserTag)
+
 };
 
 struct ModifierParserTagEntry
@@ -45,6 +49,9 @@ struct ModifierParserTagEntry
 		: tag(the_tag), attribs(the_attribs)
 	{
 	}
+
+	DECLARE_NO_ASSIGN_CLASS(ModifierParserTagEntry)
+
 };
 
 #include <wx/dynarray.h>
@@ -465,6 +472,8 @@ public:
 
 	}
 
+	DECLARE_NO_ASSIGN_CLASS(ModifierParser)
+
 };
 
 
@@ -809,6 +818,7 @@ struct LogControlWordCell : public wxHtmlCell
 	LogControlWordCell(const wxString& word, wxDC& dc);
 	virtual void Draw(wxDC& dc, int x, int y, int view_y1, int view_y2);
 	wxString m_Word;
+	DECLARE_NO_COPY_CLASS(LogControlWordCell)
 };
 
 wxString LogControl::GetCellText(wxHtmlCell *cell)
@@ -1279,7 +1289,7 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 
 }
 
-void LogControl::OnIdle(wxIdleEvent& event)
+void LogControl::OnIdle(wxIdleEvent &WXUNUSED(event))
 {
 
 	if (m_cur_hand == NULL)
@@ -1506,6 +1516,8 @@ public:
 	{
 		return m_LastCell;
 	}
+
+	DECLARE_NO_COPY_CLASS(LogControlContainerCell)
 
 };
 

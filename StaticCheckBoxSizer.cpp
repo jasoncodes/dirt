@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: StaticCheckBoxSizer.cpp,v 1.1 2003-05-27 16:24:21 jason Exp $)
+RCS_ID($Id: StaticCheckBoxSizer.cpp,v 1.2 2003-08-01 07:48:03 jason Exp $)
 
 #include "StaticCheckBoxSizer.h"
 
@@ -34,6 +34,8 @@ protected:
 protected:
 	wxStaticBox *m_box;
 	wxCheckBox *m_chk;
+
+	DECLARE_NO_COPY_CLASS(StaticCheckBoxSizerEventHandler)
 
 };
 

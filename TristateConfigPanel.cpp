@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.6 2003-06-12 05:57:26 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.7 2003-08-01 07:48:04 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
@@ -87,7 +87,7 @@ void TristateConfigPanel::OnSelectionChanged(int n)
 	}
 }
 
-void TristateConfigPanel::OnText(wxCommandEvent &event)
+void TristateConfigPanel::OnText(wxCommandEvent &WXUNUSED(event))
 {
 	if (m_cmdWavePreview)
 	{
@@ -100,7 +100,7 @@ void TristateConfigPanel::OnText(wxCommandEvent &event)
 	SendChangeEvent();
 }
 
-void TristateConfigPanel::OnBrowse(wxCommandEvent &event)
+void TristateConfigPanel::OnBrowse(wxCommandEvent &WXUNUSED(event))
 {
 	wxWindow *parent = GetParent();
 	while (parent->GetParent())
@@ -128,7 +128,7 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &event)
 	}
 }
 
-void TristateConfigPanel::OnWavePreview(wxCommandEvent &event)
+void TristateConfigPanel::OnWavePreview(wxCommandEvent &WXUNUSED(event))
 {
 	#if wxUSE_WAVE
 		if (wxFileName(GetPath()).FileExists())

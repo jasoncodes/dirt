@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.70 2003-07-06 14:35:06 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.71 2003-08-01 07:47:59 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -956,7 +956,7 @@ void Client::OnConnect()
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
 }
 
-void Client::OnTimerPing(wxTimerEvent &event)
+void Client::OnTimerPing(wxTimerEvent &WXUNUSED(event))
 {
 	if (IsConnected())
 	{

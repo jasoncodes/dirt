@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.16 2003-06-05 13:00:49 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.17 2003-08-01 07:48:01 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -237,7 +237,7 @@ void HTTP::SetEventHandler(wxEvtHandler *handler, wxEventType id)
 	m_id = id;
 }
 
-void HTTP::OnTimerTimeout(wxTimerEvent &event)
+void HTTP::OnTimerTimeout(wxTimerEvent &WXUNUSED(event))
 {
 	wxLongLong_t idle_time = GetMillisecondTicks() - m_last_active;
 	if (idle_time >= m_idle_timeout_secs*1000)

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SpanTag.cpp,v 1.10 2003-06-30 04:00:55 jason Exp $)
+RCS_ID($Id: SpanTag.cpp,v 1.11 2003-08-01 07:48:03 jason Exp $)
 
 #include "SpanTag.h"
 
@@ -98,6 +98,8 @@ public:
 protected:
 	wxColour m_colour;
 	wxHtmlCell *m_endcell;
+
+	DECLARE_NO_COPY_CLASS(SpanTagCell)
 
 };
 

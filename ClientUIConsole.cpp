@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.55 2003-06-30 04:42:34 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.56 2003-08-01 07:47:59 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -81,7 +81,7 @@ wxArrayString ClientUIConsole::OnClientSupportedCommands()
 	return SplitString(wxT("EXIT"), wxT(" "));
 }
 
-bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
+bool ClientUIConsole::OnClientPreprocess(const wxString &WXUNUSED(context), wxString &cmd, wxString &params)
 {
 	if (cmd == wxT("EXIT"))
 	{
@@ -98,22 +98,22 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 	}
 }
 
-void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &text)
+void ClientUIConsole::OnClientDebug(const wxString &WXUNUSED(context), const wxString &text)
 {
 	Output(wxString() << wxT("Debug: ") << text);
 }
 
-void ClientUIConsole::OnClientWarning(const wxString &context, const wxString &text)
+void ClientUIConsole::OnClientWarning(const wxString &WXUNUSED(context), const wxString &text)
 {
 	Output(wxString() << wxT("*** ") << text);
 }
 
-void ClientUIConsole::OnClientError(const wxString &context, const wxString &type, const wxString &text)
+void ClientUIConsole::OnClientError(const wxString &WXUNUSED(context), const wxString &type, const wxString &text)
 {
 	Output(wxString() << wxT("*** Error ") << type << wxT(": ") << text);
 }
 
-void ClientUIConsole::OnClientInformation(const wxString &context, const wxString &text)
+void ClientUIConsole::OnClientInformation(const wxString &WXUNUSED(context), const wxString &text)
 {
 	Output(wxString() << wxT("*** ") << text);
 }
@@ -164,7 +164,7 @@ void ClientUIConsole::OnClientAuthBad(const wxString &text)
 	m_passmode = true;
 }
 
-void ClientUIConsole::OnClientMessageOut(const wxString &context, const wxString &nick, const wxString &text, bool is_action)
+void ClientUIConsole::OnClientMessageOut(const wxString &WXUNUSED(context), const wxString &nick, const wxString &text, bool is_action)
 {
 	bool is_private = (nick.Length() > 0);
 	if (is_private)
@@ -221,7 +221,7 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 	}
 }
 
-void ClientUIConsole::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIConsole::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	wxString msg;
 	msg << wxT('[') << nick;
@@ -237,7 +237,7 @@ void ClientUIConsole::OnClientCTCPIn(const wxString &context, const wxString &ni
 	Output(msg);
 }
 
-void ClientUIConsole::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIConsole::OnClientCTCPOut(const wxString &WXUNUSED(context), const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	wxString msg;
 	msg << wxT("-> [") << nick << wxT(']');
@@ -252,7 +252,7 @@ void ClientUIConsole::OnClientCTCPOut(const wxString &context, const wxString &n
 	Output(msg);
 }
 
-void ClientUIConsole::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIConsole::OnClientCTCPReplyIn(const wxString &WXUNUSED(context), const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	wxString msg;
 	msg << wxT('[') << nick;
@@ -268,7 +268,7 @@ void ClientUIConsole::OnClientCTCPReplyIn(const wxString &context, const wxStrin
 	Output(msg);
 }
 
-void ClientUIConsole::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+void ClientUIConsole::OnClientCTCPReplyOut(const wxString &WXUNUSED(context), const wxString &WXUNUSED(nick), const wxString &WXUNUSED(type), const ByteBuffer &WXUNUSED(data))
 {
 }
 
@@ -352,7 +352,7 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 
 }
 
-void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
+void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
 {
 	wxString text;
 	text << wxT("*** ") << nick;
@@ -371,7 +371,7 @@ void ClientUIConsole::OnClientUserAway(const wxString &nick, const wxString &msg
 	Output(text);
 }
 
-void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg, long away_time, long away_time_diff)
+void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg, long WXUNUSED(away_time), long away_time_diff)
 {
 	wxString text;
 	text << wxT("*** ") << nick << wxT(" has returned");
@@ -386,7 +386,7 @@ void ClientUIConsole::OnClientUserBack(const wxString &nick, const wxString &msg
 	Output(text);
 }
 
-void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHashMap &details)
+void ClientUIConsole::OnClientWhoIs(const wxString &WXUNUSED(context), const ByteBufferHashMap &details)
 {
 	ByteBufferHashMap details2(details);
 	wxString nickname = details2[wxT("NICK")];
@@ -429,11 +429,11 @@ void ClientUIConsole::OnClientWhoIs(const wxString &context, const ByteBufferHas
 	Output(nickname + wxT(" End of /WHOIS"));
 }
 
-void ClientUIConsole::OnClientTransferNew(const FileTransfer &transfer)
+void ClientUIConsole::OnClientTransferNew(const FileTransfer &WXUNUSED(transfer))
 {
 }
 
-void ClientUIConsole::OnClientTransferDelete(const FileTransfer &transfer, bool user_initiated)
+void ClientUIConsole::OnClientTransferDelete(const FileTransfer &WXUNUSED(transfer), bool WXUNUSED(user_initiated))
 {
 }
 
@@ -450,11 +450,11 @@ void ClientUIConsole::OnClientTransferState(const FileTransfer &transfer)
 	}
 }
 
-void ClientUIConsole::OnClientTransferTimer(const FileTransfer &transfer)
+void ClientUIConsole::OnClientTransferTimer(const FileTransfer &WXUNUSED(transfer))
 {
 }
 
-ResumeState ClientUIConsole::OnClientTransferResumePrompt(const FileTransfer &transfer, const wxString &new_filename, bool can_resume)
+ResumeState ClientUIConsole::OnClientTransferResumePrompt(const FileTransfer &WXUNUSED(transfer), const wxString &WXUNUSED(new_filename), bool WXUNUSED(can_resume))
 {
 	return rsNotSupported;
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.12 2003-06-30 12:36:35 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.13 2003-08-01 07:48:03 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -50,7 +50,7 @@ void ServerUIConsole::OnEOF()
 	m_server->ProcessConsoleInput(wxT("/exit"));
 }
 
-bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &params)
+bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &WXUNUSED(params))
 {
 	if (cmd == wxT("EXIT"))
 	{

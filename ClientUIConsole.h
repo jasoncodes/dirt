@@ -56,6 +56,8 @@ protected:
 	LogWriter *m_log;
 	bool m_log_warning_given;
 
+	DECLARE_NO_COPY_CLASS(ClientUIConsole)
+
 };
 
 #endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.53 2003-07-26 06:46:44 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.54 2003-08-01 07:48:01 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -379,7 +379,7 @@ bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, 
 	return false;
 }
 
-bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+bool FileTransfers::OnClientCTCPIn(const wxString &WXUNUSED(context), const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 
 	if (type == wxT("DCC"))
@@ -587,17 +587,17 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 
 }
 
-bool FileTransfers::OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+bool FileTransfers::OnClientCTCPOut(const wxString &WXUNUSED(context), const wxString &WXUNUSED(nick), const wxString &type, const ByteBuffer &WXUNUSED(data))
 {
 	return (type == wxT("DCC"));
 }
 
-bool FileTransfers::OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+bool FileTransfers::OnClientCTCPReplyIn(const wxString &WXUNUSED(context), const wxString &WXUNUSED(nick), const wxString &WXUNUSED(type), const ByteBuffer &WXUNUSED(data))
 {
 	return false;
 }
 
-bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
+bool FileTransfers::OnClientCTCPReplyOut(const wxString &WXUNUSED(context), const wxString &WXUNUSED(nick), const wxString &WXUNUSED(type), const ByteBuffer &WXUNUSED(data))
 {
 	return false;
 }

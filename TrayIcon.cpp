@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.11 2003-05-27 17:02:20 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.12 2003-08-01 07:48:04 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -95,7 +95,7 @@ protected:
 	}
 
 protected:
-	void OnClose(wxCloseEvent &event)
+	void OnClose(wxCloseEvent &WXUNUSED(event))
 	{
 		if (m_trayicon)
 		{
@@ -215,6 +215,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(TrayIconPrivate)
 
 };
 

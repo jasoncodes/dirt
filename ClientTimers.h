@@ -67,6 +67,7 @@ protected:
 
 private:
 	DECLARE_EVENT_TABLE()
+	DECLARE_NO_COPY_CLASS(ClientTimers)
 
 };
 
@@ -104,6 +105,7 @@ public:
 
 protected:
 	const ClientTimer m_timer;
+	DECLARE_NO_ASSIGN_CLASS(ClientTimersEvent)
 
 };
 
