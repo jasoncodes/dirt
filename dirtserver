@@ -1,0 +1,3 @@
+#!/bin/bash
+DTACH_FILE=~/dirt_dtach_$$_$RANDOM
+dtach -n $DTACH_FILE dirtconsole --server-dtach

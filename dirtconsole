@@ -36,7 +36,7 @@ do
 	if [ ! -f $LOCK_FILE ]
 	then
 
-		if dtach -n ~/dtach_$DISPLAY_$RANDOM$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 -once > /dev/null
+		if dtach -n ~/dirt_xvfb_dtach_$DISPLAY_$$_$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 -once > /dev/null
 		then
 
 			TRIES=0

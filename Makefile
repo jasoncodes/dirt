@@ -20,6 +20,7 @@ SOURCES := $(shell /bin/ls *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
 DIRTCONSOLE_EXE_PERMS = $(shell /bin/ls -l dirtconsole | awk '{print $$1}' | tr -d "rw-")
+DIRTSERVER_EXE_PERMS = $(shell /bin/ls -l dirtserver | awk '{print $$1}' | tr -d "rw-")
 
 dirt : Dirt
 ifneq ($(DIRT_EXE_PERMS),xxx)
@@ -27,6 +28,9 @@ ifneq ($(DIRT_EXE_PERMS),xxx)
 endif
 ifneq ($(DIRTCONSOLE_EXE_PERMS),xxx)
 	chmod +x dirtconsole
+endif
+ifneq ($(DIRTSERVER_EXE_PERMS),xxx)
+	chmod +x dirtserver
 endif
 
 clean:
