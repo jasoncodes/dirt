@@ -68,7 +68,7 @@ void FileTransfers::Test()
 	t.filename = "D:\\Archive\\Stuff\\Dirt.exe";
 	t.filesize = 363520;
 	t.time = 133;
-	t.timeleft = 67;
+	t.timeleft = -1;
 	t.cps = -1;
 	t.filesent = 363520/3*2;
 	t.status = "Sending...";

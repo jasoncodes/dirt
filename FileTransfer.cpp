@@ -14,7 +14,7 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 	: m_transfers(transfers),
 		transferid(-1), issend(false), state(ftsUnknown),
 		nickname(wxEmptyString), filename(wxEmptyString),
-		filesize(0), time(0), timeleft(0), cps(-1), filesent(0),
+		filesize(0), time(0), timeleft(-1), cps(-1), filesent(0),
 		status(wxEmptyString)
 {
 }
@@ -34,4 +34,18 @@ void FileTransfer::OnTimer()
 		filesent = filesize;
 	}
 	cps = m_cps.Update(filesent);
+	if (filesent < filesize)
+	{
+		time++;
+		int bytesleft = filesize - filesent;
+		if (cps > 0)
+		{
+			timeleft = bytesleft / cps;
+		}
+		else
+		{
+			timeleft = -1;
+		}
+	}
+
 }

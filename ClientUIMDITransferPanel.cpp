@@ -258,7 +258,14 @@ void ClientUIMDITransferPanel::SetTime(long seconds)
 void ClientUIMDITransferPanel::SetTimeleft(long seconds)
 {
 	m_timeleft = seconds;
-	m_lblLeft->SetLabel(SecondsToMMSS(seconds));
+	if (seconds >= 0)
+	{
+		m_lblLeft->SetLabel(SecondsToMMSS(seconds));
+	}
+	else
+	{
+		m_lblLeft->SetLabel("??:??");
+	}
 }
 
 void ClientUIMDITransferPanel::SetCPS(long cps)
