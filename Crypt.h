@@ -26,6 +26,9 @@ public:
 	static const size_t MD5MACKeyLength;
 	static const size_t MD5MACDigestLength;
 
+	static ByteBuffer Base64Encode(const ByteBuffer &data, bool insert_line_breaks = true, int max_line_length = 72);
+	static ByteBuffer Base64Decode(const ByteBuffer &data);
+
 	void SetAESEncryptKey(const ByteBuffer &key);
 	void SetAESDecryptKey(const ByteBuffer &key);
 	ByteBuffer AESEncrypt(const ByteBuffer &data);

@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.7 2003-02-20 07:43:24 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.8 2003-02-22 07:26:28 jason Exp $)
 
 #include "Crypt.h"
 
@@ -27,6 +27,7 @@ RCS_ID($Id: Crypt.cpp,v 1.7 2003-02-20 07:43:24 jason Exp $)
 #include "crypto/sha.h"
 #include "crypto/md5.h"
 #include "crypto/md5mac.h"
+#include "crypto/base64.h"
 
 #ifdef _MSC_VER
 	#pragma warning ( pop )
@@ -407,5 +408,51 @@ bool Crypt::MD5MACVerify(const ByteBuffer &key, const ByteBuffer &data, const By
 	digest.Unlock();
 	data.Unlock();
 	return match;
+
+}
+
+ByteBuffer Crypt::Base64Encode(const ByteBuffer &data, bool insert_line_breaks, int max_line_length)
+{
+
+	ByteBuffer buff(data.Length() * 4);
+	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
+	size_t len;
+
+	Base64Encoder *filter = new Base64Encoder(sink, insert_line_breaks, max_line_length);
+	StringSource src(data.Lock(), data.Length(), true, filter);
+	len = sink->TotalPutLength();
+	wxASSERT(len <= buff.Length());
+
+	buff.Unlock();
+
+	ByteBuffer result(buff.Lock(), len);
+	buff.Unlock();
+	
+	data.Unlock();
+
+	return result;
+
+}
+
+ByteBuffer Crypt::Base64Decode(const ByteBuffer &data)
+{
+
+	ByteBuffer buff(data.Length());
+	ArraySink *sink = new ArraySink(buff.Lock(), buff.Length());
+	size_t len;
+
+	Base64Decoder *filter = new Base64Decoder(sink);
+	StringSource src(data.Lock(), data.Length(), true, filter);
+	len = sink->TotalPutLength();
+	wxASSERT(len <= buff.Length());
+
+	buff.Unlock();
+
+	ByteBuffer result(buff.Lock(), len);
+	buff.Unlock();
+	
+	data.Unlock();
+
+	return result;
 
 }
