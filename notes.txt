@@ -20,8 +20,10 @@
 
 * option to auto /back if talk in main window or talk in any window
 
-* when new word filter is added, recheck away msg and nicks
-  (keep a copy of the nick/away msg before filtering and it for refiltering)
+* recheck away msg and nicks in PopulateFilteredWords()
+  (keep a copy of the nick/away msg before filtering and use it for refiltering)
+
+* UPnP IGD support for socket binds (transfers and server)
 
 * admin feature to change nicks
 
@@ -32,14 +34,16 @@
 * if other side of file transfer is on same subnet as any of local subnets then
   set block size to 8192 KB else 2048 KB
 
-* UPnP IGD support for socket binds (transfers and server)
-
 * SOCKS 4/5 BIND support for DCC Listen
   Seems the SOCKS protocol is too restrictive for our needs.
   This probably won't be possible to implement.
 
 * lock for exclusive write any files opened by FileTransfers.cpp
   (make sure reading is still allowed)
+
+* only scroll to bottom if scrollpos was already at or near bottom
+  and no scroll in progress and no selection in progress.
+  also do red line if no scroll this time (maybe also a sound?)
 
 * /dcc close complete, /dcc close all, /dcc close fail
 
@@ -54,30 +58,14 @@
 			Pending
 			Completed and Failed
 
-* investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
-  for SwitchBar on Windows XP/2003
+* [x] close on complete
 
-* nice about screen (wxHtmlWindow maybe?)
+* [x] close on remote cancel
 
-* /notice
+* [x] close on fail
 
-* /lock
-
-* WTS event bindings: Terminal_Connect, Disconnect, Lock, Unlock
-
-* other scriptable bindings: Dirt_AuthPrompt, Connect, Disconnect
-
-* split /lanlist into a UI and model interface and model implementation
-
-* add a server list model implementation for public list (dirt.pl)
-
-* ability to search multiple logs
-
-* force full line selection if holding control when highlighting in logcontrol
-
-* [x] close window on complete
-
-* [x] close window on fail
+* [x] delete file after sent, delete file
+  (confirm delete, use win32 recycle bin if available)
 
 * client options dialog
 	file transfers
@@ -91,11 +79,28 @@
 		[x] auto accept
 			directory with browse button
 
+* ability to search multiple logs
+
+* investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
+  for SwitchBar on Windows XP/2003
+
+* nice about screen (wxHtmlWindow maybe?)
+
+* /lock
+
+* WTS event bindings: Terminal_Connect, Disconnect, Lock, Unlock
+
+* other scriptable bindings: Dirt_AuthPrompt, Connect, Disconnect
+
+* split /lanlist into a UI and model interface and model implementation
+
+* add a server list model implementation for public list (dirt.pl)
+
+* force full line selection if holding control when highlighting in logcontrol
+
 * add kde extension for /resetwindowpos
 
 * speed limiting on file transfers
-
-* delete file after sent, delete file
 
 * update dirt homepage to extract details from exe and show latest ver number and
   modified date (preferably from RCS data, but last modified date would probably
@@ -105,10 +110,6 @@
 
 * is there a way to tell gethostbyname() to cancel?
   (so we can speed up DNS::Cancel())
-
-* only scroll to bottom if scrollpos was already at or near bottom
-  and no scroll in progress and no selection in progress.
-  also do red line if no scroll this time (maybe also a sound?)
 
 * scripting (/exec and /eval)
 
@@ -124,32 +125,25 @@
 
 * when colour popup shows on GTK cannot programmically focus back to main window
 
-* allow saving of passwords for servers
-
 * optional password protection for saved passwords and private keys in dirt.ini
-
-* notices to users via console@server
-
-* automaticly check for new versions of Win32 Dirt on dirtchat.sourceforge.net
-
-* confirm exit when connected option for client?
 
 * spawn other processes in seperate thread
 
+* notices to users via console@server
+
+* automaticly check for new Win32 builds on dirt.gslabs.com.au
+
+* confirm exit when connected option for client?
+
 * prefix caption with number in brackets showing how many msgs are waiting?
 
-* /font (wxHtmlWindow::SetFonts() and maybe also drop <code/> usage)
-	Use wxWin 2.5's default sizes if avail else use hardcoded for wxWin 2.4
-
-* remove msvcp60.dll dependency?
+* remove msvcp60.dll (and late msvcrt.dll) dependency?
 
 * research that log control gdi thing in 9x
   seems to be caused by LOTS of wxFont instances
   Perhaps you should if 9x, if messagelog.length > x
   SAY Warning: 9x about to run out of GDI resources
   Win9x Resource Meter uses GetFreeSystemResources (16 bit only)
-
-* non-wrapping lines have row of blank pixels underneath (related to font?)
 
 * check that guards are in place where necessary to trap malformed messages
 
