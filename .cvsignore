@@ -12,3 +12,5 @@ ReleaseDll
 Dirt
 *.kdevses
 *.aps
+*.d
+
