@@ -13,7 +13,7 @@ enum FileTransferState
 	ftsSendListening,  // waiting for other user to accept
 	ftsSendStarting,   // connected, other side accepted, handshaking (resume pos, etc)
 	ftsSendTransfer,   // transferring
-	ftsSendConnecting, // firewall, other side try listening
+	//ftsSendConnecting, // firewall, other side try listening
 	ftsSendComplete,   // transfer complete
 	ftsSendFail,       // transfer failed (connect broken, other side abort, etc)
 
@@ -21,7 +21,7 @@ enum FileTransferState
 	ftsGetConnecting,  // accepted, connecting to other host
 	ftsGetStarting,    // connected, handshaking (resume pos, etc)
 	ftsGetTransfer,    // transferring
-	ftsGetListening,   // firewall, other side try connecting
+	//ftsGetListening,   // firewall, other side try connecting
 	ftsGetComplete,    // transfer complete
 	ftsGetFail         // transfer failed (connect broken, other side abort, etc)
 
