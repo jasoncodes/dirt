@@ -4,7 +4,7 @@
   reproduces in unmodified controls sample
 
 * wxBug: each line read with wxTextFile has a null char on the end
-  string_fix.patch is in Jason's local wxWindows checkout
+  https://sourceforge.net/tracker/?func=detail&atid=309863&aid=789039&group_id=9863
 
 * option to set normal font (and CJK font when implemented)
 
