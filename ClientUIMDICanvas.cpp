@@ -27,7 +27,7 @@ public:
 		: wxSplitterWindow(
 			parent, id,
 			wxDefaultPosition, wxDefaultSize,
-			wxSP_NOBORDER | wxSP_FULLSASH | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN)
+			wxSP_NOBORDER | wxSP_FULLSASH /*| wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN)
 	{
 		SetMinimumPaneSize(96);
 	}
