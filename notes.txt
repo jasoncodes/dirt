@@ -1,5 +1,3 @@
-* sashes are broken on latest cvs but work on 2.4.0
-
 * add kde extension for /resetwindowpos
 
 * increase win32 tray icon caption length if os + psdk supports?

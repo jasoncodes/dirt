@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.51 2003-05-14 07:53:14 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.52 2003-05-14 16:10:36 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -140,7 +140,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 		m_sash = new wxSashWindow(
 			this, ID_SASH,
 			wxDefaultPosition, wxSize(112, 112),
-			wxSW_3DSASH | wxCLIP_CHILDREN);
+			wxSW_3DSASH | wxCLIP_CHILDREN | wxNO_BORDER);
 		m_sash->SetSashVisible(wxSASH_LEFT, true );
 		m_lstNickList = new NickListControl(m_sash, ID_NICKLIST);
 		m_lstNickList->SetFont(m_txtInput->GetFont());

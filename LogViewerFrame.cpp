@@ -72,10 +72,10 @@ LogViewerFrame::LogViewerFrame()
 
 	SetIcon(wxIcon(dirt_xpm));
 
-	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL);
+	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL | wxNO_BORDER);
 
-	m_sash1 = new wxSashWindow(panel, ID_SASH1, wxDefaultPosition, wxSize(225,100), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
-	m_sash2 = new wxSashWindow(m_sash1, ID_SASH2, wxDefaultPosition, wxSize(100, 200), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
+	m_sash1 = new wxSashWindow(panel, ID_SASH1, wxDefaultPosition, wxSize(225,100), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxNO_BORDER);
+	m_sash2 = new wxSashWindow(m_sash1, ID_SASH2, wxDefaultPosition, wxSize(100, 200), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxNO_BORDER);
 	m_sash1->SetSashVisible(wxSASH_RIGHT, true);
 	m_sash2->SetSashVisible(wxSASH_BOTTOM, true);
 	
