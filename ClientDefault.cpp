@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.24 2003-03-05 02:02:13 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.25 2003-03-05 07:07:08 jason Exp $)
 
 #include "ClientDefault.h"
+#include "DNS.h"
 #include "Modifiers.h"
 #include "CryptSocket.h"
 #include "util.h"
@@ -16,10 +17,12 @@ RCS_ID($Id: ClientDefault.cpp,v 1.24 2003-03-05 02:02:13 jason Exp $)
 enum
 {
 	ID_SOCKET = 1,
+	ID_DNS
 };
 
 BEGIN_EVENT_TABLE(ClientDefault, Client)
 	EVT_CRYPTSOCKET(ID_SOCKET, ClientDefault::OnSocket)
+	EVT_DNS(ID_DNS, ClientDefault::OnDNS)
 END_EVENT_TABLE()
 
 ClientDefault::ClientDefault(ClientEventHandler *event_handler)
@@ -28,6 +31,8 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 
 	m_sck = new CryptSocketClient;
 	m_sck->SetEventHandler(this, ID_SOCKET);
+	m_dns = new DNS;
+	m_dns->SetEventHandler(this, ID_DNS);
 
 	Debug(wxEmptyString, AppTitle());
 
@@ -36,6 +41,7 @@ ClientDefault::ClientDefault(ClientEventHandler *event_handler)
 ClientDefault::~ClientDefault()
 {
 	delete m_sck;
+	delete m_dns;
 }
 
 void ClientDefault::SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action)
@@ -61,6 +67,8 @@ void ClientDefault::SetNickname(const wxString &context, const wxString &nicknam
 
 bool ClientDefault::Connect(const URL &url)
 {
+	m_sck->Close();
+	m_dns->Cancel();
 	if (url.GetProtocol("dirt") != "dirt")
 	{
 		return false;
@@ -72,25 +80,50 @@ bool ClientDefault::Connect(const URL &url)
 	m_server_name = wxEmptyString;
 	m_url = url;
 	wxIPV4address addr;
-	bool ok = addr.Hostname(url.GetHostname());
-	ok &= addr.Service(url.GetPort(11626));
+	if (m_dns->Lookup(m_url.GetHostname()))
+	{
+		wxString msg;
+		msg << wxT("Looking up ") << m_url.GetHostname();
+		m_event_handler->OnClientInformation(wxEmptyString, msg);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void ClientDefault::OnDNS(DNSEvent &event)
+{
+	bool ok = event.IsSuccess();
 	if (ok)
 	{
-		m_sck->Connect(addr);
-		wxString msg;
-		msg << wxT("Connecting to ") << url.GetHostname();
-		if (url.GetPort(11626) != 11626)
+		wxIPV4address *addr = (wxIPV4address*)event.GetAddress().Clone();
+		ok &= addr->Service(m_url.GetPort(11626));
+		if (ok)
 		{
-			msg << wxT(':') << url.GetPort();
+			wxString msg;
+			msg << wxT("Connecting to ") << m_url.GetHostname();
+			if (m_url.GetPort(11626) != 11626)
+			{
+				msg << wxT(':') << m_url.GetPort();
+			}
+			m_event_handler->OnClientInformation(wxEmptyString, msg);
+			m_sck->Connect(*addr);
 		}
-		m_event_handler->OnClientInformation(wxEmptyString, msg);
+		delete addr;
 	}
-	return ok;
+	if (!ok)
+	{
+		m_event_handler->OnClientWarning(wxEmptyString, wxT("Error resolving ") + event.GetHostname());
+		m_event_handler->OnClientStateChange();
+	}
 }
 
 void ClientDefault::Disconnect()
 {
 	m_sck->Close();
+	m_dns->Cancel();
 	m_event_handler->OnClientInformation(wxEmptyString, wxT("Disconnected"));
 	m_event_handler->OnClientStateChange();
 }

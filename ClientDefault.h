@@ -4,6 +4,8 @@
 #include "Client.h"
 class CryptSocketClient;
 class CryptSocketEvent;
+class DNS;
+class DNSEvent;
 
 class ClientDefault : public Client
 {
@@ -27,9 +29,11 @@ protected:
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
+	void OnDNS(DNSEvent &event);
 	
 protected:
 	CryptSocketClient *m_sck;
+	DNS *m_dns;
 	ByteBuffer m_authkey;
 	URL m_url;
 
