@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.161 2004-10-27 07:04:53 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.162 2005-02-28 07:31:53 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -106,7 +106,7 @@ END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
 	: SwitchBarParent(NULL, -1, AppTitle(wxT("Client")),
-		wxPoint(-1, -1), wxSize(500, 400),
+		wxDefaultPosition, wxSize(500, 400),
 		wxDEFAULT_FRAME_STYLE, wxT("Dirt"))
 {
 
@@ -223,6 +223,15 @@ void ClientUIMDIFrame::OnFocusGained()
 
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 {
+#ifdef __WXMAC__
+// You love cheap hax. This works around a wx bug with initial window pos
+static bool s_init_pos_set = false;
+if (!s_init_pos_set && event.GetActive())
+{
+ResetWindowPos();
+s_init_pos_set = true;
+}
+#endif
 	m_activated = event.GetActive();
 	if (event.GetActive())
 	{
@@ -648,17 +657,22 @@ void ClientUIMDIFrame::DoAlert()
 
 void ClientUIMDIFrame::DoFlashWindow()
 {
+
 	m_alert = true;
-	#ifdef __WXMSW__
+
+	#if defined(__WXMSW__)
 		wxLongLong_t now = GetMillisecondTicks();
 		if (now > m_last_flash_window + 1000)
 		{
 			::FlashWindow((HWND)GetHandle(), TRUE);
 			m_last_flash_window = now;
 		}
+	#elif defined(__WXMAC__)
+		RequestUserAttention();
 	#else
 		m_flash = 8;
 	#endif
+
 	if (m_tray)
 	{
 		UpdateCaption();
@@ -673,6 +687,7 @@ void ClientUIMDIFrame::DoFlashWindow()
 			m_tmrTray->Start(500);
 		}
 	}
+
 }
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
