@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.28 2004-04-25 17:06:02 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.29 2004-04-25 18:27:19 jason Exp $)
 
 #include "SwitchBarMDI.h"
 
@@ -185,12 +185,12 @@ void SwitchBarParent::DoUpdateWindowMenu()
 	int iNumChildren = m_switchbar->GetButtonCount();
 	bool bIsChildren = (iNumChildren > 0);
 	
-	GetMenuBar()->Enable(ID_WINDOW_MINIMIZE, bIsActiveChild);
-	GetMenuBar()->Enable(ID_WINDOW_CLOSE, bIsActiveChild);
-	GetMenuBar()->Enable(ID_WINDOW_CASCADE, bIsChildren);
-	GetMenuBar()->Enable(ID_WINDOW_TILE, bIsChildren);
-	GetMenuBar()->Enable(ID_WINDOW_NEXT, bIsChildren);
-	GetMenuBar()->Enable(ID_WINDOW_PREV, bIsChildren);
+	GetMenuBar()->FindItem(ID_WINDOW_MINIMIZE)->Enable(bIsActiveChild);
+	GetMenuBar()->FindItem(ID_WINDOW_CLOSE)->Enable(bIsActiveChild);
+	GetMenuBar()->FindItem(ID_WINDOW_CASCADE)->Enable(bIsChildren);
+	GetMenuBar()->FindItem(ID_WINDOW_TILE)->Enable(bIsChildren);
+	GetMenuBar()->FindItem(ID_WINDOW_NEXT)->Enable(bIsChildren);
+	GetMenuBar()->FindItem(ID_WINDOW_PREV)->Enable(bIsChildren);
 
 	int iNumDesired = (iNumChildren>0) ? iNumChildren : 1;
 

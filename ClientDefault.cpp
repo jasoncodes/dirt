@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.43 2003-11-24 07:01:46 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.44 2004-04-25 18:27:19 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -177,7 +177,7 @@ void ClientDefault::Disconnect(const wxString &msg)
 
 bool ClientDefault::IsConnected() const
 {
-	return m_sck->Ok() && m_tmrPing->IsRunning();
+	return m_sck->Ok();
 }
 
 const URL& ClientDefault::GetLastURL() const
