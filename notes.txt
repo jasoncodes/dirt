@@ -11,9 +11,6 @@
 		auto accept
 			directory with browse button
 			[x] append nickname to path
-	logging
-		( ) none, (*) default, ( ) custom
-		directory with browse button
 
 * server log file options in config dialog
 

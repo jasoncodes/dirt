@@ -49,6 +49,7 @@ public:
 	void ResizeChildren();
 	void LogControlTest();
 	void SendFiles(const wxString &nickname, const wxArrayString &filenames);
+	void InitLog();
 
 protected:
 	void OnSize(wxSizeEvent &event);

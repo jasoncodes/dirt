@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.50 2003-05-15 10:41:18 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.51 2003-05-20 05:41:45 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -288,9 +288,24 @@ BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
 
 Server::Server(ServerEventHandler *event_handler)
-	: wxEvtHandler(), m_event_handler(event_handler),
-	m_log_warning_given(false)
+	: wxEvtHandler(), m_event_handler(event_handler)
 {
+	m_log = NULL;
+	InitLog();
+	m_connections.Alloc(10);
+	m_peak_users = 0;
+}
+
+Server::~Server()
+{
+	CloseAllConnections();
+	delete m_log;
+}
+
+void Server::InitLog()
+{
+	delete m_log;
+	m_log_warning_given = false;
 	wxString log_dir = m_config.GetActualLogDir();
 	wxDateTime log_date = LogWriter::GenerateNewLogDate(log_dir, wxT("Server"));
 	wxString log_filename = LogWriter::GenerateFilename(log_dir, wxT("Server"), log_date);
@@ -302,14 +317,6 @@ Server::Server(ServerEventHandler *event_handler)
 	{
 		m_log = NULL;
 	}
-	m_connections.Alloc(10);
-	m_peak_users = 0;
-}
-
-Server::~Server()
-{
-	CloseAllConnections();
-	delete m_log;
 }
 
 void Server::Information(const wxString &line)

@@ -176,6 +176,7 @@ public:
 	virtual time_t GetAverageLatency() const;
 	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
 	virtual wxArrayString GetSupportedCommands() const;
+	virtual void InitLog();
 
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.2 2003-05-20 05:37:09 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.3 2003-05-20 05:39:29 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -34,7 +34,6 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
-	
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"));
 
 	wxBoxSizer *szrAll = new wxBoxSizer(wxHORIZONTAL);
@@ -70,6 +69,8 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	}
 
 	LoadSettings();
+
+	m_pnlLog->SetFocus();
 	
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);

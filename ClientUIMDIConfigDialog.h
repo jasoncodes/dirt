@@ -21,6 +21,7 @@ protected:
 
 protected:
 	ClientConfig *m_config;
+	TristateConfigPanel *m_pnlLog;
 	TristateConfigPanel *m_pnlSound;
 
 private:

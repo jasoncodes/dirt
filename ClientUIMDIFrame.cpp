@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.116 2003-05-19 13:27:10 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.117 2003-05-20 05:37:10 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -775,6 +775,16 @@ void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
 	{
 		OnClientInformation(wxEmptyString, text);
 		GetContext(wxEmptyString)->SetPasswordMode(true);
+	}
+}
+
+void ClientUIMDIFrame::InitLogs()
+{
+	for (int i = 0; i < m_switchbar->GetButtonCount(); ++i)
+	{
+		ClientUIMDICanvas *canvas =
+			(ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+		canvas->InitLog();
 	}
 }
 

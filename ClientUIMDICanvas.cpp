@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.53 2003-05-18 09:05:48 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.54 2003-05-20 05:37:09 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -65,30 +65,7 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 
 	m_type = type;
 	m_log_warning_shown = false;
-
-	if (type == QueryCanvas || type == ChannelCanvas)
-	{
-		wxString log_dir = parent->GetClient()->GetConfig().GetActualLogDir();
-		wxDateTime log_date = ((ClientUIMDIFrame*)parent)->GetLogDate();
-		wxString log_nick = (type == QueryCanvas)?title:wxString();
-		wxString log_filename = LogWriter::GenerateFilename(log_dir, wxT("Client"), log_date, log_nick);
-		if (log_filename.Length())
-		{
-			m_log = new LogWriter(log_filename);
-			if (m_log->Ok())
-			{
-				m_log->AddSeparator();
-			}
-		}
-		else
-		{
-			m_log = NULL;
-		}
-	}
-	else
-	{
-		m_log = NULL;
-	}
+	m_log = NULL;
 
 	switch (type)
 	{
@@ -116,6 +93,8 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 
 	SetTitle(title);
 	SetIcon(icon);
+
+	InitLog();
 
 	if (type == ChannelCanvas || type == QueryCanvas)
 	{
@@ -166,6 +145,35 @@ ClientUIMDICanvas::ClientUIMDICanvas(ClientUIMDIFrame *parent, const wxString &t
 ClientUIMDICanvas::~ClientUIMDICanvas()
 {
 	delete m_log;
+}
+
+void ClientUIMDICanvas::InitLog()
+{
+	m_log_warning_shown = false;
+	delete m_log;
+	if (m_type == QueryCanvas || m_type == ChannelCanvas)
+	{
+		wxString log_dir = GetClient()->GetConfig().GetActualLogDir();
+		wxDateTime log_date = ((ClientUIMDIFrame*)m_parent)->GetLogDate();
+		wxString log_nick = (m_type == QueryCanvas)?GetTitle():wxString();
+		wxString log_filename = LogWriter::GenerateFilename(log_dir, wxT("Client"), log_date, log_nick);
+		if (log_filename.Length())
+		{
+			m_log = new LogWriter(log_filename);
+			if (m_log->Ok())
+			{
+				m_log->AddSeparator();
+			}
+		}
+		else
+		{
+			m_log = NULL;
+		}
+	}
+	else
+	{
+		m_log = NULL;
+	}
 }
 
 void ClientUIMDICanvas::DoGotFocus()

@@ -27,6 +27,7 @@ public:
 	wxArrayString* GetNicklist() { return &m_nicklist; }
 	wxDateTime GetLogDate();
 	bool MinToTray();
+	void InitLogs();
 
 protected:
 	void OnFileExit(wxCommandEvent& event);
