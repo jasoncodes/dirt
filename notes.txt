@@ -12,6 +12,8 @@
 
 * research that log control gdi thing in 9x
 
+* suppress wxBell when /away?
+
 * logging
 
 * scripting (/exec and /eval)
