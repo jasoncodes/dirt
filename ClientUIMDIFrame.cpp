@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.74 2003-03-15 08:19:04 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.75 2003-03-16 12:24:21 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -416,6 +416,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("EXIT"))
 	{
+		m_client->Quit(params);
 		Close();
 		return true;
 	}

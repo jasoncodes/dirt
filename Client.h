@@ -58,6 +58,7 @@ public:
 	virtual const URL& GetLastURL() const = 0;
 	virtual void WhoIs(const wxString &context, const wxString &nick);
 	virtual void Oper(const wxString &context, const wxString &pass) = 0;
+	virtual void Quit(const wxString &msg);
 	virtual void Away(const wxString &msg);
 	virtual void Back() { Away(wxEmptyString); }
 	virtual long GetLatency() const { return m_latency; }

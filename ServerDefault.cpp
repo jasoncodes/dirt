@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.42 2003-03-15 08:19:04 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.43 2003-03-16 12:24:21 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -39,12 +39,18 @@ void ServerDefaultConnection::SendData(const ByteBuffer &data)
 
 void ServerDefaultConnection::Terminate(const wxString &reason)
 {
-	m_quitmsg = reason;
-	if (GetNickname().Length())
+	if (!m_quitmsg.Length())
 	{
-		Send(wxEmptyString, wxT("PART"), Pack(GetNickname(), GetInlineDetails(), m_quitmsg));
+		m_quitmsg = reason;
 	}
-	m_sck->CloseWithEvent();
+	if (m_sck)
+	{
+		if (m_sck->Ok() && GetNickname().Length())
+		{
+			Send(wxEmptyString, wxT("PART"), Pack(GetNickname(), GetInlineDetails(), m_quitmsg));
+		}
+		m_sck->CloseWithEvent();
+	}
 }
 
 enum

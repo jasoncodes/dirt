@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.35 2003-03-16 07:39:43 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.36 2003-03-16 12:24:20 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -53,7 +53,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK RECONNECT SAY SERVER WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT DISCONNECT HELP ME MSG MSGME NICK QUIT RECONNECT SAY SERVER WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -150,6 +150,11 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		Oper(context, params);
+	}
+	else if (cmd == wxT("QUIT"))
+	{
+		ASSERT_CONNECTED();
+		Quit(params);
 	}
 	else if (cmd == wxT("AWAY"))
 	{
@@ -395,6 +400,13 @@ void Client::WhoIs(const wxString &context, const wxString &nick)
 {
 	ASSERT_CONNECTED();
 	SendToServer(EncodeMessage(context, wxT("WHOIS"), nick));
+}
+
+void Client::Quit(const wxString &msg)
+{
+	wxString context = wxEmptyString;
+	ASSERT_CONNECTED();
+	SendToServer(EncodeMessage(context, wxT("QUIT"), msg));
 }
 
 void Client::Away(const wxString &msg)

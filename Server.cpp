@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.36 2003-03-15 08:19:04 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.37 2003-03-16 12:24:21 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -814,6 +814,19 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->m_useragent = (wxString)data;
 			Information(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
 		}
+	}
+	else if (cmd == wxT("QUIT"))
+	{
+		wxString msg;
+		if (data.Length())
+		{
+			msg = wxT("Quit: ") + data;
+		}
+		else
+		{
+			msg = wxT("Quit");
+		}
+		conn->Terminate(msg);
 	}
 	else if (cmd == wxT("AWAY"))
 	{
