@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.101 2003-05-02 02:04:27 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.102 2003-05-05 09:29:07 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -456,7 +456,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS LANLIST"), wxT(" "));
+	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST QUERY RESETWINDOWPOS LOGS LANLIST"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -523,11 +523,6 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		{
 			OnClientWarning(context, wxT("/resetwindowpos: Unavailable on this platform"));
 		}
-		return true;
-	}
-	else if (cmd == wxT("TEST2"))
-	{
-		m_client->GetFileTransfers()->Test();
 		return true;
 	}
 	else if (cmd == wxT("LOGS") || cmd == wxT("LANLIST"))

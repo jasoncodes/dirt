@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.8 2003-05-03 07:38:31 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.9 2003-05-05 09:29:08 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -69,12 +69,14 @@ void FileTransfers::Test()
 	t.issend = true;
 	t.state = ftsSendTransfer;
 	t.nickname = wxT("Jason");
-	t.filename = wxT("D:\\Archive\\Stuff\\Dirt.exe");
-	t.filesize = 363520;
-	t.time = 133;
+	t.filename = GetSelf();
+	wxStructStat st;
+	wxStat(t.filename, &st);
+	t.filesize = st.st_size;
+	t.time = t.filesize / 3000;
 	t.timeleft = -1;
 	t.cps = -1;
-	t.filesent = 363520/3*2;
+	t.filesent = t.filesize/3*2;
 	t.status = wxT("Sending...");
 
 	m_transfers.Add(t);
@@ -156,4 +158,49 @@ bool FileTransfers::OnClientCTCPReplyIn(const wxString &context, const wxString 
 bool FileTransfers::OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 	return false;
+}
+
+wxArrayString FileTransfers::GetSupportedCommands()
+{
+	return SplitString(wxT("HELP TEST"), wxT(" "));
+}
+
+void FileTransfers::ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params)
+{
+	if (cmd == wxT("HELP"))
+	{
+		m_client->m_event_handler->OnClientInformation(context, wxT("Supported DCC commands: ") + JoinArray(GetSupportedCommands(), wxT(" ")));
+	}
+	else if (cmd == wxT("TEST"))
+	{
+		Test();
+	}
+	else if (cmd == wxT(""))
+	{
+		ProcessConsoleInput(context, wxT("HELP"), wxT(""));
+	}
+	else
+	{
+		m_client->m_event_handler->OnClientWarning(context, wxT("Unrecognized DCC command: ") + cmd);
+	}
+}
+
+bool FileTransfers::OnClientPreprocess(const wxString &context, const wxString &cmd, const wxString &params)
+{
+	if (cmd == wxT("DCC"))
+	{
+		HeadTail ht = SplitHeadTail(params);
+		ht.head.MakeUpper();
+		ProcessConsoleInput(context, ht.head, ht.tail);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+wxArrayString FileTransfers::OnClientSupportedCommands()
+{
+	return SplitString(wxT("DCC"), wxT(" "));
 }

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.6 2003-05-02 02:04:27 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.7 2003-05-05 09:29:07 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -24,9 +24,9 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 
 bool FileTransfer::OnTimer()
 {
-	if (filesent >= 300 * 1024)
+	if (filesent >= filesize * 17 / 20)
 	{
-		filesent += 8192;
+		filesent += filesize / 50;
 	}
 	else
 	{

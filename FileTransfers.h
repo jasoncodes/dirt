@@ -35,12 +35,16 @@ protected:
 
 protected:
 	int GetNewId();
+	wxArrayString GetSupportedCommands();
+	void ProcessConsoleInput(const wxString &context, const wxString &cmd, const wxString &params);
 
 protected:
 	virtual bool OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual bool OnClientCTCPOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual bool OnClientCTCPReplyIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
 	virtual bool OnClientCTCPReplyOut(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data);
+	virtual bool OnClientPreprocess(const wxString &context, const wxString &cmd, const wxString &params);
+	virtual wxArrayString OnClientSupportedCommands();
 
 protected:
 	Client *m_client;

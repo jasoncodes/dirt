@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.54 2003-05-03 07:38:31 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.55 2003-05-05 09:29:07 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -67,6 +67,7 @@ wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
 	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT ECHO HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, m_file_transfers->OnClientSupportedCommands());
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
 	return cmds;
@@ -519,7 +520,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		{
 			ProcessAlias(context, cmds, params);
 		}
-		else
+		else if (!m_file_transfers->OnClientPreprocess(context, cmd, params))
 		{
 			m_event_handler->OnClientWarning(context, wxT("Unrecognized command: ") + cmd);
 		}
