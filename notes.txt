@@ -1,4 +1,15 @@
-* ability to search logs. get details from 2003/08/23 log with Blacksage
+* ability to search logs
+	* how load the log search frame?
+	* critera at top, listview with matched lines in the middle
+	  selecting a matched line shows the log in a preview logcontrol window at bottom
+	* keep a cache of the last 10 logs previewed for performance
+	* what string to match (wildcard, partial, regex)
+	* date range (from/to, before, after, on, last x days/weeks/months)
+	* what servers to limit to
+	* whether to search server logs or client logs
+	* if client logs, list of nicks for queries, all public, all private
+	* max hits total, max hits per log
+	* log file sort order (cronological or reverse)
 
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
