@@ -1,8 +1,8 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
+#include "ByteBuffer.h"
 class wxHtmlWinParser;
-class ByteBuffer;
 class wxDateTime;
 
 struct HeadTail
