@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.9 2003-06-02 08:32:36 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.10 2003-06-02 09:27:13 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -366,14 +366,14 @@ void ClientUIMDIConfigDialog::LoadSettings()
 bool ClientUIMDIConfigDialog::ErrMsg(const wxString &msg)
 {
 	wxMessageBox(msg, GetTitle(), wxOK|wxICON_ERROR, this);
-	return true;
+	return false;
 }
 
 bool ClientUIMDIConfigDialog::SaveSettings()
 {
-	
+
 	bool success = true;
-	
+
 	bool bLogChanged = (m_config->GetLogDirType() != m_pnlLog->GetMode());
 	if (!bLogChanged && m_config->GetLogDirType() == Config::tsmCustom)
 	{
@@ -381,67 +381,170 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 	}
 	if (bLogChanged)
 	{
-		success &= m_config->SetLogDir(m_pnlLog->GetMode(), m_pnlLog->GetPath());
-		if (success)
+		if (m_config->SetLogDir(m_pnlLog->GetMode(), m_pnlLog->GetPath()))
 		{
 			((ClientUIMDIFrame*)GetParent())->InitLogs();
 		}
 		else
 		{
 			ErrMsg(wxT("Error setting log directory"));
+			success = false;
 		}
 	}
 	
-	success &= m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath()) ||
-		ErrMsg(wxT("Error setting notification sound"));
+	if (success)
+	{
+		if (!m_config->SetSoundFile(m_pnlSound->GetMode(), m_pnlSound->GetPath()))
+		{
+			ErrMsg(wxT("Error setting notification sound"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetEnabled(m_chkProxy->GetValue())
-		|| ErrMsg(wxT("Error setting proxy enabled"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetEnabled(m_chkProxy->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy enabled"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetProtocol(m_cmbProtocol->GetValue())
-		|| ErrMsg(wxT("Error setting proxy protocol"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetProtocol(m_cmbProtocol->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy protocol"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetHostname(m_txtHostname->GetValue())
-		|| ErrMsg(wxT("Error setting proxy hostname"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetHostname(m_txtHostname->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy hostname"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetPort(m_txtPort->GetValue())
-		|| ErrMsg(wxT("Error setting proxy port"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetPort(m_txtPort->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy port"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetUsername(m_txtUsername->GetValue())
-		|| ErrMsg(wxT("Error setting proxy username"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetUsername(m_txtUsername->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy username"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetPassword(m_txtPassword->GetValue())
-		|| ErrMsg(wxT("Error setting proxy password"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetPassword(m_txtPassword->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy password"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetConnectionType(pctServer, m_chkTypeServer->GetValue())
-		|| ErrMsg(wxT("Error setting proxy connection type (Server)"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetConnectionType(pctServer, m_chkTypeServer->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy connection type (Server)"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetConnectionType(pctDCCConnect, m_chkTypeDCCConnect->GetValue())
-		|| ErrMsg(wxT("Error setting proxy connection type (DCC Connect)"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetConnectionType(pctDCCConnect, m_chkTypeDCCConnect->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy connection type (DCC Connect)"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetConnectionType(pctDCCListen, m_chkTypeDCCListen->GetValue())
-		|| ErrMsg(wxT("Error setting proxy connection type (DCC Listen)"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetConnectionType(pctDCCListen, m_chkTypeDCCListen->GetValue()))
+		{
+			ErrMsg(wxT("Error setting proxy connection type (DCC Listen)"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetDestNetworkMode((CryptSocketProxyDestMode)m_pnlDestNetwork->GetSelection())
-		|| ErrMsg(wxT("Error setting destination network mode"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetDestNetworkMode((CryptSocketProxyDestMode)m_pnlDestNetwork->GetSelection()))
+		{
+			ErrMsg(wxT("Error setting destination network mode"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetDestNetworkNetwork(m_pnlDestNetwork->GetNetwork())
-		|| ErrMsg(wxT("Error setting destination network"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetDestNetworkNetwork(m_pnlDestNetwork->GetNetwork()))
+		{
+			ErrMsg(wxT("Error setting destination network"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetDestNetworkSubnet(m_pnlDestNetwork->GetSubnet())
-		|| ErrMsg(wxT("Error setting destination subnet"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetDestNetworkSubnet(m_pnlDestNetwork->GetSubnet()))
+		{
+			ErrMsg(wxT("Error setting destination subnet"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetDestPortsMode((CryptSocketProxyDestMode)m_pnlDestPorts->GetSelection())
-		|| ErrMsg(wxT("Error setting destination ports mode"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetDestPortsMode((CryptSocketProxyDestMode)m_pnlDestPorts->GetSelection()))
+		{
+			ErrMsg(wxT("Error setting destination ports mode"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SetDestPortRanges(m_pnlDestPorts->GetString())
-		|| ErrMsg(wxT("Error setting destination ports"));
+	if (success)
+	{
+		if (!m_proxy_settings->SetDestPortRanges(m_pnlDestPorts->GetString()))
+		{
+			ErrMsg(wxT("Error setting destination ports"));
+			success = false;
+		}
+	}
 
-	success &= m_proxy_settings->SaveSettings() ||
-		ErrMsg(wxT("Error saving proxy settings"));
+	if (success)
+	{
+		if (!m_proxy_settings->SaveSettings())
+		{
+			ErrMsg(wxT("Error saving proxy settings"));
+			success = false;
+		}
+	}
 	
-	success &= m_config->Flush() ||
-		ErrMsg(wxT("Error flushing settings to disk"));
+
+	if (!m_config->Flush())
+	{
+		if (success)
+		{
+			ErrMsg(wxT("Error flushing settings to disk"));
+			success = false;
+		}
+	}
 
 	return success;
 
