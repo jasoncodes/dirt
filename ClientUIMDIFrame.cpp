@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.67 2003-03-12 11:10:07 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.68 2003-03-13 01:17:18 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -32,7 +32,8 @@ enum
 	ID_FOCUSTIMER,
 	ID_TRAY,
 	ID_TRAYTIMER,
-	ID_RESTORE
+	ID_RESTORE,
+	ID_BINDING
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
@@ -45,6 +46,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 	EVT_ICONIZE(ClientUIMDIFrame::OnIconize)
 	EVT_MENU(ID_RESTORE, ClientUIMDIFrame::OnRestore)
 	EVT_TIMER(ID_TRAYTIMER, ClientUIMDIFrame::OnTrayTimer)
+	EVT_MENU(ID_BINDING, ClientUIMDIFrame::OnBinding)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
@@ -90,6 +92,17 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_tmrTray = new wxTimer(this, ID_TRAYTIMER);
 
 	m_client = new ClientDefault(this);
+
+	size_t num_accel = 1;
+	wxAcceleratorEntry *entries = new wxAcceleratorEntry[GetAcceleratorCount()+num_accel];
+	entries[0].Set(0, WXK_F1, ID_BINDING);
+	for (size_t i = num_accel; i < GetAcceleratorCount()+num_accel; ++i)
+	{
+		entries[i] = GetAccelerators()[i-num_accel];
+	}
+	wxAcceleratorTable accel(GetAcceleratorCount()+num_accel, entries);
+	SetAcceleratorTable(accel);
+	delete[] entries;
 
 }
 
@@ -815,4 +828,10 @@ void ClientUIMDIFrame::OnClientTransferTimer(const FileTransfer &transfer)
 	ClientUIMDITransferPanel *pnl = GetContext(transfer.transferid);
 	wxASSERT(pnl);
 	pnl->Update(transfer);
+}
+
+void ClientUIMDIFrame::OnBinding(wxCommandEvent &event)
+{
+	OnClientDebug(wxEmptyString, wxT("OnBinding"));
+	event.Skip();
 }
