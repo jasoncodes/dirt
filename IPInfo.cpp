@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.3 2003-05-27 17:02:19 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.4 2003-06-02 05:57:48 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -246,6 +246,11 @@ IPInfoEntryArray GetIPInfo()
 wxUint32 GetIPV4Address(const wxString &ip)
 {
 	return inet_addr(ip.mb_str());
+}
+
+bool IsValidIPV4Address(const wxUint32 ip)
+{
+	return ip != INADDR_NONE;
 }
 
 wxUint32 GetIPV4Address(wxSockAddress &addr)

@@ -76,15 +76,15 @@ public:
 
 protected:
 	template <typename T>
-	inline bool Read(const wxString &key, void (CryptSocketProxySettings::*fn)(T))
+	inline bool Read(const wxString &key, bool (CryptSocketProxySettings::*fn)(T))
 	{
 		T x;
 		bool b = m_config.m_config->Read(m_config.m_path + wxT("/Proxy/") + key, &x);
 		if (b)
 		{
-			fn(x);
+			return fn(x);
 		}
-		return b;
+		return true;
 	}
 
 	template <typename T>
