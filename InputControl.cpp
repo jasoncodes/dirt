@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.27 2004-05-22 18:27:31 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.28 2004-05-22 18:35:20 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -699,11 +699,6 @@ void InputControl::OnChar(wxKeyEvent& event)
 		m_tab_completion_prefix = wxEmptyString;
 		event.Skip();
 	}
-}
-
-void InputControl::Alert()
-{
-	//wxBell();
 }
 
 void InputControl::OnIdle(wxIdleEvent &event)
