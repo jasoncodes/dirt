@@ -16,6 +16,14 @@ else
 	exit 1
 fi
 
+if which usleep > /dev/null 2> /dev/null;
+then
+	true
+else
+	echo dirtconsole: usleep not found!
+	exit 1
+fi
+
 DISPLAY=499
 XVFB_PID=
 
@@ -32,23 +40,24 @@ do
 
 		echo dirtconsole: No Xvfb @ :$DISPLAY
 
-		if dtach -n ~/dtach_$DISPLAY_$RANDOM$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 > /dev/null
+		if dtach -n ~/dtach_$DISPLAY_$RANDOM$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 -once > /dev/null
 		then
 
 			TRIES=0
-			while [ \( ! -f $LOCK_FILE \) -a \( $TRIES -lt 5 \) ]
+			while [ \( ! -f $LOCK_FILE \) -a \( $TRIES -lt 25 \) ]
 			do
 				echo dirtconsole: Waiting for Xvfb to start...
-				sleep 1
+				usleep 250
 				TRIES=$(($TRIES+1))
 			done
 
-			if [ $TRIES -lt 5 ]
+			if [ $TRIES -lt 25 ]
 			then
 				echo dirtconsole: Successfully started Xvfb
 				XVFB_PID=`cat $LOCK_FILE`
 			else
-				echo dirtconsole: Xvfb failed to start in 5 seconds...
+				echo dirtconsole: Xvfb failed to start in 5 seconds. Aborting
+				exit 1;
 			fi
 
 		fi

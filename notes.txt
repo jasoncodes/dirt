@@ -31,5 +31,3 @@
 * flashing text for main frame as FlashWindow() alternative
 
 * prefix caption with number in brackets showing how many msgs are waiting?
-
-* linux: dirtconsole script and/or Xvfb are not Ctrl-C safe
