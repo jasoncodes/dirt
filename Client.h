@@ -101,6 +101,7 @@ public:
 	virtual void Disconnect(const wxString &msg = wxT("Disconnected")) = 0;
 	virtual bool IsConnected() const = 0;
 	virtual const URL& GetLastURL() const = 0;
+	virtual wxString GetLastHostname() const = 0;
 	virtual void WhoIs(const wxString &context, const wxString &nick);
 	virtual void Oper(const wxString &context, const wxString &pass) = 0;
 	virtual void Quit(const wxString &msg);

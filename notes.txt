@@ -1,16 +1,22 @@
+* ability to search multiple logs
+
 * force full line selection if holding control when highlighting in logcontrol
+
+* [x] close window on complete
+
+* [x] close window on fail
 
 * options dialog
 	file transfers
-		auto close on complete
-			[x] send [x] receive
-		auto close on remote cancel
-			[x] send [x] receive
-		auto close on fail
-			[x] send [x] receive
-		auto accept
+		[x] auto close
+			on complete
+				[x] send [x] receive
+			on remote cancel
+				[x] send [x] receive
+			on fail
+				[x] send [x] receive
+		[x] auto accept
 			directory with browse button
-			[x] append nickname to path
 
 * add kde extension for /resetwindowpos
 

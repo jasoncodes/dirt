@@ -22,6 +22,7 @@ public:
 	virtual void Disconnect(const wxString &msg = wxT("Disconnected"));
 	virtual bool IsConnected() const;
 	virtual const URL& GetLastURL() const;
+	virtual wxString GetLastHostname() const;
 	virtual void Authenticate(const ByteBuffer &auth);
 	virtual void Oper(const wxString &context, const wxString &pass);
 	virtual ByteBuffer GetKeyLocalPublic() const;
@@ -40,6 +41,7 @@ protected:
 	DNS *m_dns;
 	ByteBuffer m_authkey;
 	URL m_url;
+	wxString m_last_server_hostname;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.31 2003-05-07 23:59:04 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.32 2003-05-21 11:59:53 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
 #include "Modifiers.h"
 #include "CryptSocket.h"
 #include "util.h"
+#include "IPInfo.h"
 
 enum
 {
@@ -95,6 +96,7 @@ void ClientDefault::OnDNS(DNSEvent &event)
 		ok &= addr->Service(m_url.GetPort(11626));
 		if (ok)
 		{
+			m_last_server_hostname = GetIPV4AddressString(event.GetIP());
 			wxString msg;
 			msg << wxT("Connecting to ") << m_url.GetHostname();
 			if (m_url.GetPort(11626) != 11626)
@@ -131,6 +133,11 @@ bool ClientDefault::IsConnected() const
 const URL& ClientDefault::GetLastURL() const
 {
 	return m_url;
+}
+
+wxString ClientDefault::GetLastHostname() const
+{
+	return m_last_server_hostname;
 }
 
 void ClientDefault::SendToServer(const ByteBuffer &msg)
