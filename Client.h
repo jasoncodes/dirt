@@ -43,16 +43,19 @@ public:
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
 
-	virtual wxString GetNickname() = 0;
+	virtual wxString GetNickname();
+	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
 	virtual FileTransfers* GetFileTransfers() { return m_file_transfers; }
 
 protected:
 	virtual void ProcessServerInput(const ByteBuffer &msg);
 	virtual void ProcessServerInput(const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual void OnConnect();
 
 protected:
 	ClientEventHandler *m_event_handler;
 	FileTransfers *m_file_transfers;
+	wxString m_nickname;
 
 private:
 	DECLARE_EVENT_TABLE()

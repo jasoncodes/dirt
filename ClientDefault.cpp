@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.15 2003-02-17 14:10:11 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.16 2003-02-17 14:37:47 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -63,9 +63,9 @@ void ClientDefault::SendMessage(const wxString &context, const wxString &nick, c
 	m_sck->Send(msg);
 }
 
-wxString ClientDefault::GetNickname()
+void ClientDefault::SetNickname(const wxString &context, const wxString &nickname)
 {
-	return wxT("LOCALHOST");
+	m_sck->Send(EncodeMessage(context, "NICK", nickname));
 }
 
 bool ClientDefault::Connect(const URL &url)
@@ -104,7 +104,7 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 	{
 
 		case CRYPTSOCKET_CONNECTION:
-			m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
+			OnConnect();
 			break;
 
 		case CRYPTSOCKET_LOST:

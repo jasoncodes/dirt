@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.8 2003-02-17 14:10:12 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.9 2003-02-17 14:37:47 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -229,9 +229,23 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("MALFORMED")), wxT("Malformed data in ") + cmd));
 		}
 	}
+	else if (cmd == wxT("NICK"))
+	{
+		ServerConnection *tmp = GetConnection(data);
+		if (tmp)
+		{
+			conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NICK")), wxString(wxT("Nickname in use"))));
+		}
+		else
+		{
+			conn->m_nickname = data;
+			conn->Send(context, wxT("NICK"), data);
+		}
+	}
 	else
 	{
 
+		m_event_handler->OnServerInformation(wxT("Unknown message recv'd:"));
 		m_event_handler->OnServerInformation(wxT("Context: \"") + context + wxT("\""));
 		m_event_handler->OnServerInformation(wxT("Command: \"") + cmd + wxT("\""));
 		m_event_handler->OnServerInformation(wxT("Data: ") + data.GetHexDump());

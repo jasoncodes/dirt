@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.16 2003-02-17 14:10:11 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.17 2003-02-17 14:37:47 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -20,6 +20,7 @@ Client::Client(ClientEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler)
 {
 	m_file_transfers = new FileTransfers(this);
+	m_nickname = wxEmptyString;
 }
 
 Client::~Client()
@@ -169,6 +170,18 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	{
 		m_event_handler->OnClientInformation(context, data);
 	}
+	else if (cmd == wxT("NICK"))
+	{
+		ByteBuffer nick1, nick2;
+		if (Unpack(data, nick1, nick2))
+		{
+			// not implemented
+		}
+		else
+		{
+			m_nickname = data;
+		}
+	}
 	else
 	{
 		m_event_handler->OnClientDebug(context, wxT("Unknown message recv'd:"));
@@ -177,3 +190,15 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		m_event_handler->OnClientDebug(context, wxT("Data: ") + data.GetHexDump());
 	}
 }
+
+void Client::OnConnect()
+{
+	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
+	SetNickname(wxEmptyString, wxGetUserId());
+}
+
+wxString Client::GetNickname()
+{
+	return m_nickname;
+}
+

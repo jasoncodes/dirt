@@ -13,7 +13,7 @@ public:
 	virtual ~ClientDefault();
 
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message);
-	virtual wxString GetNickname();
+	virtual void SetNickname(const wxString &context, const wxString &nickname);
 	virtual bool Connect(const URL &url);
 	virtual void Disconnect();
 	virtual bool IsConnected();
