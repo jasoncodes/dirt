@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.23 2004-03-14 08:04:07 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.24 2004-03-27 13:10:59 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -282,7 +282,7 @@ void InputControl::ShowPopup()
 		m_popup = new InputControlColourPopup(this, -1, wxT("Colour Index"));
 		m_popup->Show(true);
 
-#ifdef __WXGTK__
+#ifdef __WXGTK20__
                 gdk_window_focus(GetGDKWindow(m_popup->GetControlFrame()), 0);
 		gdk_window_raise(GetGDKWindow(m_popup));
 #endif
