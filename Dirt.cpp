@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.10 2003-02-13 14:09:04 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.11 2003-02-13 14:11:57 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIMDIFrame.h"
@@ -161,7 +161,6 @@ bool DirtApp::IsConsole()
 
 bool DirtApp::OnInit()
 {
-	wxMessageBox(wxString() << GetRCSDate() << "\n" << GetRCSAuthor() << "\n" << GetProductVersion());
 	if (IsConsole())
 	{
 		m_console = new ClientUIConsole();

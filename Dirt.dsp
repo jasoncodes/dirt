@@ -301,6 +301,14 @@ SOURCE=.\NickListControl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\RCS.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RCS.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SpanTag.cpp
 # End Source File
 # Begin Source File

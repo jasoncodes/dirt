@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.36 2003-02-13 12:51:35 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.37 2003-02-13 14:09:04 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -35,7 +35,7 @@ BEGIN_EVENT_TABLE(ClientUIMDIFrame, SwitchBarParent)
 END_EVENT_TABLE()
 
 ClientUIMDIFrame::ClientUIMDIFrame()
-	: SwitchBarParent(NULL, -1, "Dirt Secure Chat 3.0.0 Alpha 0",
+	: SwitchBarParent(NULL, -1, "Dirt Secure Chat Client " + GetProductVersion(),
 		wxPoint(-1, -1), wxSize(500, 400),
 		wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL)
 {
@@ -135,9 +135,14 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	wxMessageBox(
-		"Dirt Secure Chat 3.0.0 Alpha 0\n\nhttp://dirtchat.sourceforge.net/",
-		"About", wxICON_INFORMATION);
+	wxMessageBox(wxString()
+		<< "Dirt Secure Chat 3.0.0 Alpha 0\n"
+		<< "\n"
+		<< "Built on " << GetRCSDate() << "\n"
+		<< "Last revision by " << GetRCSAuthor() << "\n"
+		<< "\n"
+		<< "http://dirtchat.sourceforge.net/",
+		"About Dirt Secure Chat", wxICON_INFORMATION);
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)
