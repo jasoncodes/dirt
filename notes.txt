@@ -21,7 +21,8 @@
 
 * is there a way to tell gethostbyname() to cancel? (so we can speed up DNS::Cancel())
 
-* only scroll to bottom if scrollpos was already at bottom (and/or no sel)?
+* only scroll to bottom if scrollpos was already at or near bottom
+  and no scroll in progress and no selection in progress.
 
 * scripting (/exec and /eval)
 
