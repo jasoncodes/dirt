@@ -6,9 +6,24 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.5 2003-02-15 00:36:43 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.6 2003-02-15 01:31:30 jason Exp $)
 
 #include "ServerDefault.h"
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ServerDefaultConnectionArray);
+
+ServerDefaultConnection::ServerDefaultConnection()
+{
+}
+
+ServerDefaultConnection::~ServerDefaultConnection()
+{
+	if (m_sck)
+	{
+		m_sck->Destroy();
+	}
+}
 
 enum
 {
@@ -64,7 +79,49 @@ bool ServerDefault::IsRunning()
 
 void ServerDefault::OnSocket(CryptSocketEvent &event)
 {
-	wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+
+	if (event.GetSocket() == m_sckListen)
+	{
+
+		if (event.GetSocketEvent() == CRYPTSOCKET_CONNECTION)
+		{
+			ServerDefaultConnection *conn = new ServerDefaultConnection;
+			conn->m_sck = m_sckListen->Accept();
+			conn->m_sck->SetUserData(conn);
+			m_connections.Add(conn);
+		}
+		else
+		{
+			wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+		}
+
+	}
+	else
+	{
+
+		switch (event.GetSocketEvent())
+		{
+
+			case CRYPTSOCKET_CONNECTION:
+				break;
+
+			case CRYPTSOCKET_LOST:
+				m_connections.Remove((ServerDefaultConnection*)event.GetUserData());
+				break;
+
+			case CRYPTSOCKET_INPUT:
+				break;
+
+			case CRYPTSOCKET_OUTPUT:
+				break;
+
+			default:
+				wxFAIL_MSG("Unexpected message in ServerDefault::OnSocket");
+
+		}
+
+	}
+
 }
 
 int ServerDefault::GetListenPort()

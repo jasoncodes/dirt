@@ -15,6 +15,8 @@ public:
 	virtual ~CryptSocketBase();
 
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
+	virtual void SetUserData(void *userdata) { m_userdata = userdata; }
+	virtual void* GetUserData() const { return m_userdata; }
 	virtual void Destroy();
 	virtual void Close();
 	virtual void Send(const ByteBuffer &data);
@@ -49,6 +51,7 @@ protected:
 protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
+	void *m_userdata;
 	wxSocketBase *m_sck;
 	ByteBuffer m_buffIn;
 	ByteBuffer m_buffOut;
@@ -131,7 +134,7 @@ class CryptSocketEvent : public wxEvent
 
 public:
 	CryptSocketEvent(int id, CryptSocketNotify event, CryptSocketBase *src)
-		: wxEvent(id, wxEVT_CRYPTSOCKET), m_data()
+		: wxEvent(id, wxEVT_CRYPTSOCKET), m_data(), m_userdata(src->GetUserData())
 	{
 		wxASSERT(event != CRYPTSOCKET_INPUT);
 		m_event = event;
@@ -139,7 +142,7 @@ public:
 	}
 
 	CryptSocketEvent(int id, CryptSocketNotify event, CryptSocketBase *src, const ByteBuffer &data)
-		: wxEvent(id, wxEVT_CRYPTSOCKET), m_data(data)
+		: wxEvent(id, wxEVT_CRYPTSOCKET), m_data(data), m_userdata(src->GetUserData())
 	{
 		wxASSERT(event == CRYPTSOCKET_INPUT);
 		m_event = event;
@@ -165,6 +168,11 @@ public:
 		return m_data;
 	}
 
+	virtual void* GetUserData() const
+	{
+		return m_userdata;
+	}
+
 	virtual wxEvent *Clone() const
 	{
 		return new CryptSocketEvent(*this);
@@ -173,6 +181,7 @@ public:
 protected:
 	CryptSocketNotify m_event;
 	ByteBuffer m_data;
+	void *m_userdata;
 
 };
 

@@ -4,8 +4,31 @@
 #include "Server.h"
 #include "CryptSocket.h"
 
+class ServerDefault;
+
+class ServerDefaultConnection
+{
+
+	friend ServerDefault;
+
+public:
+	virtual ~ServerDefaultConnection();
+
+protected:
+	ServerDefaultConnection();
+
+protected:
+	CryptSocketClient *m_sck;
+
+};
+
+#include <wx/dynarray.h>
+WX_DECLARE_OBJARRAY(ServerDefaultConnection, ServerDefaultConnectionArray);
+
 class ServerDefault : public Server
 {
+
+	friend ServerDefaultConnection;
 
 public:
 	ServerDefault(ServerEventHandler *event_handler);
@@ -21,6 +44,7 @@ protected:
 
 protected:
 	CryptSocketServer *m_sckListen;
+	ServerDefaultConnectionArray m_connections;
 
 private:
 	DECLARE_EVENT_TABLE()

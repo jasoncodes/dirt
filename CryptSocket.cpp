@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.3 2003-02-14 12:43:01 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.4 2003-02-15 01:31:29 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -40,6 +40,7 @@ CryptSocketBase::CryptSocketBase()
 	m_handler = NULL;
 	m_id = 0;
 	m_sck = NULL;
+	m_userdata = NULL;
 	m_bOutputOkay = false;
 }
 
