@@ -317,6 +317,14 @@ SOURCE=.\SpanTag.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Splash.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Splash.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SwitchBar.cpp
 # End Source File
 # Begin Source File

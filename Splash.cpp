@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.3 2003-02-13 17:07:39 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.4 2003-02-13 17:29:17 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -32,13 +32,13 @@ Splash::Splash()
 	: wxFrame(NULL, -1, "Dirt Secure Chat" + GetProductVersion(), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLIP_CHILDREN | wxMINIMIZE_BOX | wxSYSTEM_MENU)
 {
 	SetIcon(wxIcon( dirt_xpm ));
-	new wxButton(this, ID_CLIENT, "&Client", wxPoint(32, 140));
-	new wxButton(this, ID_SERVER, "&Server", wxPoint(128, 140));
+	wxButton *cmdClient = new wxButton(this, ID_CLIENT, "&Client", wxPoint(32, 140));
+	wxButton *cmdServer = new wxButton(this, ID_SERVER, "&Server", wxPoint(128, 140));
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
 	wxImage img(is, wxBITMAP_TYPE_ANY);
 	m_bmp = new wxBitmap(img);
-	SetClientSize(m_bmp->GetWidth(), m_bmp->GetHeight());
+	SetClientSize(m_bmp->GetWidth(), cmdClient->GetRect().GetBottom() + 16);
 	CentreOnScreen();
 	Show();
 }
