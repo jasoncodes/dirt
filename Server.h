@@ -50,6 +50,7 @@ public:
 	virtual wxString GetInlineDetails() const { return GetRemoteHost(); }
 	virtual wxString GetId() const;
 	virtual bool IsAuthenticated() const { return m_authenticated; }
+	virtual bool IsAdmin() const { return m_admin; }
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
@@ -68,6 +69,7 @@ protected:
 	wxString m_useragent;
 	const wxDateTime m_jointime;
 	bool m_authenticated;
+	bool m_admin;
 
 };
 
@@ -114,6 +116,8 @@ public:
 	Server(ServerEventHandler *event_handler);
 	virtual ~Server();
 
+	virtual void Information(const wxString &line);
+	virtual void Warning(const wxString &line);
 	virtual void ProcessConsoleInput(const wxString &input);
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
@@ -126,6 +130,7 @@ public:
 	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data, bool with_nicks_only);
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual ByteBuffer GetNickList();
+	virtual wxString GetServerNickname() const { return s_server_nickname; }
 
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);
@@ -138,6 +143,7 @@ protected:
 	ServerEventHandler *m_event_handler;
 	ServerConnectionArray m_connections;
 	ServerConfig *m_config;
+	static const wxString s_server_nickname;
 
 private:
 	DECLARE_EVENT_TABLE()

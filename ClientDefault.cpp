@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.21 2003-02-21 07:53:13 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.22 2003-02-27 02:52:31 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -97,6 +97,7 @@ const URL& ClientDefault::GetLastURL()
 
 void ClientDefault::SendToServer(const ByteBuffer &msg)
 {
+	wxString context = Unpack(msg, 2).Item(0);
 	ASSERT_CONNECTED()
 	m_sck->Send(msg);
 }
@@ -111,6 +112,20 @@ void ClientDefault::Authenticate(const ByteBuffer &auth)
 	catch (...)
 	{
 		m_event_handler->OnClientWarning(wxEmptyString, "Error encoding authentication data");
+	}
+}
+
+void ClientDefault::Oper(const wxString &context, const wxString &pass)
+{
+	ASSERT_CONNECTED();
+	try
+	{
+		ByteBuffer digest = Crypt::MD5MACDigest(m_authkey, pass);
+		SendToServer(EncodeMessage(context, wxT("OPER"), digest));
+	}
+	catch (...)
+	{
+		m_event_handler->OnClientWarning(context, "Error encoding authentication data");
 	}
 }
 

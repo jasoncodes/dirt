@@ -19,6 +19,7 @@ public:
 	virtual bool IsConnected();
 	virtual const URL& GetLastURL();
 	virtual void Authenticate(const ByteBuffer &auth);
+	virtual void Oper(const wxString &context, const wxString &pass);
 
 protected:
 	virtual void SendToServer(const ByteBuffer &msg);

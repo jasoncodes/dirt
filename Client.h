@@ -6,7 +6,7 @@
 #include "ByteBuffer.h"
 #include "util.h"
 
-#define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(wxEmptyString, wxT("Not connected")); return; } }
+#define ASSERT_CONNECTED() { if (!IsConnected()) { m_event_handler->OnClientWarning(context, wxT("Not connected")); return; } }
 
 class ClientEventHandler
 {
@@ -53,6 +53,7 @@ public:
 	virtual bool IsConnected() = 0;
 	virtual const URL& GetLastURL() = 0;
 	virtual void WhoIs(const wxString &context, const wxString &nick);
+	virtual void Oper(const wxString &context, const wxString &pass) = 0;
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname();

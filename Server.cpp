@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.21 2003-02-26 05:48:26 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.22 2003-02-27 02:52:31 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -22,6 +22,7 @@ ServerConnection::ServerConnection()
 	m_latency = -1;
 	m_useragent = wxEmptyString;
 	m_authenticated = false;
+	m_admin = false;
 	ResetIdleTime();
 }
 
@@ -36,6 +37,10 @@ ServerConnection::operator wxString() const
 	retval << wxT("@") << (GetRemoteHostAndPort().Length()?GetRemoteHostAndPort():wxT("N/A"));
 	retval << wxT(" (") << (GetUserDetails().Length()?GetUserDetails():wxT("N/A"));
 	retval << wxT(") (");
+	if (IsAdmin())
+	{
+		retval << wxT("Admin; ");
+	}
 	if (GetAwayMessage().Length())
 	{
 		retval << wxT("Away: ") << GetAwayMessage() << wxT("; ");
@@ -204,6 +209,8 @@ bool ServerConfig::SetPassword(const wxString &key, const wxString &password)
 
 //////// Server ////////
 
+const wxString Server::s_server_nickname = wxT("Console@Server");
+
 BEGIN_EVENT_TABLE(Server, wxEvtHandler)
 END_EVENT_TABLE()
 
@@ -218,6 +225,32 @@ Server::~Server()
 {
 	CloseAllConnections();
 	delete m_config;
+}
+
+void Server::Information(const wxString &line)
+{
+	m_event_handler->OnServerInformation(line);
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		ServerConnection *conn = m_connections.Item(i);
+		if (conn->IsAdmin())
+		{
+			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
+		}
+	}
+}
+
+void Server::Warning(const wxString &line)
+{
+	m_event_handler->OnServerWarning(line);
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		ServerConnection *conn = m_connections.Item(i);
+		if (conn->IsAdmin())
+		{
+			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
+		}
+	}
 }
 
 void Server::ProcessConsoleInput(const wxString &input)
@@ -245,7 +278,7 @@ void Server::ProcessConsoleInput(const wxString &input)
 	{
 		if (IsRunning())
 		{
-			m_event_handler->OnServerWarning(wxT("Server is already running"));
+			Warning(wxT("Server is already running"));
 		}
 		else
 		{
@@ -260,31 +293,31 @@ void Server::ProcessConsoleInput(const wxString &input)
 		}
 		else
 		{
-			m_event_handler->OnServerWarning(wxT("Server is not running"));
+			Warning(wxT("Server is not running"));
 		}
 	}
 	else if (cmd == wxT("USERS"))
 	{
 		if (IsRunning())
 		{
-			m_event_handler->OnServerInformation(wxString() << wxT("There are currently ") << GetConnectionCount() << wxT(" connections"));
+			Information(wxString() << wxT("There are currently ") << GetConnectionCount() << wxT(" connections"));
 			for (size_t i = 0; i < GetConnectionCount(); ++i)
 			{
-				m_event_handler->OnServerInformation(wxT("    ") + *GetConnection(i));
+				Information(wxT("    ") + *GetConnection(i));
 			}
 		}
 		else
 		{
-			m_event_handler->OnServerWarning(wxT("Server is not running"));
+			Warning(wxT("Server is not running"));
 		}
 	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnServerInformation(wxT("Supported commands: HELP START STOP USERS"));
+		Information(wxT("Supported commands: HELP START STOP USERS"));
 	}
 	else
 	{
-		m_event_handler->OnServerWarning(wxT("Unrecognized command: ") + cmd);
+		Warning(wxT("Unrecognized command: ") + cmd);
 	}
 
 }
@@ -359,7 +392,7 @@ ServerConnection* Server::SendToNick(const wxString &nickname, const wxString &c
 
 bool Server::IsValidNickname(const wxString &nickname)
 {
-    if (nickname.Length() < 1 || nickname.Length() > 16)
+    if (nickname.Length() < 1 || nickname.Length() > 16 || nickname == GetServerNickname())
 	{
 		return false;
 	}
@@ -442,15 +475,31 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 		ByteBuffer msg;
 		if (Unpack(data, nick, msg))
 		{
-			ServerConnection *dest = GetConnection(nick);
-			if (dest)
+			if (GetServerNickname().CmpNoCase((wxString)nick) == 0)
 			{
-				conn->Send(context, cmd + wxT("OK"), Pack(dest->GetNickname(), msg));
-				dest->Send(wxEmptyString, cmd, Pack(conn->GetNickname(), msg));
+				if (conn->IsAdmin())
+				{
+					conn->Send(context, cmd + wxT("OK"), Pack(GetServerNickname(), msg));
+					Information(conn->GetId() + wxT(" issued command: ") + msg);
+					ProcessConsoleInput(msg);
+				}
+				else
+				{
+					conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxString(wxT("You are not a server administrator"))));
+				}
 			}
 			else
 			{
-				conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxT("No suck nick: ") + nick));
+				ServerConnection *dest = GetConnection(nick);
+				if (dest)
+				{
+					conn->Send(context, cmd + wxT("OK"), Pack(dest->GetNickname(), msg));
+					dest->Send(wxEmptyString, cmd, Pack(conn->GetNickname(), msg));
+				}
+				else
+				{
+					conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxT("No suck nick: ") + nick));
+				}
 			}
 		}
 		else
@@ -461,12 +510,12 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	else if (cmd == wxT("USERDETAILS"))
 	{
 		conn->m_userdetails = data;
-		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
+		Information(conn->GetId() + wxT(" is ") + conn->GetUserDetails());
 	}
 	else if (cmd == wxT("USERAGENT"))
 	{
 		conn->m_useragent = data;
-		m_event_handler->OnServerInformation(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
+		Information(conn->GetId() + wxT(" is running ") + conn->GetUserAgent());
 	}
 	else if (cmd == wxT("WHOIS"))
 	{
@@ -477,6 +526,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			map[wxT("NICK")] = user->GetNickname();
 			map[wxT("HOSTNAME")] = user->GetRemoteHost();
 			map[wxT("DETAILS")] = user->GetUserDetails();
+			if (user->IsAdmin())
+			{
+				map[wxT("ISADMIN")] = wxT("");
+			}
 			map[wxT("AWAY")] = user->GetAwayMessage();
 			map[wxT("IDLE")] = wxString() << user->GetIdleTime();
 			map[wxT("IDLESTRING")] = user->GetIdleTimeString();
@@ -513,14 +566,14 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					ByteBuffer nicklist = GetNickList();
 					conn->Send(context, wxT("NICK"), data);
 					conn->m_nickname = new_nick;
-					m_event_handler->OnServerInformation(conn->GetId() + wxT(" has entered the chat"));
+					Information(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
 				}
 				else
 				{
 					SendToAll(wxEmptyString, wxT("NICK"), Pack(conn->m_nickname, data), true);
-					m_event_handler->OnServerInformation(conn->GetId() + wxT(" is now known as ") + new_nick);
+					Information(conn->GetId() + wxT(" is now known as ") + new_nick);
 					conn->m_nickname = new_nick;
 				}
 			}
@@ -528,10 +581,10 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 	}
 	else if (!ProcessClientInputExtra(false, false, conn, context, cmd, data))
 	{
-		m_event_handler->OnServerInformation(wxT("Unknown message recv'd:"));
-		m_event_handler->OnServerInformation(wxT("Context: \"") + context + wxT("\""));
-		m_event_handler->OnServerInformation(wxT("Command: \"") + cmd + wxT("\""));
-		m_event_handler->OnServerInformation(wxT("Data: ") + data.GetHexDump());
+		Information(wxT("Unknown message recv'd:"));
+		Information(wxT("Context: \"") + context + wxT("\""));
+		Information(wxT("Command: \"") + cmd + wxT("\""));
+		Information(wxT("Data: ") + data.GetHexDump());
 		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NOCMD")), wxT("Unrecognized command: ") + cmd));
 	}
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.27 2003-02-22 09:05:35 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.28 2003-02-27 02:52:31 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -82,13 +82,13 @@ void ServerDefault::Start()
 	if (m_sckListen->Listen(addr))
 	{
 		m_sckListen->GetLocal(addr);
-		m_event_handler->OnServerInformation(wxT("Server started on ") + GetIPV4String(addr, true));
+		Information(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
 		m_tmrPing->Start(ping_timer_interval);
 	}
 	else
 	{
-		m_event_handler->OnServerWarning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr, true));
+		Warning(wxT("Error starting server. Maybe a server is already running on ") + GetIPV4String(addr, true));
 	}
 }
 
@@ -97,7 +97,7 @@ void ServerDefault::Stop()
 	wxCHECK_RET(IsRunning(), wxT("Cannot stop server. Server not running."));
 	m_sckListen->Close();
 	CloseAllConnections();
-	m_event_handler->OnServerInformation(wxT("Server stopped"));
+	Information(wxT("Server stopped"));
 	m_event_handler->OnServerStateChange();
 	m_tmrPing->Stop();
 }
@@ -142,7 +142,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_remotehost = ::GetIPV4String(addr, false);
 					conn->m_remotehostandport =
 						wxString() << conn->m_remotehost << wxT(':') << addr.Service();
-					m_event_handler->OnServerInformation(wxT("Incoming connection from ") + conn->GetId());
+					Information(wxT("Incoming connection from ") + conn->GetId());
 				}
 				break;
 
@@ -157,12 +157,12 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					}
 					if (conn->GetNickname().Length())
 					{
-						m_event_handler->OnServerInformation(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + wxT(")"));
+						Information(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + wxT(")"));
 						SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), conn->m_quitmsg), true);
 					}
 					else
 					{
-						m_event_handler->OnServerInformation(conn->GetId() + wxT(" disconnected (") + conn->m_quitmsg + wxT(")"));
+						Information(conn->GetId() + wxT(" disconnected (") + conn->m_quitmsg + wxT(")"));
 					}
 					delete conn;
 					m_event_handler->OnServerConnectionChange();
@@ -275,7 +275,7 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 			{
 				conn2->m_authenticated = true;
 				conn2->Send(context, wxT("AUTHOK"), wxString(wxT("Authentication successful")));
-				m_event_handler->OnServerInformation(conn->GetId() + wxT(" successfully authenticated"));
+				Information(conn->GetId() + wxT(" successfully authenticated"));
 			}
 			else
 			{
@@ -285,12 +285,46 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 				{
 					int left = max_attempts - conn2->m_auth_fail_count;
 					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Authentication failed. You have %d attempt%s remaining."), left, (left == 1)?wxT(""):wxT("s")));
-					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (attempt %d)"), conn2->m_auth_fail_count));
+					Warning(conn->GetId() + wxString::Format(wxT(" failed to authenticate (attempt %d)"), conn2->m_auth_fail_count));
 				}
 				else
 				{
 					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Failed to authenticate %d times. Disconnecting"), max_attempts));
 					conn2->Terminate(wxString::Format(wxT("Authentication failed after %d attempts"), max_attempts));
+				}
+			}
+			return true;
+		}
+		else if (cmd == wxT("OPER"))
+		{
+			bool success;
+			try
+			{
+				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(m_config->GetAdminPassword(true)), data);
+			}
+			catch (...)
+			{
+				success = false;
+			}
+			if (success)
+			{
+				if (!conn2->m_admin)
+				{
+					conn2->m_admin = true;
+					Information(conn->GetId() + wxT(" is now a server administrator"));
+				}
+			}
+			else
+			{
+				if (conn2->m_admin)
+				{
+					Information(conn->GetId() + wxT(" is no longer a server administrator"));
+					conn2->m_admin = false;
+				}
+				else
+				{
+					Warning(conn->GetId() + wxT(" failed to become a server administrator"));
+					conn2->Send(context, wxT("ERROR"), Pack(cmd, wxString(wxT("Invalid server administarator password"))));
 				}
 			}
 			return true;

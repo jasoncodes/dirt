@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.26 2003-02-21 10:23:24 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.27 2003-02-27 02:52:31 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -119,6 +119,11 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		WhoIs(context, params);
+	}
+	else if (cmd == wxT("OPER"))
+	{
+		ASSERT_CONNECTED();
+		Oper(context, params);
 	}
 	else if (cmd == wxT("HELP"))
 	{

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.23 2003-02-22 05:50:55 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.24 2003-02-27 02:52:32 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -60,11 +60,12 @@ ServerUIFrame::ServerUIFrame()
 	m_lstConnections->InsertColumn(0, wxT("Nickname"),     wxLIST_FORMAT_LEFT, 96);
 	m_lstConnections->InsertColumn(1, wxT("Host"),         wxLIST_FORMAT_LEFT, 96);
 	m_lstConnections->InsertColumn(2, wxT("User Details"), wxLIST_FORMAT_LEFT, 160);
-	m_lstConnections->InsertColumn(3, wxT("Away Message"), wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(4, wxT("Idle Time"),    wxLIST_FORMAT_LEFT, 60);
-	m_lstConnections->InsertColumn(5, wxT("Latency"),      wxLIST_FORMAT_LEFT, 60);
-	m_lstConnections->InsertColumn(6, wxT("User Agent"),   wxLIST_FORMAT_LEFT, 96);
-	m_lstConnections->InsertColumn(7, wxT("Join Time"),    wxLIST_FORMAT_LEFT, 128);
+	m_lstConnections->InsertColumn(3, wxT("Type"),         wxLIST_FORMAT_LEFT, 48);
+	m_lstConnections->InsertColumn(4, wxT("Away Message"), wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(5, wxT("Idle Time"),    wxLIST_FORMAT_LEFT, 60);
+	m_lstConnections->InsertColumn(6, wxT("Latency"),      wxLIST_FORMAT_LEFT, 60);
+	m_lstConnections->InsertColumn(7, wxT("User Agent"),   wxLIST_FORMAT_LEFT, 96);
+	m_lstConnections->InsertColumn(8, wxT("Join Time"),    wxLIST_FORMAT_LEFT, 128);
 
 	wxStaticBox *boxConnections = new wxStaticBox(panel, -1, wxT("Connections"));
 	wxBoxSizer *szrConnections = new wxStaticBoxSizer(boxConnections, wxVERTICAL);
@@ -313,11 +314,12 @@ void ServerUIFrame::UpdateConnectionList()
 		SetItemText(m_lstConnections, i, 0, conn->GetNickname());
 		SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
 		SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
-		SetItemText(m_lstConnections, i, 3, conn->GetAwayMessage());
-		SetItemText(m_lstConnections, i, 4, conn->GetIdleTimeString());
-		SetItemText(m_lstConnections, i, 5, conn->GetLatencyString());
-		SetItemText(m_lstConnections, i, 6, conn->GetUserAgent());
-		SetItemText(m_lstConnections, i, 7, conn->GetJoinTimeString());
+		SetItemText(m_lstConnections, i, 3, conn->IsAuthenticated()?(conn->IsAdmin()?wxT("Admin"):wxT("User")):wxT("N/A"));
+		SetItemText(m_lstConnections, i, 4, conn->GetAwayMessage());
+		SetItemText(m_lstConnections, i, 5, conn->GetIdleTimeString());
+		SetItemText(m_lstConnections, i, 6, conn->GetLatencyString());
+		SetItemText(m_lstConnections, i, 7, conn->GetUserAgent());
+		SetItemText(m_lstConnections, i, 8, conn->GetJoinTimeString());
 	}
 }
 
