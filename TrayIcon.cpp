@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.8 2003-05-06 07:10:46 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.9 2003-05-15 08:02:34 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -17,10 +17,28 @@ RCS_ID($Id: TrayIcon.cpp,v 1.8 2003-05-06 07:10:46 jason Exp $)
 	#include <wx/msw/winundef.h>
 #endif
 
-// Why is it that people don't run late versions of Platform SDK? :)
-#ifndef NOTIFYICONDATA_V1_SIZE
-	#define NOTIFYICONDATA_V1_SIZE 88
-#endif
+struct MYNOTIFYICONDATA
+{
+	DWORD cbSize;
+	HWND hWnd;
+	UINT uID;
+	UINT uFlags;
+	UINT uCallbackMessage;
+	HICON hIcon;
+    wxChar szTip[128];
+    DWORD dwState;
+    DWORD dwStateMask;
+    wxChar szInfo[256];
+    union {
+        UINT  uTimeout;
+        UINT  uVersion;
+    } DUMMYUNIONNAME;
+    wxChar szInfoTitle[64];
+    DWORD dwInfoFlags;
+};
+
+static size_t normal_len = 24 + sizeof(wxChar)*64;
+static size_t extended_len = normal_len + 16 + sizeof(wxChar)*384;
 
 class TrayIconPrivate : public wxFrame
 {
@@ -28,25 +46,35 @@ class TrayIconPrivate : public wxFrame
 	friend class TrayIcon;
 
 protected:
+	static BOOL MyNotifyIcon(DWORD dwMessage, MYNOTIFYICONDATA *lpData)
+	{
+		return Shell_NotifyIcon(dwMessage, (PNOTIFYICONDATA)lpData);
+	}
+
 	TrayIconPrivate(TrayIcon *trayicon)
 		: wxFrame(NULL, -1, wxT("TrayIcon Event Handler"), wxDefaultPosition, wxSize(128, 64), wxCAPTION)
 	{
 		m_trayicon = trayicon;
 		TaskbarCreated = RegisterWindowMessage(wxT("TaskbarCreated"));
 		SetExtraStyle(wxWS_EX_TRANSIENT);
-		nid.cbSize = NOTIFYICONDATA_V1_SIZE;
+		nid.cbSize = extended_len;
 		nid.hWnd = (HWND)GetHandle();
 		nid.uID = 1;
 		nid.uFlags = NIF_MESSAGE;
 		nid.uCallbackMessage = WM_USER + 1;
 		nid.hIcon = 0;
 		nid.szTip[0] = 0;
-		m_ok = Shell_NotifyIcon(NIM_ADD, &nid) != 0;
+		m_ok = MyNotifyIcon(NIM_ADD, &nid) != 0;
+		if (!m_ok)
+		{
+			nid.cbSize = normal_len;
+			m_ok = MyNotifyIcon(NIM_ADD, &nid) != 0;
+		}
 	}
 
 	virtual ~TrayIconPrivate()
 	{
-		Shell_NotifyIcon(NIM_DELETE, &nid);
+		MyNotifyIcon(NIM_DELETE, &nid);
 	}
 
 	virtual void SetIcon(const char **xpm)
@@ -54,7 +82,7 @@ protected:
 		nid.uFlags = NIF_ICON;
 		m_icon = wxIcon(xpm);
 		nid.hIcon = (HICON)m_icon.GetHICON();
-		Shell_NotifyIcon(NIM_MODIFY, &nid);
+		MyNotifyIcon(NIM_MODIFY, &nid);
 	}
 
 	virtual void SetToolTip(const wxString &tooltip)
@@ -63,7 +91,7 @@ protected:
 		size_t len = (sizeof nid.szTip) / (sizeof nid.szTip[0]);
 		wxStrncpy(nid.szTip, tooltip.c_str(), len);
 		nid.szTip[len-1] = 0;
-		Shell_NotifyIcon(NIM_MODIFY, &nid);
+		MyNotifyIcon(NIM_MODIFY, &nid);
 	}
 
 protected:
@@ -168,7 +196,7 @@ protected:
 		else if (nMsg == TaskbarCreated && m_trayicon)
 		{
 			nid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
-			Shell_NotifyIcon(NIM_ADD, &nid);
+			MyNotifyIcon(NIM_ADD, &nid);
 			return wxFrame::MSWWindowProc(nMsg, wParam, lParam);
 		}
 		else
@@ -180,7 +208,7 @@ protected:
 
 protected:
 	TrayIcon *m_trayicon;
-	NOTIFYICONDATA nid;
+	MYNOTIFYICONDATA nid;
 	wxIcon m_icon;
 	bool m_ok;
 	UINT TaskbarCreated;
