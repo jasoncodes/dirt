@@ -28,10 +28,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.9 2004-08-16 18:22:39 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.10 2004-09-10 00:16:59 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef __WXMSW__
+	#include <io.h>
+	#include <fcntl.h>
+#endif
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
@@ -244,6 +249,10 @@ void send_header(const wxString &baseuri, const wxString &pathinfo)
 
 int main(int argc, char **argv)
 {
+
+#ifdef __WXMSW__
+	setmode(fileno(stdout), O_BINARY);
+#endif
 
 	wxApp::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
 
