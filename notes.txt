@@ -14,7 +14,7 @@
 
 * logging
 
-* scripting (/exec and /eval) via http://wxjs.sourceforge.net/
+* scripting (/exec and /eval)
 
 * banning
 
