@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.26 2003-06-17 08:21:15 jason Exp $)
+RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.27 2003-07-26 06:36:26 jason Exp $)
 
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
@@ -19,7 +19,7 @@ RCS_ID($Id: ClientUIMDITransferPanel.cpp,v 1.26 2003-06-17 08:21:15 jason Exp $)
 
 enum
 {
-	ID_TRANSFER_ACCEPT = wxEVT_USER_FIRST + 3000,
+	ID_TRANSFER_ACCEPT = 13000,
 	ID_TRANSFER_ACCEPT_LAST_DIR,
 	ID_TRANSFER_OPEN,
 	ID_TRANSFER_OPEN_COMPLETE,
