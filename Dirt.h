@@ -7,7 +7,8 @@ enum AppMode
 {
 	appDefault,
 	appClient,
-	appServer
+	appServer,
+	appLog
 };
 
 class DirtApp : public wxApp
@@ -32,6 +33,7 @@ protected:
 	wxCmdLineParser *m_cmdline;
 	AppMode m_appmode;
 	wxString m_host;
+	wxString m_logfile;
 	bool m_no_input;
 	bool m_control_down;
 	bool m_alt_down;

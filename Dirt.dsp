@@ -327,6 +327,14 @@ SOURCE=.\LogReader.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\LogViewerFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\LogViewerFrame.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\LogWriter.cpp
 # End Source File
 # Begin Source File

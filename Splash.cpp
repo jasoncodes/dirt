@@ -6,14 +6,16 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.15 2003-03-19 10:06:36 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.16 2003-03-20 04:28:38 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
 #include "ServerUIFrame.h"
-#include "wx/image.h"
-#include "wx/mstream.h"
+#include "LogViewerFrame.h"
 #include "util.h"
+
+#include <wx/image.h>
+#include <wx/mstream.h>
 
 #include "res/dirt.xpm"
 #include "res/splash.h"
@@ -46,12 +48,12 @@ Splash::Splash()
 	const int gap_y = 16;
 
 	wxButton *btns[4];
-	const int btn_count = 3;
+	const int btn_count = 4;
 
 	btns[0] = new wxButton(this, ID_CLIENT, wxT("&Client"));
 	btns[1] = new wxButton(this, ID_SERVER, wxT("&Server"));
 	btns[2] = new wxButton(this, ID_INTERNET, wxT("&Internet"));
-	//btns[3] = new wxButton(this, ID_LOGS, wxT("&Logs"));
+	btns[3] = new wxButton(this, ID_LOGS, wxT("&Logs"));
 
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxMemoryInputStream is(splash_jpg, splash_jpg_len);
@@ -130,6 +132,11 @@ void Splash::OnButton(wxCommandEvent &event)
 			{
 				Destroy();
 			}
+			break;
+
+		case ID_LOGS:
+			Destroy();
+			new LogViewerFrame;
 			break;
 
 		default:

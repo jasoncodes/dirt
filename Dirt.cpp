@@ -6,13 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.33 2003-03-19 08:18:17 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.34 2003-03-20 04:28:38 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
 #include "ServerUIConsole.h"
 #include "ClientUIMDIFrame.h"
 #include "ServerUIFrame.h"
+#include "LogViewerFrame.h"
 #include "Splash.h"
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -164,6 +165,7 @@ bool DirtApp::OnInit()
 {
 
 	Client *c = NULL;
+	LogViewerFrame *l = NULL;
 	m_console = NULL;
 	m_cmdline = NULL;
 	m_control_down = false;
@@ -200,6 +202,10 @@ bool DirtApp::OnInit()
 				m_console = new ServerUIConsole(m_no_input);
 				break;
 
+			case appLog:
+				m_cmdline->Usage();
+				break;
+
 			default:
 				wxFAIL_MSG(wxT("Unknown AppMode"));
 				return false;
@@ -228,6 +234,10 @@ bool DirtApp::OnInit()
 				new ServerUIFrame;
 				break;
 
+			case appLog:
+				l = new LogViewerFrame;
+				break;
+
 			default:
 				wxFAIL_MSG(wxT("Unknown AppMode"));
 				return false;
@@ -237,9 +247,13 @@ bool DirtApp::OnInit()
 
 	}
 
-	if (m_host.Length() > 0)
+	if (c && m_host.Length())
 	{
 		c->Connect(m_host);
+	}
+	if (l && m_logfile.length())
+	{
+		l->ViewLogFile(m_logfile);
 	}
 
 	return true;
@@ -264,12 +278,14 @@ bool DirtApp::ProcessCommandLine()
 
 	m_cmdline = new wxCmdLineParser(argc, argv);
 
-	m_cmdline->AddSwitch(wxT("c"), wxT("console"), wxT("Console Mode"), 0);
-	m_cmdline->AddSwitch(wxT("g"), wxT("gui"), wxT("GUI Mode"), 0);
-	m_cmdline->AddSwitch(wxT("l"), wxT("client"), wxT("Client Mode"), 0);
-	m_cmdline->AddSwitch(wxT("s"), wxT("server"), wxT("Server Mode"), 0);
-	m_cmdline->AddOption(wxT("h"), wxT("host"), wxT("Remote host to connect to (implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
-	m_cmdline->AddSwitch(wxT("n"), wxT("no-input"), wxT("Disable reading from the console (for background tasks, applies to console only)"), 0);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("gui"), wxT("GUI Mode"), 0);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("console"), wxT("Console Mode"), 0);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("no-input"), wxT("Disable reading from the console (for background tasks, applies to console only)"), 0);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("server"), wxT("Server Mode"), 0);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("client"), wxT("Client Mode"), 0);
+	m_cmdline->AddOption(wxEmptyString, wxT("host"), wxT("Remote host to connect to (implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("logs"), wxT("Log Mode (GUI only)"), 0);
+	m_cmdline->AddOption(wxEmptyString, wxT("log"), wxT("Log file to view (implies log mode)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
 	if (m_cmdline->Parse() != 0)
 	{
@@ -284,6 +300,10 @@ bool DirtApp::ProcessCommandLine()
 	{
 		m_appmode = appClient;
 	}
+	else if (m_cmdline->Found(wxT("logs")))
+	{
+		m_appmode = appLog;
+	}
 	else
 	{
 		m_appmode = appDefault;
@@ -296,6 +316,19 @@ bool DirtApp::ProcessCommandLine()
 			m_appmode = appClient;
 		}
 		else if (m_appmode != appClient)
+		{
+			m_cmdline->Usage();
+			return false;
+		}
+	}
+
+	if (m_cmdline->Found(wxT("log"), &m_logfile))
+	{
+		if (m_appmode == appDefault)
+		{
+			m_appmode = appLog;
+		}
+		else if (m_appmode != appLog)
 		{
 			m_cmdline->Usage();
 			return false;
@@ -357,7 +390,7 @@ void DirtApp::RegisterDirtProtocol()
 		int num_actions = 0;
 		wxRegKey reg;
 		reg.SetName(wxRegKey::HKCR, wxT("dirt"));
-		num_actions += !!reg.Create(false);
+		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxT("URL:Dirt Secure Chat Protocol"));
 		num_actions += !!MaybeSet(reg, wxT("EditFlags"), 2);
 		num_actions += !!MaybeSet(reg, wxT("URL Protocol"), wxEmptyString);
@@ -367,6 +400,19 @@ void DirtApp::RegisterDirtProtocol()
 		reg.SetName(wxRegKey::HKCR, wxT("dirt\\shell\\open\\command"));
 		reg.Create(false);
 		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --host=\"%1\""));
+		reg.SetName(wxRegKey::HKCR, wxT(".dirtlog"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxT("DirtSecureChat.LogFile"));
+		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxT("Dirt Secure Chat Log File"));
+		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile\\shell"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxT("open"));
+		reg.SetName(wxRegKey::HKCR, wxT("DirtSecureChat.LogFile\\shell\\open\\command"));
+		reg.Create(false);
+		num_actions += !!MaybeSet(reg, NULL, wxString() << wxT("\"") << exe << wxT("\" --log=\"%1\""));
+
 		if (num_actions)
 		{
 			SendMessageTimeout(HWND_BROADCAST, WM_WININICHANGE, 0, 0, 0, 500, 0);
