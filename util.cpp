@@ -120,7 +120,7 @@ wxString AddCommas(off_t size)
 		buff = ',' + buff;
 		size /= 1000;
 	}
-	return wxString() << size << buff;
+	return wxString() << (int)size << buff;
 }
 
 wxString AddCommas(double size)
@@ -137,7 +137,7 @@ wxString SizeToString(off_t size)
 	wxASSERT(size >= 0);
     if (size < 1000)
 	{
-        return wxString() << size << " bytes";
+        return wxString() << (int)size << " bytes";
 	}
     else if (size < 524288)
 	{
