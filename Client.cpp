@@ -6,14 +6,25 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.29 2003-03-05 02:02:13 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.30 2003-03-12 11:10:06 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
 #include "Modifiers.h"
 #include "FileTransfers.h"
+#include "Crypt.h"
+
+const wxLongLong_t initial_ping_delay = 5000;
+const wxLongLong_t ping_interval = 30000;
+const wxLongLong_t ping_timeout_delay = 45000;
+
+enum
+{
+	ID_TIMER_PING = 100,
+};
 
 BEGIN_EVENT_TABLE(Client, wxEvtHandler)
+	EVT_TIMER(ID_TIMER_PING, Client::OnTimerPing)
 END_EVENT_TABLE()
 
 Client::Client(ClientEventHandler *event_handler)
@@ -22,10 +33,12 @@ Client::Client(ClientEventHandler *event_handler)
 	m_file_transfers = new FileTransfers(this);
 	m_nickname = wxEmptyString;
 	m_server_name = wxEmptyString;
+	m_tmrPing = new wxTimer(this, ID_TIMER_PING);
 }
 
 Client::~Client()
 {
+	delete m_tmrPing;
 	delete m_file_transfers;
 }
 
@@ -204,6 +217,14 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 		}
 		m_event_handler->OnClientMessageOut(context, nick, text, cmd == wxT("PRIVACTIONOK"));
 	}
+	else if (cmd == wxT("PONG"))
+	{
+		wxLongLong_t now = GetMillisecondTicks();
+		m_latency = (long)(now - m_ping_next);
+		m_ping_next = now + ping_interval;
+		m_ping_data = wxEmptyString;
+		m_event_handler->OnClientStateChange();
+	}
 	else if (cmd == wxT("ERROR"))
 	{
 		ByteBuffer type, text;
@@ -329,6 +350,10 @@ void Client::Away(const wxString &msg)
 
 void Client::OnConnect()
 {
+	m_tmrPing->Start(2500);
+	m_ping_next = GetMillisecondTicks() + initial_ping_delay;
+	m_ping_data = wxEmptyString;
+	m_latency = -1;
 	m_event_handler->OnClientInformation(wxEmptyString, wxT("Connected"));
 	m_event_handler->OnClientStateChange();
 	wxString userdetails;
@@ -339,17 +364,42 @@ void Client::OnConnect()
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
 }
 
-wxString Client::GetNickname()
+void Client::OnTimerPing(wxTimerEvent &event)
+{
+	if (IsConnected())
+	{
+		wxLongLong_t now = GetMillisecondTicks();
+		if (now > m_ping_next)
+		{
+			if (m_ping_data.Length() == 0)
+			{
+				m_ping_data = Crypt::Random(8).GetHexDump(false, false);
+				m_ping_timeout_tick = now + ping_timeout_delay;
+				SendToServer(EncodeMessage(wxEmptyString, wxT("PING"), m_ping_data));
+			}
+			else if (now > m_ping_timeout_tick)
+			{
+				Disconnect(wxT("Ping timeout"));
+			}
+		}
+	}
+	else
+	{
+		m_tmrPing->Stop();
+	}
+}
+
+wxString Client::GetNickname() const
 {
 	return m_nickname;
 }
 
-wxString Client::GetServerName()
+wxString Client::GetServerName() const
 {
 	return m_server_name;
 }
 
-wxString Client::GetDefaultNick()
+wxString Client::GetDefaultNick() const
 {
 	wxString nick = ::wxGetUserId();
 	int i = nick.Index(wxT(' '));

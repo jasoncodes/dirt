@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.26 2003-03-05 07:50:26 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.27 2003-03-12 11:10:07 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -16,7 +16,7 @@ RCS_ID($Id: ClientDefault.cpp,v 1.26 2003-03-05 07:50:26 jason Exp $)
 
 enum
 {
-	ID_SOCKET = 1,
+	ID_SOCKET = 200,
 	ID_DNS
 };
 
@@ -117,20 +117,20 @@ void ClientDefault::OnDNS(DNSEvent &event)
 	}
 }
 
-void ClientDefault::Disconnect()
+void ClientDefault::Disconnect(const wxString &msg)
 {
 	m_sck->Close();
 	m_dns->Cancel();
-	m_event_handler->OnClientInformation(wxEmptyString, wxT("Disconnected"));
+	m_event_handler->OnClientInformation(wxEmptyString, msg);
 	m_event_handler->OnClientStateChange();
 }
 
-bool ClientDefault::IsConnected()
+bool ClientDefault::IsConnected() const
 {
 	return m_sck->Ok();
 }
 
-const URL& ClientDefault::GetLastURL()
+const URL& ClientDefault::GetLastURL() const
 {
 	return m_url;
 }

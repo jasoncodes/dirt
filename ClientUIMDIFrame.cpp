@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.66 2003-03-12 06:47:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.67 2003-03-12 11:10:07 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -465,8 +465,8 @@ void ClientUIMDIFrame::OnClientStateChange()
 	if (!m_client->IsConnected())
 	{
 		m_lstNickList->Clear();
+		GetContext(wxEmptyString)->SetPasswordMode(false);
 	}
-	GetContext(wxEmptyString)->SetPasswordMode(false);
 	UpdateCaption();
 }
 
@@ -511,6 +511,10 @@ void ClientUIMDIFrame::UpdateCaption()
 				{
 					title << wxT(" on ") << hostname;
 				}
+			}
+			if (m_client->GetLatency() >= 0)
+			{
+				title << wxT(" (") << AddCommas(m_client->GetLatency()) << wxT(" ms lag)");
 			}
 		}
 	}

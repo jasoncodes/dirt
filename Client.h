@@ -51,20 +51,24 @@ public:
 
 	virtual void SendMessage(const wxString &context, const wxString &nick, const wxString &message, bool is_action) = 0;
 	virtual bool Connect(const URL &url) = 0;
-	virtual void Disconnect() = 0;
-	virtual bool IsConnected() = 0;
-	virtual const URL& GetLastURL() = 0;
+	virtual void Disconnect(const wxString &msg = wxT("Disconnected")) = 0;
+	virtual bool IsConnected() const = 0;
+	virtual const URL& GetLastURL() const = 0;
 	virtual void WhoIs(const wxString &context, const wxString &nick);
 	virtual void Oper(const wxString &context, const wxString &pass) = 0;
 	virtual void Away(const wxString &msg);
 	virtual void Back() { Away(wxEmptyString); }
+	virtual long GetLatency() const { return m_latency; }
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
-	virtual wxString GetNickname();
-	virtual wxString GetServerName();
-	virtual wxString GetDefaultNick();
+	virtual wxString GetNickname() const;
+	virtual wxString GetServerName() const;
+	virtual wxString GetDefaultNick() const;
 	virtual void SetNickname(const wxString &context, const wxString &nickname) = 0;
-	virtual FileTransfers* GetFileTransfers() { return m_file_transfers; }
+	virtual FileTransfers* GetFileTransfers() const { return m_file_transfers; }
+
+protected:
+	void OnTimerPing(wxTimerEvent &event);
 
 protected:
 	virtual void ProcessServerInput(const ByteBuffer &msg);
@@ -78,6 +82,11 @@ protected:
 	FileTransfers *m_file_transfers;
 	wxString m_nickname;
 	wxString m_server_name;
+	wxTimer *m_tmrPing;
+	wxLongLong_t m_ping_next;
+	wxString m_ping_data;
+	wxLongLong_t m_ping_timeout_tick;
+	long m_latency;
 
 private:
 	DECLARE_EVENT_TABLE()
