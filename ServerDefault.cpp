@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.75 2004-05-30 12:46:41 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.76 2004-05-31 08:05:49 jason Exp $)
 
 #include <wx/filename.h>
 #include "ServerDefault.h"
@@ -74,15 +74,6 @@ void ServerDefaultConnection::Terminate(const ByteBuffer &reason)
 	{
 		if (m_sck->Ok() && GetNickname().Length())
 		{
-			if (m_server->m_log_public_messages)
-			{
-				m_server->m_log_public_messages->AddText(wxString()
-					<< GetLongTimestamp()
-					<< GetNickname()
-					<< wxT(" (") << GetInlineDetails()
-					<< wxT(") has left the chat (")
-					<< m_quitmsg << wxT(")"), colours[3]);
-			}
 			Send(wxEmptyString, wxT("PART"), Pack(GetNickname(), GetInlineDetails(), m_quitmsg));
 		}
 		m_sck->CloseWithEvent();
@@ -262,6 +253,15 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					if (conn->GetNickname().Length())
 					{
 						Information(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + (wxChar)OriginalModifier + wxT(")"));
+						if (m_log_public_messages)
+						{
+							m_log_public_messages->AddText(wxString()
+								<< GetLongTimestamp()
+								<< conn->GetNickname()
+								<< wxT(" (") << conn->GetInlineDetails()
+								<< wxT(") has left the chat (")
+								<< conn->m_quitmsg << wxT(")"), colours[3]);
+						}
 						SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), conn->m_quitmsg), true);
 					}
 					else
