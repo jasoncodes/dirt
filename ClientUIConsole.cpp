@@ -35,12 +35,19 @@ public:
 	ReadThread(ClientUIConsole *console, Client *client)
 		: wxThread()
 	{
+		Output(wxString()<<"ReadThread()");
 		m_console = console;
 		m_client = client;
 	}
 
+	virtual ~ReadThread()
+	{
+		Output(wxString()<<"~ReadThread()");
+	}
+
 	virtual ExitCode Entry()
 	{
+		Output(wxString()<<"read thread starting");
 		wxFFileInputStream in(stdin);
 		wxTextInputStream cin(in);
 		while (!in.Eof())
@@ -51,6 +58,7 @@ public:
 				ProcessInput(line);
 			}
 		}
+		Output(wxString()<<"read thread gracefully exiting");
 		ProcessInput("/exit");
 		return 0;
 	}
@@ -60,7 +68,7 @@ protected:
 	{
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_ENTER, ID_CONSOLE_INPUT);
 		event.SetString(input);
-		m_console->ProcessEvent(event);
+		m_console->AddPendingEvent(event);
 	}
 
 protected:
@@ -75,6 +83,7 @@ END_EVENT_TABLE()
 
 ClientUIConsole::ClientUIConsole()
 {
+	Output(wxString()<<"ClientUIConsole()");
 	m_client = new ClientDefault(this);
 	read_thread = new ReadThread(this, m_client);
 	read_thread->Create();
@@ -83,11 +92,13 @@ ClientUIConsole::ClientUIConsole()
 
 ClientUIConsole::~ClientUIConsole()
 {
+	Output(wxString()<<"~ClientUIConsole()");
 	delete m_client;
 }
 
 void ClientUIConsole::OnTextEnter(wxCommandEvent& event)
 {
+	wxASSERT(wxThread::IsMain());
 	m_client->ProcessInput(wxEmptyString, event.GetString());
 }
 
@@ -95,7 +106,7 @@ bool ClientUIConsole::OnClientPreprocess(const wxString &context, wxString &cmd,
 {
 	if (cmd == "EXIT")
 	{
-		wxGetApp().ExitMainLoop(); // this no working :(
+		wxGetApp().ExitMainLoop();
 		return true;
 	}
 	else

@@ -21,7 +21,7 @@ static bool IsConsole()
 			return false;
 		#endif
 	#else
-		// no generic detection yet.. using GUI
+		// no detection for non-Win32 yet.. defaulting to GUI
 		return false;
 	#endif
 }
@@ -30,7 +30,7 @@ bool DirtApp::OnInit()
 {
 	if (IsConsole())
 	{
-		new ClientUIConsole;
+		m_console = new ClientUIConsole();
 	}
 	else
 	{
@@ -38,4 +38,13 @@ bool DirtApp::OnInit()
 		SetTopWindow(frame);
 	}
 	return true;
+}
+
+int DirtApp::OnExit()
+{
+	if (IsConsole())
+	{
+		delete m_console;
+	}
+	return wxApp::OnExit();
 }

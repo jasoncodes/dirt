@@ -13,6 +13,15 @@ public:
 	virtual void SendMessage(const wxString &nick, const wxString &message);
 	virtual wxString GetNickname();
 
+protected:
+	void OnTestTimer(wxTimerEvent &event);
+	
+protected:
+	wxTimer *tmrTest;
+
+private:
+	DECLARE_EVENT_TABLE()
+
 };
 
 #endif

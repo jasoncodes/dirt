@@ -8,14 +8,26 @@
 
 #include "ClientDefault.h"
 
-ClientDefault::ClientDefault(ClientEventHandler *event_handler)
-	: Client(event_handler)
+enum
 {
+	ID_TIMER_TEST = 1
+};
+
+BEGIN_EVENT_TABLE(ClientDefault, wxEvtHandler)
+	EVT_TIMER(ID_TIMER_TEST, ClientDefault::OnTestTimer)
+END_EVENT_TABLE()
+
+ClientDefault::ClientDefault(ClientEventHandler *event_handler)
+	: wxEvtHandler(), Client(event_handler)
+{
+	tmrTest = new wxTimer(this, ID_TIMER_TEST);
+	tmrTest->Start(5000);
 	Debug(wxEmptyString, "ClientDefault Ready");
 }
 
 ClientDefault::~ClientDefault()
 {
+	delete tmrTest;
 }
 
 void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
@@ -29,4 +41,9 @@ void ClientDefault::SendMessage(const wxString &nick, const wxString &message)
 wxString ClientDefault::GetNickname()
 {
 	return "LOCALHOST";
+}
+
+void ClientDefault::OnTestTimer(wxTimerEvent &event)
+{
+	m_event_handler->OnClientDebug(wxEmptyString, "This is a test timer");
 }
