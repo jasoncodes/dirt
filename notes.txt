@@ -368,8 +368,6 @@ option to disable red and beep for a mdi child (for server console)
 
 * highlighting has bugs on gtk (when updates happen while highlighting)
 
-* when colour popup shows on GTK cannot programmically focus back to main window
-
 * optional password protection for saved passwords and private keys in dirt.ini
 
 * spawn other processes in seperate thread
