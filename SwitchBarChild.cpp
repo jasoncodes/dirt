@@ -44,10 +44,18 @@ SwitchBarChild::~SwitchBarChild()
 void SwitchBarChild::OnActivate(wxActivateEvent& event)
 {
 
-	if ( event.GetActive() && m_canvas )
+	if (m_canvas)
 	{
-		m_canvas->SetFocus();
-		m_canvas->OnActivate();
+		if (event.GetActive())
+		{
+			m_canvas->Show();
+			m_canvas->SetFocus();
+			m_canvas->OnActivate();
+		}
+		else
+		{
+			m_canvas->Show(false);
+		}
 	}
 
 	int button_index = m_parent->GetSwitchBar()->GetIndexFromUserData(m_canvas);
@@ -69,12 +77,18 @@ void SwitchBarChild::OnActivate(wxActivateEvent& event)
 
 void SwitchBarChild::OnMove(wxMoveEvent& event)
 {
-
+	
 	if (IsIconized())
 	{
 		int index = m_parent->GetSwitchBar()->GetIndexFromUserData(m_canvas);
 		m_parent->GetSwitchBar()->SelectButton(-1);
 		m_parent->GetSwitchBar()->RaiseEvent(index, false);
+		m_canvas->Show(false);
+	}
+
+	if (GetPosition().x < 0 || GetPosition().y < 0)
+	{
+		m_canvas->Show(false);
 	}
 
 	m_parent->UpdateWindowMenu();
@@ -84,11 +98,15 @@ void SwitchBarChild::OnMove(wxMoveEvent& event)
 
 void SwitchBarChild::OnSize(wxSizeEvent& event)
 {
+
 	m_parent->UpdateWindowMenu();
+
 	if (GetSize().x > 1 && GetSize().y > 1)
 	{
+		m_canvas->Show();
 		event.Skip();
 	}
+
 }
 
 void SwitchBarChild::OnClose(wxCloseEvent& event)

@@ -512,7 +512,6 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 		if (child == NULL)
 		{
 			child = NewWindow(canvas, true);
-			canvas->Show(true);
 		}
 		child->Show(true);
 		child->Activate();
