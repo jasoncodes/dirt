@@ -4,6 +4,7 @@
 #include "SwitchBarCanvas.h"
 #include "LogControl.h"
 #include "InputControl.h"
+#include "ClientUIMDITransferPanel.h"
 
 enum CanvasType
 {
@@ -47,6 +48,8 @@ protected:
 	InputControl *m_txtInput;
 
 	wxListBox *m_lstNickList;
+
+	ClientUIMDITransferPanel *m_pnlTransfer;
 
 private:
 	DECLARE_EVENT_TABLE()

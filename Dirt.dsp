@@ -305,6 +305,14 @@ SOURCE=.\ClientUIMDIFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientUIMDITransferPanel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ClientUIMDITransferPanel.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Dirt.cpp
 # End Source File
 # Begin Source File

@@ -21,7 +21,8 @@ enum
 {
 	ID_LOG = 1,
 	ID_INPUT,
-	ID_NICKLIST
+	ID_NICKLIST,
+	ID_TRANSFER
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -62,10 +63,18 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 
 	}
 
+	SetTitle(title);
+	SetIcon(icon);
+
 	if (type == ChannelCanvas || type == QueryCanvas)
 	{
 		m_txtLog = new LogControl(this, ID_LOG);
 		m_txtInput = new InputControl(this, ID_INPUT);
+	}
+	else
+	{
+		m_txtLog = NULL;
+		m_txtInput = NULL;
 	}
 
 	if (type == ChannelCanvas)
@@ -78,8 +87,14 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 		m_lstNickList = NULL;
 	}
 
-	SetTitle(title);
-	SetIcon(icon);
+	if (type == TransferSendCanvas || type == TransferReceiveCanvas)
+	{
+		m_pnlTransfer = new ClientUIMDITransferPanel(this, ID_TRANSFER);
+	}
+	else
+	{
+		m_pnlTransfer = NULL;
+	}
 
 }
 
@@ -89,7 +104,10 @@ ClientUIMDICanvas::~ClientUIMDICanvas()
 
 void ClientUIMDICanvas::DoGotFocus()
 {
-	m_txtInput->SetFocus();
+	if (m_txtInput)
+	{
+		m_txtInput->SetFocus();
+	}
 	SwitchBar *switchbar = m_parent->GetSwitchBar();
 	int button_index = switchbar->GetIndexFromUserData(this);
 	if (button_index > -1)
@@ -116,10 +134,17 @@ void ClientUIMDICanvas::OnActivate()
 void ClientUIMDICanvas::ResizeChildren()
 {
 
-	if (m_txtLog != NULL && m_txtInput != NULL)
+	
+	wxSize size = GetClientSize();
+
+	if (m_pnlTransfer != NULL)
 	{
 
-		wxSize size = GetClientSize();
+		m_pnlTransfer->SetSize(0, 0, size.x, size.y);
+
+	}
+	else if (m_txtLog != NULL && m_txtInput != NULL)
+	{
 
 		int input_height = 
 			m_txtInput->GetBestSize().GetHeight();

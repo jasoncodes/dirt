@@ -100,7 +100,7 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	wxMessageBox("Dirt Secure Chat 3.0.0 Alpha 0");
+	wxMessageBox("Dirt Secure Chat 3.0.0 Alpha 0", "About", wxICON_INFORMATION);
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)
@@ -182,6 +182,12 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	else if (cmd == "TEST")
 	{
 		GetContext(context)->LogControlTest();
+		return true;
+	}
+	else if (cmd == "TEST2")
+	{
+		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "Test Send Transfer", TransferSendCanvas);
+		NewWindow(canvas, true);
 		return true;
 	}
 	else if (cmd == "QUERY")
