@@ -11,6 +11,9 @@
 #include "util.h"
 #include <wx/progdlg.h>
 #include <wx/dir.h>
+#include "Dirt.h"
+
+DECLARE_APP(DirtApp)
 
 #ifdef __WXMSW__
 	#include <windows.h>
@@ -49,6 +52,7 @@ enum
 };
 
 BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
+	EVT_CLOSE(LogViewerFrame::OnClose)
 	EVT_SIZE(LogViewerFrame::OnSize)
 	EVT_SASH_DRAGGED(ID_SASH1, LogViewerFrame::OnSashDragged)
 	EVT_SASH_DRAGGED(ID_SASH2, LogViewerFrame::OnSashDragged)
@@ -93,13 +97,33 @@ LogViewerFrame::LogViewerFrame()
 
 	SetSizeHints(300,200);
 	CentreOnScreen();
-	Maximize();
-	Show();
+
+	m_config = new wxFileConfig(wxT("dirt"), wxT(""), wxGetApp().GetConfigFilename());
+	m_config->SetUmask(0077);
+	RestoreWindowState(this, m_config, wxT("Log Viewer"), true, true);
+	int sash1pos = m_sash1->GetSize().x;
+	int sash2pos = m_sash2->GetSize().y;
+	m_config->Read(wxT("/Log Viewer/WindowState/Sash1"), &sash1pos, sash1pos);
+	m_config->Read(wxT("/Log Viewer/WindowState/Sash2"), &sash2pos, sash2pos);
+	m_sash1->SetSize(sash1pos, -1);
+	m_sash2->SetSize(-1, sash2pos);
+	ResizeChildren();
 
 }
 
 LogViewerFrame::~LogViewerFrame()
 {
+	delete m_config;
+}
+
+void LogViewerFrame::OnClose(wxCloseEvent &event)
+{
+	SaveWindowState(this, m_config, wxT("Log Viewer"));
+	int sash1pos = m_sash1->GetSize().x;
+	int sash2pos = m_sash2->GetSize().y;
+	m_config->Write(wxT("/Log Viewer/WindowState/Sash1"), sash1pos);
+	m_config->Write(wxT("/Log Viewer/WindowState/Sash2"), sash2pos);
+	event.Skip();
 }
 
 void LogViewerFrame::OnSize(wxSizeEvent &event)

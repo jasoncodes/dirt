@@ -4,6 +4,8 @@
 #include <wx/sashwin.h>
 #include <wx/dirctrl.h>
 #include <wx/treectrl.h>
+#include <wx/confbase.h>
+#include <wx/fileconf.h>
 
 #include "LogControl.h"
 
@@ -17,6 +19,7 @@ public:
 	void ViewLogFile(const wxString &filename);
 
 protected:
+	void OnClose(wxCloseEvent &event);
 	void OnCtrlF(wxCommandEvent &event);
 	void OnSize(wxSizeEvent &event);
 	void OnSashDragged(wxSashEvent &event);
@@ -42,6 +45,8 @@ protected:
 	wxGenericDirCtrl *m_dir;
 
 	wxString last_filename;
+
+	wxFileConfig *m_config;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -61,8 +61,8 @@ wxString GetPublicListURL();
 bool OpenBrowser(wxWindow *parent, const wxString &URL, bool show_error = true);
 void ForceForegroundWindow(wxFrame *frm);
 void GetWindowState(const wxFrame *frm, wxRect& r, bool& maximized);
-void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show = false);
+void SetWindowState(wxFrame *frm, const wxRect &r, const bool maximized, bool show = false, bool is_already_maximized = false);
 void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString);
-void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString, bool show = false);
+void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString, bool show = false, bool default_maximized = false);
 
 #endif

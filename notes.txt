@@ -32,6 +32,4 @@
 
 * file transfers
 
-* save size of nicklist sash, log viewer frame pos/size, log viewer sashes
-
 * at least win32: holding down the mouse button on logcontrol scrollbar stops network traffic
