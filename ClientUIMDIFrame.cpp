@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.140 2004-03-14 00:21:32 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.141 2004-03-14 04:18:12 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -93,10 +93,10 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	m_client = NULL;
 	m_tray = NULL;
-	m_focused = true;
 	m_alert = false;
 	m_flash = 0;
 	m_log_date_okay = false;
+	m_focused = true;
 	UpdateCaption();
 
 	SetIcon(wxIcon(dirt_xpm));
@@ -191,21 +191,18 @@ bool ClientUIMDIFrame::ResetWindowPos()
 	return true;
 }
 
-void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
+void ClientUIMDIFrame::OnFocusGained()
 {
-	m_focused = event.GetActive();
-	if (m_focused)
-	{
-		#ifdef __WXMSW__
-			m_last_flash_window = 0;
-		#endif
-		m_alert = false;
-		UpdateCaption();
-	}
-	else
-	{
-		ResetRedLines();
-	}
+	#ifdef __WXMSW__
+		m_last_flash_window = 0;
+	#endif
+	m_alert = false;
+	UpdateCaption();
+}
+
+void ClientUIMDIFrame::OnFocusLost()
+{
+	ResetRedLines();
 }
 
 void ClientUIMDIFrame::ResetRedLines()
@@ -236,7 +233,7 @@ bool ClientUIMDIFrame::IsFocused()
 		HWND hWnd = (HWND)GetHandle();
 		return (::GetForegroundWindow() == hWnd);
 	#else
-		return m_focused;
+		return (FindFocus() != NULL);
 	#endif
 }
 
@@ -251,7 +248,11 @@ static inline bool IsWin32()
 
 void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 {
-	if (IsFocused() || !IsWin32())
+
+	bool m_last_focused = m_focused;
+	m_focused = IsFocused();
+
+	if (m_focused || !IsWin32())
 	{
 		SwitchBarChild *child = (SwitchBarChild*)GetActiveChild();
 		if (child)
@@ -264,6 +265,16 @@ void ClientUIMDIFrame::OnFocusTimer(wxTimerEvent &WXUNUSED(event))
 		m_flash--;
 		UpdateCaption();
 	}
+
+	if (m_focused && !m_last_focused)
+	{
+		OnFocusGained();
+	}
+	else if (!m_focused && m_last_focused)
+	{
+		OnFocusLost();
+	}
+
 }
 
 void ClientUIMDIFrame::OnFileExit(wxCommandEvent &WXUNUSED(event))
@@ -626,7 +637,10 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == wxT("MINTOTRAY"))
 	{
-		MinToTray();
+		if (!MinToTray())
+		{
+			Iconize();
+		}
 		return true;
 	}
 	else if (cmd == wxT("QUERY"))

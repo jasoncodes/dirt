@@ -37,7 +37,6 @@ protected:
 	void OnToolsOptions(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 	void OnFocusTimer(wxTimerEvent &event);
-	void OnActivate(wxActivateEvent &event);
 	void OnTrayDblClick(wxMouseEvent &event);
 	void OnTrayRightClick(wxMouseEvent &event);
 	void OnRestore(wxCommandEvent &event);
@@ -92,6 +91,8 @@ protected:
 	void OnHotKey();
 	int GetHotKeyKeyCode() const;
 	wxUint8 GetHotKeyModifiers() const;
+	void OnFocusGained();
+	void OnFocusLost();
 
 	wxString ConvertTitleToToolTip(const wxString &title) const;
 
@@ -102,7 +103,6 @@ protected:
 protected:
 	wxTimer *m_tmrFocus;
 	Client *m_client;
-	bool m_focused;
 	NickListControl *m_lstNickList;
 	wxArrayString m_nicklist;
 	bool m_alert;
@@ -124,6 +124,7 @@ protected:
 		int m_hotkey_keycode;
 		wxUint8 m_hotkey_mods;
 	#endif
+	bool m_focused;
 
 private:
 	DECLARE_EVENT_TABLE()

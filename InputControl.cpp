@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.21 2003-08-22 17:29:08 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.22 2004-03-14 04:18:12 jason Exp $)
 
 #include "InputControl.h"
 #include "LogControl.h"
@@ -17,7 +17,10 @@ RCS_ID($Id: InputControl.cpp,v 1.21 2003-08-22 17:29:08 jason Exp $)
 	#include <windows.h>
 	#include <wx/msw/winundef.h>
 #endif
-
+#ifdef __WXGTK__
+	#include <gdk/gdk.h>
+	#include <gtk/gtk.h>
+#endif
 
 class InputControlColourPanel : public wxPanel
 {
@@ -224,12 +227,7 @@ InputControl::InputControl(
 	m_txtBestSize->Show(false);
 	m_txtBestSize->SetFont(GetFont());
 
-	// this is currently broken on GTK 2.x (but works fine on Win32 & GTK 1.x)
-	#ifndef __WXGTK20__
-	{
-		SetFont(LogControl::GetDefaultFixedWidthFont());
-	}
-	#endif
+	SetFont(LogControl::GetDefaultFixedWidthFont());
 
 	SetSize(GetBestSize());
 
@@ -394,6 +392,8 @@ void InputControl::MaybeClosePopup(wxKeyEvent& event)
 bool InputControl::IsPrintable(const wxString &text)
 {
 
+#ifdef __WXMSW__
+
 	int x, y;
 	GetTextExtent(text, &x, &y);
 
@@ -421,6 +421,12 @@ bool InputControl::IsPrintable(const wxString &text)
 	}
 
 	return printable;
+
+#else
+
+	return false;
+
+#endif
 
 }
 

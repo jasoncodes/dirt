@@ -1,3 +1,17 @@
+GTK: hotkey support
+
+GTK2: clipboard seems to be not performing a UTF8 conversion somewhere
+
+at least win32: ctrl key held down detection needs replacing
+
+GTK2: change font dialog does not default to last selected font
+
+GTK2: scroll wheel on log control not working unless over scrollbar
+
+GTK2: underlined text in log control not working
+
+GTK2: input control not font'd
+
 GTK2: TristateConfigPanel does not render correctly
 
 mintotray on non-supporting build should minimize if possible otherwise "Not supported"
@@ -13,11 +27,7 @@ default tab to work like it does in bash (dont pick unless not ambiguous, show l
 /./././././../././././
 /././././././././././././././.
 
-remove 2.4 make files
-
 see if possible to not use GTK yet on linux
-
-remove monolithic wx lib usage
 
 change KB to KiB
 
