@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.59 2003-08-22 19:26:05 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.60 2003-08-22 19:34:51 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1427,6 +1427,7 @@ public:
 	{
 		m_font.SetWeight(GetFontBold()?wxBOLD:wxNORMAL);
 		m_font.SetUnderlined(GetFontUnderlined()?true:false);
+		GetDC()->SetFont(m_font);
 		return &m_font;
 	}
 
