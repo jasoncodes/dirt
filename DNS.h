@@ -24,34 +24,26 @@
 #define DNS_H_
 
 #include <wx/socket.h>
-#include <wx/thread.h>
 
-class DNSWorker;
+class DNSThread;
 
 class DNS : public wxEvtHandler
 {
 
-	friend class DNSWorker;
+	friend class DNSThread;
 
 public:
 	DNS();
 	virtual ~DNS();
 
-	virtual bool Lookup(const wxString &hostname, bool block_if_busy = true);
-	virtual bool Cancel();
-	virtual bool IsBusy() const;
+	virtual void Lookup(const wxString &question, bool is_reverse = false, void *userdata = NULL);
+	virtual void Cancel();
 
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
 
 protected:
-	virtual void CleanUp(bool lock_section);
-
-protected:
 	wxEvtHandler *m_handler;
 	wxEventType m_id;
-	DNSWorker *m_worker;
-	wxString m_hostname;
-	wxCriticalSection m_section;
 
 	DECLARE_NO_COPY_CLASS(DNS)
 
@@ -63,8 +55,8 @@ class DNSEvent : public wxEvent
 {
 
 public:
-	DNSEvent(int id, DNS *src, bool success, const wxString &hostname, const wxIPV4address &addr, wxUint32 ip)
-		: wxEvent(id, wxEVT_DNS), m_success(success), m_hostname(hostname), m_addr((wxIPV4address*)addr.Clone()), m_ip(ip)
+	DNSEvent(int id, DNS *src, bool success, const wxString &hostname, const wxIPV4address &addr, wxUint32 ip, void *userdata)
+		: wxEvent(id, wxEVT_DNS), m_success(success), m_hostname(hostname), m_addr((wxIPV4address*)addr.Clone()), m_ip(ip), m_userdata(userdata)
 	{
 		SetEventObject(src);
 	}
@@ -113,6 +105,11 @@ public:
 	virtual wxEvent *Clone() const
 	{
 		return new DNSEvent(*this);
+	}
+
+	virtual void* GetUserData() const
+	{
+		return m_userdata;
 	}
 
 protected:
