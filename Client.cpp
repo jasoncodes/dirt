@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.57 2003-05-07 01:59:55 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.58 2003-05-07 03:06:49 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -68,7 +68,7 @@ void Client::Debug(const wxString &context, const wxString &text)
 wxArrayString Client::GetSupportedCommands() const
 {
 	wxArrayString cmds;
-	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT ECHO HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHOIS"), wxT(" ")));
+	WX_APPEND_ARRAY(cmds, SplitString(wxT("ALIAS AWAY BACK BIND CONNECT CTCP DISCONNECT ECHO HELP ME ME'S MSG MSGME MY NICK TIMER TIMERS QUIT RECONNECT SAY SERVER PING WHO WHOIS"), wxT(" ")));
 	WX_APPEND_ARRAY(cmds, m_file_transfers->OnClientSupportedCommands());
 	WX_APPEND_ARRAY(cmds, m_event_handler->OnClientSupportedCommands());
 	cmds.Sort();
@@ -165,6 +165,27 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	{
 		ASSERT_CONNECTED();
 		WhoIs(context, params);
+	}
+	else if (cmd == wxT("WHO"))
+	{
+		ASSERT_CONNECTED();
+		wxArrayString nicks;
+		for (size_t i = 0; i < GetContactCount(); ++i)
+		{
+			ClientContact *contact = GetContact(i);
+			if (!contact->IsSelf())
+			{
+				nicks.Add(contact->GetNickname());
+			}
+		}
+		nicks.Sort();
+		if (!nicks.GetCount())
+		{
+			nicks.Add(wxT("(Nobody)"));
+		}
+		m_event_handler->OnClientInformation(
+			context, wxT("Chatting with: ") +
+			JoinArray(nicks, wxT(", ")));
 	}
 	else if (cmd == wxT("CTCP"))
 	{
