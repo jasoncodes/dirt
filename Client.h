@@ -1,9 +1,7 @@
 #ifndef Client_H_
 #define Client_H_
 
-class FileTransfer;
-class FileTransfers;
-enum FileTransferState;
+#include "FileTransfer.h"
 
 class ClientEventHandler
 {
