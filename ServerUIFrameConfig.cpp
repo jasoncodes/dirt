@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.28 2003-03-11 13:14:38 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.29 2003-03-11 13:20:48 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
+#include <wx/filename.h>
 
 class StaticCheckBoxSizerEventHandler : public wxEvtHandler
 {
@@ -384,7 +385,8 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 	wxTextCtrl *txt =
 		(event.GetId()==ID_BROWSE_SOUND_CONNECTION) ?
 		m_txtSoundConnection : m_txtSoundJoin;
-	wxFileDialog dlg(this, wxT("Select Sound File"), wxT(""), txt->GetValue(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
+	wxFileName fn(txt->GetValue());
+	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(), fn.GetFullName(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		txt->SetValue(dlg.GetPath());
