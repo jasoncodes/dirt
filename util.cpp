@@ -145,25 +145,25 @@ wxString AddCommas(double size)
 wxString SizeToString(off_t size)
 {
 	wxASSERT(size >= 0);
-    if (size < 1000)
+	if (size < 1000)
 	{
-        return wxString() << (int)size << " bytes";
+		return wxString() << (int)size << " bytes";
 	}
-    else if (size < 524288)
+	else if (size < 524288)
 	{
-        return wxString() << AddCommas(size / pow(1024, 1)) << " KB";
+		return wxString() << AddCommas(size / pow(1024, 1)) << " KB";
 	}
-    else if (size < 1073741824)
+	else if (size < 1073741824)
 	{
-        return wxString() << AddCommas(size / pow(1024, 2)) << " MB";
+		return wxString() << AddCommas(size / pow(1024, 2)) << " MB";
 	}
-    else if (size < 1099511627776)
+	else if (size < 1099511627776)
 	{
-        return wxString() << AddCommas(size / pow(1024, 3)) << " GB";
+		return wxString() << AddCommas(size / pow(1024, 3)) << " GB";
 	}
 	else
 	{
-        return wxString() << AddCommas(size / pow(1024, 4)) << " TB";
+		return wxString() << AddCommas(size / pow(1024, 4)) << " TB";
 	}
 }
 
