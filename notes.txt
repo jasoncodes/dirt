@@ -33,3 +33,5 @@
 * dirt:// protocol registration for mozilla on X11
 
 * file transfers
+
+* save window positions
