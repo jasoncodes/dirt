@@ -30,7 +30,6 @@ protected:
 	DNSWorker *m_worker;
 	wxString m_hostname;
 	wxCriticalSection m_section;
-	static wxCriticalSection s_section_lookup;
 
 };
 

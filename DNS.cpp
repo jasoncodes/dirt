@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.6 2003-03-05 13:07:06 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.7 2003-03-05 13:23:16 jason Exp $)
 
 #include "DNS.h"
 
@@ -35,9 +35,9 @@ protected:
 		wxString hostname = m_dns->m_hostname;
 		m_dns->m_section.Leave();
 		wxIPV4address addr;
-		m_dns->s_section_lookup.Enter();
+		s_section_lookup.Enter();
 		bool success = addr.Hostname(hostname);
-		m_dns->s_section_lookup.Leave();
+		s_section_lookup.Leave();
 		wxUint32 ip = GetIPV4Address(addr);
 		if (!m_no_event)
 		{
@@ -50,10 +50,11 @@ protected:
 protected:
 	DNS *m_dns;
 	bool m_no_event;
+	static wxCriticalSection s_section_lookup;
 
 };
 
-wxCriticalSection DNS::s_section_lookup;
+wxCriticalSection DNSWorker::s_section_lookup;
 
 DNS::DNS()
 {
