@@ -6,6 +6,7 @@
 
 class InputControl;
 class TrayIcon;
+enum XPMs;
 
 class ServerUIFrame : public wxFrame, public ServerEventHandler
 {
