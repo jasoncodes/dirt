@@ -10,6 +10,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) -o $(PROGRAM) $(OBJECTS) `wx-config --libs`
+	chmod +x dirt dirtconsole
 
 clean:
 	rm -f *.o $(PROGRAM)
