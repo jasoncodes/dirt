@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.81 2003-08-24 14:00:34 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.82 2003-08-24 15:35:30 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -1135,7 +1135,7 @@ void Client::OnConnect()
 	wxString userdetails;
 	userdetails << ::wxGetUserId() << wxT('@') << ::wxGetHostName();
 	userdetails << wxT(" (\"") << ::wxGetUserName() << wxT("\")");
-	userdetails << wxT(" on ") << ::wxGetOsDescription();
+	userdetails << wxT(" on ") << GetOSDescription();
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERAGENT"), GetProductVersion() + wxT(' ') + GetRCSDate()));
 }

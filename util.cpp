@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.77 2003-08-22 02:53:53 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.78 2003-08-24 15:35:31 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1230,4 +1230,24 @@ wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value,
 		find_pos = old_value_upper.Length()?text_upper.find(old_value_upper, start_pos):wxString::npos;
 	}
 	return output;
+}
+
+#ifdef __UNIX__
+#include <sys/utsname.h>
+#endif
+
+wxString GetOSDescription()
+{
+#ifdef __UNIX__
+	struct utsname name;
+	if (uname (&name) == -1)
+	{
+		return wxEmptyString;
+	}
+	wxString str;
+	str << uname.sysname << wxT(" ") << uname.release;
+	return str;
+#else
+	return wxGetOsDescription();
+#endif
 }

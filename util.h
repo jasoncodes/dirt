@@ -82,5 +82,6 @@ bool StringToLongLong(const wxString &str, wxLongLong_t *x);
 bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x);
 bool SetDefaultMenuItem(wxMenu &mnu, int id);
 wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value, const wxString &new_value);
+wxString GetOSDescription();
 
 #endif

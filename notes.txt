@@ -1,3 +1,9 @@
+* open when complete is broken
+
+* show file transfer statuses in log even if unticked in options
+
+* ability to search logs. get details from 2003/08/23 log with Blacksage
+
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
 
@@ -68,6 +74,8 @@
 * [x] delete file after sent, delete file
   (confirm delete, use win32 recycle bin if available)
 
+* resend (for aborted/failed)
+
 * client options dialog
 	file transfers
 		[x] auto close
@@ -79,8 +87,6 @@
 				[x] send [x] receive
 		[x] auto accept
 			directory with browse button
-
-* ability to search multiple logs
 
 * investigate using #if wxUSE_UXTHEME / wxUxThemeEngine wx/msw/uxtheme.h
   for SwitchBar on Windows XP/2003
