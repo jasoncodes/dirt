@@ -103,7 +103,7 @@ public:
 	}
 
 protected:
-	const ClientTimer &m_timer;
+	const ClientTimer m_timer;
 
 };
 

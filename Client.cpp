@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.44 2003-04-03 02:08:47 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.45 2003-04-03 02:31:29 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -217,8 +217,8 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 			m_event_handler->OnClientInformation(context, wxT("      Halts all timers"));
 			m_event_handler->OnClientInformation(context, wxT("    /timer id"));
 			m_event_handler->OnClientInformation(context, wxT("      Lists information about timer called id"));
-			m_event_handler->OnClientInformation(context, wxT("    /timer id [start] times delay commands"));
-			m_event_handler->OnClientInformation(context, wxT("      Sets a timer called id that executes <commands>, <times> times (0 for unlimited), every <delay> seconds, starting at <start> (or immediately if <start> is ommited)"));
+			m_event_handler->OnClientInformation(context, wxT("    /timer id [start] times interval commands"));
+			m_event_handler->OnClientInformation(context, wxT("      Sets a timer called id that executes <commands>, <times> times (0 for unlimited), every <interval> seconds, starting at <start> (or immediately if <start> is ommited)"));
 
 		}
 		else
@@ -322,6 +322,8 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 			else
 			{
 
+				const wxString usage = wxT("/timer id [start] times interval commands");
+
 				ht = SplitQuotedHeadTail(params);
 
 				wxDateTime start_time = ParseDateTime(ht.head, true);
@@ -330,6 +332,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 				{
 					if (start_time < wxDateTime::Now())
 					{
+						m_event_handler->OnClientWarning(context, usage);
 						m_event_handler->OnClientWarning(context, wxString() << wxT("Start time must be in the future"));
 						return;
 					}
@@ -340,7 +343,15 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 				
 				if (!ht.head.ToLong(&times) || times < 0)
 				{
-					m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid number of times (or optional start time)"));
+					m_event_handler->OnClientWarning(context, usage);
+					if (ht.head.Length())
+					{
+						m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid number of times (or optional start time)"));
+					}
+					else
+					{
+						m_event_handler->OnClientWarning(context, wxT("You must specify the number of times"));
+					}
 					return;
 				}
 
@@ -355,7 +366,15 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 
 				if (!ht.head.ToDouble(&interval_secs) || interval_secs <= 0)
 				{
-					m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid interval"));
+					m_event_handler->OnClientWarning(context, usage);
+					if (ht.head.Length())
+					{
+						m_event_handler->OnClientWarning(context, wxString() << wxT("\"") << ht.head << wxT("\" is not a valid interval"));
+					}
+					else
+					{
+						m_event_handler->OnClientWarning(context, wxT("You must specify the interval"));
+					}
 					return;
 				}
 
@@ -365,7 +384,8 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 
 				if (!commands.Length())
 				{
-					m_event_handler->OnClientWarning(context, wxString() << wxT("You must specify a list of commands to execute"));
+					m_event_handler->OnClientWarning(context, usage);
+					m_event_handler->OnClientWarning(context, wxString() << wxT("You must specify the list of commands to execute"));
 					return;
 				}
 
