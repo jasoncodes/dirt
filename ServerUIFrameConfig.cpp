@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.30 2003-03-11 13:37:29 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.31 2003-03-12 00:59:22 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 #include <wx/filename.h>
@@ -154,6 +154,16 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblHostname = new wxStaticText(panel, -1, wxT("&Hostname:"));
 	m_txtHostname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtHostname);
+
+	#if wxUSE_WAVE
+	#else
+		lblSoundConnection->Enable(false);
+		m_txtSoundConnection->Enable(false);
+		cmdSoundConnection->Enable(false);
+		lblSoundJoin->Enable(false);
+		m_txtSoundJoin->Enable(false);
+		cmdSoundJoin->Enable(false);
+	#endif
 
 	m_chkPublicListEnabled = new wxCheckBox(panel, -1, wxT("&Public List"));
 	m_lblPublicListAuthentication = new wxStaticText(panel, -1, wxT("&Authentication:"));
@@ -386,7 +396,7 @@ void ServerUIFrameConfig::OnBrowse(wxCommandEvent &event)
 		(event.GetId()==ID_BROWSE_SOUND_CONNECTION) ?
 		m_txtSoundConnection : m_txtSoundJoin;
 	wxFileName fn(txt->GetValue());
-	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(), fn.GetFullName(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
+	wxFileDialog dlg(this, wxT("Select Sound File"), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), wxT("Wave Files (*.wav)|*.wav|All Files (*.*)|*.*"), wxOPEN|wxHIDE_READONLY|wxFILE_MUST_EXIST, wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		txt->SetValue(dlg.GetPath());

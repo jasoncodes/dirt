@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.30 2003-03-10 13:04:44 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.31 2003-03-12 00:59:22 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -75,6 +75,7 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 //////// ServerConfig ////////
 
 #include "Crypt.h"
+#include <wx/filename.h>
 
 ServerConfig::ServerConfig()
 {
@@ -120,6 +121,32 @@ long ServerConfig::GetMaxUsers() const
 long ServerConfig::GetMaxUsersIP() const
 {
 	return m_config->Read(wxT("Server/Max Users Per IP"), 4);
+}
+
+wxString ServerConfig::GetSoundConnection() const
+{
+	wxString default_sound = wxEmptyString;
+	#ifdef __WXMSW__
+		default_sound = wxGetOSDirectory() + wxT("\\Media\\ringout.wav");
+		if (!wxFileName(default_sound).FileExists())
+		{
+			default_sound = wxEmptyString;
+		}
+	#endif
+	return m_config->Read(wxT("Server/Sound/Connection"), default_sound);
+}
+
+wxString ServerConfig::GetSoundJoin() const
+{
+	wxString default_sound = wxEmptyString;
+	#ifdef __WXMSW__
+		default_sound = wxGetOSDirectory() + wxT("\\Media\\ringin.wav");
+		if (!wxFileName(default_sound).FileExists())
+		{
+			default_sound = wxEmptyString;
+		}
+	#endif
+	return m_config->Read(wxT("Server/Sound/Join"), default_sound);
 }
 
 wxString ServerConfig::GetServerName() const
@@ -199,6 +226,20 @@ bool ServerConfig::SetMaxUsers(long max_users)
 bool ServerConfig::SetMaxUsersIP(long max_users_ip)
 {
 	return m_config->Write(wxT("Server/Max Users Per IP"), max_users_ip);
+}
+
+bool ServerConfig::SetSoundConnection(const wxString &filename)
+{
+	return
+		(filename.Length() == 0 || wxFileName(filename).FileExists()) &&
+		m_config->Write(wxT("Server/Sound/Connection"), filename);
+}
+
+bool ServerConfig::SetSoundJoin(const wxString &filename)
+{
+	return
+		(filename.Length() == 0 || wxFileName(filename).FileExists()) &&
+		m_config->Write(wxT("Server/Sound/Join"), filename);
 }
 
 bool ServerConfig::SetServerName(const wxString &server_name)

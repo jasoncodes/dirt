@@ -120,8 +120,8 @@ public:
 	bool SetMaxUsers(long max_users);
 	bool SetMaxUsersIP(long max_users_ip);
 
-	bool SetSoundConnection(const wxString &filename) const;
-	bool SetSoundJoin(const wxString &filename) const;
+	bool SetSoundConnection(const wxString &filename);
+	bool SetSoundJoin(const wxString &filename);
 
 	bool SetServerName(const wxString &server_name);
 	bool SetHostname(const wxString &hostname);
