@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.23 2003-02-21 01:12:53 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.24 2003-02-21 04:40:37 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -99,6 +99,10 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		ASSERT_CONNECTED();
 		Disconnect();
 	}
+	else if (cmd == wxT("RECONNECT"))
+	{
+		ProcessConsoleInput(context, wxT("/connect ") + GetLastURL());
+	}
 	else if (cmd == wxT("NICK"))
 	{
 		ASSERT_CONNECTED();
@@ -113,7 +117,7 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 	}
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG NICK SAY SERVER"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG NICK RECONNECT SAY SERVER"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{
@@ -202,6 +206,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			details = ByteBuffer();
 		}
 		m_event_handler->OnClientUserJoin(nick, details);
+		if ((wxString)nick == m_nickname)
+		{
+			m_event_handler->OnClientStateChange();
+		}
 	}
 	else if (cmd == wxT("PART"))
 	{
@@ -213,6 +221,10 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			msg = ByteBuffer();
 		}
 		m_event_handler->OnClientUserPart(nick, details, msg);
+		if ((wxString)nick == m_nickname)
+		{
+			m_event_handler->OnClientStateChange();
+		}
 	}
 	else if (cmd == wxT("NICK"))
 	{
@@ -222,6 +234,7 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 			if ((wxString)nick1 == m_nickname)
 			{
 				m_nickname = nick2;
+				m_event_handler->OnClientStateChange();
 			}
 			m_event_handler->OnClientUserNick(nick1, nick2);
 			// add handling for file transfers here

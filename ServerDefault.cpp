@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.22 2003-02-21 01:27:35 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.23 2003-02-21 04:40:38 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -195,16 +195,17 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 			else
 			{
 				conn2->m_auth_fail_count++;
-				const int max_tries = 3;
-				if (conn2->m_auth_fail_count < max_tries)
+				const int max_attempts = 3;
+				if (conn2->m_auth_fail_count < max_attempts)
 				{
-					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Authentication failed. You have %d tries remaining."), max_tries - conn2->m_auth_fail_count));
-					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (try %d)"), conn2->m_auth_fail_count));
+					int left = max_attempts - conn2->m_auth_fail_count;
+					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Authentication failed. You have %d attempt%s remaining."), left, (left == 1)?wxT(""):wxT("s")));
+					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (attempt %d)"), conn2->m_auth_fail_count));
 				}
 				else
 				{
-					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Failed to authenticate %d times. Disconnecting"), max_tries));
-					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (try %d, disconnecting)"), conn2->m_auth_fail_count));
+					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Failed to authenticate %d times. Disconnecting"), max_attempts));
+					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (attempt %d, disconnecting)"), conn2->m_auth_fail_count));
 					conn2->m_sck->CloseWithEvent();
 				}
 			}

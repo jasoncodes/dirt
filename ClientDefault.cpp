@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.19 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.20 2003-02-21 04:40:38 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -68,6 +68,7 @@ bool ClientDefault::Connect(const URL &url)
 	{
 		return false;
 	}
+	m_url = url;
 	wxIPV4address addr;
 	addr.Hostname(url.GetHostname());
 	addr.Service(url.GetPort(11626));
@@ -86,6 +87,11 @@ void ClientDefault::Disconnect()
 bool ClientDefault::IsConnected()
 {
 	return m_sck->Ok();
+}
+
+const URL& ClientDefault::GetLastURL()
+{
+	return m_url;
 }
 
 void ClientDefault::SendToServer(const ByteBuffer &msg)

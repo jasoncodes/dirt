@@ -17,6 +17,7 @@ public:
 	virtual bool Connect(const URL &url);
 	virtual void Disconnect();
 	virtual bool IsConnected();
+	virtual const URL& GetLastURL();
 	virtual void Authenticate(const ByteBuffer &auth);
 
 protected:
@@ -29,6 +30,7 @@ protected:
 protected:
 	CryptSocketClient *m_sck;
 	ByteBuffer m_authkey;
+	URL m_url;
 
 private:
 	DECLARE_EVENT_TABLE()

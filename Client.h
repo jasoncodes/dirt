@@ -49,6 +49,7 @@ public:
 	virtual bool Connect(const URL &url) = 0;
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
+	virtual const URL& GetLastURL() = 0;
 
 	virtual void Authenticate(const ByteBuffer &auth) = 0;
 	virtual wxString GetNickname();

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.48 2003-02-21 01:31:04 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.49 2003-02-21 04:40:38 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -301,6 +301,26 @@ void ClientUIMDIFrame::OnClientStateChange()
 		m_lstNickList->Clear();
 	}
 	GetContext(wxEmptyString)->SetPasswordMode(false);
+	wxString title;
+	title << AppTitle(wxT("Client"));
+	if (m_client->IsConnected())
+	{
+		title << wxT(" - ");
+		if (m_client->GetNickname().Length())
+		{
+			title << m_client->GetNickname();
+		}
+		else
+		{
+			title << "<NoNick>";
+		}
+		const URL &url = m_client->GetLastURL();
+		if (url.GetHostname().Length())
+		{
+			title << wxT(" on ") << url.GetHostname();
+		}
+	}
+	SetTitle(title);
 }
 
 void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
