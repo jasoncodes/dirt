@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.19 2003-02-22 09:05:35 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.20 2003-02-22 10:25:45 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -65,12 +65,12 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 
 //////// ServerConfig ////////
 
-#include <wx/fileconf.h>
 #include "Crypt.h"
 
 ServerConfig::ServerConfig()
 {
 	m_config = new wxFileConfig(wxT("dirt"));
+	m_config->SetUmask(0077);
 }
 
 ServerConfig::~ServerConfig()
