@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.18 2004-05-16 04:42:44 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.19 2004-06-07 09:49:49 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -287,7 +287,21 @@ void Console::Output(const wxString &line)
 	#ifdef __WXMSW__
 		wxPuts(line);
 	#else
-		puts(line.mb_str());
+		wxCharBuffer buff = line.mb_str(wxConvLibc);
+		if (!buff)
+		{
+			buff = wxCharBuffer(line.Length()+1);
+			char *ptr = buff.data();
+			for (size_t i = 0; i < line.Length(); ++i)
+			{
+				if ((unsigned int)line[i] < 256u)
+				{
+					ptr[i] = (unsigned char)line[i];
+				}
+			}
+			ptr[line.Length()] = 0;
+		}
+		puts(buff);
 	#endif
 	fflush(stdout);
 }
