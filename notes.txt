@@ -44,6 +44,8 @@
 
 * filter local ips from avg ping
 
+* disable gui elements when uncheck checkboxes in server config dialog
+
 * tray icon support
 * client side ping
 * /bind
