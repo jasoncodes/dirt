@@ -1,5 +1,5 @@
-#ifndef _SpanTag_H
-#define _SpanTag_H
+#ifndef SpanTag_H_
+#define SpanTag_H_
 
 #include <wx/html/winpars.h>
 

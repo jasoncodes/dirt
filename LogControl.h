@@ -2,8 +2,8 @@
 // wxEVT_COMMAND_BUTTON_CLICKED event and use event.GetString()
 // to get the URI of the link that was clicked.
 
-#ifndef _LogControl_H
-#define _LogControl_H
+#ifndef LogControl_H_
+#define LogControl_H_
 
 #include "wx/html/htmlwin.h"
 

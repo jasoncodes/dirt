@@ -1,5 +1,5 @@
-#ifndef _ClientUIMDICanvas_H
-#define _ClientUIMDICanvas_H
+#ifndef ClientUIMDICanvas_H_
+#define ClientUIMDICanvas_H_
 
 #include "SwitchBarCanvas.h"
 #include "LogControl.h"

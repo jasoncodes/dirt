@@ -1,5 +1,5 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef UTIL_H_
+#define UTIL_H_
 
 class wxHtmlWinParser;
 

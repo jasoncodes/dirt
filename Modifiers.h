@@ -1,5 +1,5 @@
-#ifndef _Modifiers_H
-#define _Modifiers_H
+#ifndef Modifiers_H_
+#define Modifiers_H_
 
 struct ModifierMapping
 {

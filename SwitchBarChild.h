@@ -1,5 +1,5 @@
-#ifndef _SwitchBarChild_H
-#define _SwitchBarChild_H
+#ifndef SwitchBarChild_H_
+#define SwitchBarChild_H_
 
 #include "SwitchBarCanvas.h"
 

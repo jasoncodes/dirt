@@ -1,5 +1,5 @@
-#ifndef _ClientUIMDITransferPanel_H
-#define _ClientUIMDITransferPanel_H
+#ifndef ClientUIMDITransferPanel_H_
+#define ClientUIMDITransferPanel_H_
 
 class ClientUIMDICanvas;
 

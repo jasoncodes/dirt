@@ -1,5 +1,5 @@
-#ifndef _ClientUIMDIFrame_H
-#define _ClientUIMDIFrame_H
+#ifndef ClientUIMDIFrame_H_
+#define ClientUIMDIFrame_H_
 
 #include "SwitchBarParent.h"
 #include "Client.h"

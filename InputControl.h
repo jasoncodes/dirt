@@ -1,7 +1,7 @@
 // to handle events from this control use EVT_TEXT_ENTER()
 
-#ifndef _InputControl_H
-#define _InputControl_H
+#ifndef InputControl_H_
+#define InputControl_H_
 
 class InputControlColourPopup;
 

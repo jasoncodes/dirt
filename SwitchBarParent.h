@@ -1,5 +1,5 @@
-#ifndef _SwitchBarParent_H
-#define _SwitchBarParent_H
+#ifndef SwitchBarParent_H_
+#define SwitchBarParent_H_
 
 #include "SwitchBar.h"
 #include "SwitchBarChild.h"

@@ -10,8 +10,8 @@
  * GetClientData()  Triggering button's user data
  */
 
-#ifndef _SwitchBar_H
-#define _SwitchBar_H
+#ifndef SwitchBar_H_
+#define SwitchBar_H_
 
 #include <wx/dynarray.h>
 

@@ -1,5 +1,5 @@
-#ifndef _Client_H
-#define _Client_H
+#ifndef Client_H_
+#define Client_H_
 
 class ClientEventHandler
 {

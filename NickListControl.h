@@ -1,5 +1,5 @@
-#ifndef _NickListControl_H
-#define _NickListControl_H
+#ifndef NickListControl_H_
+#define NickListControl_H_
 
 /**
  * EVT_MENU for right click

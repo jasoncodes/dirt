@@ -1,5 +1,5 @@
-#ifndef _Dirt_H
-#define _Dirt_H
+#ifndef Dirt_H_
+#define Dirt_H_
 
 class ClientUIConsole;
 

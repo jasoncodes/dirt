@@ -1,5 +1,5 @@
-#ifndef _SwitchBarCanvas_H
-#define _SwitchBarCanvas_H
+#ifndef SwitchBarCanvas_H_
+#define SwitchBarCanvas_H_
 
 class SwitchBarParent;
 class SwitchBarChild;

@@ -1,5 +1,5 @@
-#ifndef _ClientUIConsole_H
-#define _ClientUIConsole_H
+#ifndef ClientUIConsole_H_
+#define ClientUIConsole_H_
 
 #include "Client.h"
 
