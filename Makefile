@@ -23,9 +23,11 @@ BUNDLE = Dirt.app/Contents
 
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
 	CXXFLAGS_EXTRA = `pkg-config --cflags gtk+-2.0`
+	EXTRAS_TO_COMPILE=dirtlogs.cgi
 else
 	ifneq (,$(findstring wx_gtk,$(WX_BASENAME)))
 		CXXFLAGS_EXTRA = `gtk-config --cflags`
+		EXTRAS_TO_COMPILE=dirtlogs.cgi
 	endif
 endif
 
@@ -47,7 +49,7 @@ CXXFLAGS = \
 		$(CXXFLAGS_EXTRA) -I`$(WXCONFIG) --prefix`/include \
 	)
 LINK_FLAGS_GUI = `$(WXCONFIG) --libs`
-LINK_FLAGS_CLI = `$(WXCONFIG) --libs base`
+LINK_FLAGS_CLI = `$(WXCONFIG) --libs=base`
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS = \
@@ -78,7 +80,7 @@ ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
 	EXTRA_CLEAN = Dirt.res
 endif
 
-dirt : Dirt$(BINARY_SUFFIX) dirtlogs.cgi
+dirt : Dirt$(BINARY_SUFFIX) $(EXTRAS_TO_COMPILE)
 ifneq ($(DIRT_EXE_PERMS),xxx)
 	chmod +x dirt
 endif
