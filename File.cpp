@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: File.cpp,v 1.5 2003-05-10 07:48:26 jason Exp $)
+RCS_ID($Id: File.cpp,v 1.6 2003-05-16 10:19:41 jason Exp $)
 
 #include "File.h"
 
@@ -18,6 +18,11 @@ RCS_ID($Id: File.cpp,v 1.5 2003-05-10 07:48:26 jason Exp $)
 #endif
 
 #if USE_WIN32_FILE
+
+	// Why is it that people don't run late versions of Platform SDK? :)
+	#ifndef INVALID_SET_FILE_POINTER
+		#define INVALID_SET_FILE_POINTER ((DWORD)-1)
+	#endif
 
 	static inline wxLongLong_t MakeLongLong(long hi, unsigned long lo)
 	{
