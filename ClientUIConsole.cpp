@@ -122,25 +122,32 @@ END_EVENT_TABLE()
 
 ClientUIConsole::ClientUIConsole()
 {
+
 	Output(wxString()<<"ClientUIConsole()");
 	m_client = new ClientDefault(this);
+
 	m_read_thread = new ReadThread(this, m_client);
 	m_read_thread->Create();
 	m_read_thread->Run();
+
 	#ifdef __WXMSW__
 		ctrl_handler_read_thread = m_read_thread;
 		SetConsoleCtrlHandler(CtrlHandler, TRUE);
 	#endif
+
 }
 
 ClientUIConsole::~ClientUIConsole()
 {
+
 	Output(wxString()<<"~ClientUIConsole()");
 	delete m_client;
+
 	Output(wxString()<<"shutting down read thread");
 	m_read_thread->Delete();
 	Output(wxString()<<"read thread shut down");
 	delete m_read_thread;
+
 }
 
 void ClientUIConsole::OnTextEnter(wxCommandEvent& event)
