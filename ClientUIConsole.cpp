@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.54 2003-05-16 16:13:01 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.55 2003-06-30 04:42:34 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -23,6 +23,7 @@ ClientUIConsole::ClientUIConsole(bool no_input)
 {
 	m_passmode = false;
 	m_log = NULL;
+	OnClientInformation(wxEmptyString, AppTitle(wxT("Client")));
 	m_client = new ClientDefault(this);
 	wxString log_dir = m_client->GetConfig().GetActualLogDir();
 	wxDateTime log_date = LogWriter::GenerateNewLogDate(log_dir, wxT("Client"));
