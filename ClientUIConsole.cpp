@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.29 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.30 2003-02-21 01:31:04 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -75,17 +75,17 @@ void ClientUIConsole::OnClientDebug(const wxString &context, const wxString &tex
 
 void ClientUIConsole::OnClientWarning(const wxString &context, const wxString &text)
 {
-	Output(wxString() << wxT("* ") << text);
+	Output(wxString() << wxT("*** ") << text);
 }
 
 void ClientUIConsole::OnClientError(const wxString &context, const wxString &type, const wxString &text)
 {
-	Output(wxString() << wxT("* Error ") << type << wxT(": ") << text);
+	Output(wxString() << wxT("*** Error ") << type << wxT(": ") << text);
 }
 
 void ClientUIConsole::OnClientInformation(const wxString &context, const wxString &text)
 {
-	Output(wxString() << wxT("* ") << text);
+	Output(wxString() << wxT("*** ") << text);
 }
 
 void ClientUIConsole::OnClientStateChange()
@@ -142,7 +142,7 @@ void ClientUIConsole::OnClientMessageIn(const wxString &nick, const wxString &te
 
 void ClientUIConsole::OnClientUserList(const wxArrayString &nicklist)
 {
-	wxString msg = wxT("* Chatting with: ");
+	wxString msg = wxT("*** Chatting with: ");
 	if (nicklist.GetCount() > 0)
 	{
 		for (size_t i = 0; i < nicklist.GetCount(); ++i)
@@ -166,11 +166,11 @@ void ClientUIConsole::OnClientUserJoin(const wxString &nick, const wxString &det
 	wxString msg;
 	if (nick == m_client->GetNickname())
 	{
-		msg << wxT("* Now chatting as ") << nick;
+		msg << wxT("*** Now chatting as ") << nick;
 	}
 	else
 	{
-		msg << wxT("* ") << nick;
+		msg << wxT("*** ") << nick;
 		if (details.Length() > 0)
 		{
 			msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
@@ -183,7 +183,7 @@ void ClientUIConsole::OnClientUserJoin(const wxString &nick, const wxString &det
 void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &details, const wxString &message)
 {
 	wxString msg;
-	msg << wxT("* ") << nick;
+	msg << wxT("*** ") << nick;
 	if (details.Length() > 0)
 	{
 		msg << wxT(" (") << details << wxT(")");
@@ -203,15 +203,15 @@ void ClientUIConsole::OnClientUserNick(const wxString &old_nick, const wxString 
 	
 	if (old_nick == new_nick)
 	{
-		msg << wxT("* You nickname is ") << new_nick;
+		msg << wxT("*** You nickname is ") << new_nick;
 	}
 	else if (new_nick == m_client->GetNickname())
 	{
-		msg << wxT("* You are now known as ") << new_nick;
+		msg << wxT("*** You are now known as ") << new_nick;
 	}
 	else
 	{
-		msg << wxT("* ") << old_nick;
+		msg << wxT("*** ") << old_nick;
 		msg << wxT(" is now known as ");
 		msg << new_nick;
 	}

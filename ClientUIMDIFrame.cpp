@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.47 2003-02-21 01:08:37 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.48 2003-02-21 01:31:04 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -281,17 +281,17 @@ void ClientUIMDIFrame::OnClientDebug(const wxString &context, const wxString &te
 
 void ClientUIMDIFrame::OnClientWarning(const wxString &context, const wxString &text)
 {
-	AddLine(context, wxT("* ") + text, *wxRED);
+	AddLine(context, wxT("*** ") + text, *wxRED);
 }
 
 void ClientUIMDIFrame::OnClientError(const wxString &context, const wxString &type, const wxString &text)
 {
-	AddLine(context, wxString() << wxT("* Error ") << type << wxT(": ") << text, *wxRED);
+	AddLine(context, wxString() << wxT("*** Error ") << type << wxT(": ") << text, *wxRED);
 }
 	
 void ClientUIMDIFrame::OnClientInformation(const wxString &context, const wxString &text)
 {
-	AddLine(context, wxT("* ") + text, wxColour(0,0,128));
+	AddLine(context, wxT("*** ") + text, wxColour(0,0,128));
 }
 
 void ClientUIMDIFrame::OnClientStateChange()
@@ -370,11 +370,11 @@ void ClientUIMDIFrame::OnClientUserJoin(const wxString &nick, const wxString &de
 	wxString msg;
 	if (nick == m_client->GetNickname())
 	{
-		msg << wxT("* Now chatting as ") << nick;
+		msg << wxT("*** Now chatting as ") << nick;
 	}
 	else
 	{
-		msg << wxT("* ") << nick;
+		msg << wxT("*** ") << nick;
 		if (details.Length() > 0)
 		{
 			msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
@@ -391,7 +391,7 @@ void ClientUIMDIFrame::OnClientUserPart(const wxString &nick, const wxString &de
 {
 
 	wxString msg;
-	msg << wxT("* ") << nick;
+	msg << wxT("*** ") << nick;
 	if (details.Length() > 0)
 	{
 		msg << wxT(" (") << details << (wxChar)OriginalModifier << wxT(")");
@@ -414,15 +414,15 @@ void ClientUIMDIFrame::OnClientUserNick(const wxString &old_nick, const wxString
 	
 	if (old_nick == new_nick)
 	{
-		msg << wxT("* You nickname is ") << new_nick;
+		msg << wxT("*** You nickname is ") << new_nick;
 	}
 	else if (new_nick == m_client->GetNickname())
 	{
-		msg << wxT("* You are now known as ") << new_nick;
+		msg << wxT("*** You are now known as ") << new_nick;
 	}
 	else
 	{
-		msg << wxT("* ") << old_nick;
+		msg << wxT("*** ") << old_nick;
 		msg << wxT(" is now known as ");
 		msg << new_nick;
 	}

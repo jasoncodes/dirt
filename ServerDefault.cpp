@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.21 2003-02-21 01:08:38 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.22 2003-02-21 01:27:35 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -220,3 +220,4 @@ bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthche
 		return false;
 	}
 }
+
