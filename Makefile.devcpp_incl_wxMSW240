@@ -1,5 +1,0 @@
-WINDRES := $(WINDRES) $(subst -I,--include-dir=,$(CXXINCS))
-
-all-before:
-	if not exist Release mkdir Release
-	if not exist UnicodeRelease mkdir UnicodeRelease

@@ -1,3 +1,22 @@
+prompt when pasting multiple lines
+
+implement digest auth in http.cpp
+
+filename label in filetransferpanel doesnt convert & to &&
+
+default tab to work like it does in bash (dont pick unless not ambiguous, show list of possibles otherwise)
+
+/./././././../././././
+/././././././././././././././.
+
+remove 2.4 make files
+
+see if possible to not use GTK yet on linux
+
+remove monolithic wx lib usage
+
+change KB to KiB
+
 why is there so much latency in ping yet typing text is so fast
 this applies to /ping and /whois and titlebar
 
