@@ -25,7 +25,8 @@ enum
 	ID_TRANSFER,
 	ID_NICKLIST,
 	ID_NICKLIST_NICK,
-	ID_NICKLIST_MESSAGE
+	ID_NICKLIST_MESSAGE,
+	ID_NICKLIST_QUERY
 };
 
 BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
@@ -36,7 +37,8 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 	EVT_LISTBOX_DCLICK(ID_NICKLIST, ClientUIMDICanvas::OnNickListDblClick)
 	EVT_MENU(ID_NICKLIST, ClientUIMDICanvas::OnNickListMenu)
-	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMessage)
+	EVT_MENU(ID_NICKLIST_MESSAGE, ClientUIMDICanvas::OnNickListMenuItem)
+	EVT_MENU(ID_NICKLIST_QUERY, ClientUIMDICanvas::OnNickListMenuItem)
 END_EVENT_TABLE()
 
 ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &title, CanvasType type)
@@ -239,26 +241,8 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 
 void ClientUIMDICanvas::OnNickListDblClick(wxCommandEvent &event)
 {
-	OnNickListMessage(event);
-}
-
-void ClientUIMDICanvas::OnNickListMessage(wxCommandEvent &event)
-{
-
-	wxString nick = m_lstNickList->GetSelectedNick();
-
-	if (nick.Length() > 0)
-	{
-
-		wxString msg = ::wxGetTextFromUser("Message to send to " + nick + ":", "Dirt Secure Chat");
-		
-		if (msg.Length() > 0)
-		{
-			GetClient()->SendMessage(nick, msg);
-		}
-
-	}
-
+	event.SetId(ID_NICKLIST_MESSAGE);
+	OnNickListMenuItem(event);
 }
 
 void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
@@ -272,9 +256,49 @@ void ClientUIMDICanvas::OnNickListMenu(wxCommandEvent &event)
 	menu.Enable(ID_NICKLIST_NICK, false);
 	menu.AppendSeparator();
 	menu.Append(ID_NICKLIST_MESSAGE, "Send &Message");
+	menu.Append(ID_NICKLIST_QUERY, "&Query");
 
 	wxPoint pos = ScreenToClient(wxGetMousePosition());
 	PopupMenu(&menu, pos);
+
+}
+
+void ClientUIMDICanvas::OnNickListMenuItem(wxCommandEvent &event)
+{
+
+	wxString nick = m_lstNickList->GetSelectedNick();
+
+	switch (event.GetId())
+	{
+
+		case ID_NICKLIST_MESSAGE:
+		{
+
+			if (nick.Length() > 0)
+			{
+
+				wxString msg = ::wxGetTextFromUser("Message to send to " + nick + ":", "Dirt Secure Chat");
+				
+				if (msg.Length() > 0)
+				{
+					GetClient()->SendMessage(nick, msg);
+				}
+
+			}
+
+		}
+		break;
+
+		case ID_NICKLIST_QUERY:
+		{
+			GetClient()->ProcessInput(wxEmptyString, "/query " + nick);
+		}
+		break;
+
+		default:
+			wxFAIL_MSG("Unknown event ID");
+
+	}
 
 }
 
