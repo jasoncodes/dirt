@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.47 2003-04-03 04:50:24 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.48 2003-04-03 05:23:49 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -757,7 +757,7 @@ void Client::CTCP(const wxString &context, const wxString &nick, const wxString 
 	ByteBuffer data2(data);
 	if (type.Upper() == wxT("PING"))
 	{
-		data2 = wxLongLong(GetMillisecondTicks()).ToString();
+		data2 = Uint64ToBytes(GetMillisecondTicks());
 	}
 	SendToServer(EncodeMessage(context, wxT("CTCP"), Pack(nick, type.Upper(), data2)));
 }
@@ -1078,14 +1078,12 @@ bool Client::ProcessCTCPOut(const wxString &context, const wxString &nick, wxStr
 
 bool Client::ProcessCTCPReplyIn(const wxString &context, const wxString &nick, wxString &type, ByteBuffer &data)
 {
-	if (type == wxT("PING"))
+	if (type == wxT("PING") && data.Length() == sizeof(wxUint64))
 	{
-		unsigned long ul;
-		if (((wxString)data).ToULong(&ul))
-		{
-			long latency = (long)(GetMillisecondTicks() - ul);
-			data = ByteBuffer(SecondsToMMSS(latency, true, true)) + ByteBuffer(1) + ByteBuffer(wxString() << latency);
-		}
+		unsigned wxLongLong_t num = BytesToUint64(data.LockRead(), data.Length());
+		data.Unlock();
+		long latency = (long)(GetMillisecondTicks() - num);
+		data = ByteBuffer(SecondsToMMSS(latency, true, true)) + ByteBuffer(1) + data;
 	}
 	return false;
 }

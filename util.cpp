@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.52 2003-04-03 04:48:03 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.53 2003-04-03 05:23:50 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -366,6 +366,20 @@ wxString SecondsToMMSS(long seconds, bool milliseconds, bool verbose)
 
 	return result;
 
+}
+
+ByteBuffer Uint64ToBytes(unsigned wxLongLong_t num)
+{
+	wxULongLong ull(num);
+	return Uint32ToBytes(ull.GetHi()) + Uint32ToBytes(ull.GetLo());
+}
+
+unsigned wxLongLong_t BytesToUint64(const byte *data, int len)
+{
+	wxASSERT((len == 8) && (len == sizeof (wxUint64)) && (len == sizeof (wxULongLong)));
+	wxUint32 hi = BytesToUint32(data + 0, 4);
+	wxUint32 lo = BytesToUint32(data + 4, 4);
+	return wxULongLong(hi, lo).GetValue();
 }
 
 ByteBuffer Uint32ToBytes(wxUint32 num)
