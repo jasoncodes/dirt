@@ -27,12 +27,7 @@ don't hyperlink "news:", "http:", etc by themselves
 
 * option to minimize to tray by default (invert ctrl flag)
 
-* dirt.pl should use a javascript timer as well as a http refresh to refresh
-the page (as it seems the http one fails after a dirt:// link is clicked).
-
-* dirt.pl should use some javascript to show how many minutes and seconds
-ago the dirt.pl page refreshed (and why not throw in a thing saying how out
-the local clock is :))
+* only flash 2 times then display maybe a third icon option for system tray
 
 * dirt.pl should not count private ips (192.168.*.*, 172.16.*.* ->
 172.32.*.*, 10.*.*.*) in choosing something for the hostname field
