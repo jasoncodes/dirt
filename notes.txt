@@ -1,4 +1,6 @@
-filter various invalid chars from nick after content enhance (, ), space, etc
+GTK: startup with --host=jason.darktech.org results in it thinking
+that it didn't have focus and a red line appears at the top
+with multiple taskbar flashes
 
 @home.my shouldnt be URL'd
 
