@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.19 2004-06-11 16:29:31 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.20 2004-06-11 22:45:55 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -313,6 +313,43 @@ bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
 
 	return rval;
 
+}
+
+#elif defined(__WXMAC__)
+
+// it seems Mac doesn't have support for wxTaskBarIcon yet
+// here's a set of stubs for TrayIcon so we can still compile
+
+TrayIcon::TrayIcon()
+{
+}
+
+TrayIcon::~TrayIcon()
+{
+}
+
+void TrayIcon::SetEventHandler(wxEvtHandler *handler, wxEventType id)
+{
+        m_handler = handler;
+        m_id = id;
+}
+
+bool TrayIcon::Ok()
+{
+        return false;
+}
+
+void TrayIcon::SetIcon(const char **xpm)
+{
+}
+
+void TrayIcon::SetToolTip(const wxString &tooltip)
+{
+}
+
+bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
+{
+        return false;
 }
 
 #else
