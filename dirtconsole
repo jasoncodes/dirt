@@ -8,72 +8,12 @@ else
 	exit 1
 fi
 
-if which dtach > /dev/null 2> /dev/null;
+if which xvfb-run > /dev/null 2> /dev/null;
 then
 	true
 else
-	echo dirtconsole: dtach not found!
+	echo dirtconsole: xvfb-run not found!
 	exit 1
 fi
 
-if which usleep > /dev/null 2> /dev/null;
-then
-	SLEEP_CMD="usleep 250"
-else
-	if sleep --version | grep "GNU" > /dev/null;
-	then
-		SLEEP_CMD="sleep 0.25"
-	else
-		SLEEP_CMD="sleep 1"
-	fi
-fi
-
-DISPLAY=499
-XVFB_PID=
-
-while [ $DISPLAY != 600 -a "$XVFB_PID" == "" ]
-do
-
-	DISPLAY=$(($DISPLAY+1))
-	LOCK_FILE=/tmp/.X${DISPLAY}-lock
-
-	if [ ! -f $LOCK_FILE ]
-	then
-
-		if dtach -n ~/dirt_xvfb_dtach_$DISPLAY_$$_$RANDOM Xvfb :$DISPLAY -screen 0 32x32x24 -once > /dev/null
-		then
-
-			TRIES=0
-			while [ \( ! -f $LOCK_FILE \) -a \( $TRIES -lt 25 \) ]
-			do
-				$SLEEP_CMD
-				TRIES=$(($TRIES+1))
-			done
-
-			if [ $TRIES -lt 25 ]
-			then
-				XVFB_PID=`cat $LOCK_FILE`
-			else
-				echo dirtconsole: Xvfb failed to start in 5 seconds.
-				exit 1;
-			fi
-
-		fi
-
-	fi
-
-done
-
-if [ "$XVFB_PID" == "" ];
-then
-
-	echo dirtconsole: Unable to start Xvfb.
-
-else
-
-	export DISPLAY=:$DISPLAY
-	`dirname $0`/Dirt --console "$@"
-
-	kill $XVFB_PID
-
-fi
+exec xvfb-run `dirname $0`/Dirt --console $*
