@@ -10,6 +10,7 @@ class wxDateTime;
 
 #include "wx/hashmap.h"
 WX_DECLARE_STRING_HASH_MAP(wxString, StringHashMap);
+WX_DECLARE_STRING_HASH_MAP(ByteBuffer, ByteBufferHashMap);
 
 struct HeadTail
 {
