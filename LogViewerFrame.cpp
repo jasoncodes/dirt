@@ -40,7 +40,7 @@ enum
 	ID_SASH2,
 	ID_TREECTRL,
 	ID_CTRL_F,
-	ID_EXPORT
+	ID_DELETE
 };
 
 BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
@@ -50,6 +50,7 @@ BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
 	EVT_TREE_SEL_CHANGED(ID_TREECTRL, LogViewerFrame::OnTreeSelChanged)
 	EVT_TREE_ITEM_RIGHT_CLICK(ID_TREECTRL, LogViewerFrame::OnItemRightClick)
 	EVT_MENU(ID_CTRL_F, LogViewerFrame::OnCtrlF)
+	EVT_MENU(ID_DELETE, LogViewerFrame::OnDelete)
 END_EVENT_TABLE()
 
 LogViewerFrame::LogViewerFrame()
@@ -78,9 +79,10 @@ LogViewerFrame::LogViewerFrame()
 
 	m_dir->ExpandPath(LogReader::GetDefaultLogDirectory());
 
-	wxAcceleratorEntry entries[1];
+	wxAcceleratorEntry entries[2];
 	entries[0].Set(wxACCEL_CTRL, 'F', ID_CTRL_F);
-	wxAcceleratorTable accel(1, entries);
+	entries[1].Set(0, WXK_DELETE, ID_DELETE);
+	wxAcceleratorTable accel(2, entries);
 	SetAcceleratorTable(accel);
 
 	SetSizeHints(300,200);
@@ -162,7 +164,7 @@ void LogViewerFrame::OnTreeSelChanged(wxTreeEvent &event)
 
 wxString LogViewerFrame::GetItemFilename(const wxTreeItemId& id) const
 {
-	LogViewerTreeItemData *data = (LogViewerTreeItemData*)(m_tree->GetItemData(id));
+	LogViewerTreeItemData *data = id.IsOk()?((LogViewerTreeItemData*)(m_tree->GetItemData(id))):0;
 	return data?data->GetFilename():wxString();
 }
 
@@ -275,6 +277,7 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 	}
 	else
 	{
+		last_filename = wxEmptyString;
 		wxMessageBox(wxT("Unable to open log file"), wxT("Dirt Secure Chat"), wxOK|wxICON_ERROR, this);
 	}
 
@@ -419,6 +422,11 @@ void LogViewerFrame::PopulateTree(const wxString &dirname)
 
 }
 
+void LogViewerFrame::OnCtrlF(wxCommandEvent &event)
+{
+	m_log->ShowFindDialog(true);
+}
+
 void LogViewerFrame::OnItemRightClick(wxTreeEvent &event)
 {
 	wxTreeItemId id = event.GetItem();
@@ -427,13 +435,79 @@ void LogViewerFrame::OnItemRightClick(wxTreeEvent &event)
 		if (m_tree->GetItemData(id) != NULL)
 		{
 			wxMenu menu;
-			menu.Append(ID_EXPORT, wxT("&Export..."));
+			menu.Append(ID_DELETE, wxT("&Delete"));
 			PopupMenu(&menu, ScreenToClient(m_tree->ClientToScreen(event.GetPoint())));
 		}
 	}
 }
 
-void LogViewerFrame::OnCtrlF(wxCommandEvent &event)
+void LogViewerFrame::OnDelete(wxCommandEvent &event)
 {
-	m_log->ShowFindDialog(true);
+
+	wxTreeItemId id = m_tree->GetSelection();
+
+	wxString filename = GetItemFilename(id);
+
+	if (filename.Length())
+	{
+
+		filename = wxFileName(m_dir->GetPath(), filename).GetFullPath();
+
+		bool success;
+
+		{
+
+			wxBusyCursor busy;
+
+			#ifdef __WXMSW__
+				SHFILEOPSTRUCT FileOp;
+				FileOp.hwnd = (HWND)GetHandle();
+				FileOp.wFunc = FO_DELETE;
+				wxChar pFromBuff[MAX_PATH*2];
+				memset(pFromBuff, 0, MAX_PATH*2*(sizeof wxChar));
+				wxStrcpy(pFromBuff, filename.c_str());
+				FileOp.pFrom = pFromBuff;
+				FileOp.pTo = NULL;
+				FileOp.fFlags = FOF_ALLOWUNDO|FOF_NOERRORUI|FOF_NOCONFIRMATION;
+				success = (SHFileOperation(&FileOp) == 0);
+			#else
+				success = wxRemoveFile(filename);
+			#endif
+
+		}
+		
+		if (success)
+		{
+		
+			m_log->Clear();
+			last_filename = wxEmptyString;
+
+			if (m_tree->GetChildrenCount(id))
+			{
+				delete m_tree->GetItemData(id);
+				m_tree->SetItemData(id, NULL);
+			}
+			else
+			{
+				wxTreeItemId parent = m_tree->GetItemParent(id);
+				m_tree->Delete(id);
+				if (parent.IsOk() && !m_tree->GetChildrenCount(parent) && !m_tree->GetItemData(parent))
+				{
+					wxTreeItemId grand_parent = m_tree->GetItemParent(parent);
+					m_tree->Delete(parent);
+					if (grand_parent.IsOk() && !m_tree->GetChildrenCount(grand_parent) && !m_tree->GetItemData(grand_parent))
+					{
+						m_tree->Delete(grand_parent);
+					}
+				}
+			}
+
+		}
+		else
+		{
+			wxMessageBox(wxT("Error deleting ") + filename, wxT("Dirt Secure Chat"), wxOK | wxICON_ERROR, this);
+		}
+
+	}
+
 }
