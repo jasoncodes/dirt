@@ -32,10 +32,10 @@ OPTIMIZATIONS = -O1
 
 CXXFLAGS = \
 	$(strip \
-		$(OPTIMIZATION) `wx-config --cxxflags` $(KDE_CXXFLAGS \
-		$(GTK_EXTRAS) -I`wx-config --prefix`/include) -DNDEBUG \
+		$(OPTIMIZATION) `$(WXCONFIG) --cxxflags` $(KDE_CXXFLAGS \
+		$(GTK_EXTRAS) -I`$(WXCONFIG) --prefix`/include) -DNDEBUG \
 	)
-LINK_FLAGS = `wx-config --libs` $(KDE_LINK)
+LINK_FLAGS = `$(WXCONFIG) --libs` $(KDE_LINK)
 .SUFFIXES: .o .cpp
 .PRECIOUS: dirt
 .PHONY: clean dirt all
