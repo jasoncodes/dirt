@@ -423,10 +423,11 @@ SwitchBarCanvas *SwitchBarParent::GetActiveCanvas()
 
 void SwitchBarParent::OnSwitchBarMinimize(wxCommandEvent& event)
 {
-	m_switchbar->SelectButton(-1);
-	m_switchbar->RaiseEvent(switchbar_popup_button_index, false);
-	int new_index = m_switchbar->GetIndexFromUserData(GetActiveCanvas());
-	m_switchbar->SelectButton(new_index);
+	if (m_switchbar->GetSelectedIndex() != switchbar_popup_button_index)
+	{
+		m_switchbar->SimulateClick(switchbar_popup_button_index);
+	}
+	m_switchbar->SimulateClick(switchbar_popup_button_index);
 }
 
 void SwitchBarParent::OnSwitchBarClose(wxCommandEvent& event)
