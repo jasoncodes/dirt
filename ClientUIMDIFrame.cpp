@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.52 2003-02-22 05:16:20 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.53 2003-02-24 12:43:44 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -95,6 +95,28 @@ bool ClientUIMDIFrame::ResetWindowPos()
 void ClientUIMDIFrame::OnActivate(wxActivateEvent &event)
 {
 	m_focused = event.GetActive();
+	if (!m_focused)
+	{
+		ResetRedLines();
+	}
+}
+
+void ClientUIMDIFrame::ResetRedLines()
+{
+	for (int i = 0; i < m_switchbar->GetButtonCount(); ++i)
+	{
+		bool b = !m_switchbar->GetButtonHighlight(i);
+		if (b && IsFocused())
+		{
+			b = m_switchbar->GetSelectedIndex() != i;
+		}
+		if (b)
+		{
+			ClientUIMDICanvas *canvas =
+				(ClientUIMDICanvas*)m_switchbar->GetUserDataFromIndex(i);
+			canvas->GetLog()->ResetRedLine();
+		}
+	}
 }
 
 bool ClientUIMDIFrame::IsFocused()
@@ -189,34 +211,41 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 {
 
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
-	canvas->GetLog()->AddTextLine(GetShortTimestamp() + line, line_colour, tmmParse, convert_urls);
+
+	bool bAlert = false;
+	bool bFlashWindow = false;
+
+	if (GetActiveChild() != canvas->GetParent())
+	{
+		int button_index = m_switchbar->GetIndexFromUserData(canvas);
+		if (button_index > -1)
+		{
+			m_switchbar->SetButtonHighlight(button_index, true);
+		}
+		bAlert = true;
+	}
+
+	if (!IsFocused())
+	{
+		bAlert = true;
+		bFlashWindow = true;
+	}
+
+	canvas->GetLog()->AddTextLine(GetShortTimestamp() + line, line_colour, tmmParse, convert_urls, true, bAlert);
 	
 	if (!suppress_alert)
 	{
-
-		bool bAlert = false;
-		
-		if (GetActiveChild() != canvas->GetParent())
+	
+		if (bAlert)
 		{
-			int button_index = m_switchbar->GetIndexFromUserData(canvas);
-			if (button_index > -1)
-			{
-				m_switchbar->SetButtonHighlight(button_index, true);
-			}
-			bAlert = true;
+			wxBell();
 		}
-
-		if (!IsFocused())
+		
+		if (bFlashWindow)
 		{
 			#ifdef __WXMSW__
 				::FlashWindow((HWND)GetHandle(), TRUE);
 			#endif
-			bAlert = true;
-		}
-
-		if (bAlert)
-		{
-			wxBell();
 		}
 
 	}

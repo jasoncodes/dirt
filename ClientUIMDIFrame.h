@@ -19,8 +19,8 @@ public:
 	Client* GetClient() { return m_client; }
 
 	bool IsFocused();
-
 	bool ResetWindowPos();
+	void ResetRedLines();
 
 protected:
 	void OnFileExit(wxCommandEvent& event);

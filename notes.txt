@@ -42,5 +42,3 @@
 * support for public listing
 * tray icon support
 * /away
-
-* red bar that shows the last place you were in the convo when you minimized

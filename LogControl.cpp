@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.20 2003-02-24 07:57:28 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.21 2003-02-24 12:43:44 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -708,6 +708,15 @@ void LogControl::OnDraw(wxDC& dcFront)
 			HighlightCells(dcBack, last_start_cell, last_end_cell);
 		}
 
+		if (m_red_line)
+		{
+			wxPen old_pen = dcBack.GetPen();
+			dcBack.SetPen(*wxRED_PEN);
+			wxRect red_rect = GetCellRect(m_red_line);
+			dcBack.DrawLine(0, red_rect.y, red_rect.width, red_rect.y);
+			dcBack.SetPen(old_pen);
+		}
+
 #if USE_BACKBUFFER
 
 		dcFront.Blit(x, y, client_area.width, client_area.height, &dcBack, x, y);
@@ -1204,11 +1213,12 @@ void LogControl::ScrollToBottom()
 
 void LogControl::Clear()
 {
+	m_red_line = NULL;
 	SetPage(wxT(""));
 	ScrollToBottom();
 }
 
-void LogControl::AddHtmlLine(const wxString &line, bool split_long_words)
+void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool red_line)
 {
 
 	wxString source = wxT("<br><code>") + line + wxT("</code>");
@@ -1234,7 +1244,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words)
 		{
 			cell->DrawInvisible(*dc, 0, 0);
 			wxString text = GetCellText(cell);
-			if (text.Length() > 8 && last)
+			if (text.Length() > 32 && last)
 			{
 				wxASSERT(last->GetNext() == cell);
 				wxHtmlCell *first = new wxHtmlWordCell(text.Left(8), *dc);
@@ -1263,6 +1273,11 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words)
 		}
 	}
 
+	if (!m_red_line && red_line)
+	{
+		m_red_line = c2;
+	}
+
 	m_Cell->InsertCell(c2);
 
 	delete p2;
@@ -1284,7 +1299,7 @@ wxString LogControl::ConvertModifiersIntoHtml(const wxString &text, bool strip_m
 	return parser.Parse(text);
 }
 
-void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode, bool convert_urls, bool split_long_words)
+void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, TextModifierMode mode, bool convert_urls, bool split_long_words, bool red_line)
 {
 
 	wxString html = FormatTextAsHtml(line);
@@ -1317,7 +1332,7 @@ void LogControl::AddTextLine(const wxString &line, const wxColour &line_colour, 
 
 	html = wxT("<font color='") + ColourToString(line_colour) + wxT("'>") + html + wxT("</font>");
 
-	AddHtmlLine(html, split_long_words);
+	AddHtmlLine(html, split_long_words, red_line);
 
 }
 
@@ -1450,4 +1465,13 @@ void LogControl::OnLinkClicked(const wxHtmlLinkInfo& link)
 	wxCommandEvent event(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
 	event.SetString(link.GetHref());
 	ProcessEvent(event);
+}
+
+void LogControl::ResetRedLine()
+{
+	if (m_red_line)
+	{
+		m_red_line = NULL;
+		Refresh();
+	}
 }
