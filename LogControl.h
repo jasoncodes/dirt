@@ -5,7 +5,7 @@
 #ifndef LogControl_H_
 #define LogControl_H_
 
-#include "wx/html/htmlwin.h"
+#include "wx/html/htmlcell.h"
 #include <wx/fdrepdlg.h>
 
 #include <wx/dynarray.h>
@@ -83,11 +83,10 @@ protected:
 
 	static bool s_bInitDone;
 
-	// stuff that is for some reason private not protected in wxHtmlWindow
 	wxHtmlLinkInfo *m_tmpLastLink;
 	wxHtmlCell *m_tmpLastCell;
 	bool m_tmpMouseMoved;
-	// these have been changed from static for easier maintenance
+
 	wxCursor *m_cur_hand;
 	wxCursor *m_cur_arrow;
 

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.121 2003-06-08 03:36:59 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.122 2003-06-12 10:29:42 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -26,6 +26,7 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.121 2003-06-08 03:36:59 jason Exp $)
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDITransferResumeDialog.h"
 #include "ClientUIMDIConfigDialog.h"
+#include <wx/filename.h>
 
 #ifdef __WXMSW__
 	#include <windows.h>

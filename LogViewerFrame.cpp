@@ -13,6 +13,7 @@
 #include <wx/dir.h>
 #include "Dirt.h"
 #include "LogControl.h"
+#include <wx/filename.h>
 
 DECLARE_APP(DirtApp)
 
