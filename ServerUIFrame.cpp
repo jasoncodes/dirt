@@ -6,13 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.1 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.3 2003-02-14 04:12:59 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
 #include "LogControl.h"
 #include "InputControl.h"
-#include "Util.h"
+#include "util.h"
+
+#include "res/dirt.xpm"
 
 enum
 {
@@ -30,12 +32,14 @@ ServerUIFrame::ServerUIFrame()
 		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
 		wxDefaultPosition, wxDefaultSize)
 {
+        SetIcon(wxIcon( dirt_xpm ));
 	m_txtInput = new InputControl(this, ID_INPUT);
 	m_txtLog = new wxTextCtrl(this, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
 	FixBorder(m_txtLog);
 	m_server = new ServerDefault(this);
 	CenterOnScreen();
 	Show();
+	m_txtInput->SetFocus();
 }
 
 ServerUIFrame::~ServerUIFrame()
