@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.18 2003-03-04 06:55:40 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.19 2003-03-04 08:01:24 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -14,7 +14,6 @@ class StaticCheckBoxSizerEventHandler : public wxEvtHandler
 {
 
 public:
-
 	StaticCheckBoxSizerEventHandler(wxStaticBox *box, wxCheckBox *chk)
 		: wxEvtHandler(), m_box(box), m_chk(chk)
 	{
