@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.6 2003-02-17 03:15:25 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.7 2003-02-17 03:21:57 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -54,33 +54,33 @@ URL::URL(const wxString &url)
 		m_hostname = tmp.Left(x);
 		tmp = tmp.Mid(x);
 
-		i = m_hostname.Find(wxT('@'), true);
-		if (i > -1)
-		{
-			SetAuthentication(m_hostname.Left(i));
-			m_hostname = m_hostname.Mid(i + 1);
-		}
-
-		i = m_hostname.Find(wxT(':'), true);
-		if (i > -1)
-		{
-			unsigned long ul;
-			bool ok = m_hostname.Mid(i + 1).ToULong(&ul);
-			wxASSERT(ok);
-			wxASSERT(ul > 0 && ul < INT_MAX);
-			SetPort((int)ul);
-			SetHostname(Unescape(m_hostname.Left(i)));
-		}
-		else
-		{
-			SetHostname(Unescape(m_hostname));
-		}
-
 	}
 	else
 	{
-		m_hostname = Unescape(tmp);
-		return;
+		m_hostname = tmp;
+		tmp = wxEmptyString;
+	}
+
+	i = m_hostname.Find(wxT('@'), true);
+	if (i > -1)
+	{
+		SetAuthentication(m_hostname.Left(i));
+		m_hostname = m_hostname.Mid(i + 1);
+	}
+
+	i = m_hostname.Find(wxT(':'), true);
+	if (i > -1)
+	{
+		unsigned long ul;
+		bool ok = m_hostname.Mid(i + 1).ToULong(&ul);
+		wxASSERT(ok);
+		wxASSERT(ul > 0 && ul < INT_MAX);
+		SetPort((int)ul);
+		SetHostname(Unescape(m_hostname.Left(i)));
+	}
+	else
+	{
+		SetHostname(Unescape(m_hostname));
 	}
 
 	i = tmp.Find(wxT('#'), true);

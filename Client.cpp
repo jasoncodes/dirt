@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.14 2003-02-17 01:58:50 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.15 2003-02-17 03:25:58 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -80,7 +80,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 			SendMessage(nick, msg);
 		}
 	}
-	else if (cmd == wxT("CONNECT"))
+	else if (cmd == wxT("CONNECT") || cmd == wxT("SERVER"))
 	{
 		if (IsConnected())
 		{
@@ -116,7 +116,7 @@ void Client::ProcessInput(const wxString &context, const wxString &input)
 	}*/
 	else if (cmd == wxT("HELP"))
 	{
-		m_event_handler->OnClientInformation(context, wxT("Supported commands: SAY HELP MSG CONNECT DISCONNECT"));
+		m_event_handler->OnClientInformation(context, wxT("Supported commands: CONNECT DISCONNECT HELP MSG SAY SERVER"));
 	}
 	else if (cmd == wxT("LIZARD"))
 	{

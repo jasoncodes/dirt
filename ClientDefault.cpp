@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.12 2003-02-17 01:58:50 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.13 2003-02-17 03:21:57 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -72,7 +72,6 @@ wxString ClientDefault::GetNickname()
 
 bool ClientDefault::Connect(const URL &url)
 {
-	m_event_handler->OnClientDebug(wxEmptyString, wxT("Note: Connect does not support parameters yet, using localhost:11626"));
 	if (url.GetProtocol("dirt") != "dirt")
 	{
 		return false;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.19 2003-02-17 03:16:40 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.20 2003-02-17 03:23:21 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -140,11 +140,11 @@ bool DirtApp::IsConsole()
 
 	#else
 
-		if (cmdline->Found(wxT("gui")))
+		if (m_cmdline->Found(wxT("gui")))
 		{
 			bIsConsole = false;
 		}
-		else if (cmdline->Found(wxT("console")))
+		else if (m_cmdline->Found(wxT("console")))
 		{
 			bIsConsole = true;
 		}
