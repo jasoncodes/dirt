@@ -9,6 +9,7 @@
 #include "util.h"
 #include <wx/datetime.h>
 #include <wx/html/htmlwin.h>
+#include <math.h>
 
 wxArrayString SplitString(const wxString &str, const wxString &sep)
 {
@@ -107,4 +108,58 @@ void SetHtmlParserFonts(wxHtmlWinParser *parser)
 		parser->SetFonts(wxEmptyString, "Fixedsys", default_sizes);
 	#endif
 
+}
+
+wxString AddCommas(off_t size)
+{
+	wxASSERT(size >= 0);
+	wxString buff;
+	while (size >= 1000)
+	{
+		buff = wxString::Format("%03d", size % 1000) + buff;
+		buff = ',' + buff;
+		size /= 1000;
+	}
+	return wxString() << size << buff;
+}
+
+wxString AddCommas(double size)
+{
+	wxString quotient = AddCommas((off_t)size);
+	wxString remainder = wxString::Format("%04.2lf", fmod(size, 1));
+	wxASSERT(remainder.Left(2) == "0.");
+	remainder = remainder.Mid(1);
+	return wxString() << quotient << remainder;
+}
+
+wxString SizeToString(off_t size)
+{
+	wxASSERT(size >= 0);
+    if (size < 1000)
+	{
+        return wxString() << size << " bytes";
+	}
+    else if (size < 524288)
+	{
+        return wxString() << AddCommas(size / pow(1024, 1)) << " KB";
+	}
+    else if (size < 1073741824)
+	{
+        return wxString() << AddCommas(size / pow(1024, 2)) << " MB";
+	}
+    else if (size < 1099511627776)
+	{
+        return wxString() << AddCommas(size / pow(1024, 3)) << " GB";
+	}
+	else
+	{
+        return wxString() << AddCommas(size / pow(1024, 4)) << " TB";
+	}
+}
+
+wxString SizeToLongString(off_t size)
+{
+	return wxString()
+		<< SizeToString(size)
+		<< " (" << AddCommas(size) << " bytes)";
 }
