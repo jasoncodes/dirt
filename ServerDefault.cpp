@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.52 2003-04-27 10:37:34 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.53 2003-04-30 03:11:29 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -58,14 +58,14 @@ void ServerDefaultConnection::Terminate(const wxString &reason)
 enum
 {
 	ID_SOCKET = 1,
-	ID_BCAST,
+	ID_BROADCAST,
 	ID_TIMER_PING,
 	ID_HTTP
 };
 
 BEGIN_EVENT_TABLE(ServerDefault, Server)
 	EVT_CRYPTSOCKET(ID_SOCKET, ServerDefault::OnSocket)
-	EVT_BROADCAST_SOCKET(ID_BCAST, ServerDefault::OnBroadcast)
+	EVT_BROADCAST_SOCKET(ID_BROADCAST, ServerDefault::OnBroadcast)
 	EVT_TIMER(ID_TIMER_PING, ServerDefault::OnTimerPing)
 	EVT_HTTP(ID_HTTP, ServerDefault::OnHTTP)
 END_EVENT_TABLE()
@@ -108,6 +108,7 @@ void ServerDefault::Start()
 		wxTimerEvent evt;
 		OnTimerPing(evt);
 		m_bcast = new BroadcastSocket(GetConfig().GetListenPort());
+		m_bcast->SetEventHandler(this, ID_BROADCAST);
 	}
 	else
 	{
