@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DirtLogsCGI.cpp,v 1.3 2004-07-20 18:13:38 jason Exp $)
+RCS_ID($Id: DirtLogsCGI.cpp,v 1.4 2004-07-20 18:23:24 jason Exp $)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,14 +60,15 @@ wxString GetConfigFilename()
 wxString GetLogDirectory()
 {
 
-	wxFileConfig cfg(GetConfigFilename());
+	wxFileConfig config(GetConfigFilename());
 
 	// todo: check ini file for custom location
 	// ConfigFile.cpp has source
-
-	wxFileName fn(GetConfigFilename());
-	fn.SetName(wxT("dirtlogs/"));
-	return fn.GetFullPath();
+	
+	wxFileName cfg(GetConfigFilename());
+	wxFileName fn(cfg.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), wxT(""));
+	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
+	return fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
 
 }
 
