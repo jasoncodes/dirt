@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.25 2003-02-19 00:20:34 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.26 2003-02-20 06:42:02 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -417,7 +417,7 @@ ByteBuffer Pack(const ByteBufferArray &array)
 	for (size_t i = 0; i < array.GetCount(); ++i)
 	{
 		ByteBuffer tmp(array.Item(i));
-		byte *tmpptr = tmp.Lock();
+		const byte *tmpptr = tmp.Lock();
 		memcpy(ptr, tmpptr, tmp.Length());
 		ptr += tmp.Length() + 1;
 		tmp.Unlock();
@@ -438,10 +438,10 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 	
 		ByteBufferArray array;
 		ByteBuffer src(packed_array);
-		byte *ptr = src.Lock();
+		const byte *ptr = src.Lock();
 		size_t len = src.Length();
 
-		byte *sep = (byte*)memchr(ptr, 0, len);
+		const byte *sep = (const byte*)memchr(ptr, 0, len);
 		while (sep && ((max_segments == 0) || (array.GetCount() < max_segments-1)))
 		{
 			size_t seglen = sep-ptr;
@@ -458,7 +458,7 @@ ByteBufferArray Unpack(const ByteBuffer &packed_array, size_t max_segments)
 			{
 				break;
 			}
-			sep = (byte*)memchr(ptr, 0, len);
+			sep = (const byte*)memchr(ptr, 0, len);
 		}
 
 		ByteBuffer b(ptr, len);
