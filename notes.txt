@@ -33,39 +33,3 @@
 * prefix caption with number in brackets showing how many msgs are waiting?
 
 * linux: use "signal(SIGINT, foo)" to catch "kill" or ctrl-c or something
-
-
-
-
-/*
-  * View an HTML file
-  */
-
-void heViewHTMLFile(const wxString& url)
-{
-     wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT("html"));
-     if ( !ft )
-     {
-         wxLogError(_T("Impossible to determine the file type for extension html. Please edit your MIME types."));
-         return ;
-     }
-
-     wxString cmd;
-     bool ok = ft->GetOpenCommand(&cmd,
-                                  wxFileType::MessageParameters(url, _T("")));
-     delete ft;
-
-     if (!ok)
-     {
-         // TODO: some kind of configuration dialog here.
-         wxMessageBox(_("Could not determine the command for running the browser."),
-                    wxT("Browsing problem"), wxOK|wxICON_EXCLAMATION);
-         return ;
-     }
-
-     // GetOpenCommand can prepend file:// even if it already has http://
-     if (cmd.Find(wxT("http://")) != -1)
-         cmd.Replace(wxT("file://"), wxT(""));
-
-     ok = (wxExecute(cmd, FALSE) != 0);
-}

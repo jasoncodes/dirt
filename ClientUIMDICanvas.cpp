@@ -12,6 +12,7 @@
 #include "ClientUIMDIFrame.h"
 #include "util.h"
 #include "NickListControl.h"
+#include <wx/mimetype.h>
 
 #include "res/channel.xpm"
 #include "res/query.xpm"
@@ -258,20 +259,24 @@ Client *ClientUIMDICanvas::GetClient()
 void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 {
 
+	wxLogNull supress_log;
+
 	#ifdef __WXMSW__
 
 		::wxBeginBusyCursor();
-		HINSTANCE hInstance = ::ShellExecute((HWND)GetHandle(), "open", event.GetString(), NULL, NULL, SW_NORMAL);
+		HINSTANCE hInstance = ::ShellExecute((HWND)GetHandle(), wxT("open"), event.GetString(), NULL, NULL, SW_NORMAL);
 		::wxEndBusyCursor();
 		bool success = ((int)hInstance > 32);
 		if (!success)
 		{
-			wxMessageBox("Unable to navigate to " + event.GetString(), "Dirt Secure Chat", wxICON_ERROR);
+			wxMessageBox(
+				wxT("Unable to navigate to ") + event.GetString(),
+				wxT("Browser Problem"), wxOK | wxICON_ERROR);
 		}
 
 	#else
 
-		const char *browsers[2] = { "mozilla", "netscape" };
+		const wxChar *browsers[2] = { wxT("mozilla"), wxT("netscape") };
 		const size_t num_browsers = ((sizeof browsers) / (sizeof browsers[0]));
 
 		bool success = false;
@@ -279,7 +284,7 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 		for (int i = 0; i < num_browsers && !success; ++i)
 		{
 			wxString cmdline;
-			cmdline << browsers[i] << ' ' << event.GetString();
+			cmdline << browsers[i] << wxT(' ') << event.GetString();
 			::wxBeginBusyCursor();
 			long pid = ::wxExecute(cmdline, wxEXEC_ASYNC);
 			::wxEndBusyCursor();
@@ -288,7 +293,46 @@ void ClientUIMDICanvas::OnLinkClicked(wxCommandEvent& event)
 
 		if (!success)
 		{
-			wxMessageBox("Unable to navigate to " + event.GetString() + "\n\nPlease check that Mozilla in your path", "Dirt Secure Chat", wxICON_ERROR);
+
+			wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT("html"));
+			if ( !ft )
+			{
+				wxMessageBox(
+					wxT("Unable to determine the file type for HTML."),
+					wxT("Browser Problem"), wxOK | wxICON_ERROR);
+				return;
+			}
+
+			wxString cmd;
+			bool ok = ft->GetOpenCommand(
+				&cmd,
+				wxFileType::MessageParameters(event.GetString(),
+				_T("")));
+			delete ft;
+
+			if (!ok)
+			{
+				wxMessageBox(
+					wxT("Unable to determine the command for running your HTML browser."),
+					wxT("Browser Problem"), wxOK | wxICON_ERROR);
+				return;
+			}
+
+			// GetOpenCommand can prepend file:// even if it already has http://
+			if (cmd.Find(wxT("http://")) != -1)
+			{
+				cmd.Replace(wxT("file://"), wxT(""));
+			}
+
+			ok = (wxExecute(cmd, FALSE) != 0);
+
+			if (!ok)
+			{
+				wxMessageBox(
+					wxT("Unable to navigate to ") + event.GetString(),
+					wxT("Browser Problem"), wxOK | wxICON_ERROR);
+			}
+	
 		}
 
 	#endif
