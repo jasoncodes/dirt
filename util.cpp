@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.56 2003-05-07 09:46:55 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.57 2003-05-08 13:56:17 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1070,4 +1070,18 @@ wxString GetSelf()
 
 	#endif
 
+}
+
+bool StringToLongLong(const wxString &str, wxLongLong_t *x)
+{
+	wxChar c;
+	int retval = wxSscanf(str.c_str(), wxT("%") wxLongLongFmtSpec wxT("d%c"), x, &c);
+	return (retval == 1);
+}
+
+bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x)
+{
+	wxChar c;
+	int retval = wxSscanf(str.c_str(), wxT("%") wxLongLongFmtSpec wxT("u%c"), x, &c);
+	return (retval == 1);
 }

@@ -71,5 +71,7 @@ void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name
 void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name = wxEmptyString, bool show = false, bool default_maximized = false);
 wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future = false);
 wxString GetSelf();
+bool StringToLongLong(const wxString &str, wxLongLong_t *x);
+bool StringToULongLong(const wxString &str, unsigned wxLongLong_t *x);
 
 #endif
