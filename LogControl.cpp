@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.51 2003-06-30 03:59:07 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.52 2003-06-30 04:00:55 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -721,7 +721,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 		dcBack.SetMapMode(wxMM_TEXT);
 		dcBack.SetBackgroundMode(wxTRANSPARENT);
 
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 		wxHtmlRenderingInfo render_info;
 #endif
 
@@ -730,7 +730,7 @@ void LogControl::OnDraw(wxDC& dcFront)
 			0, m_iYOffset,
 			rect.GetTop() + y - 32,
 			rect.GetBottom() + y + 32
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 			, render_info
 #endif
 			);
@@ -892,7 +892,7 @@ static wxHtmlCell *FindNext(wxHtmlCell *cell)
 	if (!cell->IsTerminalCell())
 	{
 		wxHtmlContainerCell *container = (wxHtmlContainerCell*)cell;
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 		wxHtmlCell *child = container->GetFirstChild();
 #else
 		wxHtmlCell *child = container->GetFirstCell();
@@ -1390,7 +1390,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 
 	if (split_long_words)
 	{
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 		wxHtmlCell *cell = c2->GetFirstChild();
 		cell = ((wxHtmlContainerCell*)cell->GetNext())->GetFirstChild();
 #else
@@ -1399,7 +1399,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 #endif
 		if (!cell)
 		{
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 			cell = ((wxHtmlContainerCell*)c2->GetFirstChild())->GetFirstChild();
 #else
 			cell = ((wxHtmlContainerCell*)c2->GetFirstCell())->GetFirstCell();
@@ -1408,7 +1408,7 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 		wxHtmlCell *last = NULL;
 		while (cell)
 		{
-#if wxCHECK_VERSION(2,4,2)
+#if wxCHECK_VERSION(2,5,0)
 			wxHtmlRenderingInfo render_info;
 			cell->DrawInvisible(*dc, 0, 0, render_info);
 #else
