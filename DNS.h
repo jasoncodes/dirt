@@ -15,11 +15,14 @@ public:
 	DNS();
 	virtual ~DNS();
 
-	bool Lookup(const wxString &hostname);
-	bool Cancel();
-	bool IsBusy() const;
+	virtual bool Lookup(const wxString &hostname);
+	virtual bool Cancel();
+	virtual bool IsBusy() const;
 
 	virtual void SetEventHandler(wxEvtHandler *handler, wxEventType id = wxID_ANY);
+
+protected:
+	virtual void StopThread();
 
 protected:
 	wxEvtHandler *m_handler;

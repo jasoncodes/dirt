@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.2 2003-03-05 05:16:26 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.3 2003-03-05 05:49:49 jason Exp $)
 
 #include "DNS.h"
 
@@ -69,16 +69,25 @@ DNS::~DNS()
 	{
 		m_worker->m_no_event = true;
 		m_section.Enter();
-		if (IsBusy())
-		{
-			m_worker->Kill();
-		}
-		else
-		{
-			m_worker->Delete();
-		}
+		StopThread();
 		delete m_worker;
 		m_section.Leave();
+	}
+}
+
+void DNS::StopThread()
+{
+	if (IsBusy())
+	{
+		#ifdef __WXMSW__
+			m_worker->Kill();
+		#else
+			m_worker->Delete();
+		#endif
+	}
+	else
+	{
+		m_worker->Delete();
 	}
 }
 
@@ -102,14 +111,7 @@ bool DNS::Cancel()
 		m_worker->m_no_event = true;
 		m_section.Enter();
 		entered = true;
-		if (IsBusy())
-		{
-			m_worker->Kill();
-		}
-		else
-		{
-			m_worker->Delete();
-		}
+		StopThread();
 		delete m_worker;
 		m_worker = NULL;
 	}
