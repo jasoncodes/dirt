@@ -82,13 +82,13 @@ LogViewerFrame::LogViewerFrame()
 	m_tree = new wxTreeCtrl(m_sash1, ID_TREECTRL, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT);
 	m_tree->AddRoot(wxEmptyString);
 	
-	wxFileName::Mkdir(LogReader::GetDefaultLogDirectory(), 0700, wxPATH_MKDIR_FULL);
+	wxFileName::Mkdir(GetLogDirectory(), 0700, wxPATH_MKDIR_FULL);
 
 	m_dir = new wxGenericDirCtrl(m_sash2, wxID_ANY, wxDirDialogDefaultFolderStr, wxDefaultPosition, wxDefaultSize, wxDIRCTRL_3D_INTERNAL | wxDIRCTRL_DIR_ONLY | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
  	Connect(m_dir->GetTreeCtrl()->GetId(), wxEVT_COMMAND_TREE_SEL_CHANGED,
 		(wxObjectEventFunction)(wxEventFunction)(wxTreeEventFunction)&LogViewerFrame::OnDirSelChange);
 
-	m_dir->ExpandPath(LogReader::GetDefaultLogDirectory());
+	m_dir->ExpandPath(GetLogDirectory());
 
 	wxAcceleratorEntry entries[2];
 	entries[0].Set(wxACCEL_CTRL, 'F', ID_CTRL_F);
@@ -112,6 +112,12 @@ LogViewerFrame::LogViewerFrame()
 
 LogViewerFrame::~LogViewerFrame()
 {
+}
+
+wxString LogViewerFrame::GetLogDirectory()
+{
+	Config cfg(wxT("Client"));
+	return cfg.GetActualLogDir();
 }
 
 void LogViewerFrame::OnClose(wxCloseEvent &event)
@@ -180,7 +186,7 @@ void LogViewerFrame::ResizeChildren()
 	m_sash1->SetSize(0, 0, x, size.y);
 	m_sash2->SetSize(0, 0, x-margin_x, y);
 	m_dir->SetSize(0, 0, x-margin_x, y-margin_y);
-	m_tree->SetSize(0, y, x-margin_x, size.y-y);
+	m_tree->SetSize(0, y, x-margin_x, size.y-y-margin_y);
 	m_log->SetSize(x, 0, size.x-x, size.y);
 
 }

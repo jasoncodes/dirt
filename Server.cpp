@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.48 2003-04-18 10:05:43 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.49 2003-05-14 07:53:15 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -78,48 +78,37 @@ void ServerConnection::Send(const wxString &context, const wxString &cmd, const 
 #include <wx/filename.h>
 
 ServerConfig::ServerConfig()
+	: Config(wxT("/Server"))
 {
-	m_config = new ConfigFile;
 }
 
 ServerConfig::~ServerConfig()
 {
-	delete m_config;
-}
-
-bool ServerConfig::Flush()
-{
-	return m_config->Flush();
-}
-
-bool ServerConfig::ResetToDefaults()
-{
-	return m_config->DeleteGroup(wxT("Server"));
 }
 
 long ServerConfig::GetListenPort() const
 {
-	return m_config->Read(wxT("Server/Listen Port"), 11626);
+	return m_config->Read(wxT("/Server/Listen Port"), 11626);
 }
 
 wxString ServerConfig::GetUserPassword(bool decrypt) const
 {
-	return GetPassword(wxT("Server/User Password"), decrypt);
+	return GetPassword(wxT("/Server/User Password"), decrypt);
 }
 
 wxString ServerConfig::GetAdminPassword(bool decrypt) const
 {
-	return GetPassword(wxT("Server/Admin Password"), decrypt);
+	return GetPassword(wxT("/Server/Admin Password"), decrypt);
 }
 
 long ServerConfig::GetMaxUsers() const
 {
-	return m_config->Read(wxT("Server/Max Users"), 32);
+	return m_config->Read(wxT("/Server/Max Users"), 32);
 }
 
 long ServerConfig::GetMaxUsersIP() const
 {
-	return m_config->Read(wxT("Server/Max Users Per IP"), 4);
+	return m_config->Read(wxT("/Server/Max Users Per IP"), 4);
 }
 
 wxString ServerConfig::GetSoundConnection() const
@@ -132,7 +121,7 @@ wxString ServerConfig::GetSoundConnection() const
 			default_sound = wxEmptyString;
 		}
 	#endif
-	return m_config->Read(wxT("Server/Sound/Connection"), default_sound);
+	return m_config->Read(wxT("/Server/Sound/Connection"), default_sound);
 }
 
 wxString ServerConfig::GetSoundJoin() const
@@ -145,235 +134,150 @@ wxString ServerConfig::GetSoundJoin() const
 			default_sound = wxEmptyString;
 		}
 	#endif
-	return m_config->Read(wxT("Server/Sound/Join"), default_sound);
+	return m_config->Read(wxT("/Server/Sound/Join"), default_sound);
 }
 
 wxString ServerConfig::GetServerName() const
 {
-	return m_config->Read(wxT("Server/Server Name"), wxEmptyString);
+	return m_config->Read(wxT("/Server/Server Name"), wxEmptyString);
 }
 
 wxString ServerConfig::GetHostname() const
 {
-	return m_config->Read(wxT("Server/Hostname"), wxEmptyString);
+	return m_config->Read(wxT("/Server/Hostname"), wxEmptyString);
 }
 
 bool ServerConfig::GetPublicListEnabled() const
 {
 	bool value;
-	bool success = m_config->Read(wxT("Server/Public List/Enabled"), &value, false);
+	bool success = m_config->Read(wxT("/Server/Public List/Enabled"), &value, false);
 	return success?value:false;
 }
 
 wxString ServerConfig::GetPublicListAuthentication(bool decrypt) const
 {
-	return GetPassword(wxT("Server/Public List/Authentication"), decrypt);
+	return GetPassword(wxT("/Server/Public List/Authentication"), decrypt);
 }
 
 wxString ServerConfig::GetPublicListComment() const
 {
-	return m_config->Read(wxT("Server/Public List/Comment"), wxEmptyString);
+	return m_config->Read(wxT("/Server/Public List/Comment"), wxEmptyString);
 }
 
 bool ServerConfig::GetHTTPProxyEnabled() const
 {
 	bool value;
-	bool success = m_config->Read(wxT("Server/HTTP Proxy/Enabled"), &value, false);
+	bool success = m_config->Read(wxT("/Server/HTTP Proxy/Enabled"), &value, false);
 	return success?value:false;
 }
 
 wxString ServerConfig::GetHTTPProxyHostname() const
 {
-	return m_config->Read(wxT("Server/HTTP Proxy/Hostname"), wxEmptyString);
+	return m_config->Read(wxT("/Server/HTTP Proxy/Hostname"), wxEmptyString);
 }
 
 long ServerConfig::GetHTTPProxyPort() const
 {
-	return m_config->Read(wxT("Server/HTTP Proxy/Port"), 80);
+	return m_config->Read(wxT("/Server/HTTP Proxy/Port"), 80);
 }
 
 wxString ServerConfig::GetHTTPProxyUsername() const
 {
-	return m_config->Read(wxT("Server/HTTP Proxy/Username"), wxEmptyString);
+	return m_config->Read(wxT("/Server/HTTP Proxy/Username"), wxEmptyString);
 }
 
 wxString ServerConfig::GetHTTPProxyPassword(bool decrypt) const
 {
-	return GetPassword(wxT("Server/HTTP Proxy/Password"), decrypt);
+	return GetPassword(wxT("/Server/HTTP Proxy/Password"), decrypt);
 }
 
 bool ServerConfig::SetListenPort(long port)
 {
-	return m_config->Write(wxT("Server/Listen Port"), port);
+	return m_config->Write(wxT("/Server/Listen Port"), port);
 }
 
 bool ServerConfig::SetUserPassword(const wxString &password)
 {
-	return SetPassword(wxT("Server/User Password"), password);
+	return SetPassword(wxT("/Server/User Password"), password);
 }
 
 bool ServerConfig::SetAdminPassword(const wxString &password)
 {
-	return SetPassword(wxT("Server/Admin Password"), password);
+	return SetPassword(wxT("/Server/Admin Password"), password);
 }
 
 bool ServerConfig::SetMaxUsers(long max_users)
 {
-	return m_config->Write(wxT("Server/Max Users"), max_users);
+	return m_config->Write(wxT("/Server/Max Users"), max_users);
 }
 
 bool ServerConfig::SetMaxUsersIP(long max_users_ip)
 {
-	return m_config->Write(wxT("Server/Max Users Per IP"), max_users_ip);
+	return m_config->Write(wxT("/Server/Max Users Per IP"), max_users_ip);
 }
 
 bool ServerConfig::SetSoundConnection(const wxString &filename)
 {
 	return
 		(filename.Length() == 0 || wxFileName(filename).FileExists()) &&
-		m_config->Write(wxT("Server/Sound/Connection"), filename);
+		m_config->Write(wxT("/Server/Sound/Connection"), filename);
 }
 
 bool ServerConfig::SetSoundJoin(const wxString &filename)
 {
 	return
 		(filename.Length() == 0 || wxFileName(filename).FileExists()) &&
-		m_config->Write(wxT("Server/Sound/Join"), filename);
+		m_config->Write(wxT("/Server/Sound/Join"), filename);
 }
 
 bool ServerConfig::SetServerName(const wxString &server_name)
 {
-	return m_config->Write(wxT("Server/Server Name"), server_name);
+	return m_config->Write(wxT("/Server/Server Name"), server_name);
 }
 
 bool ServerConfig::SetHostname(const wxString &hostname)
 {
-	return m_config->Write(wxT("Server/Hostname"), hostname);
+	return m_config->Write(wxT("/Server/Hostname"), hostname);
 }
 
 bool ServerConfig::SetPublicListEnabled(bool enabled)
 {
-	return m_config->Write(wxT("Server/Public List/Enabled"), enabled);
+	return m_config->Write(wxT("/Server/Public List/Enabled"), enabled);
 }
 
 bool ServerConfig::SetPublicListAuthentication(const wxString &auth)
 {
-	return SetPassword(wxT("Server/Public List/Authentication"), auth);
+	return SetPassword(wxT("/Server/Public List/Authentication"), auth);
 }
 
 bool ServerConfig::SetPublicListComment(const wxString &comment)
 {
-	return m_config->Write(wxT("Server/Public List/Comment"), comment);
+	return m_config->Write(wxT("/Server/Public List/Comment"), comment);
 }
 
 bool ServerConfig::SetHTTPProxyEnabled(bool enabled)
 {
-	return m_config->Write(wxT("Server/HTTP Proxy/Enabled"), enabled);
+	return m_config->Write(wxT("/Server/HTTP Proxy/Enabled"), enabled);
 }
 
 bool ServerConfig::SetHTTPProxyHostname(const wxString &hostname)
 {
-	return m_config->Write(wxT("Server/HTTP Proxy/Hostname"), hostname);
+	return m_config->Write(wxT("/Server/HTTP Proxy/Hostname"), hostname);
 }
 
 bool ServerConfig::SetHTTPProxyPort(long port)
 {
-	return m_config->Write(wxT("Server/HTTP Proxy/Port"), port);
+	return m_config->Write(wxT("/Server/HTTP Proxy/Port"), port);
 }
 
 bool ServerConfig::SetHTTPProxyUsername(const wxString &username)
 {
-	return m_config->Write(wxT("Server/HTTP Proxy/Username"), username);
+	return m_config->Write(wxT("/Server/HTTP Proxy/Username"), username);
 }
 
 bool ServerConfig::SetHTTPProxyPassword(const wxString &password)
 {
-	return SetPassword(wxT("Server/HTTP Proxy/Password"), password);
-}
-
-
-static const wxString EncodedPrefix = wxT("Encoded:");
-
-static wxString DecodePassword(const wxString &value, bool decrypt)
-{
-
-	if (!decrypt || value.Length() == 0 || !LeftEq(value, EncodedPrefix))
-	{
-		return value;
-	}
-
-	ByteBuffer data = Crypt::Base64Decode(value.Mid(EncodedPrefix.Length()));
-	
-	if (data.Length() < 40)
-	{
-		return wxEmptyString;
-	}
-	
-	if (((data.Length() - 40) % 16) != 0)
-	{
-		return wxEmptyString;
-	}
-
-	const byte *ptr = data.LockRead();
-	ByteBuffer crc32(ptr, 4);
-	ByteBuffer len_buff(ptr+4, 4);
-	size_t len = BytesToUint32(len_buff.LockRead(), len_buff.Length());
-	len_buff.Unlock();
-	ByteBuffer AESKey(ptr+8, 32);
-	ByteBuffer enc(ptr+40, data.Length()-40);
-	data.Unlock();	
-	
-	try
-	{
-		Crypt crypt;
-		crypt.SetAESDecryptKey(AESKey);
-		data = crypt.AESDecrypt(enc);
-	}
-	catch (...)
-	{
-		return wxEmptyString;
-	}
-	
-	ByteBuffer dec(data.LockRead(), len);
-	data.Unlock();
-	
-	if (crc32 == Crypt::CRC32(AESKey + dec))
-	{
-		return dec;
-	}
-
-	return wxEmptyString;
-
-}
-
-wxString ServerConfig::GetPassword(const wxString &key, bool decrypt) const
-{
-	return DecodePassword(m_config->Read(key), decrypt);
-}
-
-bool ServerConfig::SetPassword(const wxString &key, const wxString &password)
-{
-	ByteBuffer data;
-	if (password.Length() > 0)
-	{
-		if (LeftEq(password, EncodedPrefix))
-		{
-			return (DecodePassword(password, true).Length() > 0);
-		}
-		else
-		{
-			ByteBuffer AESKey = Crypt::Random(32);
-			Crypt crypt;
-			crypt.SetAESEncryptKey(AESKey);
-			data =
-				Crypt::CRC32(AESKey + ByteBuffer(password)) + 
-				Uint32ToBytes(password.Length()) +
-				AESKey +
-				crypt.AESEncrypt(password);
-			data = EncodedPrefix + Crypt::Base64Encode(data, false);
-		}
-	}
-	return m_config->Write(key, data);
+	return SetPassword(wxT("/Server/HTTP Proxy/Password"), password);
 }
 
 //////// Server ////////
@@ -385,8 +289,19 @@ END_EVENT_TABLE()
 
 Server::Server(ServerEventHandler *event_handler)
 	: wxEvtHandler(), m_event_handler(event_handler),
-	m_log(LogWriter::GenerateFilename(wxT("Server"), LogWriter::GenerateNewLogDate(wxT("Server")))), m_log_warning_given(false)
+	m_log_warning_given(false)
 {
+	wxString log_dir = m_config.GetActualLogDir();
+	wxDateTime log_date = LogWriter::GenerateNewLogDate(log_dir, wxT("Server"));
+	wxString log_filename = LogWriter::GenerateFilename(log_dir, wxT("Server"), log_date);
+	if (log_filename.Length())
+	{
+		m_log = new LogWriter(log_filename);
+	}
+	else
+	{
+		m_log = NULL;
+	}
 	m_connections.Alloc(10);
 	m_peak_users = 0;
 }
@@ -394,6 +309,7 @@ Server::Server(ServerEventHandler *event_handler)
 Server::~Server()
 {
 	CloseAllConnections();
+	delete m_log;
 }
 
 void Server::Information(const wxString &line)
@@ -407,14 +323,17 @@ void Server::Information(const wxString &line)
 			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
 		}
 	}
-	if (m_log.Ok())
+	if (m_log)
 	{
-		m_log.AddText(GetLongTimestamp() + line, *wxBLACK, false);
-	}
-	else if (!m_log_warning_given)
-	{
-		m_log_warning_given = true;
-		Warning(wxT("Error writing log file"));
+		if (m_log->Ok())
+		{
+			m_log->AddText(GetLongTimestamp() + line, *wxBLACK, false);
+		}
+		else if (!m_log_warning_given)
+		{
+			m_log_warning_given = true;
+			Warning(wxT("Error writing log file"));
+		}
 	}
 }
 
@@ -429,14 +348,17 @@ void Server::Warning(const wxString &line)
 			conn->Send(wxEmptyString, wxT("PRIVMSG"), Pack(GetServerNickname(), line));
 		}
 	}
-	if (m_log.Ok())
+	if (m_log)
 	{
-		m_log.AddText(GetLongTimestamp() + line, *wxRED, false);
-	}
-	else if (!m_log_warning_given)
-	{
-		m_log_warning_given = true;
-		Warning(wxT("Error writing log file"));
+		if (m_log->Ok())
+		{
+			m_log->AddText(GetLongTimestamp() + line, *wxRED, false);
+		}
+		else if (!m_log_warning_given)
+		{
+			m_log_warning_given = true;
+			Warning(wxT("Error writing log file"));
+		}
 	}
 }
 

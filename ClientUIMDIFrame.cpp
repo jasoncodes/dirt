@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.111 2003-05-11 09:55:12 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.112 2003-05-14 07:53:14 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -104,11 +104,11 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	SetMenuBar(mnu);
 
+	m_client = new ClientDefault(this);
+
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxT("[Main]"), ChannelCanvas);
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
-
-	m_client = new ClientDefault(this);
 
 	int nicklist_width = canvas->GetNickList()->GetParent()->GetSize().x;
 	wxConfigBase *config = GetClient()->GetConfig().GetConfig();
@@ -1108,7 +1108,8 @@ wxDateTime ClientUIMDIFrame::GetLogDate()
 {
 	if (!m_log_date_okay)
 	{
-		m_log_date = LogWriter::GenerateNewLogDate(wxT("Client"));
+		wxString log_dir = m_client->GetConfig().GetActualLogDir();
+		m_log_date = LogWriter::GenerateNewLogDate(log_dir, wxT("Client"));
 		m_log_date_okay = true;
 	}
 	return m_log_date;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogWriter.cpp,v 1.11 2003-05-06 06:58:12 jason Exp $)
+RCS_ID($Id: LogWriter.cpp,v 1.12 2003-05-14 07:53:15 jason Exp $)
 
 #include "LogWriter.h"
 #include <wx/confbase.h>
@@ -16,10 +16,13 @@ RCS_ID($Id: LogWriter.cpp,v 1.11 2003-05-06 06:58:12 jason Exp $)
 LogWriter::LogWriter(const wxString &filename)
 {
 	wxLogNull supress_log;
-	wxFileName fn(filename);
-	wxString dir = fn.GetPath(wxPATH_GET_VOLUME);
-	wxFileName::Mkdir(dir, 0700, wxPATH_MKDIR_FULL);
-	m_file.Open(filename, wxFile::write_append);
+	if (filename.Length())
+	{
+		wxFileName fn(filename);
+		wxString dir = fn.GetPath(wxPATH_GET_VOLUME);
+		wxFileName::Mkdir(dir, 0700, wxPATH_MKDIR_FULL);
+		m_file.Open(filename, wxFile::write_append);
+	}
 }
 
 LogWriter::~LogWriter()
@@ -27,19 +30,22 @@ LogWriter::~LogWriter()
 	m_file.Close();
 }
 
-wxString LogWriter::GenerateFilename(const wxString &prefix, const wxDateTime &date, const wxString &suffix)
+wxString LogWriter::GenerateFilename(const wxString &dir, const wxString &prefix, const wxDateTime &date, const wxString &suffix)
 {
-	wxString filename;
-	filename
-		<< prefix
-		<< (prefix.Length() ? wxT(" ") : wxT(""))
-		<< date.Format(wxT("%Y%m%d%H%M%S"))
-		<< (suffix.Length() ? wxT(" ") : wxT(""))
-		<< suffix;
-	wxFileName fn(wxGetHomeDir(), filename);
-	fn.SetExt(wxT("dirtlog"));
-	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
-	return fn.GetFullPath();
+	if (dir.Length())
+	{
+		wxString filename;
+		filename
+			<< prefix
+			<< (prefix.Length() ? wxT(" ") : wxT(""))
+			<< date.Format(wxT("%Y%m%d%H%M%S"))
+			<< (suffix.Length() ? wxT(" ") : wxT(""))
+			<< suffix;
+		wxFileName fn(dir, filename);
+		fn.SetExt(wxT("dirtlog"));
+		return fn.GetFullPath();
+	}
+	return wxEmptyString;
 }
 
 bool LogWriter::Ok() const
@@ -116,14 +122,14 @@ void LogWriter::Write(const ByteBuffer &data)
 	tmp.Unlock();
 }
 
-wxDateTime LogWriter::GenerateNewLogDate(const wxString &prefix)
+wxDateTime LogWriter::GenerateNewLogDate(const wxString &dir, const wxString &prefix)
 {
 	wxDateTime date = wxDateTime::Now();
-	wxFileName fn(GenerateFilename(prefix, date));
+	wxFileName fn(GenerateFilename(dir, prefix, date));
 	while (fn.FileExists())
 	{
 		date += wxTimeSpan::Seconds(1);
-		fn = wxFileName(GenerateFilename(prefix, date));
+		fn = wxFileName(GenerateFilename(dir, prefix, date));
 	}
 	return date;
 }

@@ -91,16 +91,12 @@ WX_DEFINE_ARRAY(ServerConnection*, ServerConnectionArray);
 
 #include "ConfigFile.h"
 
-class ServerConfig
+class ServerConfig : public Config
 {
 
 public:
 	ServerConfig();
-	~ServerConfig();
-
-	wxConfigBase* GetConfig() const { return m_config; }
-	bool Flush();
-	bool ResetToDefaults();
+	virtual ~ServerConfig();
 
 	long GetListenPort() const;
 	wxString GetUserPassword(bool decrypt) const;
@@ -143,13 +139,6 @@ public:
 	bool SetHTTPProxyPort(long port);
 	bool SetHTTPProxyUsername(const wxString &username);
 	bool SetHTTPProxyPassword(const wxString &password);
-
-protected:
-	wxString GetPassword(const wxString &key, bool decrypt) const;
-	bool SetPassword(const wxString &key, const wxString &password);
-
-protected:
-	ConfigFile *m_config;
 
 };
 
@@ -203,7 +192,7 @@ protected:
 	#if wxUSE_WAVE
 		wxWave m_wave;
 	#endif
-	LogWriter m_log;
+	LogWriter *m_log;
 	bool m_log_warning_given;
 
 private:

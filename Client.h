@@ -60,23 +60,18 @@ public:
 
 #include "ConfigFile.h"
 
-class ClientConfig
+class ClientConfig : public Config
 {
 
 public:
 	ClientConfig();
-	~ClientConfig();
+	virtual ~ClientConfig();
 
-	wxConfigBase* GetConfig() const { return m_config; }
-	
-	wxString GetLastSendDir() const;
-	wxString GetLastGetDir() const;
+	virtual wxString GetLastSendDir() const;
+	virtual wxString GetLastGetDir() const;
 
-	bool SetLastSendDir(const wxString &dir);
-	bool SetLastGetDir(const wxString &dir);
-
-protected:
-	ConfigFile *m_config;
+	virtual bool SetLastSendDir(const wxString &dir);
+	virtual bool SetLastGetDir(const wxString &dir);
 
 };
 

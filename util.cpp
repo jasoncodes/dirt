@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.61 2003-05-11 10:51:29 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.62 2003-05-14 07:53:15 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -916,7 +916,7 @@ void SaveWindowState(const wxFrame *frm, wxConfigBase *cfg, const wxString &name
 	wxString path;
 	if (name.Length())
 	{
-		path = wxT("/") + name;
+		path = ((name[0u] != wxT('/')) ? wxT("/") : wxT("")) + name;
 	}
 	path += wxT("/WindowState");
 
@@ -944,7 +944,7 @@ void RestoreWindowState(wxFrame *frm, wxConfigBase *cfg, const wxString &name, b
 	wxString path;
 	if (name.Length())
 	{
-		path = wxT("/") + name;
+		path = ((name[0u] != wxT('/')) ? wxT("/") : wxT("")) + name;
 	}
 	path += wxT("/WindowState");
 

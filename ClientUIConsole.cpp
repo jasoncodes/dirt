@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.50 2003-05-07 23:59:05 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.51 2003-05-14 07:53:14 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -19,30 +19,41 @@ RCS_ID($Id: ClientUIConsole.cpp,v 1.50 2003-05-07 23:59:05 jason Exp $)
 DECLARE_APP(DirtApp)
 
 ClientUIConsole::ClientUIConsole(bool no_input)
-	: Console(no_input),
-	m_log(LogWriter::GenerateFilename(wxT("Client"), LogWriter::GenerateNewLogDate(wxT("Client")))), m_log_warning_given(false)
+	: Console(no_input), m_log_warning_given(false)
 {
 	m_passmode = false;
+	m_log = NULL;
 	m_client = new ClientDefault(this);
+	wxString log_dir = m_client->GetConfig().GetActualLogDir();
+	wxDateTime log_date = LogWriter::GenerateNewLogDate(log_dir, wxT("Client"));
+	wxString log_filename = LogWriter::GenerateFilename(log_dir, wxT("Client"), log_date);
+	if (log_filename.Length())
+	{
+		m_log = new LogWriter(log_filename);
+	}
 }
 
 ClientUIConsole::~ClientUIConsole()
 {
 	delete m_client;
+	delete m_log;
 }
 
 void ClientUIConsole::Output(const wxString &line)
 {
 	wxString text = GetShortTimestamp() + line;
 	Console::Output(LogControl::ConvertModifiersIntoHtml(text, true));
-	if (m_log.Ok())
+	if (m_log)
 	{
-		m_log.AddText(text);
-	}
-	else if (!m_log_warning_given)
-	{
-		m_log_warning_given = true;
-		OnClientWarning(wxEmptyString, wxT("Error writing log file"));
+		if (m_log->Ok())
+		{
+			m_log->AddText(text);
+		}
+		else if (!m_log_warning_given)
+		{
+			m_log_warning_given = true;
+			OnClientWarning(wxEmptyString, wxT("Error writing log file"));
+		}
 	}
 }
 

@@ -16,8 +16,8 @@ public:
 	LogWriter(const wxString &filename);
 	virtual ~LogWriter();
 
-	static wxString GenerateFilename(const wxString &prefix = wxEmptyString, const wxDateTime &date = wxDateTime::Now(), const wxString &suffix = wxEmptyString);
-	static wxDateTime GenerateNewLogDate(const wxString &prefix);
+	static wxString GenerateFilename(const wxString &dir, const wxString &prefix = wxEmptyString, const wxDateTime &date = wxDateTime::Now(), const wxString &suffix = wxEmptyString);
+	static wxDateTime GenerateNewLogDate(const wxString &dir, const wxString &prefix);
 
 	virtual bool Ok() const;
 

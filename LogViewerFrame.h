@@ -34,6 +34,7 @@ protected:
 	static wxArrayString GetLogFilenames(const wxString &dirname);
 	void EnsureItemSelected(const wxTreeItemId& idParent, const wxString &filename, long cookie = -1);
 	wxString GetItemFilename(const wxTreeItemId& id) const;
+	static wxString GetLogDirectory();
 
 protected:
 	wxSashWindow *m_sash1;

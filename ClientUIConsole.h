@@ -53,7 +53,7 @@ protected:
 protected:
 	Client *m_client;
 	bool m_passmode;
-	LogWriter m_log;
+	LogWriter *m_log;
 	bool m_log_warning_given;
 
 };

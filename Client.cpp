@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.62 2003-05-11 09:55:11 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.63 2003-05-14 07:53:14 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -21,33 +21,32 @@ const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
 
 ClientConfig::ClientConfig()
+	: Config(wxT("/Client"))
 {
-	m_config = new ConfigFile;
 }
 
 ClientConfig::~ClientConfig()
 {
-	delete m_config;
 }
 
 wxString ClientConfig::GetLastSendDir() const
 {
-	return m_config->Read(wxT("Client/Last Send Directory"));
+	return m_config->Read(wxT("/Client/Last Send Directory"));
 }
 
 wxString ClientConfig::GetLastGetDir() const
 {
-	return m_config->Read(wxT("Client/Last Get Directory"));
+	return m_config->Read(wxT("/Client/Last Get Directory"));
 }
 
 bool ClientConfig::SetLastSendDir(const wxString &dir)
 {
-	return m_config->Write(wxT("Client/Last Send Directory"), dir);
+	return m_config->Write(wxT("/Client/Last Send Directory"), dir);
 }
 
 bool ClientConfig::SetLastGetDir(const wxString &dir)
 {
-	return m_config->Write(wxT("Client/Last Get Directory"), dir);
+	return m_config->Write(wxT("/Client/Last Get Directory"), dir);
 }
 
 enum
@@ -1081,7 +1080,7 @@ wxArrayString Client::GetAliasList() const
 {
 	wxArrayString list;
 	wxString old_path = m_config.GetConfig()->GetPath();
-	m_config.GetConfig()->SetPath(wxT("Client/Aliases"));
+	m_config.GetConfig()->SetPath(wxT("/Client/Aliases"));
 	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
 	wxString val;
 	long i;
@@ -1099,18 +1098,18 @@ wxArrayString Client::GetAliasList() const
 
 wxString Client::GetAlias(const wxString &name) const
 {
-	return m_config.GetConfig()->Read(wxT("Client/Aliases/")+name, wxEmptyString);
+	return m_config.GetConfig()->Read(wxT("/Client/Aliases/")+name, wxEmptyString);
 }
 
 bool Client::SetAlias(const wxString &name, const wxString &value)
 {
 	if (value.Length())
 	{
-		return m_config.GetConfig()->Write(wxT("Client/Aliases/")+name, value) && m_config.GetConfig()->Flush();
+		return m_config.GetConfig()->Write(wxT("/Client/Aliases/")+name, value) && m_config.GetConfig()->Flush();
 	}
 	else if (GetAlias(name).Length())
 	{
-		return m_config.GetConfig()->DeleteEntry(wxT("Client/Aliases/")+name) && m_config.GetConfig()->Flush();
+		return m_config.GetConfig()->DeleteEntry(wxT("/Client/Aliases/")+name) && m_config.GetConfig()->Flush();
 	}
 	else
 	{
@@ -1122,7 +1121,7 @@ wxArrayString Client::GetBindingList() const
 {
 	wxArrayString list;
 	wxString old_path = m_config.GetConfig()->GetPath();
-	m_config.GetConfig()->SetPath(wxT("Client/Bindings"));
+	m_config.GetConfig()->SetPath(wxT("/Client/Bindings"));
 	list.Alloc(m_config.GetConfig()->GetNumberOfEntries(false));
 	wxString val;
 	long i;
@@ -1155,18 +1154,18 @@ wxArrayString Client::GetValidBindNames() const
 
 wxString Client::GetBinding(const wxString &name) const
 {
-	return m_config.GetConfig()->Read(wxT("Client/Bindings/")+name, wxEmptyString);
+	return m_config.GetConfig()->Read(wxT("/Client/Bindings/")+name, wxEmptyString);
 }
 
 bool Client::SetBinding(const wxString &name, const wxString &value)
 {
 	if (value.Length())
 	{
-		return m_config.GetConfig()->Write(wxT("Client/Bindings/")+name, value) && m_config.GetConfig()->Flush();
+		return m_config.GetConfig()->Write(wxT("/Client/Bindings/")+name, value) && m_config.GetConfig()->Flush();
 	}
 	else if (GetBinding(name).Length())
 	{
-		return m_config.GetConfig()->DeleteEntry(wxT("Client/Bindings/")+name) && m_config.GetConfig()->Flush();
+		return m_config.GetConfig()->DeleteEntry(wxT("/Client/Bindings/")+name) && m_config.GetConfig()->Flush();
 	}
 	else
 	{

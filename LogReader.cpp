@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.15 2003-03-29 05:30:08 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.16 2003-05-14 07:53:14 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -49,13 +49,6 @@ LogReader::LogReader(const wxString &filename)
 LogReader::~LogReader()
 {
 	m_file.Close();
-}
-
-wxString LogReader::GetDefaultLogDirectory()
-{
-	wxFileName fn(wxGetHomeDir(), wxT(""));
-	fn.SetPath(fn.GetPathWithSep() + wxT("dirtlogs"));
-	return fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
 }
 
 #include <wx/dynarray.h>
