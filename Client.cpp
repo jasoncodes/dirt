@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.69 2003-06-12 07:26:08 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.70 2003-07-06 14:35:06 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -80,6 +80,17 @@ bool ClientConfig::SetSoundFile(TristateMode type, const wxString &filename)
 		}
 	}
 	return SetTristate(GetSoundFileKey(), type, filename, false);
+}
+
+bool ClientConfig::GetTaskbarNotification() const
+{
+	bool x;
+	return m_config->Read(wxT("/Client/Taskbar Notification"), &x) ? x : true;
+}
+
+bool ClientConfig::SetTaskbarNotification(bool mode)
+{
+	return m_config->Write(wxT("/Client/Taskbar Notification"), mode);
 }
 
 enum

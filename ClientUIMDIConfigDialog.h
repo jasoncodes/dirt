@@ -41,7 +41,10 @@ protected:
 	DestPortsPanel *m_pnlDestPorts;
 
 	TristateConfigPanel *m_pnlLog;
+
+	wxStaticBox *m_fraNotification;
 	TristateConfigPanel *m_pnlSound;
+	wxCheckBox *m_chkTaskbarNotification;
 
 private:
 	DECLARE_EVENT_TABLE()

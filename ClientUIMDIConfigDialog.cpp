@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.13 2003-06-12 06:00:05 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.14 2003-07-06 14:35:06 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -172,6 +172,9 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 	m_pnlDestPorts = new DestPortsPanel(panel, wxID_ANY);
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
+
+	m_fraNotification = new wxStaticBox(panel, wxID_ANY, wxT("Message Notification"));
+	m_chkTaskbarNotification = new wxCheckBox(panel, wxID_ANY, wxT("Taskbar Notification Flash"));
 	m_pnlSound = new TristateConfigPanel(panel, ID_SOUND, wxT("Notification Sound"), wxT("Wave Files|*.wav|All Files|*"), true);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
@@ -233,14 +236,22 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 			}
 			szrMain->Add(szrProxy, 3, wxRIGHT, 8);
 
-			wxBoxSizer *szrTristate = new wxBoxSizer(wxVERTICAL);
+			wxBoxSizer *szrRight = new wxBoxSizer(wxVERTICAL);
 			{
 
-				szrTristate->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
-				szrTristate->Add(m_pnlSound, 0, wxEXPAND, 0);
+				szrRight->Add(m_pnlLog, 0, wxBOTTOM | wxEXPAND, 8);
+
+				wxStaticBoxSizer *szrNotification = new wxStaticBoxSizer(m_fraNotification, wxVERTICAL);
+				{
+
+					szrNotification->Add(m_chkTaskbarNotification, 0, wxTOP|wxBOTTOM, 4);
+					szrNotification->Add(m_pnlSound, 0, wxEXPAND, 8);
+
+				}
+				szrRight->Add(szrNotification, 0, wxEXPAND, 0);
 
 			}
-			szrMain->Add(szrTristate, 2, 0, 0);
+			szrMain->Add(szrRight, 2, 0, 0);
 
 		}
 		szrAll->Add(szrMain, 1, wxALL | wxEXPAND, 8);
@@ -351,7 +362,6 @@ void ClientUIMDIConfigDialog::LoadSettings()
 	m_chkTypeServer->SetValue(m_proxy_settings->GetConnectionType(pctServer));
 	m_chkTypeDCCConnect->SetValue(m_proxy_settings->GetConnectionType(pctDCCConnect));
 	m_chkTypeDCCListen->SetValue(m_proxy_settings->GetConnectionType(pctDCCListen));
-
 	m_pnlDestNetwork->SetSelection(m_proxy_settings->GetDestNetworkMode());
 	m_pnlDestNetwork->SetNetwork(m_proxy_settings->GetDestNetworkNetwork());
 	m_pnlDestNetwork->SetSubnet(m_proxy_settings->GetDestNetworkSubnet());
@@ -361,6 +371,8 @@ void ClientUIMDIConfigDialog::LoadSettings()
 
 	//m_chkProxy->Enable(false);
 	//m_chkProxy->SetValue(false);
+
+	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
 
 	wxCommandEvent evt;
 	OnProxy(evt);
@@ -543,7 +555,15 @@ bool ClientUIMDIConfigDialog::SaveSettings()
 			((ClientUIMDIFrame*)GetParent())->GetClient()->NewProxySettings();
 		}
 	}
-	
+
+	if (success)
+	{
+		if (!m_config->SetTaskbarNotification(m_chkTaskbarNotification->GetValue()))
+		{
+			ErrMsg(wxT("Error setting Taskbar Notification"));
+			success = false;
+		}
+	}
 
 	if (!m_config->Flush())
 	{

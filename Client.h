@@ -80,6 +80,9 @@ public:
 	virtual wxString GetSoundFile() const;
 	virtual bool SetSoundFile(TristateMode type, const wxString &filename);
 
+	virtual bool GetTaskbarNotification() const;
+	virtual bool SetTaskbarNotification(bool mode);
+
 protected:
 	virtual wxString GetSoundFileKey() const;
 

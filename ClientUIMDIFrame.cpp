@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.123 2003-06-25 03:10:42 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.124 2003-07-06 14:35:07 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -398,6 +398,8 @@ ClientUIMDITransferPanel* ClientUIMDIFrame::GetContext(const long transferid)
 void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert, bool convert_urls)
 {
 
+	ClientConfig &config = m_client->GetConfig();
+
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
 
 	bool bAlert = false;
@@ -413,7 +415,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 		bAlert = true;
 	}
 
-	if (!IsFocused())
+	if (!IsFocused() && config.GetTaskbarNotification())
 	{
 		bAlert = true;
 		bFlashWindow = true;
@@ -447,8 +449,6 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 			if (!m_client->GetContactSelf() || !m_client->GetContactSelf()->IsAway())
 			{
-
-				ClientConfig &config = m_client->GetConfig();
 
 				switch (config.GetSoundType())
 				{
