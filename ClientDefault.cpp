@@ -13,15 +13,15 @@ enum
 	ID_TIMER_TEST = 1
 };
 
-BEGIN_EVENT_TABLE(ClientDefault, wxEvtHandler)
+BEGIN_EVENT_TABLE(ClientDefault, Client)
 	EVT_TIMER(ID_TIMER_TEST, ClientDefault::OnTestTimer)
 END_EVENT_TABLE()
 
 ClientDefault::ClientDefault(ClientEventHandler *event_handler)
-	: wxEvtHandler(), Client(event_handler)
+	: Client(event_handler)
 {
 	tmrTest = new wxTimer(this, ID_TIMER_TEST);
-	tmrTest->Start(5000);
+	//tmrTest->Start(5000);
 	Debug(wxEmptyString, "ClientDefault Ready");
 }
 

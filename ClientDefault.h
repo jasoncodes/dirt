@@ -3,7 +3,7 @@
 
 #include "Client.h"
 
-class ClientDefault : public wxEvtHandler, public Client
+class ClientDefault : public Client
 {
 
 public:

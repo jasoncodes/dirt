@@ -8,6 +8,7 @@
 
 * need a portable way open a URL
   ShellExecute works good on Win32, but what about others?
+  maybe just try execing mozilla?
 
 * flickering when ctrl-tab
 
@@ -24,9 +25,5 @@
     cancel a blocking read on stdin?)
 
 * dcc send/recv dialog
-
-* highlight/beep when app isn't focused (ClientUIMDIFrame::AddLine)
-
-* set window pos to bottom of screen, full width
 
 * only scroll to bottom if scrollpos was already at bottom?

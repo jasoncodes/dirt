@@ -9,8 +9,11 @@
 #include "Client.h"
 #include "util.h"
 
+BEGIN_EVENT_TABLE(Client, wxEvtHandler)
+END_EVENT_TABLE()
+
 Client::Client(ClientEventHandler *event_handler)
-	: m_event_handler(event_handler)
+	: wxEvtHandler(), m_event_handler(event_handler)
 {
 }
 

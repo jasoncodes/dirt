@@ -151,17 +151,41 @@ ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool cr
 
 void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, const wxColour &line_colour, bool create_if_not_exist, bool suppress_alert)
 {
+	
 	ClientUIMDICanvas *canvas = GetContext(context, create_if_not_exist);
 	canvas->GetLog()->AddTextLine(Timestamp() + line, line_colour);
-	if (!suppress_alert && GetActiveChild() != canvas->GetParent())
+	
+	if (!suppress_alert)
 	{
-		int button_index = m_switchbar->GetIndexFromUserData(canvas);
-		if (button_index > -1)
+
+		bool bAlert = false;
+		
+		if (GetActiveChild() != canvas->GetParent())
 		{
-			m_switchbar->SetButtonHighlight(button_index, true);
+			int button_index = m_switchbar->GetIndexFromUserData(canvas);
+			if (button_index > -1)
+			{
+				m_switchbar->SetButtonHighlight(button_index, true);
+			}
+			bAlert = true;
 		}
-		wxBell();
+
+		#ifdef __WXMSW__
+			HWND hWnd = (HWND)GetHandle();
+			if (::GetForegroundWindow() != hWnd)
+			{
+				::FlashWindow(hWnd, TRUE);
+				bAlert = true;
+			}
+		#endif
+
+		if (bAlert)
+		{
+			wxBell();
+		}
+
 	}
+
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)

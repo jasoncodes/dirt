@@ -14,7 +14,7 @@ public:
 
 };
 
-class Client
+class Client : public wxEvtHandler
 {
 
 public:
@@ -30,6 +30,9 @@ public:
 
 protected:
 	ClientEventHandler *m_event_handler;
+
+private:
+	DECLARE_EVENT_TABLE()
 
 };
 
