@@ -1,8 +1,50 @@
+[./ByteBuffer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./ByteBuffer.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./ByteBuffer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[./CPSCalc.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./CPSCalc.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./CPSCalc.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [./Client.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./Client.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./Client.h]
 dist=true
@@ -16,6 +58,12 @@ install=false
 install_location=
 type=SOURCE
 
+[./ClientDefault.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./ClientDefault.h]
 dist=true
 install=false
@@ -27,6 +75,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./ClientUIConsole.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./ClientUIConsole.h]
 dist=true
@@ -40,6 +94,12 @@ install=false
 install_location=
 type=SOURCE
 
+[./ClientUIMDICanvas.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./ClientUIMDICanvas.h]
 dist=true
 install=false
@@ -51,6 +111,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./ClientUIMDIFrame.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./ClientUIMDIFrame.h]
 dist=true
@@ -64,7 +130,67 @@ install=false
 install_location=
 type=SOURCE
 
+[./ClientUIMDITransferPanel.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./ClientUIMDITransferPanel.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[./Console.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./Console.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./Console.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[./Crypt.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./Crypt.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./Crypt.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[./CryptSocket.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./CryptSocket.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./CryptSocket.h]
 dist=true
 install=false
 install_location=
@@ -75,6 +201,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./Dirt.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./Dirt.dsp]
 dist=true
@@ -106,11 +238,53 @@ install=false
 install_location=
 type=DATA
 
+[./FileTransfer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./FileTransfer.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./FileTransfer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[./FileTransfers.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[./FileTransfers.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./FileTransfers.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [./InputControl.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./InputControl.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./InputControl.h]
 dist=true
@@ -124,6 +298,12 @@ install=false
 install_location=
 type=SOURCE
 
+[./LogControl.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./LogControl.h]
 dist=true
 install=false
@@ -131,7 +311,7 @@ install_location=
 type=HEADER
 
 [./Makefile.am]
-files=./InputControl.cpp,./InputControl.h,./LogControl.cpp,./LogControl.h,./Modifiers.h,./SpanTag.cpp,./SpanTag.h,./SwitchBar.cpp,./SwitchBar.h,./SwitchBarCanvas.cpp,./SwitchBarCanvas.h,./SwitchBarChild.cpp,./SwitchBarChild.h,./SwitchBarParent.cpp,./SwitchBarParent.h,./Dirt.cpp,./Dirt.h,./ClientUIMDICanvas.cpp,./ClientUIMDICanvas.h,./ClientUIMDIFrame.cpp,./ClientUIMDIFrame.h,./Dirt.dsp,./Dirt.dsw,./Dirt.kdevprj,./Dirt.rc,./notes.txt,./Client.cpp,./ClientDefault.cpp,./ClientUIConsole.cpp,./ClientUIMDITransferPanel.cpp,./util.cpp,./ClientDefault.h,./Client.h,./ClientUIConsole.h,./ClientUIMDITransferPanel.h,./util.h,./NickListControl.cpp,./NickListControl.h
+files=./Dirt.kdevprj,./ByteBuffer.cpp,./ByteBuffer.h,./CPSCalc.cpp,./CPSCalc.h,./Client.cpp,./Client.h,./ClientDefault.cpp,./ClientDefault.h,./util.d,./ClientUIConsole.h,./SwitchBarParent.d,./ClientUIMDICanvas.h,./ClientUIMDIFrame.cpp,./ClientUIMDIFrame.h,./ClientUIMDITransferPanel.cpp,./ClientUIMDITransferPanel.h,./Console.cpp,./Console.h,./Crypt.cpp,./Crypt.h,./CryptSocket.cpp,./CryptSocket.h,./Dirt.cpp,./Dirt.dsp,./Dirt.dsw,./Dirt.h,./Dirt.rc,./FileTransfer.cpp,./FileTransfer.h,./FileTransfers.cpp,./FileTransfers.h,./InputControl.cpp,./InputControl.h,./LogControl.cpp,./LogControl.h,./Modifiers.h,./NickListControl.cpp,./NickListControl.h,./OldClient.cpp.txt,./SpanTag.cpp,./SpanTag.h,./SwitchBar.cpp,./SwitchBar.h,./SwitchBarCanvas.cpp,./SwitchBarCanvas.h,./SwitchBarChild.cpp,./SwitchBarChild.h,./SwitchBarParent.cpp,./SwitchBarParent.h,./dirtconsole,./dirt,./notes.txt,./util.cpp,./util.h,./SwitchBar.d,./SwitchBarChild.d,./SwitchBarCanvas.d,./SpanTag.d,./NickListControl.d,./LogControl.d,./InputControl.d,./FileTransfers.d,./FileTransfer.d,./Dirt.d,./CryptSocket.d,./Crypt.d,./CPSCalc.d,./Console.d,./ClientUIMDITransferPanel.d,./ClientUIMDIFrame.d,./ClientUIMDICanvas.d,./ClientUIConsole.d,./ClientDefault.d,./Client.d,./ByteBuffer.d,./ClientUIMDICanvas.cpp,./ClientUIConsole.cpp,
 sub_dirs=res,
 type=prog_main
 
@@ -147,17 +327,35 @@ install=false
 install_location=
 type=SOURCE
 
+[./NickListControl.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./NickListControl.h]
 dist=true
 install=false
 install_location=
 type=HEADER
 
+[./OldClient.cpp.txt]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./SpanTag.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./SpanTag.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./SpanTag.h]
 dist=true
@@ -171,6 +369,12 @@ install=false
 install_location=
 type=SOURCE
 
+[./SwitchBar.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./SwitchBar.h]
 dist=true
 install=false
@@ -182,6 +386,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./SwitchBarCanvas.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./SwitchBarCanvas.h]
 dist=true
@@ -195,6 +405,12 @@ install=false
 install_location=
 type=SOURCE
 
+[./SwitchBarChild.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./SwitchBarChild.h]
 dist=true
 install=false
@@ -207,13 +423,31 @@ install=false
 install_location=
 type=SOURCE
 
+[./SwitchBarParent.d]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [./SwitchBarParent.h]
 dist=true
 install=false
 install_location=
 type=HEADER
 
-[./todo.txt]
+[./dirt]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./dirtconsole]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[./notes.txt]
 dist=true
 install=false
 install_location=
@@ -224,6 +458,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[./util.d]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [./util.h]
 dist=true
@@ -261,11 +501,8 @@ Translations=*.ts,*.po,
 User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
-[Makefile.am]
-sub_dirs=.
-
 [res/Makefile.am]
-files=res/channel.ico,res/channel.xpm,res/dirt.ico,res/dirt.xpm,res/query.ico,res/query.xpm,res/recieve.ico,res/recieve.xpm,res/send.ico,res/send.xpm,
+files=res/channel.ico,res/channel.xpm,res/dirt.ico,res/dirt.xpm,res/hand.cur,res/manifest.xml,res/query.ico,res/query.xpm,res/receive.ico,res/receive.xpm,res/send.ico,res/send.xpm,
 sub_dirs=
 type=normal
 
@@ -293,6 +530,18 @@ install=false
 install_location=
 type=DATA
 
+[res/hand.cur]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[res/manifest.xml]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [res/query.ico]
 dist=true
 install=false
@@ -305,13 +554,13 @@ install=false
 install_location=
 type=DATA
 
-[res/recieve.ico]
+[res/receive.ico]
 dist=true
 install=false
 install_location=
 type=DATA
 
-[res/recieve.xpm]
+[res/receive.xpm]
 dist=true
 install=false
 install_location=
