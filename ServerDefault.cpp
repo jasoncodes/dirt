@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.32 2003-03-04 13:08:15 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.33 2003-03-04 13:19:03 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -14,8 +14,7 @@ const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
 const wxLongLong_t ping_timeout_delay = 45000;
 const long ping_timer_interval = 2500;
-//const wxString dirt_pl = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
-const wxString dirt_pl = wxT("http://jason.darktech.org/cgi-bin/dirt.pl");
+const wxString dirt_pl = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 const long http_update_good = 5*60;
 const long http_update_bad1 = 30;
 const long http_update_bad2 = 15*60;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.21 2003-03-04 13:08:15 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.23 2003-03-04 13:15:26 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -280,6 +280,7 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	FitInside();
 	CentreOnParent();
+	cmdOK->SetDefault();
 	ShowModal();
 
 }
