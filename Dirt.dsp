@@ -299,6 +299,14 @@ SOURCE=.\InputControl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\KDE.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\KDE.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\LogControl.cpp
 # End Source File
 # Begin Source File
@@ -412,6 +420,14 @@ SOURCE=.\SwitchBarParent.cpp
 # Begin Source File
 
 SOURCE=.\SwitchBarParent.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TrayIcon.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TrayIcon.h
 # End Source File
 # Begin Source File
 
