@@ -7,7 +7,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Crypt.cpp,v 1.5 2003-02-20 05:27:23 jason Exp $)
+RCS_ID($Id: Crypt.cpp,v 1.6 2003-02-20 06:48:13 jason Exp $)
 
 #include "Crypt.h"
 
@@ -26,6 +26,7 @@ RCS_ID($Id: Crypt.cpp,v 1.5 2003-02-20 05:27:23 jason Exp $)
 #include "crypto/files.h"
 #include "crypto/sha.h"
 #include "crypto/md5.h"
+#include "crypto/md5mac.h"
 
 #ifdef _MSC_VER
 	#pragma warning ( pop )
@@ -128,7 +129,7 @@ void Crypt::RSAGenerateKey(unsigned int key_length, ByteBuffer &public_key, Byte
 
 }
 
-ByteBuffer Crypt::RSAEncrypt(ByteBuffer &public_key, ByteBuffer &plain_text)
+ByteBuffer Crypt::RSAEncrypt(const ByteBuffer &public_key, const ByteBuffer &plain_text)
 {
 
 	StringSource public_source(public_key.Lock(), public_key.Length(), true);
@@ -166,7 +167,7 @@ ByteBuffer Crypt::RSAEncrypt(ByteBuffer &public_key, ByteBuffer &plain_text)
 
 }
 
-ByteBuffer Crypt::RSADecrypt(ByteBuffer &private_key, ByteBuffer &cither_text)
+ByteBuffer Crypt::RSADecrypt(const ByteBuffer &private_key, const ByteBuffer &cither_text)
 {
 
 	StringSource private_source(private_key.Lock(), private_key.Length(), true);
@@ -206,34 +207,32 @@ ByteBuffer Crypt::RSADecrypt(ByteBuffer &private_key, ByteBuffer &cither_text)
 void Crypt::SetAESEncryptKey(const ByteBuffer &key)
 {
 	wxASSERT(key.Length() == 32);
-	ByteBuffer tmp(key);
 	try
 	{
-		m_priv->enc.SetKey(tmp.Lock(), tmp.Length());
+		m_priv->enc.SetKey(key.Lock(), key.Length());
 	}
 	catch (...)
 	{
-		tmp.Unlock();
+		key.Unlock();
 		throw;
 	}
-	tmp.Unlock();
+	key.Unlock();
 	m_priv->enc_keyset = true;
 }
 
 void Crypt::SetAESDecryptKey(const ByteBuffer &key)
 {
 	wxASSERT(key.Length() == 32);
-	ByteBuffer tmp(key);
 	try
 	{
-		m_priv->dec.SetKey(tmp.Lock(), tmp.Length());
+		m_priv->dec.SetKey(key.Lock(), key.Length());
 	}
 	catch (...)
 	{
-		tmp.Unlock();
+		key.Unlock();
 		throw;
 	}
-	tmp.Unlock();
+	key.Unlock();
 	m_priv->dec_keyset = true;
 }
 
@@ -279,25 +278,23 @@ ByteBuffer Crypt::AESDecrypt(const ByteBuffer &data)
 
 	wxASSERT(m_priv->dec_keyset);
 
-	ByteBuffer src(data);
+	wxASSERT((data.Length() % m_priv->dec.BlockSize()) == 0);
+	int num_blocks = data.Length() / m_priv->dec.BlockSize();
 
-	wxASSERT((src.Length() % m_priv->dec.BlockSize()) == 0);
-	int num_blocks = src.Length() / m_priv->dec.BlockSize();
-
-	ByteBuffer buff(src.Length());
+	ByteBuffer buff(data.Length());
 
 	try
 	{
-		m_priv->dec.ProcessAndXorMultipleBlocks(src.Lock(), NULL, buff.Lock(), num_blocks);
+		m_priv->dec.ProcessAndXorMultipleBlocks(data.Lock(), NULL, buff.Lock(), num_blocks);
 	}
 	catch (...)
 	{
-		src.Unlock();
+		data.Unlock();
 		buff.Unlock();
 		throw;
 	}
 
-	src.Unlock();
+	data.Unlock();
 	buff.Unlock();
 
 	return buff;
@@ -309,14 +306,103 @@ ByteBuffer Crypt::MD5(const ByteBuffer &data)
 
 	CryptoPP::MD5 md5;
 
-	ByteBuffer data2(data);
-	md5.Update(data2.Lock(), data2.Length());
-	data2.Unlock();
+	try
+	{
+		md5.Update(data.Lock(), data.Length());
+		data.Unlock();
+	}
+	catch (...)
+	{
+		data.Unlock();
+		throw;
+	}
 
 	ByteBuffer output(md5.DigestSize());
-	md5.Final(output.Lock());
-	output.Unlock();
+	try
+	{
+		md5.Final(output.Lock());
+		output.Unlock();
+	}
+	catch (...)
+	{
+		output.Unlock();
+		throw;
+	}
 
 	return output;
+
+}
+
+const size_t Crypt::MD5MACKeyLength = MD5MAC::KEYLENGTH;
+const size_t Crypt::MD5MACDigestLength = MD5MAC::DIGESTSIZE;
+
+ByteBuffer Crypt::MD5MACDigest(const ByteBuffer &key, const ByteBuffer &data)
+{
+	
+	wxASSERT(key.Length() == MD5MACKeyLength);
+	
+	MD5MAC mac;
+
+	try
+	{
+		mac.SetKey(key.Lock(), key.Length());
+		key.Unlock();
+	}
+	catch (...)
+	{
+		key.Unlock();
+		throw;
+	}
+
+	ByteBuffer digest(MD5MACDigestLength);
+
+	try
+	{
+		mac.CalculateDigest(digest.Lock(), data.Lock(), data.Length());
+		digest.Unlock();
+		data.Unlock();
+		return digest;
+	}
+	catch (...)
+	{
+		digest.Unlock();
+		data.Unlock();
+		throw;
+	}
+
+}
+
+bool Crypt::MD5MACVerify(const ByteBuffer &key, const ByteBuffer &data, const ByteBuffer &digest)
+{
+
+	wxASSERT(key.Length() == MD5MACKeyLength);
+	wxASSERT(digest.Length() == MD5MACDigestLength);
+
+	MD5MAC mac;
+
+	try
+	{
+		mac.SetKey(key.Lock(), key.Length());
+		key.Unlock();
+	}
+	catch (...)
+	{
+		key.Unlock();
+		throw;
+	}
+
+	try
+	{
+		bool match = mac.VerifyDigest(digest.Lock(), data.Lock(), data.Length());
+		digest.Unlock();
+		data.Unlock();
+		return match;
+	}
+	catch (...)
+	{
+		digest.Unlock();
+		data.Unlock();
+		throw;
+	}
 
 }

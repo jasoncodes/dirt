@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ByteBuffer.cpp,v 1.5 2003-02-20 05:27:23 jason Exp $)
+RCS_ID($Id: ByteBuffer.cpp,v 1.6 2003-02-20 06:47:57 jason Exp $)
 
 #include "ByteBuffer.h"
 
@@ -148,6 +148,12 @@ bool ByteBuffer::operator==(const ByteBuffer &other) const
 		(memcmp(m_data->buffer, other.m_data->buffer, m_data->length) == 0));
 }
 
+const byte* ByteBuffer::Lock() const
+{
+	m_data->locks++;
+	return m_data->buffer;
+}
+
 byte* ByteBuffer::Lock()
 {
 	EnsureOwnCopy();
@@ -171,7 +177,7 @@ void ByteBuffer::EnsureOwnCopy()
 	}
 }
 
-void ByteBuffer::Unlock()
+void ByteBuffer::Unlock() const
 {
 	wxASSERT(m_data->locks);
 	m_data->locks--;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.45 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.46 2003-02-20 06:47:33 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -323,9 +323,18 @@ void ClientUIMDIFrame::OnClientMessageIn(const wxString &nick, const wxString &t
 void ClientUIMDIFrame::OnClientUserList(const wxArrayString &nicklist)
 {
 	m_lstNickList->Clear();
+	bool self_found = false;
 	for (size_t i = 0; i < nicklist.GetCount(); ++i)
 	{
+		if (!self_found && nicklist[i] == m_client->GetNickname())
+		{
+			self_found = true;
+		}
 		m_lstNickList->Add(nicklist[i]);
+	}
+	if (!self_found && m_client->GetNickname().Length())
+	{
+		m_lstNickList->Add(m_client->GetNickname());
 	}
 }
 

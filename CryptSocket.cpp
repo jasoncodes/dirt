@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.12 2003-02-18 13:30:59 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.13 2003-02-20 06:48:13 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -270,7 +270,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 void CryptSocketBase::DispatchIncoming()
 {
 
-	byte *ptr = m_buffIn.Lock();
+	const byte *ptr = m_buffIn.Lock();
 	size_t len = m_buffIn.Length();
 
 	while (len >= 2)
@@ -350,7 +350,7 @@ void CryptSocketBase::MaybeSendData()
 
 	if (!m_bOutputOkay && m_sck && m_sck->IsConnected()) return;
 	
-	byte *ptr = m_buffOut.Lock();
+	const byte *ptr = m_buffOut.Lock();
 	size_t len = m_buffOut.Length();
 
 	while (len > 0)

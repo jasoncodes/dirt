@@ -23,8 +23,9 @@ public:
 	ByteBuffer operator+(const ByteBuffer &other) const;
 	bool operator==(const ByteBuffer &other) const;
 
+	const byte* Lock() const;
 	byte* Lock();
-	void Unlock();
+	void Unlock() const;
 
 	size_t Length() const;
 
