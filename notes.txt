@@ -5,8 +5,6 @@
   this problem reproduces in the socket sample
   CVS HEAD as of 2003/04/05 has the same problem (with 2.4 compat)
 
-* don't show the server details in titlebar until connected (currently shows in connecting)
-
 * file transfers
 
 * firewall traversal: try connecting both ways at same time, close alt route if main succeeds
