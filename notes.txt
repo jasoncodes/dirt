@@ -1,3 +1,6 @@
+* senders should sit in the send loop for upto 500 ms
+  If longer then break out and fake a "ok to send more" event
+
 * wxBug: bitmap button disabled mask not working (as if we wern't using wx/msw/wx.rc)
   reproduces in unmodified controls sample
 

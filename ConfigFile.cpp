@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ConfigFile.cpp,v 1.10 2003-08-14 06:12:06 jason Exp $)
+RCS_ID($Id: ConfigFile.cpp,v 1.11 2003-08-20 01:52:03 jason Exp $)
 
 #include "ConfigFile.h"
 #include "Dirt.h"
@@ -98,13 +98,18 @@ ConfigFile::~ConfigFile()
 {
 	wxASSERT_MSG(!m_batch_depth, wxT("EndBatch() not called before destroying ConfigFile"));
 	wxASSERT_MSG(!m_mutex->IsLocked(), wxT("Config mutex locked in destructor"));
-	delete m_mutex;
+	bool lock_ok = MutexLock();
 	delete m_base;
+	if (lock_ok)
+	{
+		MutexUnlock();
+	}
+	delete m_mutex;
 }
 
 void ConfigFile::ReInit()
 {
-	MutexLock();
+	bool lock_ok = MutexLock();
 	char *old_locale = setlocale(LC_ALL, "C");
 	if (m_base)
 	{
@@ -128,7 +133,10 @@ void ConfigFile::ReInit()
 	m_base->SetUmask(0077);
 	setlocale(LC_ALL, old_locale);
 	m_last_file_mod = GetLastFileModified();
-	MutexUnlock();
+	if (lock_ok)
+	{
+		MutexUnlock();
+	}
 }
 
 bool ConfigFile::MutexLock() const
@@ -140,13 +148,7 @@ bool ConfigFile::MutexLock() const
 
 void ConfigFile::MutexUnlock() const
 {
-	if (m_mutex->GetLockDepth())
-	{
-		if (m_mutex->IsLocked())
-		{
-			m_mutex->Unlock();
-		}
-	}
+	m_mutex->Unlock();
 }
 
 bool ConfigFile::BeginBatch()
@@ -282,21 +284,27 @@ wxDateTime ConfigFile::GetLastFileModified() const
 
 bool ConfigFile::IsLatestLoaded() const
 {
-	MutexLock();
+	bool lock_ok = MutexLock();
 	bool latest = (m_last_file_mod == GetLastFileModified());
-	MutexUnlock();
+	if (lock_ok)
+	{
+		MutexUnlock();
+	}
 	return latest;
 }
 
 void ConfigFile::EnsureLatestLoaded() const
 {
-	MutexLock();
+	bool lock_ok = MutexLock();
 	if (!IsLatestLoaded())
 	{
 		const_cast<ConfigFile*>(this)->ReInit();
 		SendEvent();
 	}
-	MutexUnlock();
+	if (lock_ok)
+	{
+		MutexUnlock();
+	}
 }
 
 void ConfigFile::SetEventHandler(wxEvtHandler *handler, int id)
