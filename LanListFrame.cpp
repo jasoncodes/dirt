@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LanListFrame.cpp,v 1.9 2004-05-16 04:42:46 jason Exp $)
+RCS_ID($Id: LanListFrame.cpp,v 1.10 2004-05-31 11:11:00 jason Exp $)
 
 #include "LanListFrame.h"
 #include "util.h"
@@ -86,7 +86,11 @@ LanListFrame::LanListFrame()
 
 	if (!m_bcast->Ok())
 	{
-		wxMessageBox(wxT("Windows 98 or Windows NT SP4 is required for this function"), wxT("Unsupported Operating System"), wxOK|wxICON_ERROR);
+#ifdef __WXMSW__
+		wxMessageBox(wxT("Windows 98 or Windows NT SP4 is required for this function."), wxT("Unsupported Operating System"), wxOK|wxICON_ERROR);
+#else
+		wxMessageBox(wxT("This feature is presently unavailable on your platform."), wxT("Unsupported Operating System"), wxOK|wxICON_ERROR);
+#endif
 		m_tmr = NULL;
 		Destroy();
 		return;
