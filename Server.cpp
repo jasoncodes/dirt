@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.31 2003-03-12 00:59:22 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.32 2003-03-12 02:35:49 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -845,7 +845,18 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					conn->Send(context, wxT("NICKLIST"), nicklist);
 					size_t m_user_count = GetUserCount();
 					m_peak_users = wxMax(m_peak_users, m_user_count);
-					if (m_user_count < 3)
+					#if wxUSE_WAVE
+						wxString filename = m_config->GetSoundJoin();
+						if (filename.Length() && wxFileName(filename).FileExists())
+						{
+							m_wave.Create(filename, false);
+							if (m_wave.IsOk())
+							{
+								m_wave.Play();
+							}
+						}
+					#endif
+					if (m_user_count < 3 && GetMillisecondTicks() < GetNextPublicListUpdateTick())
 					{
 						ResetPublicListUpdate(10, false);
 					}

@@ -6,9 +6,10 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.38 2003-03-08 05:36:33 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.39 2003-03-12 02:35:49 jason Exp $)
 
 #include "ServerDefault.h"
+#include <wx/filename.h>
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -154,13 +155,26 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					{
 						conn->m_quitmsg = wxT("Too many connections");
 						conn->m_sck->CloseWithEvent();
+						return;
 					}
 					if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config->GetMaxUsersIP())
 					{
 						conn->m_quitmsg = wxT("Too many connections from this IP");
 						conn->m_sck->CloseWithEvent();
+						return;
 					}
 					conn->Send(wxEmptyString, wxT("SERVERNAME"), m_config->GetServerName());
+					#if wxUSE_WAVE
+						wxString filename = m_config->GetSoundConnection();
+						if (filename.Length() && wxFileName(filename).FileExists())
+						{
+							m_wave.Create(filename, false);
+							if (m_wave.IsOk())
+							{
+								m_wave.Play();
+							}
+						}
+					#endif
 				}
 				break;
 
@@ -184,7 +198,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					}
 					delete conn;
 					m_event_handler->OnServerConnectionChange();
-					if (GetUserCount() < 3)
+					if (GetUserCount() < 3 && GetMillisecondTicks() < GetNextPublicListUpdateTick())
 					{
 						ResetPublicListUpdate(10, false);
 					}

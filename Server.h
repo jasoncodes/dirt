@@ -3,6 +3,7 @@
 
 #include <wx/datetime.h>
 #include "util.h"
+#include <wx/wave.h>
 
 //////// ServerEventHandler ////////
 
@@ -189,6 +190,9 @@ protected:
 	ServerConfig *m_config;
 	static const wxString s_server_nickname;
 	size_t m_peak_users;
+	#if wxUSE_WAVE
+		wxWave m_wave;
+	#endif
 
 private:
 	DECLARE_EVENT_TABLE()
