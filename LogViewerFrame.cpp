@@ -244,11 +244,19 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 
 	if (first_call)
 	{
-		id = m_tree->GetFirstChild(idParent, cookie);
+		#if wxCHECK_VERSION(2,5,0)
+			id = m_tree->GetFirstChild(idParent, cookie);
+		#else
+			id = m_tree->GetFirstChild(idParent, (long&)cookie);
+		#endif
 	}
 	else
 	{
-		id = m_tree->GetNextChild(idParent, cookie);
+		#if wxCHECK_VERSION(2,5,0)
+			id = m_tree->GetNextChild(idParent, cookie);
+		#else
+			id = m_tree->GetNextChild(idParent, (long&)cookie);
+		#endif
 	}
 
 	if (!id.IsOk())

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.17 2003-08-05 06:55:00 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.18 2003-08-06 15:30:53 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -177,6 +177,7 @@ ClientUIMDIConfigDialog::ClientUIMDIConfigDialog(ClientUIMDIFrame *parent)
 
 	m_fraNickname = new wxStaticBox(panel, wxID_ANY, wxT("Default Nickname"));
 	m_txtNickname = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	FixBorder(m_txtNickname);
 
 	m_pnlLog = new TristateConfigPanel(panel, ID_LOG, wxT("Log File Directory"));
 

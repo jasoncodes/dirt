@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.2 2003-08-05 11:59:58 jason Exp $)
+RCS_ID($Id: ClientUIMDIPasswordManagerDialog.cpp,v 1.3 2003-08-06 15:30:53 jason Exp $)
 
 #include "ClientUIMDIPasswordManagerDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -24,10 +24,13 @@ public:
 		
 		wxStaticText *lblServerName = new wxStaticText(panel, wxID_ANY, wxT("Server Name:"));
 		m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+		FixBorder(m_txtServerName);
 		wxStaticText *lblPassword = new wxStaticText(panel, wxID_ANY, wxT("Password:"));
 		m_txtPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(128, -1), wxTE_PASSWORD);
+		FixBorder(m_txtPassword);
 		wxStaticText *lblConfirm = new wxStaticText(panel, wxID_ANY, wxT("Confirm:"));
 		m_txtConfirm = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(128, -1), wxTE_PASSWORD);
+		FixBorder(m_txtConfirm);
 
 		m_cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
 		m_cmdOK->Enable(false);
@@ -175,6 +178,7 @@ ClientUIMDIPasswordManagerDialog::ClientUIMDIPasswordManagerDialog(ClientUIMDIFr
 	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
 	m_lstPasswords = new wxListBox(panel, ID_LIST, wxDefaultPosition, wxSize(200,150), 0, NULL, wxLB_EXTENDED|wxLB_HSCROLL|wxLB_NEEDED_SB|wxLB_SORT);
+	FixBorder(m_lstPasswords);
 
 	m_cmdAdd = new wxButton(panel, ID_ADD, wxT("&Add"));
 	m_cmdRemove = new wxButton(panel, ID_REMOVE, wxT("&Remove"));
