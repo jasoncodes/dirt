@@ -40,6 +40,7 @@ protected:
 	virtual void MaybeSendData();
 	virtual void GenerateNewPublicKey();
 	virtual void GenerateNewBlockKey();
+	virtual void CloseWithEvent();
 
 protected:
 	void OnSocket(wxSocketEvent &event);

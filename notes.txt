@@ -35,3 +35,8 @@
 * win32: click mdi minimize button on maximized mdi child, child doesnt disappear
 
 * gtk: having a highlight when hitting ctrl-k, ctrl-b, etc results in loss of selection
+
+* crypt socket can presently cause a crash. need to catch expections from Crypto++ and also
+  gracefully CloseWithEvent() on malformed messages.
+  Try alt-000, alt-000 and alt-00, alt-00, alt-00, alt-00.
+

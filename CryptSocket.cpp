@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.4 2003-02-15 01:31:29 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.5 2003-02-15 02:02:55 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -11,6 +11,8 @@ RCS_ID($Id: CryptSocket.cpp,v 1.4 2003-02-15 01:31:29 jason Exp $)
 #include <wx/datetime.h>
 
 //////// CryptSocketBase ////////
+
+#define CRYPTSOCKET_CHECK_RET(cond,msg) wxCHECK2_MSG(cond, {CloseWithEvent();return;}, msg)
 
 const size_t CryptSocketBase::s_maxBlockKeyAgeBytes = 1024 * 512; // 512 KB
 const time_t CryptSocketBase::s_maxBlockKeyAgeSeconds = 300; // 5 minutes
@@ -157,7 +159,7 @@ void CryptSocketBase::OnSocketInput()
 	ByteBuffer buff(4096);
 	m_sck->Read(buff.Lock(), buff.Length());
 	buff.Unlock();
-	wxCHECK_RET(!m_sck->Error(), "Socket error has occured");
+	CRYPTSOCKET_CHECK_RET(!m_sck->Error(), "Socket error has occured");
 	
 	if (m_sck->LastCount())
 	{
@@ -178,7 +180,7 @@ void CryptSocketBase::OnSocketInput()
 void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 {
 
-	wxCHECK_RET(len > 2, "Packet length must be greater than 2 bytes long");
+	CRYPTSOCKET_CHECK_RET(len > 2, "Packet length must be greater than 2 bytes long");
 	size_t data_len = BytesToUint16(ptr, 2);
 	ptr += 2;
 	len -= 2;
@@ -186,7 +188,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	if (data_len > 0)
 	{
 		
-		wxCHECK_RET(m_keyRemote.Length() > 0, "No remote public key");
+		CRYPTSOCKET_CHECK_RET(m_keyRemote.Length() > 0, "No remote public key");
 		ByteBuffer enc(ptr, len);
 		ByteBuffer dec = m_crypt.AESDecrypt(enc);
 		ByteBuffer plain(dec.Lock(), data_len);
@@ -198,7 +200,7 @@ void CryptSocketBase::ProcessIncoming(const byte *ptr, size_t len)
 	else
 	{
 		
-		wxCHECK_RET(len >= 2, "Message length must be at least 2 bytes long");
+		CRYPTSOCKET_CHECK_RET(len >= 2, "Message length must be at least 2 bytes long");
 		MessageTypes type = (MessageTypes)BytesToUint16(ptr, 2);
 		ptr += 2;
 		len -= 2;
@@ -310,7 +312,7 @@ void CryptSocketBase::MaybeSendData()
 		}
 		else
 		{
-			wxCHECK_RET(!m_sck->Error(), "Socket error has occured");
+			CRYPTSOCKET_CHECK_RET(!m_sck->Error(), "Socket error has occured");
 			iSendLen = m_sck->LastCount();
 			ptr += iSendLen;
 			len -= iSendLen;
@@ -352,6 +354,12 @@ void CryptSocketBase::AddToSendQueue(const ByteBuffer &data)
 {
 	m_buffOut += (Uint16ToBytes(data.Length()) + data);
 	MaybeSendData();
+}
+
+void CryptSocketBase::CloseWithEvent()
+{
+	Close();
+	OnSocketLost();
 }
 
 void CryptSocketBase::OnSocketLost()
