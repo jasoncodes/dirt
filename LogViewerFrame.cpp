@@ -5,6 +5,8 @@
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
+#include "RCS.h"
+RCS_ID($Id: LogViewerFrame.cpp,v 1.23 2003-08-12 10:24:29 jason Exp $)
 
 #include "LogViewerFrame.h"
 #include "LogReader.h"
