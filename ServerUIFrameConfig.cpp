@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.22 2003-03-04 13:11:06 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.21 2003-03-04 13:08:15 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -113,7 +113,6 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
-	cmdOK->SetDefault();
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 	m_cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
 	wxButton *cmdReset = new wxButton(panel, ID_RESET, wxT("&Reset"));
