@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.69 2004-06-14 03:15:59 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.70 2004-06-15 18:14:31 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1263,22 +1263,19 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 		lines_per_action = 3;
 	}
 
-	if (m_wheel_rotation != 0);
+	while (m_wheel_rotation >= wheel_delta)
 	{
-		while (m_wheel_rotation >= wheel_delta)
-		{
-			int view_x, view_y;
-			GetViewStart(&view_x, &view_y);
-			Scroll(-1, wxMax(0, view_y - lines_per_action));
-			m_wheel_rotation -= wheel_delta;
-		}
-		while (m_wheel_rotation <= -wheel_delta)
-		{
-			int view_x, view_y;
-			GetViewStart(&view_x, &view_y);
-			Scroll(-1, view_y + lines_per_action);
-			m_wheel_rotation += wheel_delta;
-		}
+		int view_x, view_y;
+		GetViewStart(&view_x, &view_y);
+		Scroll(-1, wxMax(0, view_y - lines_per_action));
+		m_wheel_rotation -= wheel_delta;
+	}
+	while (m_wheel_rotation <= -wheel_delta)
+	{
+		int view_x, view_y;
+		GetViewStart(&view_x, &view_y);
+		Scroll(-1, view_y + lines_per_action);
+		m_wheel_rotation += wheel_delta;
 	}
 
 	wxPoint pos = GetVirtualMousePosition();
