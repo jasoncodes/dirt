@@ -27,6 +27,8 @@
 
 * admin feature to change away messages
 
+* option to set if sound disabled while /away
+
 * option to auto /back if talk in main window or talk in any window
   ("don't do it if been away for less than x seconds" option too)
 
@@ -149,6 +151,7 @@
   Perhaps you should if 9x, if messagelog.length > x
   SAY Warning: 9x about to run out of GDI resources
   Win9x Resource Meter uses GetFreeSystemResources (16 bit only)
+  maybe the fix will be to use a wxFont cache in wxHTML?
 
 * check that guards are in place where necessary to trap malformed messages
 
