@@ -65,7 +65,7 @@ optimizeLevel=3
 // linker
 libraryPath=crypto\Release
 outputFilename=UnicodeRelease\Dirt.exe
-libraries=wxmswu, regex, png, jpeg, zlib, tiff, stdc++, gcc, odbc32, wsock32, winspool, winmm, shell32, comctl32, ctl3d32, odbc32, advapi32, odbc32, wsock32, opengl32, glu32, ole32, oleaut32, uuid, cryptlib, iphlpapi
+libraries=wxmswu, regex, png, jpeg, zlib, tiff, stdc++, gcc, odbc32, wsock32, winspool, winmm, shell32, comctl32, ctl3d32, odbc32, advapi32, odbc32, wsock32, opengl32, glu32, ole32, oleaut32, uuid, cryptlib
 extraLinkerOptions=
 ignoreStartupFile=0
 ignoreDefaultLibs=0
