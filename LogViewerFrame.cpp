@@ -64,12 +64,12 @@ BEGIN_EVENT_TABLE(LogViewerFrame, wxFrame)
 END_EVENT_TABLE()
 
 LogViewerFrame::LogViewerFrame()
-	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(720, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN)
+	: wxFrame(NULL, -1, AppTitle(wxT("Log Viewer")), wxDefaultPosition, wxSize(720, 480), wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL)
 {
 
 	SetIcon(wxIcon(dirt_xpm));
 
-	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
+	wxPanel *panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN | wxTAB_TRAVERSAL);
 
 	m_sash1 = new wxSashWindow(panel, ID_SASH1, wxDefaultPosition, wxSize(225,100), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
 	m_sash2 = new wxSashWindow(m_sash1, ID_SASH2, wxDefaultPosition, wxSize(100, 200), wxSW_3DSASH | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);

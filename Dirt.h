@@ -13,7 +13,8 @@ enum AppMode
 	appDefault,
 	appClient,
 	appServer,
-	appLog
+	appLog,
+	appLanList
 };
 
 class DirtApp : public wxApp

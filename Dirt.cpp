@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.40 2003-04-18 08:49:48 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.41 2003-04-30 02:57:27 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -14,6 +14,7 @@ RCS_ID($Id: Dirt.cpp,v 1.40 2003-04-18 08:49:48 jason Exp $)
 #include "ClientUIMDIFrame.h"
 #include "ServerUIFrame.h"
 #include "LogViewerFrame.h"
+#include "LanListFrame.h"
 #include "Splash.h"
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -206,6 +207,7 @@ bool DirtApp::OnInit()
 				break;
 
 			case appLog:
+			case appLanList:
 				m_cmdline->Usage();
 				return false;
 
@@ -239,6 +241,10 @@ bool DirtApp::OnInit()
 
 			case appLog:
 				l = new LogViewerFrame;
+				break;
+
+			case appLanList:
+				new LanListFrame;
 				break;
 
 			default:
@@ -316,6 +322,7 @@ bool DirtApp::ProcessCommandLine()
 	m_cmdline->AddOption(wxEmptyString, wxT("host"), wxT("Remote host to connect to (implies client)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 	m_cmdline->AddSwitch(wxEmptyString, wxT("logs"), wxT("Log Mode (GUI only)"), 0);
 	m_cmdline->AddOption(wxEmptyString, wxT("log"), wxT("Log file to view (implies log mode)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
+	m_cmdline->AddSwitch(wxEmptyString, wxT("lanlist"), wxT("LAN List (GUI only)"), 0);
 	m_cmdline->AddOption(wxEmptyString, wxT("config"), wxT("Alternate config filename"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
 	if (m_cmdline->Parse() != 0)
@@ -334,6 +341,10 @@ bool DirtApp::ProcessCommandLine()
 	else if (m_cmdline->Found(wxT("logs")))
 	{
 		m_appmode = appLog;
+	}
+	else if (m_cmdline->Found(wxT("lanlist")))
+	{
+		m_appmode = appLanList;
 	}
 	else
 	{

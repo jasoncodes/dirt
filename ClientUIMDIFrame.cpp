@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.98 2003-04-29 13:12:58 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.99 2003-04-30 02:57:26 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -456,7 +456,7 @@ void ClientUIMDIFrame::AddLine(const wxString &context, const wxString &line, co
 
 wxArrayString ClientUIMDIFrame::OnClientSupportedCommands()
 {
-	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS"), wxT(" "));
+	return SplitString(wxT("CLEAR CLEARALL CLOSE EXIT TEST TEST2 QUERY RESETWINDOWPOS LOGS LANLIST"), wxT(" "));
 }
 
 bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd, wxString &params)
@@ -530,11 +530,11 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 		m_client->GetFileTransfers()->Test();
 		return true;
 	}
-	else if (cmd == wxT("LOGS"))
+	else if (cmd == wxT("LOGS") || cmd == wxT("LANLIST"))
 	{
 		wxASSERT(wxTheApp->argc > 0);
 		wxString param;
-		param << wxT("--logs");
+		param << (cmd == wxT("LOGS")) ? wxT("--logs") : wxT("--lanlist");
 		const wxChar *argv[3];
 		wxString self = GetSelf();
 		argv[0] = self.c_str();

@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.22 2003-04-28 04:53:28 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.23 2003-04-30 02:57:27 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
 #include "ServerUIFrame.h"
 #include "LogViewerFrame.h"
+#include "LanListFrame.h"
 #include "util.h"
 
 #include <wx/image.h>
@@ -63,14 +64,13 @@ enum
 	ID_CLIENT = 1,
 	ID_SERVER,
 	ID_INTERNET,
+	ID_LANLIST,
 	ID_LOGS
 };
 
 BEGIN_EVENT_TABLE(Splash, wxFrame)
-	EVT_BUTTON(ID_CLIENT, Splash::OnButton)
-	EVT_BUTTON(ID_SERVER, Splash::OnButton)
-	EVT_BUTTON(ID_INTERNET, Splash::OnButton)
-	EVT_BUTTON(ID_LOGS, Splash::OnButton)
+	EVT_BUTTON(wxID_ANY, Splash::OnButton)
+	EVT_MENU(wxID_ANY, Splash::OnButton)
 END_EVENT_TABLE()
 
 Splash::Splash()
@@ -87,22 +87,24 @@ Splash::Splash()
 	SetIcon(wxIcon(dirt_xpm));
 
 	const int pos_y = 140;
-	const int gap_x = 16;
+	const int gap_x = 8;
 	const int gap_y = 16;
 
-	wxButton *btns[4];
-	const int btn_count = 4;
+	wxButton *btns[5];
+	const int btn_count = 5;
 
 	btns[0] = new wxButton(panel, ID_CLIENT, wxT("&Client"));
 	btns[1] = new wxButton(panel, ID_SERVER, wxT("&Server"));
 	btns[2] = new wxButton(panel, ID_INTERNET, wxT("&Internet"));
-	btns[3] = new wxButton(panel, ID_LOGS, wxT("&Logs"));
+	btns[3] = new wxButton(panel, ID_LANLIST, wxT("LA&N List"));
+	btns[4] = new wxButton(panel, ID_LOGS, wxT("&Logs"));
 
 	wxAcceleratorEntry entries[btn_count];
 	entries[0].Set(0, 'C', ID_CLIENT);
 	entries[1].Set(0, 'S', ID_SERVER);
 	entries[2].Set(0, 'I', ID_INTERNET);
-	entries[3].Set(0, 'L', ID_LOGS);
+	entries[3].Set(0, 'N', ID_LANLIST);
+	entries[4].Set(0, 'L', ID_LOGS);
 	wxAcceleratorTable accel(btn_count, entries);
 	SetAcceleratorTable(accel);
 
@@ -169,6 +171,11 @@ void Splash::OnButton(wxCommandEvent &event)
 			{
 				Destroy();
 			}
+			break;
+
+		case ID_LANLIST:
+			Destroy();
+			new LanListFrame;
 			break;
 
 		case ID_LOGS:
