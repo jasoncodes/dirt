@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.56 2004-07-13 22:06:21 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.57 2004-08-31 19:54:31 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -635,7 +635,7 @@ void DirtApp::OnIdle(wxIdleEvent &event)
 bool DirtApp::IsControlDown() const
 {
 #ifdef __WXMSW__
-	return (::GetAsyncKeyState(VK_CONTROL) & 0x8000);
+	return (::GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
 #else
 	return wxGetKeyState(WXK_CONTROL);
 #endif
@@ -644,7 +644,7 @@ bool DirtApp::IsControlDown() const
 bool DirtApp::IsAltDown() const
 {
 #ifdef __WXWSW__
-	return (::GetAsyncKeyState(VK_MENU) & 0x8000);
+	return (::GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
 #else
 	return wxGetKeyState(WXK_ALT);
 #endif
@@ -653,7 +653,7 @@ bool DirtApp::IsAltDown() const
 bool DirtApp::IsShiftDown() const
 {
 #ifdef __WXMSW__
-	return (::GetAsyncKeyState(VK_SHIFT) & 0x8000);	
+	return (::GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 #else
 	return wxGetKeyState(WXK_SHIFT);
 #endif
