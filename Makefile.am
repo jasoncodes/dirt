@@ -1,8 +1,8 @@
 CC = gcc
 CPPFLAGS = `wx-config --cxxflags`
-.SUFFIXES:      .o .cpp
+.SUFFIXES: .o .cpp
 .PRECIOUS: dirt
-.PHONY: clean dirt
+.PHONY: clean dirt all
 SOURCES := $(shell /bin/ls *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 DIRT_EXE_PERMS = $(shell /bin/ls -l dirt | awk '{print $$1}' | tr -d "rw-")
@@ -19,6 +19,8 @@ endif
 clean:
 	rm -f *.o Dirt
 
+all: clean dirt
+
 .cpp.o : 
 	$(CC) -c $(CPPFLAGS) -o $@ $<
 
@@ -31,5 +33,3 @@ clean:
 
 Dirt: $(OBJECTS)
 	$(CC) -o Dirt $(OBJECTS) `wx-config --libs` crypto/libcryptopp.a
-
-all: clean dirt
