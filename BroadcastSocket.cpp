@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: BroadcastSocket.cpp,v 1.3 2003-04-27 09:28:28 jason Exp $)
+RCS_ID($Id: BroadcastSocket.cpp,v 1.4 2003-04-28 13:02:25 jason Exp $)
 
 #include "BroadcastSocket.h"
 #include "util.h"
@@ -166,7 +166,7 @@ static inline void EnableBroadcast(wxDatagramSocket *sck)
 	#if defined(__WXMSW__) || defined(__UNIX__)
 		int value = 1;
 		int retval = setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (const char*)&value, sizeof(int));
-		wxASSERT(retval == 0);
+		wxCHECK_RET(retval == 0, wxT("setsockopt SO_BROADCAST failed"));
 	#else
 		#error "Sorry, your OS is not supported yet"
 	#endif
