@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.17 2003-03-26 23:46:49 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.18 2003-03-26 23:50:17 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -97,6 +97,14 @@ Splash::Splash()
 	btns[1] = new wxButton(panel, ID_SERVER, wxT("&Server"));
 	btns[2] = new wxButton(panel, ID_INTERNET, wxT("&Internet"));
 	btns[3] = new wxButton(panel, ID_LOGS, wxT("&Logs"));
+
+	wxAcceleratorEntry entries[btn_count];
+	entries[0].Set(0, 'C', ID_CLIENT);
+	entries[1].Set(0, 'S', ID_SERVER);
+	entries[2].Set(0, 'I', ID_INTERNET);
+	entries[3].Set(0, 'L', ID_LOGS);
+	wxAcceleratorTable accel(btn_count, entries);
+	SetAcceleratorTable(accel);
 
 	int btn_width = 0;
 	

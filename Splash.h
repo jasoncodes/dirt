@@ -9,12 +9,9 @@ public:
 	virtual ~Splash();
 
 protected:
-	void OnErase(wxEraseEvent &event);
-	void OnPaint(wxPaintEvent &event);
 	void OnButton(wxCommandEvent &event);
 
 protected:
-	wxBitmap *m_bmp;
 	bool m_button_clicked;
 
 private:
