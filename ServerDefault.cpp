@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.39 2003-03-12 02:35:49 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.40 2003-03-12 03:18:55 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -169,9 +169,9 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 						if (filename.Length() && wxFileName(filename).FileExists())
 						{
 							m_wave.Create(filename, false);
-							if (m_wave.IsOk())
+							if (!m_wave.IsOk() || !m_wave.Play())
 							{
-								m_wave.Play();
+								Warning(wxT("Error playing ") + filename);
 							}
 						}
 					#endif

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.32 2003-03-12 02:35:49 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.33 2003-03-12 03:18:55 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -850,9 +850,9 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 						if (filename.Length() && wxFileName(filename).FileExists())
 						{
 							m_wave.Create(filename, false);
-							if (m_wave.IsOk())
+							if (!m_wave.IsOk() || !m_wave.Play())
 							{
-								m_wave.Play();
+								Warning(wxT("Error playing ") + filename);
 							}
 						}
 					#endif
