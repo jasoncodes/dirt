@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.3 2003-03-12 06:05:18 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.4 2003-03-13 02:23:48 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -274,6 +274,7 @@ public:
 		: KSystemTray(), m_trayicon(trayicon)
 	{
 
+		kapp->lock();
 		setAlignment(Qt::AlignTop|Qt::AlignLeft);
 		setGeometry(-128,-128,64,64);
 		NETRootInfo nri_before(qt_xdisplay(), NET::KDESystemTrayWindows);
@@ -304,6 +305,7 @@ public:
 		{
 			hide();
 		}
+		kapp->unlock();
 
 	}
 
@@ -438,11 +440,13 @@ void TrayIcon::SetIcon(const char **xpm)
 {
 	if (m_priv)
 	{
+		kapp->lock();
 		QImage img(xpm);
 		QPixmap pixmap(img.smoothScale(24, 24));
 		m_priv->setPixmap(pixmap);
 		m_priv->update();
 		kapp->processEvents();
+		kapp->unlock();
 	}
 }
 
@@ -450,7 +454,9 @@ void TrayIcon::SetToolTip(const wxString &tooltip)
 {
 	if (m_priv)
 	{
+		kapp->lock();
 		QToolTip::add(m_priv, tooltip.c_str());
+		kapp->unlock();
 	}
 }
 
