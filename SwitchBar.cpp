@@ -281,13 +281,15 @@ void SwitchBar::OnMouse(wxMouseEvent &event)
 {
 	if (event.GetEventType() == wxEVT_MOTION)
 	{
-		int button_index = HitTest(event.GetPosition());
-		wxString tooltip = wxEmptyString;
-		if (button_index > -1)
-		{
-			tooltip = GetButtonCaption(button_index);
-		}
-		SetToolTip(new wxToolTip(tooltip)); 
+		#if wxUSE_TOOLTIPS
+			int button_index = HitTest(event.GetPosition());
+			wxString tooltip = wxEmptyString;
+			if (button_index > -1)
+			{
+				tooltip = GetButtonCaption(button_index);
+			}
+			SetToolTip(new wxToolTip(tooltip)); 
+		#endif
 	}
 	else if (event.GetEventType() == wxEVT_RIGHT_UP)
 	{
