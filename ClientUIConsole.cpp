@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.47 2003-05-06 05:14:18 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.48 2003-05-07 02:52:04 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -108,7 +108,10 @@ void ClientUIConsole::OnClientInformation(const wxString &context, const wxStrin
 
 void ClientUIConsole::OnClientStateChange()
 {
-	m_passmode = false;
+	if (!m_client->IsConnected())
+	{
+		m_passmode = false;
+	}
 }
 
 void ClientUIConsole::OnClientAuthNeeded(const wxString &text)
