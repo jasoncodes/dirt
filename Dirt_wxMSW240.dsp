@@ -409,6 +409,14 @@ SOURCE=.\FileTransfers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\FontControl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FontControl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\HotKeyControl.cpp
 # End Source File
 # Begin Source File

@@ -1,3 +1,10 @@
+* disable alt font settings in ansi build
+
+* option to set normal font (and CJK font when implemented)
+
+* use detect when normal font cannot display CJK characters and switch to a 2nd font
+  for those characters
+
 * senders should sit in the send loop for upto 500 ms
   If longer then break out and fake a "ok to send more" event
 
@@ -6,11 +13,6 @@
 
 * wxBug: each line read with wxTextFile has a null char on the end
   https://sourceforge.net/tracker/?func=detail&atid=309863&aid=789039&group_id=9863
-
-* option to set normal font (and CJK font when implemented)
-
-* use detect when normal font cannot display CJK characters and switch to a 2nd font
-  for those characters
 
 * auto-reconnect if connection lost (due to timeout or kick for example)
   status messages should not be as verbose as existing /reconnect and should
