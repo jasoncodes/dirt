@@ -55,12 +55,12 @@ public:
 	virtual wxString GetId() const;
 	virtual bool IsAuthenticated() const { return m_authenticated; }
 	virtual bool IsAdmin() const { return m_admin; }
+	virtual void Terminate(const wxString &reason) = 0;
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual void SendData(const ByteBuffer &data) = 0;
 	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }
-	virtual void Terminate(const wxString &reason) = 0;
 
 protected:
 	wxString m_nickname;

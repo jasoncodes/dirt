@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.38 2003-03-15 08:19:05 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.39 2003-03-16 11:11:55 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -79,7 +79,8 @@ enum
 	ID_CLEAR,
 	ID_TIMER_UPDATECONNECTIONS,
 	ID_TRAY,
-	ID_RESTORE
+	ID_RESTORE,
+	ID_CONNECTION_KICK
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
@@ -99,6 +100,8 @@ BEGIN_EVENT_TABLE(ServerUIFrame, wxFrame)
 	EVT_MENU(ID_CLIENT, ServerUIFrame::OnClient)
 	EVT_ICONIZE(ServerUIFrame::OnIconize)
 	EVT_IDLE(ServerUIFrame::OnIdle)
+	EVT_LIST_ITEM_RIGHT_CLICK(ID_CONNECTIONS, ServerUIFrame::OnConnectionRClick)
+	EVT_MENU(ID_CONNECTION_KICK, ServerUIFrame::OnConnectionKick)
 END_EVENT_TABLE()
 
 ServerUIFrame::ServerUIFrame()
@@ -518,4 +521,41 @@ void ServerUIFrame::UpdateConnectionList()
 void ServerUIFrame::OnTimerUpdateConnections(wxTimerEvent &event)
 {
 	UpdateConnectionList();
+}
+
+void ServerUIFrame::OnConnectionRClick(wxListEvent &event)
+{
+    int flags;
+	long index = m_lstConnections->HitTest(event.GetPoint(), flags);
+	if (index > -1 && index < m_lstConnections->GetItemCount())
+	{
+		long data = m_lstConnections->GetItemData(index);
+		m_right_click_conn = (ServerConnection*)(void*)data;
+		if (m_right_click_conn)
+		{
+			wxPoint pt = event.GetPoint();
+			pt = ScreenToClient(m_lstConnections->ClientToScreen(pt));
+			wxMenu menu;
+			menu.Append(ID_CONNECTION_KICK, wxT("Kick"));
+			PopupMenu(&menu, pt);
+		}
+	}
+}
+
+void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
+{
+    wxTextEntryDialog dialog(this, wxT("Kick message for ") + m_right_click_conn->GetId() + wxT(":"), wxT("Dirt Secure Chat"));
+    if (dialog.ShowModal() == wxID_OK)
+    {
+		wxString msg = dialog.GetValue();
+        if (msg.Length())
+		{
+			msg = wxT("Kicked: ") + msg;
+		}
+		else
+		{
+			msg = wxT("Kicked");
+		}
+		m_right_click_conn->Terminate(msg);
+    }
 }

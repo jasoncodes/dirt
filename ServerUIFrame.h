@@ -39,6 +39,8 @@ protected:
 	void OnIdle(wxIdleEvent &event);
 	void OnTrayRightClick(wxMouseEvent &event);
 	void OnRestore(wxCommandEvent &event);
+	void OnConnectionRClick(wxListEvent &event);
+	void OnConnectionKick(wxCommandEvent &event);
 
 protected:
 	virtual bool ResetWindowPos();
@@ -59,6 +61,7 @@ protected:
 	int m_last_xpm;
 	wxString m_last_tooltip;
 	bool m_hide_self;
+	ServerConnection *m_right_click_conn;
 
 private:
 	DECLARE_EVENT_TABLE()
