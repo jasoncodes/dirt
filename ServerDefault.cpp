@@ -6,10 +6,11 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.46 2003-03-29 05:30:08 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.47 2003-04-01 03:44:28 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
+#include "Modifiers.h"
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
@@ -200,12 +201,12 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					}
 					if (conn->GetNickname().Length())
 					{
-						Information(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + wxT(")"));
+						Information(conn->GetId() + wxT(" has left the chat (") + conn->m_quitmsg + (wxChar)OriginalModifier + wxT(")"));
 						SendToAll(wxEmptyString, wxT("PART"), Pack(conn->GetNickname(), conn->GetInlineDetails(), conn->m_quitmsg), true);
 					}
 					else
 					{
-						Information(conn->GetId() + wxT(" disconnected (") + conn->m_quitmsg + wxT(")"));
+						Information(conn->GetId() + wxT(" disconnected (") + conn->m_quitmsg + (wxChar)OriginalModifier + wxT(")"));
 					}
 					delete conn;
 					m_event_handler->OnServerConnectionChange();
