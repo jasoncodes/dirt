@@ -1,3 +1,8 @@
+win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
+increasing padding on staticboxes in option dialog should do it
+
+win32: primary/alternate labels on hotkeys are not centred vertically
+
 win32+possibly others: Failed to retrieve file times for 'C:\...\dirt,ini' (error 32: ... used by another process)
 many of them, use wxLogNull and place in a few second loop or maybe there's an alt function to use
 
