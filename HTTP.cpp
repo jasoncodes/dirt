@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.5 2003-03-04 13:08:14 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.6 2003-03-05 01:29:46 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -806,17 +806,24 @@ void HTTP::Connect(const URL &url)
 		return;
 	}
 	wxIPV4address addr;
+	bool valid;
 	if (((wxString)m_proxy).Length() > 0)
 	{
-		addr.Hostname(m_proxy.GetHostname());
-		addr.Service(m_proxy.GetPort(80));
+		valid = addr.Hostname(m_proxy.GetHostname());
+		valid &= addr.Service(m_proxy.GetPort(80));
 	}
 	else
 	{
-		addr.Hostname(m_url.GetHostname());
-		addr.Service(m_url.GetPort(80));
+		valid = addr.Hostname(m_url.GetHostname());
+		valid &= addr.Service(m_url.GetPort(80));
 	}
-	if (m_sck->Connect(addr, false))
+	if (!valid)
+	{
+		wxSocketEvent evt(ID_SOCKET);
+		evt.m_event = wxSOCKET_LOST;
+		AddPendingEvent(evt);
+	}
+	else if (m_sck->Connect(addr, false))
 	{
 		wxSocketEvent evt(ID_SOCKET);
 		evt.m_event = wxSOCKET_CONNECTION;
