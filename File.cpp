@@ -6,11 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: File.cpp,v 1.3 2003-05-10 06:07:41 jason Exp $)
+RCS_ID($Id: File.cpp,v 1.4 2003-05-10 06:58:50 jason Exp $)
 
 #include "File.h"
 
-#if !USE_WIN32_FILE
+#if USE_WIN32_FILE
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#else
 	#include <sys/stat.h>
 #endif
 

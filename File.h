@@ -8,8 +8,7 @@
 #endif
 
 #if USE_WIN32_FILE
-	#include <windows.h>
-	#include <wx/msw/winundef.h>
+	typedef void *HANDLE;
 #else
 	#include <wx/file.h>
 #endif
