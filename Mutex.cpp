@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Mutex.cpp,v 1.2 2003-08-12 07:43:05 jason Exp $)
+RCS_ID($Id: Mutex.cpp,v 1.3 2003-08-13 10:23:52 jason Exp $)
 
 #include "Mutex.h"
 
@@ -20,7 +20,7 @@ SECURITY_ATTRIBUTES* CreateSecurityAttributes()
 	InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION);
 	SetSecurityDescriptorDacl(sd, TRUE, NULL, FALSE);
 	SECURITY_ATTRIBUTES *sa = new SECURITY_ATTRIBUTES;
-	sa->nLength = sizeof SECURITY_ATTRIBUTES;
+	sa->nLength = sizeof (SECURITY_ATTRIBUTES);
 	sa->bInheritHandle = FALSE;
 	sa->lpSecurityDescriptor = sd;
 	return sa;
@@ -176,9 +176,10 @@ Mutex::Mutex(const wxString &path)
 Mutex::~Mutex()
 {
 	wxASSERT_MSG(!IsLocked(), wxT("Mutex destructor called while locked"));
-	while (IsLocked())
+	bool ok = true;
+	while (ok && IsLocked())
 	{
-		bool ok = Unlock();
+		ok = Unlock();
 		wxASSERT_MSG(ok, wxT("Error unlocking mutex"));
 	}
 	delete m_priv;

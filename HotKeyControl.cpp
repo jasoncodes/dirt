@@ -6,9 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HotKeyControl.cpp,v 1.1 2003-08-13 08:16:19 jason Exp $)
+RCS_ID($Id: HotKeyControl.cpp,v 1.2 2003-08-13 10:23:50 jason Exp $)
 
 #include "HotKeyControl.h"
+
+#ifdef __WXMSW__
+#include <windows.h>
+#include <wx/msw/winundef.h>
+#endif
 
 BEGIN_EVENT_TABLE(HotKeyControl, wxTextCtrl)
 	EVT_KEY_DOWN(HotKeyControl::OnKeyDown)
