@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.9 2003-03-19 08:16:57 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.10 2003-03-19 08:18:17 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -63,7 +63,6 @@ WX_DEFINE_OBJARRAY(BoolArray);
 WX_DECLARE_OBJARRAY(size_t, SizeTArray);
 WX_DEFINE_OBJARRAY(SizeTArray);
 
-// not implemented
 bool LogReader::ParseFilename(const wxString &filename, wxString &prefix, wxDateTime &date, wxString &suffix)
 {
 	wxFileName fn(filename);
