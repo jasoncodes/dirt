@@ -1,3 +1,11 @@
+make down arrow on input row not do anything
+
+make up arrow then down arrow bring back the last line that was being typed
+
+abstract out all dings from input control into an event that if skipped
+or not handled causes a wxBell otherwise does nothing (to allow the canvas
+to trigger the default configured sound)
+
 MinGW+NT4: Pressing Alt+T followed by space results in crash
 
 GTK: startup with --host=jason.darktech.org results in it thinking
@@ -87,8 +95,6 @@ as any nicks in use
 Multiple matches found: match1, match2, (5 more)
 each match will be clickable
 5 more will take you to the site
-
-make down arrow not clear current input row for n00bs
 
 always show ip along with hostname (in whois and also server user listing)
 
