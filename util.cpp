@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.50 2003-04-02 12:50:31 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.51 2003-04-03 01:34:52 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -928,11 +928,21 @@ wxDateTime ParseDateTime(const wxString &str, bool okay_to_presume_future)
 	ht.tail.Trim(true).Trim(false);
 	if (ht.head.Length())
 	{
-		dt.ParseDate(ht.head);
+		const wxChar *begin = ht.head.c_str();
+		const wxChar *end = dt.ParseDate(begin);
+		if ((size_t)(end - begin) != ht.head.Length())
+		{
+			return wxInvalidDateTime;
+		}
 	}
 	if (ht.tail.Length())
 	{
-		dt.ParseTime(ht.tail);
+		const wxChar *begin = ht.tail.c_str();
+		const wxChar *end = dt.ParseTime(begin);
+		if ((size_t)(end - begin) != ht.tail.Length())
+		{
+			return wxInvalidDateTime;
+		}
 	}
 	if (!ht.head.Length() && okay_to_presume_future)
 	{
