@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.63 2004-03-07 18:20:16 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.64 2004-03-13 04:02:59 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1765,11 +1765,18 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 	wxStringTokenizer st(tmp, delims, wxTOKEN_RET_DELIMS);
 
 	wxString output;
+	bool append_nbsp = false;
 
 	while (st.HasMoreTokens())
 	{
 
 		wxString token = st.GetNextToken();
+
+		if (token.Right(1) == wxT('\x0a0'))
+		{
+			append_nbsp = true;
+			token = token.Left(token.Length() - 1);
+		}
 
 		if (token.Length() > 0)
 		{
@@ -1825,6 +1832,12 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 				output += last_char;
 			}
 
+		}
+
+		if (append_nbsp)
+		{
+			output += wxT("&nbsp;");
+			append_nbsp = false;
 		}
 
 	}

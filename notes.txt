@@ -19,6 +19,8 @@ remove monolithic wx lib usage
 
 change KB to KiB
 
+When a message is filtered, it becomes ASCII, breaking all unicode characters. If the word internet is filtered, for instance, and one types: internet café (using the alt-0233 unicode  é), then the second word comes out caf?.
+
 why is there so much latency in ping yet typing text is so fast
 this applies to /ping and /whois and titlebar
 
@@ -134,11 +136,6 @@ strip trailing comma or period from url
 look for bottlenecks in titlebar latency meter
 
 option to disable red and beep for a mdi child (for server console)
-
-[09:01] <Jason[Work]> i think what is hapening is <font color="xxx"> is
-being inserted into the middle of a <a href="xxxxxx"> which obv isnt good
-[09:02] <Jason[Work]> so a check is needed to see if we are in a html tag or
-not, if we are, replace colour code with nothing
 
 * bug filename label in transfer panel has _ bug with & (replace with &&)
 
