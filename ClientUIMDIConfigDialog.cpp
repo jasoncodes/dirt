@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.19 2003-08-11 07:03:14 jason Exp $)
+RCS_ID($Id: ClientUIMDIConfigDialog.cpp,v 1.20 2003-08-12 08:03:33 jason Exp $)
 
 #include "ClientUIMDIConfigDialog.h"
 #include "ClientUIMDIFrame.h"
@@ -400,7 +400,7 @@ void ClientUIMDIConfigDialog::LoadSettings()
 
 	m_chkTaskbarNotification->SetValue(m_config->GetTaskbarNotification());
 	m_chkFileTransferStatus->SetValue(m_config->GetFileTransferStatus());
-	m_cmbSystemTrayIcon->SetValue(tray_icon_options[m_config->GetSystemTrayIconMode()]);
+	m_cmbSystemTrayIcon->SetSelection(m_config->GetSystemTrayIconMode());
 
 	wxCommandEvent evt;
 	OnProxy(evt);
