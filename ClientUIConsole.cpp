@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.35 2003-02-27 07:46:12 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.36 2003-03-12 06:47:06 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -95,8 +95,16 @@ void ClientUIConsole::OnClientStateChange()
 
 void ClientUIConsole::OnClientAuthNeeded(const wxString &text)
 {
-	OnClientInformation(wxEmptyString, text);
-	m_passmode = true;
+	wxString pass = m_client->GetLastURL().GetPassword();
+	if (pass.Length())
+	{
+		m_client->Authenticate(pass);
+	}
+	else
+	{
+		OnClientInformation(wxEmptyString, text);
+		m_passmode = true;
+	}
 }
 
 void ClientUIConsole::OnClientAuthDone(const wxString &text)
@@ -106,7 +114,15 @@ void ClientUIConsole::OnClientAuthDone(const wxString &text)
 	{
 		OnClientInformation(wxEmptyString, text);
 	}
-	m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+	wxString nick = m_client->GetLastURL().GetUsername();
+	if (nick.Length())
+	{
+		m_client->SetNickname(wxEmptyString, nick);
+	}
+	else
+	{
+		m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+	}
 }
 
 void ClientUIConsole::OnClientAuthBad(const wxString &text)

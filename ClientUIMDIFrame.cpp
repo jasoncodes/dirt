@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.65 2003-03-12 06:37:06 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.66 2003-03-12 06:47:06 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -532,8 +532,16 @@ void ClientUIMDIFrame::NickPrompt(const wxString &nick)
 
 void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
 {
-	OnClientInformation(wxEmptyString, text);
-	GetContext(wxEmptyString)->SetPasswordMode(true);
+	wxString pass = m_client->GetLastURL().GetPassword();
+	if (pass.Length())
+	{
+		m_client->Authenticate(pass);
+	}
+	else
+	{
+		OnClientInformation(wxEmptyString, text);
+		GetContext(wxEmptyString)->SetPasswordMode(true);
+	}
 }
 
 void ClientUIMDIFrame::OnClientAuthDone(const wxString &text)
@@ -543,7 +551,15 @@ void ClientUIMDIFrame::OnClientAuthDone(const wxString &text)
 	{
 		OnClientInformation(wxEmptyString, text);
 	}
-	NickPrompt(m_client->GetDefaultNick());
+	wxString nick = m_client->GetLastURL().GetUsername();
+	if (nick.Length())
+	{
+		m_client->SetNickname(wxEmptyString, nick);
+	}
+	else
+	{
+		NickPrompt(m_client->GetDefaultNick());
+	}
 }
 
 void ClientUIMDIFrame::OnClientAuthBad(const wxString &text)
