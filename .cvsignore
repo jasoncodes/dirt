@@ -12,6 +12,7 @@ Dirt.res
 *.aps
 *.d
 *.layout
+Dirt.kdevses
 Makefile.win
 *_private.*
 DirtGTK.tar.gz
