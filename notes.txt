@@ -42,8 +42,6 @@
 
 * < and > around URLs not working
 
-* filter local ips from avg ping
-
 * client side ping
 * /bind
 * /alias

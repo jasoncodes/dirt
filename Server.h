@@ -38,6 +38,7 @@ public:
 	virtual wxString GetNickname() const { return m_nickname; }
 	virtual wxString GetRemoteHost() const { return m_remotehost; }
 	virtual wxString GetRemoteHostAndPort() const { return m_remotehostandport; }
+	virtual wxString GetRemoteIPString() const { return m_remoteipstring; }
 	virtual wxString GetUserDetails() const { return m_userdetails; }
 	virtual bool IsAway() const { return m_isaway; }
 	virtual wxString GetAwayMessage() const { return m_awaymessage; }
@@ -64,6 +65,7 @@ protected:
 	wxString m_nickname;
 	wxString m_remotehost;
 	wxString m_remotehostandport;
+	wxString m_remoteipstring;
 	wxString m_userdetails;
 	bool m_isaway;
 	wxString m_awaymessage;
@@ -190,6 +192,7 @@ protected:
 	ServerConfig *m_config;
 	static const wxString s_server_nickname;
 	size_t m_peak_users;
+	wxArrayString m_ip_list;
 	#if wxUSE_WAVE
 		wxWave m_wave;
 	#endif

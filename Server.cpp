@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.33 2003-03-12 03:18:55 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.34 2003-03-12 06:59:05 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -574,8 +574,11 @@ time_t Server::GetAverageLatency() const
 		{
 			if (conn->GetLatency() > 0)
 			{
-				count++;
-				sum += conn->GetLatency();
+				if (!LeftEq(conn->GetRemoteIPString(), wxT("127.")) && (m_ip_list.Index(conn->GetRemoteIPString()) == -1))
+				{
+					count++;
+					sum += conn->GetLatency();
+				}
 			}
 		}
 	}
