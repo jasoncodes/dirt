@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfer.cpp,v 1.21 2003-05-14 12:06:08 jason Exp $)
+RCS_ID($Id: FileTransfer.cpp,v 1.22 2003-05-14 15:17:55 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -22,7 +22,8 @@ FileTransfer::FileTransfer(FileTransfers *transfers)
 		nickname(wxEmptyString), filename(wxEmptyString),
 		filesize(0), time(0), timeleft(-1), cps(-1),
 		filesent(0), status(wxEmptyString), m_transfers(transfers),
-		m_connect_ok(false), m_got_accept(false), m_more_idle(false)
+		m_connect_ok(false), m_cant_connect(false),
+		m_got_accept(false), m_more_idle(false)
 {
 }
 
@@ -146,4 +147,17 @@ FileTransfer::operator wxString() const
 	str	<< transferid << wxT(": ")
 		<< GetPrefixString() << GetStateString();
 	return str;
+}
+
+size_t FileTransfer::GetConnectCount() const
+{
+	size_t num_connects = 0;
+	for (size_t i = 0; i < m_scks.GetCount(); ++i)
+	{
+		if (m_scks[i]->GetType() == cstClient)
+		{
+			num_connects++;
+		}
+	}
+	return num_connects;
 }

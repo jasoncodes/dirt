@@ -1,3 +1,5 @@
+* sashes are broken on latest cvs but work on 2.4.0
+
 * add kde extension for /resetwindowpos
 
 * increase win32 tray icon caption length if os + psdk supports?
@@ -17,8 +19,6 @@
 		-- sent by recv to accept send
 		-- optional ip/port pairs for firewall traversal
 		-- sender decides which connection to keep if multiple succeed
-
-	* firewall traversal
 
 	* resume/overwrite option on /dcc accept
 

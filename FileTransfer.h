@@ -58,6 +58,7 @@ public:
 	wxString GetPrefixString() const;
 	wxString GetStateString() const;
 	operator wxString() const;
+	size_t GetConnectCount() const;
 
 protected:
 	bool OnTimer(wxLongLong_t now);
@@ -69,6 +70,7 @@ protected:
 	CryptSocketArray m_scks;
 	bool m_connect_ok;
 	wxLongLong_t m_last_tick;
+	bool m_cant_connect;
 
 	//  get only
 	wxArrayString m_IPs;

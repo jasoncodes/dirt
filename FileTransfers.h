@@ -9,6 +9,7 @@ class ByteBuffer;
 class CryptSocketBase;
 class CryptSocketEvent;
 class DirtApp;
+class Uint16Array;
 
 WX_DECLARE_OBJARRAY(FileTransfer, FileTransferArray);
 
@@ -49,13 +50,16 @@ protected:
 	int FindRemoteTransfer(int remoteid);
 	int FindTransferBySocket(CryptSocketBase *sck);
 	wxArrayString GetMyIPs() const;
-	wxString IPMappingForConnect(const wxString &ip);
+	wxString IPMappingForConnect(const wxString &ip) const;
+	bool ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const;
+	void AppendMyIPs(ByteBufferArray &data, wxUint16 port) const;
 
 protected:
 	void OnGetConnection(FileTransfer &t);
-	void OnRemoteCancel(FileTransfer &t);
+	void OnRemoteCancel(FileTransfer &t, const wxString &msg);
 	void OnGetData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
 	void OnSendData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
+	void OnCommonData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data);
 	void OnClose(FileTransfer &t);
 
 protected:

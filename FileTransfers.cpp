@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.30 2003-05-14 12:06:08 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.31 2003-05-14 15:17:55 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -96,6 +96,16 @@ wxArrayString FileTransfers::GetMyIPs() const
 	return IPs;
 }
 
+void FileTransfers::AppendMyIPs(ByteBufferArray &data, wxUint16 port) const
+{
+	wxArrayString IPs = GetMyIPs();
+	for (size_t i = 0; i < IPs.GetCount(); ++i)
+	{
+		data.Add(IPs[i]);
+		data.Add(wxString() << (int)port);
+	}
+}
+
 int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 {
 
@@ -152,12 +162,7 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 	data.Add(wxLongLong(t->filesize).ToString());
 	data.Add(wxLongLong(t->transferid).ToString());
 	data.Add(ByteBuffer());
-	wxArrayString IPs = GetMyIPs();
-	for (size_t i = 0; i < IPs.GetCount(); ++i)
-	{
-		data.Add(IPs[i]);
-		data.Add(wxString() << (int)addr.Service());
-	}
+	AppendMyIPs(data, addr.Service());
 	m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
 	
 	m_client->m_event_handler->OnClientTransferNew(*t);
@@ -187,6 +192,9 @@ bool FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 			transfer.state = transfer.issend ? ftsSendFail : ftsGetFail;
 			transfer.status = wxT("Transfer cancelled");
 			m_client->m_event_handler->OnClientTransferState(transfer);
+		}
+		if (transfer.state != ftsSendComplete && transfer.state != ftsGetComplete)
+		{
 			ByteBufferArray data;
 			if (transfer.issend)
 			{
@@ -198,13 +206,14 @@ bool FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 				data.Add(wxString(wxT("CANCELGET")));
 				data.Add(wxString() << transfer.remoteid);
 			}
+			data.Add(transfer.status);
 			m_client->CTCP(wxEmptyString, transfer.nickname, wxT("DCC"), Pack(data));
 			for (size_t i = 0; i < transfer.m_scks.GetCount(); ++i)
 			{
 				CryptSocketBase *sck = transfer.m_scks[i];
 				if (sck->Ok())
 				{
-					sck->Send(wxString(wxT("CANCEL")));
+					sck->Send(Pack(wxString(wxT("CANCEL")), transfer.status));
 				}
 			}
 		}
@@ -277,7 +286,7 @@ void FileTransfers::OnClientUserNick(const wxString &old_nick, const wxString &n
 	}
 }
 
-wxString FileTransfers::IPMappingForConnect(const wxString &ip)
+wxString FileTransfers::IPMappingForConnect(const wxString &ip) const
 {
 	wxString last_server_hostname = m_client->GetLastURL().GetHostname();
 	if (last_server_hostname.Length() &&
@@ -288,6 +297,32 @@ wxString FileTransfers::IPMappingForConnect(const wxString &ip)
 	return ip;
 }
 	
+bool FileTransfers::ExtractIPsAndPorts(const ByteBufferArray &fields, size_t i, wxArrayString &IPs, Uint16Array &ports) const
+{
+	while (i < fields.GetCount() && fields[i].Length())
+	{
+		++i;
+	}
+	++i;
+	if (i <= fields.GetCount() && ((fields.GetCount()-i) % 2) == 0)
+	{
+		while (i < fields.GetCount())
+		{
+			IPs.Add(IPMappingForConnect(fields[i]));
+			wxString port_str = fields[i+1];
+			unsigned long port;
+			if (!port_str.ToULong(&port))
+			{
+				return false;
+			}
+			ports.Add(port);
+			i += 2;
+		}
+		return true;
+	}
+	return false;
+}
+
 bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick, const wxString &type, const ByteBuffer &data)
 {
 
@@ -305,30 +340,12 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 				wxString filename = wxFileName(fields[1u]).GetFullName();
 				wxString size_str = fields[2u];
 				wxString id_str = fields[3u];
-				size_t i = 4u;
-				while (i < fields.GetCount() && fields[i].Length())
-				{
-					++i;
-				}
-				if (i+2 >= fields.GetCount())
-				{
-					return false;
-				}
 
-				i++;
 				wxArrayString IPs;
 				Uint16Array ports;
-				while (i < fields.GetCount())
+				if (!ExtractIPsAndPorts(fields, 4, IPs, ports) || IPs.GetCount() < 1)
 				{
-					IPs.Add(IPMappingForConnect(fields[i]));
-					wxString port_str = fields[i+1];
-					unsigned long port;
-					if (!port_str.ToULong(&port))
-					{
-						return false;
-					}
-					ports.Add(port);
-					i += 2;
+					return false;
 				}
 
 				wxLongLong_t size;
@@ -387,10 +404,32 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 
 						if (StringToLongLong(fields[2u], &ll) && (ll < t.filesize) && t.m_file.Seek(ll) == ll)
 						{
+							
+							wxArrayString IPs;
+							Uint16Array ports;
+							if (!ExtractIPsAndPorts(fields, 3, IPs, ports))
+							{
+								return false;
+							}
+
+							if (IPs.GetCount() > 0 && !t.m_connect_ok)
+							{
+								CryptSocketClient *sckClient = new CryptSocketClient;
+								t.m_scks.Add(sckClient);
+								sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
+								sckClient->SetUserData(&t);
+								sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+								wxIPV4address addr;
+								addr.Hostname(IPs[0u]);
+								addr.Service(ports[0u]);
+								sckClient->Connect(addr);
+							}
+
 							t.filesent = ll;
 							t.m_got_accept = true;
 							MaybeSendData(t);
 							return true;
+
 						}
 
 					}
@@ -425,7 +464,54 @@ bool FileTransfers::OnClientCTCPIn(const wxString &context, const wxString &nick
 
 						if (is_cancel_get == t.issend)
 						{
-							OnRemoteCancel(t);
+							wxString msg;
+							if (fields.GetCount() >= 3)
+							{
+								msg = fields[2u];
+							}
+							OnRemoteCancel(t, msg);
+						}
+						
+					}
+
+					return true;
+
+				}
+
+			}
+			else if ((dcc_type == wxT("NOCONNECTSEND") || dcc_type == wxT("NOCONNECTGET")) && fields.GetCount() >= 1)
+			{
+
+				long id;
+				bool is_noconnect_get = (dcc_type == wxT("NOCONNECTGET"));
+
+				if (wxString(fields[1u]).ToLong(&id))
+				{
+
+					int index;
+					if (is_noconnect_get)
+					{
+						index = FindTransfer(id);
+					}
+					else
+					{
+						index = FindRemoteTransfer(id);
+					}
+
+					if (index > -1)
+					{
+
+						FileTransfer &t = m_transfers[index];
+
+						if (is_noconnect_get == t.issend)
+						{
+							if (t.m_cant_connect)
+							{
+								t.state = t.issend ? ftsSendFail : ftsGetFail;
+								t.status = wxT("Error connecting to remote");
+								m_client->m_event_handler->OnClientTransferState(t);
+								DeleteTransfer(t.transferid, false);
+							}
 						}
 						
 					}
@@ -679,15 +765,15 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		t.status = wxT("Connecting...");
 		t.m_last_tick = GetMillisecondTicks();
 		
-		CryptSocketClient *sck = new CryptSocketClient;
-		t.m_scks.Add(sck);
-		sck->SetEventHandler(this, ID_SOCKET_CLIENT);
-		sck->SetUserData(&t);
-		sck->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+		CryptSocketClient *sckClient = new CryptSocketClient;
+		t.m_scks.Add(sckClient);
+		sckClient->SetEventHandler(this, ID_SOCKET_CLIENT);
+		sckClient->SetUserData(&t);
+		sckClient->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
 		wxIPV4address addr;
 		addr.Hostname(t.m_IPs[0u]);
 		addr.Service(t.m_ports[0u]);
-		sck->Connect(addr);
+		sckClient->Connect(addr);
 
 		m_client->m_event_handler->OnClientTransferState(t);
 
@@ -696,6 +782,24 @@ bool FileTransfers::AcceptTransfer(int transferid, const wxString &filename, boo
 		data.Add(wxString() << t.remoteid);
 		data.Add(wxLongLong(t.filesent).ToString());
 		data.Add(ByteBuffer());
+
+		CryptSocketServer *sckServer = new CryptSocketServer;
+		sckServer->SetEventHandler(this, ID_SOCKET_SERVER);
+		sckServer->SetUserData(&t);
+		sckServer->SetKey(m_client->GetKeyLocalPublic(), m_client->GetKeyLocalPrivate());
+		addr.AnyAddress();
+		addr.Service(0);
+		if (sckServer->Listen(addr))
+		{
+			t.m_scks.Add(sckServer);
+			sckServer->GetLocal(addr);
+			AppendMyIPs(data, addr.Service());
+		}
+		else
+		{
+			delete sckServer;
+		}
+	
 		m_client->CTCP(wxEmptyString, t.nickname, wxT("DCC"), Pack(data));
 
 		return true;
@@ -739,7 +843,12 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 
 			case CRYPTSOCKET_INPUT:
 				{
-					wxASSERT(t->m_scks.GetCount() == 1);
+					if (t->m_scks.GetCount() > 1)
+					{
+						t->m_scks.Remove(event.GetSocket());
+						WX_CLEAR_ARRAY(t->m_scks);
+						t->m_scks.Add(event.GetSocket());
+					}
 					ByteBuffer cmd, data;
 					if (!Unpack(event.GetData(), cmd, data))
 					{
@@ -765,34 +874,44 @@ void FileTransfers::OnSocket(CryptSocketEvent &event)
 				break;
 
 			case CRYPTSOCKET_CONNECTION:
-				if (t->issend)
+				if (event.GetId() == ID_SOCKET_SERVER)
 				{
-					if (event.GetId() == ID_SOCKET_SERVER)
-					{
-						CryptSocketServer *sckListen = (CryptSocketServer*)event.GetSocket();
-						sckListen->SetEventHandler(NULL, wxID_ANY);
-						CryptSocketBase *sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
-						WX_CLEAR_ARRAY(t->m_scks);
-						t->m_scks.Add(sck);
-					}
-					else
-					{
-						t->m_connect_ok = true;
-						MaybeSendData(*t);
-					}
+					CryptSocketServer *sckListen = (CryptSocketServer*)event.GetSocket();
+					sckListen->SetEventHandler(NULL, wxID_ANY);
+					CryptSocketBase *sck = sckListen->Accept(this, ID_SOCKET_CLIENT, t);
+					WX_CLEAR_ARRAY(t->m_scks);
+					t->m_scks.Add(sck);
 				}
 				else
 				{
 					t->m_connect_ok = true;
-					OnGetConnection(*t);
+					t->m_scks.Remove(event.GetSocket());
+					WX_CLEAR_ARRAY(t->m_scks);
+					t->m_scks.Add(event.GetSocket());
+					if (t->issend)
+					{
+						MaybeSendData(*t);
+					}
+					else
+					{
+						OnGetConnection(*t);
+					}
 				}
 				break;
 
 			case CRYPTSOCKET_LOST:
 				if (t->m_scks.GetCount() > 1)
 				{
-					delete t;
+					delete event.GetSocket();
 					t->m_scks.Remove(event.GetSocket());
+					if (t->GetConnectCount() == 0)
+					{
+						t->m_cant_connect = true;
+						ByteBufferArray data;
+						data.Add(wxString() << wxT("NOCONNECT") << (t->issend?wxT("SEND"):wxT("GET")));
+						data.Add(wxString() << (t->issend?t->transferid:t->remoteid));
+						m_client->CTCP(wxEmptyString, t->nickname, wxT("DCC"), Pack(data));
+					}
 				}
 				else
 				{
@@ -818,10 +937,14 @@ void FileTransfers::OnGetConnection(FileTransfer &t)
 	t.m_last_tick = GetMillisecondTicks();
 }
 
-void FileTransfers::OnRemoteCancel(FileTransfer &t)
+void FileTransfers::OnRemoteCancel(FileTransfer &t, const wxString &msg)
 {
 	t.state = t.issend ? ftsSendFail : ftsGetFail;
 	t.status = wxT("Cancelled by remote");
+	if (msg.Length())
+	{
+		t.status << wxT(" (Remote error: ") << msg << wxT(")");
+	}
 	m_client->m_event_handler->OnClientTransferState(t);
 	DeleteTransfer(t.transferid, false);
 }
@@ -862,9 +985,9 @@ void FileTransfers::OnSendData(FileTransfer &t, const wxString &cmd, const ByteB
 		m_client->m_event_handler->OnClientTransferState(t);
 		DeleteTransfer(t.transferid, false);
 	}
-	else if (cmd == wxT("CANCEL"))
+	else
 	{
-		OnRemoteCancel(t);
+		OnCommonData(t, cmd, data);
 	}
 }
 
@@ -885,6 +1008,7 @@ void FileTransfers::OnGetData(FileTransfer &t, const wxString &cmd, const ByteBu
 		{
 			t.state = ftsGetFail;
 			t.status = wxT("Error writing to file");
+			m_client->m_event_handler->OnClientTransferState(t);
 			DeleteTransfer(t.transferid, false);
 			return;
 		}
@@ -896,9 +1020,23 @@ void FileTransfers::OnGetData(FileTransfer &t, const wxString &cmd, const ByteBu
 			t.m_scks[0u]->Send(wxString(wxT("THANKS")));
 		}
 	}
-	else if (cmd == wxT("CANCEL"))
+	else
 	{
-		OnRemoteCancel(t);
+		OnCommonData(t, cmd, data);
+	}
+}
+
+void FileTransfers::OnCommonData(FileTransfer &t, const wxString &cmd, const ByteBuffer &data)
+{
+	if (cmd == wxT("CANCEL"))
+	{
+		ByteBufferArray params = Unpack(data);
+		wxString msg;
+		if (params.GetCount())
+		{
+			msg = params[0u];
+		}
+		OnRemoteCancel(t, msg);
 	}
 }
 
@@ -932,6 +1070,7 @@ void FileTransfers::MaybeSendData(FileTransfer &t)
 			{
 				t.state = ftsSendFail;
 				t.status = wxT("Error reading from file");
+				m_client->m_event_handler->OnClientTransferState(t);
 				DeleteTransfer(t.transferid, false);
 				return;
 			}

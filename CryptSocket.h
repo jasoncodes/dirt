@@ -7,6 +7,12 @@
 
 //////// CryptSocketBase ////////
 
+enum CryptSocketType
+{
+	cstClient,
+	cstServer
+};
+
 class CryptSocketBase : public wxEvtHandler
 {
 
@@ -31,6 +37,8 @@ public:
 	virtual const ByteBuffer GetKeyRemotePublic() const { return m_keyRemotePublic; }
 
 	virtual void SetKey(const ByteBuffer &public_key, const ByteBuffer &private_key);
+
+	virtual CryptSocketType GetType() const = 0;
 
 protected:
 	virtual void InitBuffers();
@@ -97,6 +105,8 @@ public:
 
 	virtual void Connect(wxSockAddress& addr);
 
+	virtual CryptSocketType GetType() const { return cstClient; }
+
 protected:
 	virtual void OnSocketConnection();
 
@@ -116,6 +126,8 @@ public:
 
 	virtual bool Listen(wxSockAddress& address);
 	virtual CryptSocketClient *Accept(wxEvtHandler *handler = NULL, wxEventType id = wxID_ANY, void *userdata = NULL);
+
+	virtual CryptSocketType GetType() const { return cstServer; }
 
 protected:
 	virtual void OnSocketConnection();
