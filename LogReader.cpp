@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.14 2003-03-19 17:23:20 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.15 2003-03-29 05:30:08 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
@@ -36,6 +36,8 @@ LogReader::LogReader(const wxString &filename)
 					{
 						ParsePropertyEntry(m_entry);
 					}
+					break;
+				default:
 					break;
 			}
 		}
@@ -155,6 +157,8 @@ bool LogReader::SetPrivateKey(const wxString &private_key)
 							}
 							ParsePropertyEntry(data);
 						}
+						break;
+					default:
 						break;
 				}
 			}

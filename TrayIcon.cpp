@@ -6,11 +6,16 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.5 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.6 2003-03-29 05:30:09 jason Exp $)
 
 #include "TrayIcon.h"
 
 #if defined(WIN32)
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 // Why is it that people don't run late versions of Platform SDK? :)
 #ifndef NOTIFYICONDATA_V1_SIZE
@@ -20,7 +25,7 @@ RCS_ID($Id: TrayIcon.cpp,v 1.5 2003-03-20 07:25:25 jason Exp $)
 class TrayIconPrivate : public wxFrame
 {
 
-	friend TrayIcon;
+	friend class TrayIcon;
 
 protected:
 	TrayIconPrivate(TrayIcon *trayicon)
@@ -234,26 +239,26 @@ void TrayIcon::SetToolTip(const wxString &tooltip)
 bool TrayIcon::PopupMenu(wxMenu *menu, const wxPoint &pos)
 {
 
-    static bool s_inPopup = false;
+	static bool s_inPopup = false;
 
-    if (s_inPopup)
+	if (s_inPopup)
 	{
-        return false;
+		return false;
 	}
 
-    s_inPopup = TRUE;
+	s_inPopup = TRUE;
 
-    menu->UpdateUI();
+	menu->UpdateUI();
 
-    ::SetForegroundWindow((HWND)m_priv->GetHWND());
+	::SetForegroundWindow((HWND)m_priv->GetHWND());
 
-    bool rval = m_priv->PopupMenu(menu, m_priv->ScreenToClient(pos));
+	bool rval = m_priv->PopupMenu(menu, m_priv->ScreenToClient(pos));
 
-    ::PostMessage((HWND)m_priv->GetHWND(), WM_NULL, 0, 0);
+	::PostMessage((HWND)m_priv->GetHWND(), WM_NULL, 0, 0);
 
-    s_inPopup = FALSE;
+	s_inPopup = FALSE;
 
-    return rval;
+	return rval;
 
 }
 

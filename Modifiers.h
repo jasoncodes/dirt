@@ -87,7 +87,7 @@ const size_t colour_count = ((sizeof colours) / (sizeof colours[0]));
 
 static inline int GetModifierIndex(wxChar c)
 {
-	for (int i = 0; i < modifier_count; ++i)
+	for (size_t i = 0; i < modifier_count; ++i)
 	{
 		if (modifier_mappings[i].modifier_char == c)
 		{

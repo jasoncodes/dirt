@@ -85,7 +85,7 @@ class CryptSocketServer;
 class CryptSocketClient : public CryptSocketBase
 {
 
-	friend CryptSocketServer;
+	friend class CryptSocketServer;
 
 public:
 	CryptSocketClient();

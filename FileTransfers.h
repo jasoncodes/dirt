@@ -11,7 +11,7 @@ WX_DECLARE_OBJARRAY(FileTransfer, FileTransferArray);
 class FileTransfers : public wxEvtHandler
 {
 
-	friend FileTransfer;
+	friend class FileTransfer;
 
 public:
 	FileTransfers(Client *client);

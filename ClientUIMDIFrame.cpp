@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.83 2003-03-29 01:54:44 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.84 2003-03-29 05:30:07 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -20,6 +20,10 @@ RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.83 2003-03-29 01:54:44 jason Exp $)
 #include "TrayIcon.h"
 #include "Dirt.h"
 #include "LogWriter.h"
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 DECLARE_APP(DirtApp)
 

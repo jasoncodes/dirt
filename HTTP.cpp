@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.11 2003-03-20 07:25:25 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.12 2003-03-29 05:30:08 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -154,7 +154,7 @@ void HTTPHeader::Init()
 			while (
 				pos+1 < lines.GetCount() &&
 				lines[pos+1].Length() > 0 &&
-				wxIsspace(lines[pos+1][0]))
+				wxIsspace(lines[pos+1][0u]))
 			{
 				pos++;
 				line += lines[pos];

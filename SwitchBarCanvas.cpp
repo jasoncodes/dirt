@@ -6,10 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarCanvas.cpp,v 1.3 2003-03-15 05:49:19 jason Exp $)
+RCS_ID($Id: SwitchBarCanvas.cpp,v 1.4 2003-03-29 05:30:09 jason Exp $)
 
 #include "SwitchBarCanvas.h"
 #include "SwitchBarParent.h"
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 BEGIN_EVENT_TABLE(SwitchBarCanvas, wxPanel)
 END_EVENT_TABLE()

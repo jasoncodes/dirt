@@ -6,12 +6,16 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: InputControl.cpp,v 1.11 2003-03-05 12:48:46 jason Exp $)
+RCS_ID($Id: InputControl.cpp,v 1.12 2003-03-29 05:30:08 jason Exp $)
 
 #include "InputControl.h"
 #include "Modifiers.h"
 #include <wx/minifram.h>
 #include "util.h"
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 
 
@@ -71,7 +75,7 @@ public:
 
 		int client_width = ((colour_count + 1) / 2) * static_size.x;
 
-		for (int i = 0; i < colour_count; ++i)
+		for (size_t i = 0; i < colour_count; ++i)
 		{
 			
 			InputControlColourPanel *lblTest = new InputControlColourPanel(this, 100, wxString() << i, static_pos, static_size);
@@ -213,8 +217,8 @@ InputControl::InputControl(
 	const wxPoint& pos, const wxSize& size)
 	: wxTextCtrl(parent, id, wxT(""), pos, size, wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/),
 	history(),
-	history_pos(0), m_ctrl_down(false),
-	popup(NULL), m_tab_completion_list(NULL), m_ignore_change(false)
+	history_pos(0), popup(NULL),
+	m_ctrl_down(false), m_tab_completion_list(NULL), m_ignore_change(false)
 {
 
 	// a whole lot of messing around to get the same font as wxHtmlWindow uses
@@ -429,7 +433,7 @@ bool InputControl::IsPrintable(const wxString &text)
 bool InputControl::ModifierCheck(wxKeyEvent& event)
 {
 
-	for (int i = 0; i < modifier_count; ++i)
+	for (size_t i = 0; i < modifier_count; ++i)
 	{
 
 		const ModifierMapping &m = modifier_mappings[i];
@@ -641,7 +645,7 @@ void InputControl::ProcessInput()
 	text.Replace(wxT("\r\n"), wxT("\n"));
 	text.Replace(wxT("\r"), wxT("\n"));
 
-	while ((text.Length() > 0) && (text[0] == wxT('\n')))
+	while ((text.Length() > 0) && (text[0u] == wxT('\n')))
 	{
 		text.Remove(0,1);
 	}

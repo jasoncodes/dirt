@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.32 2003-03-29 01:54:45 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.33 2003-03-29 05:30:09 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 #include <wx/filename.h>
@@ -55,7 +55,7 @@ public:
 		delete m_evt;
 	}
 
-    virtual void RecalcSizes()
+	virtual void RecalcSizes()
 	{
 		wxStaticBoxSizer::RecalcSizes();
 		if (m_chk)

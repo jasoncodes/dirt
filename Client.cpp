@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.38 2003-03-29 01:54:44 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.39 2003-03-29 05:30:07 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -486,7 +486,7 @@ wxString Client::GetDefaultNick() const
 	if (nick == nick.Upper() || nick == nick.Lower())
 	{
 		nick = nick.Lower();
-		nick[(size_t)0] = wxToupper(nick[0]);
+		nick[0u] = wxToupper(nick[0u]);
 	}
 	return nick;
 }
@@ -505,7 +505,7 @@ void Client::ProcessAlias(const wxString &context, const wxString &cmds, const w
 	while (tokens.Length())
 	{
 		wxString line = GetToken(tokens, wxT("|"));
-		while (tokens.Length() && tokens[0] == wxT('|'))
+		while (tokens.Length() && tokens[0u] == wxT('|'))
 		{
 			tokens = tokens.Mid(1);
 			line += wxT('|') + GetToken(tokens, wxT("|"));

@@ -9,8 +9,8 @@ class SwitchBarCanvas;
 class SwitchBarParent : public wxMDIParentFrame
 {
 
-	friend SwitchBarChild;
-	friend SwitchBarCanvas;
+	friend class SwitchBarChild;
+	friend class SwitchBarCanvas;
 
 public:
 	SwitchBarParent(

@@ -6,7 +6,7 @@
 class SwitchBarCanvas : public wxPanel
 {
 
-	friend SwitchBarParent;
+	friend class SwitchBarParent;
 
 public:
 	SwitchBarCanvas(SwitchBarParent *parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);

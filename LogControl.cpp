@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.37 2003-03-27 03:53:51 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.38 2003-03-29 05:30:08 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -25,8 +25,8 @@ DECLARE_APP(DirtApp)
 
 struct ModifierParserTag
 {
-	bool active;
 	const wxString name;
+	bool active;
 
 	ModifierParserTag(const wxString &the_name, bool initially_active = false)
 		: name(the_name), active(initially_active)
@@ -971,18 +971,18 @@ wxString LogControl::GetTextFromRange(wxHtmlCell *start_cell, wxHtmlCell *end_ce
 			line.Trim(true);
 			line.Trim(false);
 			if (line.Length() > 7 &&
-				line[0] == wxT('[') && wxIsdigit(line[1]) && wxIsdigit(line[2]) &&
-				line[3] == wxT(':') && wxIsdigit(line[4]) && wxIsdigit(line[5]) &&
-				line[6] == wxT(']') && line[7] == wxT(' '))
+				line[0u] == wxT('[') && wxIsdigit(line[1u]) && wxIsdigit(line[2u]) &&
+				line[3u] == wxT(':') && wxIsdigit(line[4u]) && wxIsdigit(line[5u]) &&
+				line[6u] == wxT(']') && line[7u] == wxT(' '))
 			{
 				line = line.Mid(8);
 			}
-			if (line.Length() > 2 && line[0] == wxT('<'))
+			if (line.Length() > 2 && line[0u] == wxT('<'))
 			{
 				int j = line.Find(wxT('>'));
 				if (j > 0)
 				{
-					if (line.Length() > (size_t)j || line[j+1] == wxT(' '))
+					if (line.Length() > (size_t)j || line[(size_t)j+1] == wxT(' '))
 					{
 						line = line.Mid(j+2);
 					}
@@ -1410,7 +1410,7 @@ class LogControlContainerCell : public wxHtmlContainerCell
 {
 
 public:
-    LogControlContainerCell(wxHtmlContainerCell *parent)
+	LogControlContainerCell(wxHtmlContainerCell *parent)
 		: wxHtmlContainerCell(parent)
 	{
 	}
@@ -1486,7 +1486,7 @@ wxString LogControl::FormatTextAsHtml(const wxString &text)
 	html.Replace(wxT("\r"),wxT("<br>"));
 	html.Replace(wxT("\n"),wxT("<br>"));
 
-	if (html[0] == wxT(' '))
+	if (html[0u] == wxT(' '))
 	{
 		html = wxT("&nbsp;") + html.Mid(1);
 	}
@@ -1561,7 +1561,7 @@ wxString LogControl::ConvertUrlsToLinks(const wxString &text)
 
 	wxString tmp(text);
 
-	bool ltgt_fix = (tmp.Index(char1) == -1) && (tmp.Index(char2) == -1);
+	bool ltgt_fix = (tmp.Find(char1) == -1) && (tmp.Find(char2) == -1);
 
 	if (ltgt_fix)
 	{

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.41 2003-03-29 01:54:45 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.42 2003-03-29 05:30:09 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -14,6 +14,11 @@ RCS_ID($Id: util.cpp,v 1.41 2003-03-29 01:54:45 jason Exp $)
 #include <math.h>
 #include "ByteBuffer.h"
 #include <wx/mimetype.h>
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 const wxString PUBLIC_LIST_URL = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 
@@ -235,6 +240,7 @@ wxString AddCommas(double size)
 wxString SizeToString(off_t size)
 {
 	wxASSERT(size >= 0);
+	wxLongLong_t size2 = size;
 	if (size < 1000)
 	{
 		return wxString() << (int)size << wxT(" bytes");
@@ -247,7 +253,7 @@ wxString SizeToString(off_t size)
 	{
 		return wxString() << AddCommas(size / pow(1024, 2)) << wxT(" MB");
 	}
-	else if (size < 1099511627776)
+	else if (size2 < 1099511627776)
 	{
 		return wxString() << AddCommas(size / pow(1024, 3)) << wxT(" GB");
 	}

@@ -9,7 +9,7 @@ class DNSWorker;
 class DNS : public wxEvtHandler
 {
 
-	friend DNSWorker;
+	friend class DNSWorker;
 
 public:
 	DNS();

@@ -6,10 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarParent.cpp,v 1.12 2003-03-13 01:17:19 jason Exp $)
+RCS_ID($Id: SwitchBarParent.cpp,v 1.13 2003-03-29 05:30:09 jason Exp $)
 
 #include "SwitchBarParent.h"
 #include "SwitchBarChild.h"
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 enum
 {
@@ -470,7 +475,7 @@ void SwitchBarParent::OnSwitchBar(wxCommandEvent& event)
 		#ifdef __WXMSW__
 
 			WINDOWPLACEMENT wndpl;
-			wndpl.length = sizeof WINDOWPLACEMENT;
+			wndpl.length = sizeof (WINDOWPLACEMENT);
 			::GetWindowPlacement((HWND)child->GetHandle(), &wndpl);
 			canvas->saved_state_rect.x =
 				wndpl.rcNormalPosition.left;

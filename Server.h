@@ -28,7 +28,7 @@ class Server;
 class ServerConnection
 {
 
-	friend Server;
+	friend class Server;
 
 protected:
 	ServerConnection();

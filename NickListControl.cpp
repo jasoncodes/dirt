@@ -6,10 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: NickListControl.cpp,v 1.13 2003-02-27 05:27:10 jason Exp $)
+RCS_ID($Id: NickListControl.cpp,v 1.14 2003-03-29 05:30:08 jason Exp $)
 
 #include "NickListControl.h"
 #include "util.h"
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 const wxString NickListControl::AwayPostfix = wxT(" (Away)");
 

@@ -6,10 +6,14 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.11 2003-03-23 04:48:57 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.12 2003-03-29 05:30:07 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 enum
 {

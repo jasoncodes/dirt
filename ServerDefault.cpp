@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.45 2003-03-29 01:54:44 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.46 2003-03-29 05:30:08 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -445,20 +445,20 @@ void ServerDefault::OnHTTP(HTTPEvent &event)
 
 StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 {
-    
-    StringHashMap post_data;
-    
+
+	StringHashMap post_data;
+
 	post_data[wxT("name")] = m_config.GetServerName();
-    if (include_auth)
+	if (include_auth)
 	{
-        wxString auth;
+		wxString auth;
 		auth = m_config.GetPublicListAuthentication(true);
 		if (auth.Length())
 		{
 			auth = Crypt::MD5(auth).GetHexDump(false, false);
 		}
 		post_data[wxT("auth")] = auth;
-    }
+	}
 	wxString colon_port;
 	colon_port << wxT(':') << m_config.GetListenPort();
 	post_data[wxT("iplist")] = JoinArray(GetIPAddresses(), wxT(' '), wxEmptyString, colon_port);
@@ -472,7 +472,7 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 	post_data[wxT("hostname")] = m_config.GetHostname() + colon_port;
 	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config.GetPublicListComment();
-    
+
 	return post_data;
 
 }

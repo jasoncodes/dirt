@@ -30,7 +30,7 @@ enum FileTransferState
 class FileTransfer
 {
 
-	friend FileTransfers;
+	friend class FileTransfers;
 
 public:
 	int transferid;

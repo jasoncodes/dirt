@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.42 2003-03-29 01:54:44 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.43 2003-03-29 05:30:09 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerUIFrameConfig.h"
@@ -530,7 +530,7 @@ void ServerUIFrame::OnTimerUpdateConnections(wxTimerEvent &event)
 
 void ServerUIFrame::OnConnectionRClick(wxListEvent &event)
 {
-    int flags;
+	int flags;
 	long index = m_lstConnections->HitTest(event.GetPoint(), flags);
 	if (index > -1 && index < m_lstConnections->GetItemCount())
 	{
@@ -549,11 +549,11 @@ void ServerUIFrame::OnConnectionRClick(wxListEvent &event)
 
 void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
 {
-    wxTextEntryDialog dialog(this, wxT("Kick message for ") + m_right_click_conn->GetId() + wxT(":"), wxT("Dirt Secure Chat"));
-    if (dialog.ShowModal() == wxID_OK)
-    {
+	wxTextEntryDialog dialog(this, wxT("Kick message for ") + m_right_click_conn->GetId() + wxT(":"), wxT("Dirt Secure Chat"));
+	if (dialog.ShowModal() == wxID_OK)
+	{
 		wxString msg = dialog.GetValue();
-        if (msg.Length())
+		if (msg.Length())
 		{
 			msg = wxT("Kicked: ") + msg;
 		}
@@ -562,5 +562,5 @@ void ServerUIFrame::OnConnectionKick(wxCommandEvent &event)
 			msg = wxT("Kicked");
 		}
 		m_right_click_conn->Terminate(msg);
-    }
+	}
 }

@@ -45,7 +45,7 @@ class ClientConfig
 
 public:
 	ClientConfig();
-	~ClientConfig();
+	virtual ~ClientConfig();
 
 	virtual wxConfigBase *GetConfig() const { return m_config; }
 
@@ -57,7 +57,7 @@ protected:
 class Client : public wxEvtHandler
 {
 
-	friend FileTransfers;
+	friend class FileTransfers;
 
 public:
 	Client(ClientEventHandler *event_handler);

@@ -18,3 +18,5 @@ Readme.txt
 Doxyfile
 crypto50.zip
 doc
+*.layout
+Makefile.win

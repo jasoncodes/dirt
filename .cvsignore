@@ -11,3 +11,6 @@ Dirt
 *.kdevses
 *.aps
 *.d
+*.layout
+Makefile.win
+*_private.*

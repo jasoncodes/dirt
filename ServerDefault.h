@@ -10,7 +10,7 @@ class ServerDefault;
 class ServerDefaultConnection : public ServerConnection
 {
 
-	friend ServerDefault;
+	friend class ServerDefault;
 
 protected:
 	ServerDefaultConnection();
@@ -36,7 +36,7 @@ protected:
 class ServerDefault : public Server
 {
 
-	friend ServerDefaultConnection;
+	friend class ServerDefaultConnection;
 
 public:
 	ServerDefault(ServerEventHandler *event_handler);

@@ -9,9 +9,13 @@
 #include "LogViewerFrame.h"
 #include "LogReader.h"
 #include "util.h"
-
 #include <wx/progdlg.h>
 #include <wx/dir.h>
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 #include "res/dirt.xpm"
 
@@ -176,31 +180,31 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 		return;
 	}
 
-    wxTreeItemId id;
+	wxTreeItemId id;
 
-    if (cookie == -1)
+	if (cookie == -1)
 	{
-        id = m_tree->GetFirstChild(idParent, cookie);
+		id = m_tree->GetFirstChild(idParent, cookie);
 	}
-    else
+	else
 	{
-        id = m_tree->GetNextChild(idParent, cookie);
-	}
-
-    if (!id.IsOk())
-	{
-        return;
+		id = m_tree->GetNextChild(idParent, cookie);
 	}
 
-    if (GetItemFilename(id) == filename)
+	if (!id.IsOk())
+	{
+		return;
+	}
+
+	if (GetItemFilename(id) == filename)
 	{
 		m_tree->SelectItem(id);
 		return;
 	}
 
-    if (m_tree->ItemHasChildren(id))
+	if (m_tree->ItemHasChildren(id))
 	{
-        EnsureItemSelected(id, filename, -1);
+		EnsureItemSelected(id, filename, -1);
 	}
 
 	if (GetItemFilename(m_tree->GetSelection()) == filename)
@@ -208,7 +212,7 @@ void LogViewerFrame::EnsureItemSelected(const wxTreeItemId& idParent, const wxSt
 		return;
 	}
 
-    EnsureItemSelected(idParent, filename, cookie);
+	EnsureItemSelected(idParent, filename, cookie);
 
 }
 
@@ -256,6 +260,8 @@ void LogViewerFrame::ViewLogFile(const wxString &filename)
 					{
 						m_log->AddSeparator();
 					}
+					break;
+				default:
 					break;
 			}
 
@@ -469,7 +475,7 @@ void LogViewerFrame::OnDelete(wxCommandEvent &event)
 				FileOp.hwnd = (HWND)GetHandle();
 				FileOp.wFunc = FO_DELETE;
 				wxChar pFromBuff[MAX_PATH*2];
-				memset(pFromBuff, 0, MAX_PATH*2*(sizeof wxChar));
+				memset(pFromBuff, 0, MAX_PATH*2*(sizeof (wxChar)));
 				wxStrcpy(pFromBuff, filename.c_str());
 				FileOp.pFrom = pFromBuff;
 				FileOp.pTo = NULL;

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: DNS.cpp,v 1.9 2003-03-05 13:43:51 jason Exp $)
+RCS_ID($Id: DNS.cpp,v 1.10 2003-03-29 05:30:07 jason Exp $)
 
 #include "DNS.h"
 
@@ -21,7 +21,7 @@ static wxUint32 GetIPV4Address(wxSockAddress &addr)
 class DNSWorker : public wxThread
 {
 
-	friend DNS;
+	friend class DNS;
 
 protected:
 	DNSWorker(DNS *dns)

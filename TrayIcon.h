@@ -6,7 +6,7 @@ class TrayIconPrivate;
 class TrayIcon : public wxEvtHandler
 {
 
-	friend TrayIconPrivate;
+	friend class TrayIconPrivate;
 
 public:
 	TrayIcon();

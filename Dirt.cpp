@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.36 2003-03-25 08:19:04 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.37 2003-03-29 05:30:07 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -21,6 +21,9 @@ RCS_ID($Id: Dirt.cpp,v 1.36 2003-03-25 08:19:04 jason Exp $)
 IMPLEMENT_APP(DirtApp)
 
 #ifdef __WIN32__
+
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
 
 	// Why is it that people don't run late versions of Platform SDK? :)
 	#ifndef INVALID_SET_FILE_POINTER

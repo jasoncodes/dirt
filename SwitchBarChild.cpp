@@ -6,10 +6,15 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: SwitchBarChild.cpp,v 1.10 2003-03-15 05:49:19 jason Exp $)
+RCS_ID($Id: SwitchBarChild.cpp,v 1.11 2003-03-29 05:30:09 jason Exp $)
 
 #include "SwitchBarChild.h"
 #include "SwitchBarParent.h"
+
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#endif
 
 BEGIN_EVENT_TABLE(SwitchBarChild, wxMDIChildFrame)
 	EVT_SIZE(SwitchBarChild::OnSize)

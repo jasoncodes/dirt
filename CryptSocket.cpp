@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.21 2003-03-21 11:26:28 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.22 2003-03-29 05:30:07 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -623,7 +623,10 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 	return retval;
 }
 
-#ifndef __WXMSW__
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <wx/msw/winundef.h>
+#else
 	#include <unistd.h>
 	#include <sys/socket.h>
 	#include <netdb.h>
