@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.68 2003-05-23 13:18:56 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.69 2003-05-23 14:11:26 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -1179,25 +1179,21 @@ bool OpenFolder(wxWindow *parent, const wxString &folder, bool show_error)
 
 bool OpenExternalResource(wxWindow *parent, const wxString &name, bool show_error)
 {
-	wxFileName dir(name, wxEmptyString);
-	if (dir.DirExists())
+
+	if (wxFileName(name, wxEmptyString).DirExists())
 	{
 		return OpenFolder(parent, name, show_error);
 	}
-	else
+
+	if (wxFileName(name).FileExists())
 	{
-		wxFileName file(name);
-		if (file.FileExists())
-		{
-			return OpenFile(parent, name, show_error);
-		}
-		else
-		{
-			return
-				OpenFile(parent, name, false) ||
-				OpenBrowser(parent, name, show_error);
-		}
+		return OpenFile(parent, name, show_error);
 	}
+
+	return
+		OpenFile(parent, name, false) ||
+		OpenBrowser(parent, name, show_error);
+
 }
 
 bool SetDefaultMenuItem(wxMenu &mnu, int id)
