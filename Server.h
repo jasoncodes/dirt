@@ -6,6 +6,7 @@ class ServerEventHandler
 
 public:
 	virtual bool OnServerPreprocess(wxString &cmd, wxString &params) { return false; }
+	virtual void OnServerStateChange() = 0;
 	virtual void OnServerInformation(const wxString &line) = 0;
 	virtual void OnServerWarning(const wxString &line) = 0;
 

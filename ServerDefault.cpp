@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.3 2003-02-14 12:43:02 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.4 2003-02-14 13:00:29 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -41,6 +41,7 @@ void ServerDefault::Start()
 	{
 		m_sckListen->GetLocal(addr);
 		m_event_handler->OnServerInformation("Server started on " + GetIPV4String(addr));
+		m_event_handler->OnServerStateChange();
 	}
 	else
 	{
@@ -53,6 +54,7 @@ void ServerDefault::Stop()
 	wxCHECK_RET(IsRunning(), "Cannot stop server. Server not running.");
 	m_sckListen->Close();
 	m_event_handler->OnServerInformation("Server stopped");
+	m_event_handler->OnServerStateChange();
 }
 
 bool ServerDefault::IsRunning()

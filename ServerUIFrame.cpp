@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.10 2003-02-14 12:43:02 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.11 2003-02-14 13:00:30 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -41,12 +41,12 @@ END_EVENT_TABLE()
 ServerUIFrame::ServerUIFrame()
 	: wxFrame(
 		NULL, -1, "Dirt Secure Chat Server " + GetProductVersion(),
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL)
 {
 
 	SetIcon(wxIcon(dirt_xpm));
 
-	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE);
+	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
 	m_txtInput = new InputControl(panel, ID_INPUT);
 	m_txtLog = new wxTextCtrl(panel, ID_LOG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL);
@@ -149,6 +149,11 @@ void ServerUIFrame::Output(const wxString &line)
 	{
 		m_txtLog->AppendText(tmp);
 	}
+	// this may need some optimization
+	//(see man page for GetNumberOfLines() for details)
+	int i = m_txtLog->GetNumberOfLines();
+	i = m_txtLog->GetLineLength(i);
+	m_txtLog->SetInsertionPoint(m_txtLog->GetInsertionPoint() - i);
 }
 
 bool ServerUIFrame::OnServerPreprocess(wxString &cmd, wxString &params)
@@ -225,4 +230,9 @@ void ServerUIFrame::OnClient(wxCommandEvent& event)
 void ServerUIFrame::OnClear(wxCommandEvent& event)
 {
 	// not implemented
+}
+
+void ServerUIFrame::OnServerStateChange()
+{
+	m_cmdStartStop->SetLabel(m_server->IsRunning() ? "&Stop" : "&Start");
 }

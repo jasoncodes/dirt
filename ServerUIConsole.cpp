@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: ServerUIConsole.cpp,v 1.3 2003-02-14 04:39:57 jason Exp $)
+RCS_ID($Id: ServerUIConsole.cpp,v 1.4 2003-02-14 13:00:29 jason Exp $)
 
 #include "ServerUIConsole.h"
 #include "ServerDefault.h"
@@ -61,4 +61,8 @@ bool ServerUIConsole::OnServerPreprocess(wxString &cmd, wxString &params)
 	{
 		return false;
 	}
+}
+
+void ServerUIConsole::OnServerStateChange()
+{
 }
