@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.19 2004-06-07 09:49:49 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.20 2004-06-07 17:40:52 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -297,6 +297,10 @@ void Console::Output(const wxString &line)
 				if ((unsigned int)line[i] < 256u)
 				{
 					ptr[i] = (unsigned char)line[i];
+				}
+				else
+				{
+					ptr[i] = '?';
 				}
 			}
 			ptr[line.Length()] = 0;
