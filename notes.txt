@@ -1,3 +1,7 @@
+win32: pressing ctrl-enter in the middle of a line of input results in the
+line being split into two lines, it should do the same thing as pressing
+ctrl-enter at the end of the input line
+
 make down arrow on input row not do anything
 
 make up arrow then down arrow bring back the last line that was being typed
