@@ -17,15 +17,18 @@ public:
 	virtual bool Connect(const URL &url);
 	virtual void Disconnect();
 	virtual bool IsConnected();
+	virtual void Authenticate(const ByteBuffer &auth);
 
 protected:
 	virtual void SendToServer(const ByteBuffer &msg);
+	virtual bool ProcessServerInputExtra(bool preprocess, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	void OnSocket(CryptSocketEvent &event);
 	
 protected:
 	CryptSocketClient *m_sck;
+	ByteBuffer m_authkey;
 
 private:
 	DECLARE_EVENT_TABLE()

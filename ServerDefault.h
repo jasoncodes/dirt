@@ -22,6 +22,8 @@ protected:
 
 protected:
 	CryptSocketClient *m_sck;
+	ByteBuffer m_authkey;
+	int m_auth_fail_count;
 
 };
 
@@ -38,6 +40,7 @@ public:
 	virtual void Stop();
 	virtual bool IsRunning();
 	virtual int GetListenPort();
+	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 
 protected:
 	void OnSocket(CryptSocketEvent &event);

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.18 2003-02-20 07:28:29 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.19 2003-02-21 01:08:37 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -94,6 +94,19 @@ void ClientDefault::SendToServer(const ByteBuffer &msg)
 	m_sck->Send(msg);
 }
 
+void ClientDefault::Authenticate(const ByteBuffer &auth)
+{
+	try
+	{
+		ByteBuffer digest = Crypt::MD5MACDigest(m_authkey, auth);
+		m_sck->Send(EncodeMessage(wxEmptyString, "AUTH", digest));
+	}
+	catch (...)
+	{
+		m_event_handler->OnClientWarning(wxEmptyString, "Error encoding authentication data");
+	}
+}
+
 void ClientDefault::OnSocket(CryptSocketEvent &event)
 {
 
@@ -120,4 +133,39 @@ void ClientDefault::OnSocket(CryptSocketEvent &event)
 
 	}
 
+}
+
+bool ClientDefault::ProcessServerInputExtra(bool preprocess, const wxString &context, const wxString &cmd, const ByteBuffer &data)
+{
+	if (preprocess)
+	{
+		if (cmd == wxT("AUTHSEED"))
+		{
+			m_authkey = data;
+			return true;
+		}
+		else if (cmd == wxT("AUTH"))
+		{
+			m_event_handler->OnClientAuthNeeded(data);
+			return true;
+		}
+		else if (cmd == wxT("AUTHOK"))
+		{
+			m_event_handler->OnClientAuthDone(data);
+			return true;
+		}
+		else if (cmd == wxT("AUTHBAD"))
+		{
+			m_event_handler->OnClientAuthBad(data);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
 }

@@ -34,6 +34,8 @@ public:
 	NickListControl* GetNickList() { return m_lstNickList; }
 	ClientUIMDITransferPanel* GetTransferPanel() { return m_pnlTransfer; }
 	Client* GetClient();
+	bool GetPasswordMode() const;
+	void SetPasswordMode(bool value);
 
 	void LogControlTest();
 
@@ -46,6 +48,7 @@ protected:
 	void OnNickListDblClick(wxCommandEvent &event);
 	void OnNickListMenu(wxCommandEvent &event);
 	void OnNickListMenuItem(wxCommandEvent &event);
+	void OnPasswordEnter(wxCommandEvent &event);
 
 	virtual void OnAttach();
 	virtual void OnActivate();
@@ -59,6 +62,7 @@ protected:
 
 	LogControl *m_txtLog;
 	InputControl *m_txtInput;
+	wxTextCtrl *m_txtPassword;
 
 	wxSashWindow *m_sash;
 	NickListControl *m_lstNickList;

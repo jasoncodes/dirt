@@ -19,6 +19,7 @@ public:
 	virtual void* GetUserData() const { return m_userdata; }
 	virtual void Destroy();
 	virtual void Close();
+	virtual void CloseWithEvent();
 	virtual void Send(const ByteBuffer &data);
 	virtual bool IsSendBufferFull() const;
 	virtual bool Ok() const { return m_sck ? m_sck->Ok() : false; }
@@ -40,7 +41,6 @@ protected:
 	virtual void MaybeSendData();
 	virtual void GenerateNewPublicKey();
 	virtual void GenerateNewBlockKey();
-	virtual void CloseWithEvent();
 	virtual void EncryptPendingSends();
 
 protected:

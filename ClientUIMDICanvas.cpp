@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.27 2003-02-17 14:10:11 jason Exp $)
+RCS_ID($Id: ClientUIMDICanvas.cpp,v 1.28 2003-02-21 01:08:37 jason Exp $)
 
 #include "ClientUIMDICanvas.h"
 #include "SwitchBarChild.h"
@@ -25,6 +25,7 @@ enum
 {
 	ID_LOG = 1,
 	ID_INPUT,
+	ID_PASSWORD,
 	ID_TRANSFER,
 	ID_SASH,
 	ID_NICKLIST,
@@ -37,6 +38,7 @@ BEGIN_EVENT_TABLE(ClientUIMDICanvas, SwitchBarCanvas)
 	EVT_SIZE(ClientUIMDICanvas::OnSize)
 	EVT_SET_FOCUS(ClientUIMDICanvas::OnFocus)
 	EVT_TEXT_ENTER(ID_INPUT, ClientUIMDICanvas::OnInputEnter)
+	EVT_TEXT_ENTER(ID_PASSWORD, ClientUIMDICanvas::OnPasswordEnter)
 	EVT_BUTTON(ID_LOG, ClientUIMDICanvas::OnLinkClicked)
 	DECLARE_EVENT_TABLE_ENTRY(wxEVT_SET_FOCUS, ID_LOG, ID_LOG, (wxObjectEventFunction)(wxFocusEventFunction)&ClientUIMDICanvas::OnFocus, NULL),
 	EVT_SASH_DRAGGED(ID_SASH, ClientUIMDICanvas::OnSashDragged)
@@ -85,11 +87,13 @@ ClientUIMDICanvas::ClientUIMDICanvas(SwitchBarParent *parent, const wxString &ti
 	{
 		m_txtInput = new InputControl(this, ID_INPUT);
 		m_txtLog = new LogControl(this, ID_LOG);
+		m_txtPassword = NULL;
 	}
 	else
 	{
 		m_txtInput = NULL;
 		m_txtLog = NULL;
+		m_txtPassword = NULL;
 	}
 
 	if (type == ChannelCanvas)
@@ -125,7 +129,11 @@ ClientUIMDICanvas::~ClientUIMDICanvas()
 
 void ClientUIMDICanvas::DoGotFocus()
 {
-	if (m_txtInput)
+	if (m_txtPassword)
+	{
+		m_txtPassword->SetFocus();
+	}
+	else if (m_txtInput)
 	{
 		m_txtInput->SetFocus();
 	}
@@ -169,6 +177,47 @@ void ClientUIMDICanvas::OnSashDragged(wxSashEvent &event)
 	}
 }
 
+bool ClientUIMDICanvas::GetPasswordMode() const
+{
+	return (m_txtPassword != NULL);
+}
+
+void ClientUIMDICanvas::SetPasswordMode(bool value)
+{
+	if (value && !m_txtPassword)
+	{
+		m_txtInput->ClosePopup();
+		m_txtInput->SetValue(wxEmptyString);
+		m_txtInput->Show(false);
+		m_txtPassword = new wxTextCtrl(this, ID_PASSWORD, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_PASSWORD);
+		FixBorder(m_txtPassword);
+		ResizeChildren();
+		DoGotFocus();
+	}
+	else if (!value && m_txtPassword)
+	{
+		m_txtInput->SetValue(wxEmptyString);
+		m_txtInput->Show(true);
+		m_txtPassword->Destroy();
+		m_txtPassword = NULL;
+		ResizeChildren();
+		DoGotFocus();
+	}
+}
+
+void ClientUIMDICanvas::OnPasswordEnter(wxCommandEvent &event)
+{
+	wxString context = wxEmptyString;
+	if (m_parent->GetSwitchBar()->GetIndexFromUserData(this) > 0)
+	{
+		context = GetTitle();
+	}
+	wxString text = m_txtPassword->GetValue();
+	m_txtPassword->SetValue(wxEmptyString);
+	SetPasswordMode(false);
+	GetClient()->Authenticate(text);
+}
+
 void ClientUIMDICanvas::ResizeChildren()
 {
 
@@ -190,7 +239,7 @@ void ClientUIMDICanvas::ResizeChildren()
 			size.y -
 			input_height;
 
-		m_txtInput->SetSize(0, log_height, size.x, input_height);
+		(m_txtPassword?m_txtPassword:m_txtInput)->SetSize(0, log_height, size.x, input_height);
 
 		if (m_sash)
 		{

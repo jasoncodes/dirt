@@ -45,6 +45,7 @@ public:
 	virtual operator wxString() const;
 	virtual wxString GetInlineDetails() const { return GetRemoteHost(); }
 	virtual wxString GetId() const;
+	virtual bool IsAuthenticated() const { return m_authenticated; }
 
 protected:
 	virtual void Send(const wxString &context, const wxString &cmd, const ByteBuffer &data);
@@ -61,6 +62,7 @@ protected:
 	time_t m_latency;
 	wxString m_useragent;
 	const wxDateTime m_jointime;
+	bool m_authenticated;
 
 };
 
@@ -91,6 +93,7 @@ protected:
 	virtual void CloseAllConnections();
 	virtual void ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg);
 	virtual void ProcessClientInput(ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
+	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data) = 0;
 
 protected:
 	ServerEventHandler *m_event_handler;

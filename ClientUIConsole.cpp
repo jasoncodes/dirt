@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.28 2003-02-20 12:29:12 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.29 2003-02-21 01:08:37 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -18,6 +18,7 @@ RCS_ID($Id: ClientUIConsole.cpp,v 1.28 2003-02-20 12:29:12 jason Exp $)
 ClientUIConsole::ClientUIConsole(bool no_input)
 	: Console(no_input)
 {
+	m_passmode = false;
 	m_client = new ClientDefault(this);
 }
 
@@ -33,7 +34,15 @@ void ClientUIConsole::Output(const wxString &line)
 
 void ClientUIConsole::OnInput(const wxString &line)
 {
-	m_client->ProcessConsoleInput(wxEmptyString, line);
+	if (m_passmode)
+	{
+		m_passmode = false;
+		m_client->Authenticate(line);
+	}
+	else
+	{
+		m_client->ProcessConsoleInput(wxEmptyString, line);
+	}
 }
 
 void ClientUIConsole::OnEOF()
@@ -81,6 +90,29 @@ void ClientUIConsole::OnClientInformation(const wxString &context, const wxStrin
 
 void ClientUIConsole::OnClientStateChange()
 {
+	m_passmode = false;
+}
+
+void ClientUIConsole::OnClientAuthNeeded(const wxString &text)
+{
+	OnClientInformation(wxEmptyString, text);
+	m_passmode = true;
+}
+
+void ClientUIConsole::OnClientAuthDone(const wxString &text)
+{
+	m_passmode = false;
+	if (text.Length())
+	{
+		OnClientInformation(wxEmptyString, text);
+	}
+	m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+}
+
+void ClientUIConsole::OnClientAuthBad(const wxString &text)
+{
+	OnClientWarning(wxEmptyString, text);
+	m_passmode = true;
 }
 
 void ClientUIConsole::OnClientMessageOut(const wxString &nick, const wxString &text)

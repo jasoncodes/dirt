@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.46 2003-02-20 06:47:33 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.47 2003-02-21 01:08:37 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -300,6 +300,32 @@ void ClientUIMDIFrame::OnClientStateChange()
 	{
 		m_lstNickList->Clear();
 	}
+	GetContext(wxEmptyString)->SetPasswordMode(false);
+}
+
+void ClientUIMDIFrame::OnClientAuthNeeded(const wxString &text)
+{
+	OnClientInformation(wxEmptyString, text);
+	GetContext(wxEmptyString)->SetPasswordMode(true);
+}
+
+void ClientUIMDIFrame::OnClientAuthDone(const wxString &text)
+{
+	if (GetContext(wxEmptyString)->GetPasswordMode())
+	{
+		GetContext(wxEmptyString)->SetPasswordMode(false);
+	}
+	if (text.Length())
+	{
+		OnClientInformation(wxEmptyString, text);
+	}
+	m_client->SetNickname(wxEmptyString, m_client->GetDefaultNick());
+}
+
+void ClientUIMDIFrame::OnClientAuthBad(const wxString &text)
+{
+	OnClientWarning(wxEmptyString, text);
+	GetContext(wxEmptyString)->SetPasswordMode(true);
 }
 
 void ClientUIMDIFrame::OnClientMessageOut(const wxString &nick, const wxString &text)

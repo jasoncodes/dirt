@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.21 2003-02-20 13:02:45 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.22 2003-02-21 01:08:37 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -143,6 +143,12 @@ void Client::ProcessServerInput(const ByteBuffer &msg)
 
 void Client::ProcessServerInput(const wxString &context, const wxString &cmd, const ByteBuffer &data)
 {
+
+	if (ProcessServerInputExtra(true, context, cmd, data))
+	{
+		return;
+	}
+
 	if (cmd == wxT("PUBMSG"))
 	{
 		ByteBuffer nick, text;
@@ -237,11 +243,15 @@ void Client::ProcessServerInput(const wxString &context, const wxString &cmd, co
 	}
 	else
 	{
-		m_event_handler->OnClientDebug(context, wxT("Unknown message recv'd:"));
-		m_event_handler->OnClientDebug(context, wxT("Context: \"") + context + wxT("\""));
-		m_event_handler->OnClientDebug(context, wxT("Command: \"") + cmd + wxT("\""));
-		m_event_handler->OnClientDebug(context, wxT("Data: ") + data.GetHexDump());
+		if (!ProcessServerInputExtra(false, context, cmd, data))
+		{
+			m_event_handler->OnClientDebug(context, wxT("Unknown message recv'd:"));
+			m_event_handler->OnClientDebug(context, wxT("Context: \"") + context + wxT("\""));
+			m_event_handler->OnClientDebug(context, wxT("Command: \"") + cmd + wxT("\""));
+			m_event_handler->OnClientDebug(context, wxT("Data: ") + data.GetHexDump());
+		}
 	}
+
 }
 
 void Client::OnConnect()
@@ -254,16 +264,20 @@ void Client::OnConnect()
 	userdetails << wxT(" (\"") << ::wxGetUserName() << wxT("\")");
 	userdetails << wxT(" on ") << ::wxGetOsDescription();
 	SendToServer(EncodeMessage(wxEmptyString, wxT("USERDETAILS"), userdetails));
+}
+
+wxString Client::GetNickname()
+{
+	return m_nickname;
+}
+
+wxString Client::GetDefaultNick()
+{
 	wxString nick = ::wxGetUserId();
 	int i = nick.Index(wxT(' '));
 	if (i > -1)
 	{
 		nick = nick.Left(i);
 	}
-	SetNickname(wxEmptyString, nick);
-}
-
-wxString Client::GetNickname()
-{
-	return m_nickname;
+	return nick;
 }

@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.14 2003-02-19 09:57:36 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.15 2003-02-21 01:08:37 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -19,6 +19,7 @@ ServerConnection::ServerConnection()
 	m_awaymessage = wxEmptyString;
 	m_latency = -1;
 	m_useragent = wxEmptyString;
+	m_authenticated = false;
 	ResetIdleTime();
 }
 
@@ -262,9 +263,25 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 	conn->ResetIdleTime();
 
+	if (ProcessClientInputExtra(true, true, conn, context, cmd, data))
+	{
+		return;
+	}
+
+	if (!conn->IsAuthenticated() && cmd != wxT("AUTH") && cmd != wxT("USERDETAILS") && cmd != wxT("USERAGENT"))
+	{
+		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NOAUTH")), wxString(wxT("You need to authenticate first"))));
+		return;
+	}
+
 	if (conn->GetNickname().Length() == 0 && cmd != wxT("NICK") && cmd != wxT("USERDETAILS") && cmd != wxT("USERAGENT"))
 	{
 		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NONICK")), wxString(wxT("You need to set a nickname first"))));
+		return;
+	}
+
+	if (ProcessClientInputExtra(true, false, conn, context, cmd, data))
+	{
 		return;
 	}
 
@@ -337,15 +354,13 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 			}
 		}
 	}
-	else
+	else if (!ProcessClientInputExtra(false, false, conn, context, cmd, data))
 	{
-
 		m_event_handler->OnServerInformation(wxT("Unknown message recv'd:"));
 		m_event_handler->OnServerInformation(wxT("Context: \"") + context + wxT("\""));
 		m_event_handler->OnServerInformation(wxT("Command: \"") + cmd + wxT("\""));
 		m_event_handler->OnServerInformation(wxT("Data: ") + data.GetHexDump());
 		conn->Send(context, wxT("ERROR"), Pack(wxString(wxT("NOCMD")), wxT("Unrecognized command: ") + cmd));
-
 	}
 
 }

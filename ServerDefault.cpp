@@ -6,12 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.20 2003-02-19 09:46:57 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.21 2003-02-21 01:08:38 jason Exp $)
 
 #include "ServerDefault.h"
 
 ServerDefaultConnection::ServerDefaultConnection()
 {
+	m_auth_fail_count = 0;
 }
 
 ServerDefaultConnection::~ServerDefaultConnection()
@@ -137,6 +138,18 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 			case CRYPTSOCKET_OUTPUT:
 				{
 					conn->Send(wxEmptyString, wxT("INFO"), wxString(wxT("Welcome to Dirt Secure Chat!")));
+					conn->m_authkey = Crypt::Random(Crypt::MD5MACKeyLength);
+					conn->Send(wxEmptyString, wxT("AUTHSEED"), conn->m_authkey);
+					conn->m_authenticated = false;
+					if (conn->m_authenticated)
+					{
+						conn->m_authenticated = true;
+						conn->Send(wxEmptyString, wxT("AUTHOK"), ByteBuffer());
+					}
+					else
+					{
+						conn->Send(wxEmptyString, wxT("AUTH"), wxString(wxT("Please enter your authentication information")));
+					}
 				}
 				break;
 
@@ -155,4 +168,55 @@ int ServerDefault::GetListenPort()
 	wxIPV4address addr;
 	m_sckListen->GetLocal(addr);
 	return addr.Service();
+}
+
+bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)
+{
+	ServerDefaultConnection *conn2 = (ServerDefaultConnection*)conn;
+	if (prenickauthcheck)
+	{
+		if (cmd == wxT("AUTH"))
+		{
+			bool success;
+			try
+			{
+				success = Crypt::MD5MACVerify(conn2->m_authkey, wxString(wxT("test")), data);
+			}
+			catch (...)
+			{
+				success = false;
+			}
+			if (success)
+			{
+				conn2->m_authenticated = true;
+				conn2->Send(context, wxT("AUTHOK"), wxString(wxT("Authentication successful")));
+				m_event_handler->OnServerInformation(conn->GetId() + wxT(" successfully authenticated"));
+			}
+			else
+			{
+				conn2->m_auth_fail_count++;
+				const int max_tries = 3;
+				if (conn2->m_auth_fail_count < max_tries)
+				{
+					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Authentication failed. You have %d tries remaining."), max_tries - conn2->m_auth_fail_count));
+					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (try %d)"), conn2->m_auth_fail_count));
+				}
+				else
+				{
+					conn2->Send(context, wxT("AUTHBAD"), wxString::Format(wxT("Failed to authenticate %d times. Disconnecting"), max_tries));
+					m_event_handler->OnServerInformation(conn->GetId() + wxString::Format(wxT(" failed to authenticate (try %d, disconnecting)"), conn2->m_auth_fail_count));
+					conn2->m_sck->CloseWithEvent();
+				}
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
 }
