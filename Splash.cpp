@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.23 2003-04-30 02:57:27 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.24 2003-04-30 05:07:53 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -96,7 +96,7 @@ Splash::Splash()
 	btns[0] = new wxButton(panel, ID_CLIENT, wxT("&Client"));
 	btns[1] = new wxButton(panel, ID_SERVER, wxT("&Server"));
 	btns[2] = new wxButton(panel, ID_INTERNET, wxT("&Internet"));
-	btns[3] = new wxButton(panel, ID_LANLIST, wxT("LA&N List"));
+	btns[3] = new wxButton(panel, ID_LANLIST, wxT("LA&N"));
 	btns[4] = new wxButton(panel, ID_LOGS, wxT("&Logs"));
 
 	wxAcceleratorEntry entries[btn_count];
