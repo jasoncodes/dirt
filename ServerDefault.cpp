@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.43 2003-03-16 12:24:21 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.44 2003-03-20 07:25:25 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -159,7 +159,7 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					event.GetSocket()->GetPeer(addr);
 					conn->m_remotehost = ::GetIPV4String(addr, false);
 					conn->m_remotehostandport =
-						wxString() << conn->m_remotehost << wxT(':') << addr.Service();
+						wxString() << conn->m_remotehost << wxT(':') << (int)addr.Service();
 					conn->m_remoteipstring = ::GetIPV4AddressString(addr);
 					Information(wxT("Incoming connection from ") + conn->GetId());
 					if (GetConnectionCount() > (size_t)m_config->GetMaxUsers())

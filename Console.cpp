@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Console.cpp,v 1.9 2003-02-20 12:29:13 jason Exp $)
+RCS_ID($Id: Console.cpp,v 1.10 2003-03-20 07:25:25 jason Exp $)
 
 #include "Console.h"
 #include <stdio.h>
@@ -252,6 +252,6 @@ void Console::ExitMainLoop()
 
 void Console::Output(const wxString &line)
 {
-	puts(line);
+	wxPuts(line);
 	fflush(stdout);
 }

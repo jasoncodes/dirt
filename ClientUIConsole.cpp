@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIConsole.cpp,v 1.39 2003-03-19 14:34:52 jason Exp $)
+RCS_ID($Id: ClientUIConsole.cpp,v 1.40 2003-03-20 07:25:24 jason Exp $)
 
 #include "ClientUIConsole.h"
 #include "LogControl.h"
@@ -39,7 +39,7 @@ void ClientUIConsole::Output(const wxString &line)
 	else if (!m_log_warning_given)
 	{
 		m_log_warning_given = true;
-		OnClientWarning(wxEmptyString, "Error writing log file");
+		OnClientWarning(wxEmptyString, wxT("Error writing log file"));
 	}
 }
 
@@ -247,7 +247,7 @@ void ClientUIConsole::OnClientUserPart(const wxString &nick, const wxString &det
 	msg << wxT(" has left the chat");
 	if (message.Length() > 0)
 	{
-		msg << wxT(" (" << message << ")");
+		msg << wxT(" (" << message << wxT(")"));
 	}
 	Output(msg);
 }

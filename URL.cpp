@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: URL.cpp,v 1.11 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: URL.cpp,v 1.12 2003-03-20 07:25:26 jason Exp $)
 
 #include "URL.h"
 #include "ByteBuffer.h"
@@ -76,13 +76,13 @@ URL::URL(const wxString &url)
 		bool ok = m_hostname.Mid(i + 1).ToULong(&ul);
 		if (ok)
 		{
-			wxCHECK2_MSG(ul > 0 && ul < INT_MAX, {}, "Invalid port");
+			wxCHECK2_MSG(ul > 0 && ul < INT_MAX, {}, wxT("Invalid port"));
 			SetPort((int)ul);
 			SetHostname(Unescape(m_hostname.Left(i)));
 		}
 		else
 		{
-			wxFAIL_MSG("Invalid port");
+			wxFAIL_MSG(wxT("Invalid port"));
 		}
 	}
 	else

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.27 2003-03-12 11:10:07 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.28 2003-03-20 07:25:24 jason Exp $)
 
 #include "ClientDefault.h"
 #include "DNS.h"
@@ -62,14 +62,14 @@ void ClientDefault::SendMessage(const wxString &context, const wxString &nick, c
 
 void ClientDefault::SetNickname(const wxString &context, const wxString &nickname)
 {
-	m_sck->Send(EncodeMessage(context, "NICK", nickname));
+	m_sck->Send(EncodeMessage(context, wxT("NICK"), nickname));
 }
 
 bool ClientDefault::Connect(const URL &url)
 {
 	m_sck->Close();
 	m_dns->Cancel();
-	if (url.GetProtocol("dirt") != "dirt")
+	if (url.GetProtocol(wxT("dirt")) != wxT("dirt"))
 	{
 		return false;
 	}
@@ -147,11 +147,11 @@ void ClientDefault::Authenticate(const ByteBuffer &auth)
 	try
 	{
 		ByteBuffer digest = Crypt::MD5MACDigest(m_authkey, auth);
-		m_sck->Send(EncodeMessage(wxEmptyString, "AUTH", digest));
+		m_sck->Send(EncodeMessage(wxEmptyString, wxT("AUTH"), digest));
 	}
 	catch (...)
 	{
-		m_event_handler->OnClientWarning(wxEmptyString, "Error encoding authentication data");
+		m_event_handler->OnClientWarning(wxEmptyString, wxT("Error encoding authentication data"));
 	}
 }
 
@@ -165,7 +165,7 @@ void ClientDefault::Oper(const wxString &context, const wxString &pass)
 	}
 	catch (...)
 	{
-		m_event_handler->OnClientWarning(context, "Error encoding authentication data");
+		m_event_handler->OnClientWarning(context, wxT("Error encoding authentication data"));
 	}
 }
 

@@ -93,6 +93,7 @@ protected:
 	wxHtmlCell *m_find_pos1;
 	wxHtmlCell *m_find_pos2;
 	bool m_find_show_sel;
+	bool m_first_line;
 
 private:
 	DECLARE_EVENT_TABLE()

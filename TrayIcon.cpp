@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TrayIcon.cpp,v 1.4 2003-03-13 02:23:48 jason Exp $)
+RCS_ID($Id: TrayIcon.cpp,v 1.5 2003-03-20 07:25:25 jason Exp $)
 
 #include "TrayIcon.h"
 
@@ -27,7 +27,7 @@ protected:
 		: wxFrame(NULL, -1, wxT("TrayIcon Event Handler"), wxDefaultPosition, wxSize(128, 64), wxCAPTION)
 	{
 		m_trayicon = trayicon;
-		TaskbarCreated = RegisterWindowMessage("TaskbarCreated");
+		TaskbarCreated = RegisterWindowMessage(wxT("TaskbarCreated"));
 		SetExtraStyle(wxWS_EX_TRANSIENT);
 		nid.cbSize = NOTIFYICONDATA_V1_SIZE;
 		nid.hWnd = (HWND)GetHandle();
@@ -55,7 +55,7 @@ protected:
 	virtual void SetToolTip(const wxString &tooltip)
 	{
 		nid.uFlags = NIF_TIP;
-		size_t len = sizeof nid.szTip;
+		size_t len = (sizeof nid.szTip) / (sizeof nid.szTip[0]);
 		wxStrncpy(nid.szTip, tooltip.c_str(), len);
 		nid.szTip[len-1] = 0;
 		Shell_NotifyIcon(NIM_MODIFY, &nid);

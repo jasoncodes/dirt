@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.10 2003-03-08 05:22:37 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.11 2003-03-20 07:25:25 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -117,7 +117,7 @@ const wxString HTTPHeader::GetField(const wxString &name) const
 void HTTPHeader::Init()
 {
 	int i = m_strHeader.Find(wxT("\r\n"));
-	if (i == -1 || !LeftEq(m_strHeader, "HTTP/"))
+	if (i == -1 || !LeftEq(m_strHeader, wxT("HTTP/")))
 	{
 		m_strStatusLine = wxEmptyString;
 		m_status_code = 0;
@@ -760,14 +760,14 @@ void HTTP::PrepareRequest()
 	{
 		if (i->first.Length() && i->second.Length())
 		{
-			strHeader << i->first << ": " << i->second << CRLF;
+			strHeader << i->first << wxT(": ") << i->second << CRLF;
 		}
 	}
 	for (StringHashMap::iterator i = m_extra_client_headers.begin(); i != m_extra_client_headers.end(); ++i)
 	{
 		if (i->first.Length() && i->second.Length())
 		{
-			strHeader << i->first << ": " << i->second << CRLF;
+			strHeader << i->first << wxT(": ") << i->second << CRLF;
 		}
 	}
 	strHeader << CRLF;

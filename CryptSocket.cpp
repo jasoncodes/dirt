@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.19 2003-03-12 07:49:03 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.20 2003-03-20 07:25:25 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -615,7 +615,7 @@ wxString GetIPV4String(wxSockAddress &addr, bool include_port)
 	}
 	if (include_port)
 	{
-		retval << wxT(":") << ipv4->Service();
+		retval << wxT(":") << (int)ipv4->Service();
 	}
 	return retval;
 }
@@ -649,7 +649,8 @@ wxArrayString GetIPAddresses()
 	{
 		struct in_addr addr;
 		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-		IPs.Add(inet_ntoa(addr));
+		const char *ip = inet_ntoa(addr);
+		IPs.Add(ByteBuffer((const byte*)ip, strlen(ip)));
 	}
 
 	if (IPs.GetCount() == 0)

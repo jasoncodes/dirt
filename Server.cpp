@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.40 2003-03-20 01:59:31 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.41 2003-03-20 07:25:25 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -417,7 +417,7 @@ void Server::Information(const wxString &line)
 	else if (!m_log_warning_given)
 	{
 		m_log_warning_given = true;
-		Warning("Error writing log file");
+		Warning(wxT("Error writing log file"));
 	}
 }
 
@@ -439,7 +439,7 @@ void Server::Warning(const wxString &line)
 	else if (!m_log_warning_given)
 	{
 		m_log_warning_given = true;
-		Warning("Error writing log file");
+		Warning(wxT("Error writing log file"));
 	}
 }
 

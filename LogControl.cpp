@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.34 2003-03-20 02:39:15 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.35 2003-03-20 07:25:25 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -353,7 +353,7 @@ public:
 				ResetColourState();
 			}
 
-			char c = text[i];
+			wxChar c = text[i];
 
 			if ( colour_pos > 0 && // is inside a colour code and
 				( (c == wxT(',') && had_comma) || // is either a 2nd comma
@@ -1283,6 +1283,7 @@ void LogControl::Clear()
 	m_find_pos1 = m_Cell;
 	m_find_pos2 = m_Cell;
 	m_find_show_sel = false;
+	m_first_line = true;
 	SetPage(wxT(""));
 	ScrollToBottom();
 }
@@ -1290,7 +1291,17 @@ void LogControl::Clear()
 void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool red_line)
 {
 
-	wxString source = wxT("<br><code>") + line + wxT("</code>");
+	wxString source;
+	
+	if (!m_first_line)
+	{
+		source = wxT("<br><code>") + line + wxT("</code>");
+	}
+	else
+	{
+		source = wxT("<code>") + line + wxT("</code>");
+		m_first_line = false;
+	}
 
 	wxClientDC *dc = new wxClientDC(this);
 	dc->SetMapMode(wxMM_TEXT);
@@ -1307,7 +1318,10 @@ void LogControl::AddHtmlLine(const wxString &line, bool split_long_words, bool r
 	{
 		wxHtmlCell *cell = c2->GetFirstCell();
 		cell = ((wxHtmlContainerCell*)cell->GetNext())->GetFirstCell();
-		wxASSERT(cell);
+		if (!cell)
+		{
+			cell = ((wxHtmlContainerCell*)c2->GetFirstCell())->GetFirstCell();
+		}
 		wxHtmlCell *last = NULL;
 		while (cell)
 		{

@@ -21,6 +21,8 @@ CFG=Dirt - Win32 Debug
 !MESSAGE "Dirt - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "Dirt - Win32 Console Release" (based on "Win32 (x86) Application")
 !MESSAGE "Dirt - Win32 Console Debug" (based on "Win32 (x86) Application")
+!MESSAGE "Dirt - Win32 Unicode Release" (based on "Win32 (x86) Application")
+!MESSAGE "Dirt - Win32 Unicode Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -149,6 +151,64 @@ LINK32=link.exe
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswd.lib crypto/Debug/cryptlib.lib /nologo /entry:"WinMainCRTStartup" /subsystem:console /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
 # SUBTRACT LINK32 /pdb:none
 
+!ELSEIF  "$(CFG)" == "Dirt - Win32 Unicode Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "UnicodeRelease"
+# PROP BASE Intermediate_Dir "UnicodeRelease"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "UnicodeRelease"
+# PROP Intermediate_Dir "UnicodeRelease"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W4 /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
+# ADD CPP /nologo /MD /W4 /WX /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "_UNICODE" /D "UNICODE" /YX"wx/wxprec.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /i "../../include" /d "NDEBUG"
+# ADD RSC /l 0x409 /i "../../include" /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib zlib.lib regex.lib png.lib jpeg.lib tiff.lib wxmswu.lib crypto\Release\cryptlib.lib /nologo /subsystem:windows /machine:I386 /ignore:4089 /ignore:6004
+# SUBTRACT LINK32 /pdb:none
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Cmds=echo Packing...	upx --best --no-color --no-progress "UnicodeRelease\Dirt.exe" > nul
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "Dirt - Win32 Unicode Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "UnicodeDebug"
+# PROP BASE Intermediate_Dir "UnicodeDebug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "UnicodeDebug"
+# PROP Intermediate_Dir "UnicodeDebug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W4 /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /YX /FD /c
+# ADD CPP /nologo /MDd /W4 /WX /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D WINVER=0x400 /D "_MT" /D wxUSE_GUI=1 /D "__WXDEBUG__" /D WXDEBUG=1 /D "_UNICODE" /D "UNICODE" /FR /YX"wx/wxprec.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /i "../../include" /d "_DEBUG"
+# ADD RSC /l 0x409 /i "../../include" /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib zlibd.lib regexd.lib pngd.lib jpegd.lib tiffd.lib wxmswud.lib crypto/Debug/cryptlib.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /ignore:4089 /ignore:6004
+# SUBTRACT LINK32 /pdb:none
+
 !ENDIF 
 
 # Begin Target
@@ -157,6 +217,8 @@ LINK32=link.exe
 # Name "Dirt - Win32 Debug"
 # Name "Dirt - Win32 Console Release"
 # Name "Dirt - Win32 Console Debug"
+# Name "Dirt - Win32 Unicode Release"
+# Name "Dirt - Win32 Unicode Debug"
 # Begin Source File
 
 SOURCE=.\ByteBuffer.cpp

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.37 2003-03-12 14:29:41 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.38 2003-03-20 07:25:26 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -132,7 +132,7 @@ void SplitQuotedHeadTail(const wxString &text, wxString &head, wxString &tail, c
 			head = text.Mid(1);
 			tail = wxEmptyString;
 		}
-		head.Replace("\"\"", "\"");
+		head.Replace(wxT("\"\""), wxT("\""));
 
 	}
 	else

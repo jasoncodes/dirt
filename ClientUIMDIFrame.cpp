@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.78 2003-03-20 05:11:34 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.79 2003-03-20 07:25:24 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -511,7 +511,7 @@ void ClientUIMDIFrame::OnClientError(const wxString &context, const wxString &ty
 	AddLine(context, wxString() << wxT("*** Error ") << type << wxT(": ") << text, *wxRED);
 	if (type == wxT("NICK") && context == wxEmptyString)
 	{
-		HeadTail ht = SplitHeadTail(text, ": ");
+		HeadTail ht = SplitHeadTail(text, wxT(": "));
 		if (ht.tail.Length())
 		{
 			NickPrompt(ht.tail);
@@ -539,7 +539,7 @@ void ClientUIMDIFrame::UpdateCaption()
 	wxString title;
 	if (m_alert)
 	{
-		title << "* ";
+		title << wxT("* ");
 	}
 	if (!m_alert || (m_flash % 2) == 0)
 	{
@@ -553,7 +553,7 @@ void ClientUIMDIFrame::UpdateCaption()
 			}
 			else
 			{
-				title << "<NoNick>";
+				title << wxT("<NoNick>");
 			}
 			const URL &url = m_client->GetLastURL();
 			wxString hostname = url.GetHostname();

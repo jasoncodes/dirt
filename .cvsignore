@@ -1,5 +1,7 @@
 ConsoleDebug
 ConsoleRelease
+UnicodeDebug
+UnicodeRelease
 Debug
 Release
 *.ncb

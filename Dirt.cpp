@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.34 2003-03-20 04:28:38 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.35 2003-03-20 07:25:25 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -131,13 +131,13 @@ bool DirtApp::IsConsole()
 	#ifdef __WXMSW__
 
 		#define CANT_CHANGE_MODE \
-			wxT("Note: Changing between console and GUI mode in Win32 " \
-			"requires changes to the binary.\nThe command line option " \
-			"that was specified to change this mode has been ignored.\n")
+			wxT("Note: Changing between console and GUI mode in Win32 ") \
+			wxT("requires changes to the binary.\nThe command line option ") \
+			wxT("that was specified to change this mode has been ignored.\n")
 
 		if (m_cmdline->Found(wxT("gui")) && bIsConsole)
 		{
-			puts(CANT_CHANGE_MODE);
+			wxPuts(CANT_CHANGE_MODE);
 		}
 		else if (m_cmdline->Found(wxT("console")) && !bIsConsole)
 		{
@@ -335,7 +335,7 @@ bool DirtApp::ProcessCommandLine()
 		}
 	}
 
-	m_no_input = m_cmdline->Found("no-input");
+	m_no_input = m_cmdline->Found(wxT("no-input"));
 
 	return true;
 
