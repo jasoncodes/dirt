@@ -157,9 +157,54 @@ wxString SizeToString(off_t size)
 	}
 }
 
-wxString SizeToLongString(off_t size)
+wxString SizeToLongString(off_t size, wxString suffix)
 {
 	return wxString()
-		<< SizeToString(size)
-		<< " (" << AddCommas(size) << " bytes)";
+		<< SizeToString(size) << suffix
+		<< " (" << AddCommas(size) << " bytes" << suffix << ")";
+}
+
+wxString SecondsToMMSS(time_t seconds)
+{
+
+	bool neg = (seconds < 0);
+
+	if (neg)
+	{
+		seconds = -seconds;
+	}
+
+	int hour, min, sec;
+
+	sec = seconds % 60;
+	min = seconds / 60;
+
+	if (min > 59)
+	{
+		hour = min / 60;
+		min = min % 60;
+	}
+	else
+	{
+		hour = 0;
+	}
+	
+	wxString result;
+
+	if (hour)
+	{
+		result = wxString::Format("%02d:%02d:%02d", hour, min, sec);
+	}
+	else
+	{
+		result = wxString::Format("%02d:%02d", min, sec);
+	}
+
+	if (neg)
+	{
+		result = "-" + result;
+	}
+
+	return result;
+
 }

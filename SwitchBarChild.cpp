@@ -22,7 +22,7 @@ SwitchBarChild::SwitchBarChild(
 	const long style, SwitchBarCanvas *canvas)
 	: wxMDIChildFrame(
 		parent, -1, canvas->GetTitle(), pos, size,
-		style | wxNO_FULL_REPAINT_ON_RESIZE)
+		style | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN)
 {
 
 	m_parent = parent;

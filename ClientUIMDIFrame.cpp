@@ -220,8 +220,10 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == "TEST2")
 	{
-		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "Test Send Transfer", TransferSendCanvas);
+		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, "Send Jason Dirt.exe", TransferSendCanvas);
 		NewWindow(canvas, true);
+		int button_index = m_switchbar->GetIndexFromUserData(canvas);
+		m_switchbar->SetButtonProgress(button_index, 66);
 		return true;
 	}
 	else if (cmd == "QUERY")
@@ -236,7 +238,7 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	}
 	else if (cmd == "HELP")
 	{
-		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST QUERY");
+		OnClientInformation(context, "Supported commands: CLEAR EXIT TEST TEST2 QUERY");
 		return false;
 	}
 	else
