@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.59 2003-07-10 02:20:39 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.60 2003-07-10 12:11:35 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -981,7 +981,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 
 static int CompareStringLengths(const wxString &a, const wxString &b)
 {
-	return a.length() - b.length();
+	return b.length() - a.length();
 }
 
 void Server::PopulateFilteredWords()
