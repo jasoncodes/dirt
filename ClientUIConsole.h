@@ -11,6 +11,8 @@ public:
 	ClientUIConsole();
 	virtual ~ClientUIConsole();
 
+	Client* GetClient() { return m_client; }
+
 	virtual void Output(const wxString &line);
 
 protected:

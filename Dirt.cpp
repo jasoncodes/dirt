@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.14 2003-02-14 03:57:00 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.15 2003-02-15 03:39:34 jason Exp $)
 
 #include "Dirt.h"
 #include "ClientUIConsole.h"
@@ -158,8 +158,13 @@ bool DirtApp::IsConsole()
 bool DirtApp::OnInit()
 {
 	
+	Client *c = NULL;
+
 	m_console = NULL;
-	ProcessCommandLine();
+	if (!ProcessCommandLine())
+	{
+		return false;
+	}
 	
 	if (IsConsole())
 	{
@@ -169,7 +174,11 @@ bool DirtApp::OnInit()
 
 			case appClient:
 			case appDefault:
-				m_console = new ClientUIConsole;
+				{
+					ClientUIConsole *cui = new ClientUIConsole;
+					m_console = cui;
+					c = cui->GetClient();
+				}
 				break;
 
 			case appServer:
@@ -194,7 +203,10 @@ bool DirtApp::OnInit()
 				break;
 
 			case appClient:
-				new ClientUIMDIFrame;
+				{
+					ClientUIMDIFrame *cui = new ClientUIMDIFrame;
+					c = cui->GetClient();
+				}
 				break;
 
 			case appServer:
@@ -210,6 +222,11 @@ bool DirtApp::OnInit()
 
 	}
 
+	if (m_host.Length() > 0)
+	{
+		c->Connect(m_host);
+	}
+
 	return true;
 
 }
@@ -221,7 +238,7 @@ int DirtApp::OnExit()
 	return wxApp::OnExit();
 }
 
-void DirtApp::ProcessCommandLine()
+bool DirtApp::ProcessCommandLine()
 {
 
 	cmdline = new wxCmdLineParser(argc, argv);
@@ -230,10 +247,14 @@ void DirtApp::ProcessCommandLine()
 	cmdline->AddSwitch("g", "gui", "GUI Mode", 0);
 	cmdline->AddSwitch("l", "client", "Client Mode", 0);
 	cmdline->AddSwitch("s", "server", "Server Mode", 0);
+	cmdline->AddOption("h", "host", "Remote host to connect to (implies client)", wxCMD_LINE_VAL_STRING, wxCMD_LINE_NEEDS_SEPARATOR | wxCMD_LINE_PARAM_OPTIONAL);
 
-	cmdline->Parse();
+	if (cmdline->Parse() != 0)
+	{
+		return false;
+	}
 
-	if (cmdline->Found("s"))
+	if (cmdline->Found("server"))
 	{
 		m_appmode = appServer;
 	}
@@ -245,5 +266,20 @@ void DirtApp::ProcessCommandLine()
 	{
 		m_appmode = appDefault;
 	}
+
+	if (cmdline->Found("host", &m_host))
+	{
+		if (m_appmode == appDefault)
+		{
+			m_appmode = appClient;
+		}
+		else if (m_appmode != appClient)
+		{
+			cmdline->Usage();
+			return false;
+		}
+	}
+
+	return true;
 
 }

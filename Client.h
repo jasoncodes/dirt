@@ -36,6 +36,7 @@ public:
 	virtual void Debug(const wxString &context, const wxString &text);
 
 	virtual void SendMessage(const wxString &nick, const wxString &message) = 0;
+	virtual void Connect(const wxString &url) = 0;
 
 	virtual wxString GetNickname() = 0;
 	virtual FileTransfers* GetFileTransfers() { return m_file_transfers; }

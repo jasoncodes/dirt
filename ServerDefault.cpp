@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.8 2003-02-15 02:46:18 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.9 2003-02-15 03:39:35 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -127,9 +127,15 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 				break;
 
 			case CRYPTSOCKET_INPUT:
+				{
+					m_event_handler->OnServerInformation("Input on socket");
+				}
 				break;
 
 			case CRYPTSOCKET_OUTPUT:
+				{
+					m_event_handler->OnServerInformation("Ready to output");
+				}
 				break;
 
 			default:

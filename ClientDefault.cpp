@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientDefault.cpp,v 1.8 2003-02-13 13:16:50 jason Exp $)
+RCS_ID($Id: ClientDefault.cpp,v 1.9 2003-02-15 03:39:34 jason Exp $)
 
 #include "ClientDefault.h"
 #include "Modifiers.h"
@@ -62,4 +62,9 @@ wxString ClientDefault::GetNickname()
 void ClientDefault::OnTestTimer(wxTimerEvent &event)
 {
 	m_event_handler->OnClientDebug(wxEmptyString, "This is a test timer");
+}
+
+void ClientDefault::Connect(const wxString &url)
+{
+	m_event_handler->OnClientDebug(wxEmptyString, "Connect not implemented yet");
 }

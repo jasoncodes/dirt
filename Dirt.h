@@ -20,12 +20,13 @@ public:
 	bool IsConsole();
 
 protected:
-	void ProcessCommandLine();
+	bool ProcessCommandLine();
 
 protected:
 	Console *m_console;
 	wxCmdLineParser *cmdline;
 	AppMode m_appmode;
+	wxString m_host;
 		
 };
 

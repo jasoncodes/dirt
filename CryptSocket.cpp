@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.6 2003-02-15 02:46:17 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.7 2003-02-15 03:39:34 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -340,7 +340,7 @@ bool CryptSocketBase::IsSendBufferFull() const
 
 void CryptSocketBase::Send(const ByteBuffer &data)
 {
-	wxCHECK_RET(m_keyLocal.Length() > 0, "No local block key");
+	CRYPTSOCKET_CHECK_RET(m_keyLocal.Length() > 0, "No local block key");
 	if ((m_currentBlockKeyAgeBytes >= s_maxBlockKeyAgeBytes) ||
 		(Now() >= m_nextBlockKeyChangeTime))
 	{

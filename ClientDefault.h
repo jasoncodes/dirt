@@ -12,6 +12,7 @@ public:
 
 	virtual void SendMessage(const wxString &nick, const wxString &message);
 	virtual wxString GetNickname();
+	virtual void Connect(const wxString &url);
 
 protected:
 	void OnTestTimer(wxTimerEvent &event);
