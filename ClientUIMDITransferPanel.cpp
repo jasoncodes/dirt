@@ -9,6 +9,7 @@
 #include "ClientUIMDITransferPanel.h"
 #include "ClientUIMDICanvas.h"
 #include "util.h"
+#include <wx/filename.h>
 
 BEGIN_EVENT_TABLE(ClientUIMDITransferPanel, wxPanel)
 	EVT_SIZE(ClientUIMDITransferPanel::OnSize)
@@ -27,7 +28,7 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 
 	m_lblType = new wxStaticText(
 		this, wxID_ANY,
-		wxString() << "DCC " << (IsSend()?"Send":"Get") << " Session",
+		wxString() << "DCC " << GetTypeString() << " Session",
 		wxPoint(8,8));
 
 	m_pnlLeft = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
@@ -38,16 +39,16 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 
 	AddRow("");
 
-	m_lblNickname = AddRow("Nickname:", "Jason");
-	m_lblFilename = AddRow("Filename:", "D:\\Archive\\Stuff\\Dirt.exe");
-	m_lblSize = AddRow("Size:", SizeToLongString(363520));
+	m_lblNickname = AddRow("Nickname:");
+	m_lblFilename = AddRow("Filename:");
+	m_lblSize = AddRow("Size:");
 
 	AddRow("");
 
-	m_lblTime = AddRow("Time:", SecondsToMMSS(133));
-	m_lblLeft = AddRow("Left:", SecondsToMMSS(67));
-	m_lblCPS = AddRow("CPS:", SizeToLongString(363520/200, "/sec"));
-	m_lblSent = AddRow("Sent:", SizeToLongString(363520 / 3 * 2));
+	m_lblTime = AddRow("Time:");
+	m_lblLeft = AddRow("Left:");
+	m_lblCPS = AddRow("CPS:");
+	m_lblSent = AddRow("Sent:");
 
 	m_pnlLeft->SetAutoLayout( TRUE );
 	m_pnlLeft->SetSizer( m_szrLeft );
@@ -57,17 +58,21 @@ ClientUIMDITransferPanel::ClientUIMDITransferPanel(
 	m_pnlRight->SetSizer( m_szrRight );
 	m_szrRight->Fit( m_pnlRight );
 
-	m_lblStatus = new wxStaticText(this, wxID_ANY, "Sending...");
+	m_lblStatus = new wxStaticText(this, wxID_ANY, wxEmptyString);
 
 	m_gauge = new wxGauge(
 		this, -1, 100,
 		wxDefaultPosition, wxSize(256, 24),
 		wxGA_SMOOTH | wxNO_BORDER);
 
-	m_gauge->SetValue(66);
-	int button_index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
-	canvas->GetSwitchBar()->SetButtonProgress(button_index, 66);
-
+	m_nickname = wxEmptyString;
+	m_filename = wxEmptyString;
+	m_filesize = 0;
+	m_time = 0;
+	m_timeleft = 0;
+	m_cps = 0;
+	m_filesent = 0;
+	m_status = wxEmptyString;
 
 }
 
@@ -105,16 +110,6 @@ void ClientUIMDITransferPanel::OnSize(wxSizeEvent &event)
 
 }
 
-void ClientUIMDITransferPanel::UpdateCaption()
-{
-	wxString caption;
-	caption += IsSend() ? "Send " : "Get ";
-	caption += "Jason";
-	caption += ' ';
-	caption += "Dirt.exe";
-	m_canvas->SetTitle(caption);
-}
-
 bool ClientUIMDITransferPanel::IsSend()
 {
 	switch (m_canvas->GetType())
@@ -127,4 +122,122 @@ bool ClientUIMDITransferPanel::IsSend()
 			wxFAIL_MSG("Unrecognized Canvas Type");
 			return false;
 	}
+}
+
+void ClientUIMDITransferPanel::UpdateCaption()
+{
+	wxString caption;
+	caption << GetTypeString() << ' ' << m_nickname << ' ' << GetShortFilename();
+	m_canvas->SetTitle(caption);
+}
+
+void ClientUIMDITransferPanel::UpdateProgress()
+{
+	int progress = (int)((double)m_filesent / (double)m_filesize * 100.0);
+	m_gauge->SetValue(progress);
+	int button_index = m_canvas->GetSwitchBar()->GetIndexFromUserData(m_canvas);
+	m_canvas->GetSwitchBar()->SetButtonProgress(button_index, progress);
+}
+
+wxString ClientUIMDITransferPanel::GetShortFilename()
+{
+	wxFileName fn(m_filename);
+	wxString result = fn.GetName();
+	if (fn.HasExt())
+	{
+		result << '.' << fn.GetExt();
+	}
+	return result;
+}
+
+wxString ClientUIMDITransferPanel::GetNickname()
+{
+	return m_nickname;
+}
+
+wxString ClientUIMDITransferPanel::GetFilename()
+{
+	return m_filename;
+}
+
+off_t ClientUIMDITransferPanel::GetFileSize()
+{
+	return m_filesize;
+}
+
+long ClientUIMDITransferPanel::GetTime()
+{
+	return m_time;
+}
+
+long ClientUIMDITransferPanel::GetTimeleft()
+{
+	return m_timeleft;
+}
+
+long ClientUIMDITransferPanel::GetCPS()
+{
+	return m_cps;
+}
+
+off_t ClientUIMDITransferPanel::GetFileSent()
+{
+	return m_filesent;
+}
+
+wxString ClientUIMDITransferPanel::GetStatus()
+{
+	return m_status;
+}
+
+void ClientUIMDITransferPanel::SetNickname(const wxString &nickname)
+{
+	m_nickname = nickname;
+	m_lblNickname->SetLabel(nickname);
+	UpdateCaption();
+}
+
+void ClientUIMDITransferPanel::SetFilename(const wxString &filename)
+{
+	m_filename = filename;
+	m_lblFilename->SetLabel(filename);
+	UpdateCaption();
+}
+
+void ClientUIMDITransferPanel::SetFileSize(off_t bytes)
+{
+	m_filesize = bytes;
+	m_lblSize->SetLabel(SizeToLongString(bytes));
+	UpdateProgress();
+}
+
+void ClientUIMDITransferPanel::SetTime(long seconds)
+{
+	m_time = seconds;
+	m_lblTime->SetLabel(SecondsToMMSS(seconds));
+}
+
+void ClientUIMDITransferPanel::SetTimeleft(long seconds)
+{
+	m_timeleft = seconds;
+	m_lblLeft->SetLabel(SecondsToMMSS(seconds));
+}
+
+void ClientUIMDITransferPanel::SetCPS(long cps)
+{
+	m_cps = cps;
+	m_lblCPS->SetLabel(SizeToLongString(cps, "/sec"));
+}
+
+void ClientUIMDITransferPanel::SetFileSent(off_t bytes)
+{
+	m_filesent = bytes;
+	m_lblSent->SetLabel(SizeToLongString(bytes));
+	UpdateProgress();
+}
+
+void ClientUIMDITransferPanel::SetStatus(const wxString &status)
+{
+	m_status = status;
+	m_lblStatus->SetLabel(status);
 }

@@ -221,6 +221,15 @@ bool ClientUIMDIFrame::OnClientPreprocess(const wxString &context, wxString &cmd
 	else if (cmd == "TEST2")
 	{
 		ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxEmptyString, TransferSendCanvas);
+		ClientUIMDITransferPanel *transfer = canvas->GetTransferPanel();
+		transfer->SetNickname("Jason");
+		transfer->SetFilename("D:\\Archive\\Stuff\\Dirt.exe");
+		transfer->SetFileSize(363520);
+		transfer->SetTime(133);
+		transfer->SetTimeleft(67);
+		transfer->SetCPS(363520/200);
+		transfer->SetFileSent(363520/3*2);
+		transfer->SetStatus("Sending...");
 		NewWindow(canvas, true);
 		return true;
 	}

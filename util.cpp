@@ -164,7 +164,7 @@ wxString SizeToLongString(off_t size, wxString suffix)
 		<< " (" << AddCommas(size) << " bytes" << suffix << ")";
 }
 
-wxString SecondsToMMSS(time_t seconds)
+wxString SecondsToMMSS(long seconds)
 {
 
 	bool neg = (seconds < 0);

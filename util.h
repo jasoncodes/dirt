@@ -20,6 +20,6 @@ wxString AddCommas(off_t size);
 wxString AddCommas(double size);
 wxString SizeToString(off_t size);
 wxString SizeToLongString(off_t size, wxString suffix = wxEmptyString);
-wxString SecondsToMMSS(time_t seconds);
+wxString SecondsToMMSS(long seconds);
 
 #endif
