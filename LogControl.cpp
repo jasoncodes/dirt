@@ -533,19 +533,24 @@ LogControl::~LogControl()
 void LogControl::OnSize(wxSizeEvent& event)
 {
 
-	#ifdef __WXMSW__
-		m_Resizing = true;
-	#endif
+	if (GetSize().x > 0 && GetSize().y > 0)
+	{
 
-	wxHtmlWindow::OnSize(event);
-	CalculateOffset();
+		#ifdef __WXMSW__
+			m_Resizing = true;
+		#endif
 
-	Refresh();
+		wxHtmlWindow::OnSize(event);
+		CalculateOffset();
 
-	#ifndef __WXMSW__
-		Update();
-		ScrollToBottom();
-	#endif
+		Refresh();
+
+		#ifndef __WXMSW__
+			Update();
+			ScrollToBottom();
+		#endif
+
+	}
 
 }
 
