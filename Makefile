@@ -58,6 +58,7 @@ include ./Makefile.cross-compile
 
 ifneq (,$(findstring wx_msw,$(WX_BASENAME)))
 	OBJECTS := $(OBJECTS) Dirt.res
+	EXTRA_CLEAN = Dirt.res
 endif
 
 dirt : Dirt$(BINARY_SUFFIX)
@@ -72,7 +73,7 @@ ifneq ($(DIRTSERVER_EXE_PERMS),xxx)
 endif
 
 clean:
-	rm -f *.o Dirt$(BINARY_SUFFIX) DirtGTK.tar.bz2
+	rm -f *.o Dirt$(BINARY_SUFFIX) DirtGTK.tar.bz2 $(EXTRA_CLEAN)
 	rm -rf Dirt.app
 
 all: clean dirt
