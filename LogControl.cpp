@@ -12,6 +12,7 @@
 #include <wx/tokenzr.h>
 #include <ctype.h>
 #include <wx/clipbrd.h>
+#include "util.h"
 
 #include "LogControl.h"
 #include "SpanTag.h"
@@ -516,6 +517,7 @@ LogControl::LogControl(wxWindow *parent, wxWindowID id,
 	Connect(GetId(), wxEVT_LEAVE_WINDOW, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
 	Connect(GetId(), wxEVT_MOUSEWHEEL, (wxObjectEventFunction)(wxMouseEventFunction)&LogControl::OnMouseEvent);
 
+	FixBorder(this);
 	SetBorders(1);
 
 	GetParser()->AddTagHandler(new SpanTagHandler());

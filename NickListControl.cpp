@@ -114,7 +114,7 @@ void NickListControl::OnMotion(wxMouseEvent &event)
 
 		int index = HitTest(event.GetPosition());
 		
-		if (index > -1)
+		if (index > -1 && GetSelection() != index)
 		{
 			SetSelection(index);
 		}

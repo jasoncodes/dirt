@@ -74,10 +74,10 @@ wxString Timestamp()
 	return wxDateTime::Now().Format("[%H:%M] ");
 }
 
-void FixBorder(wxControl *ctl)
+void FixBorder(wxWindow *wnd)
 {
 	#ifdef __WXMSW__
-		HWND hWnd = reinterpret_cast<HWND>(ctl->GetHandle());
+		HWND hWnd = reinterpret_cast<HWND>(wnd->GetHandle());
 		DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
 		dwStyle &= ~WS_BORDER;
 		::SetWindowLong(hWnd, GWL_STYLE, dwStyle);

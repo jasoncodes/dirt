@@ -123,7 +123,9 @@ void ClientUIMDIFrame::OnFileExit(wxCommandEvent& event)
 
 void ClientUIMDIFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	wxMessageBox("Dirt Secure Chat 3.0.0 Alpha 0", "About", wxICON_INFORMATION);
+	wxMessageBox(
+		"Dirt Secure Chat 3.0.0 Alpha 0\n\nhttp://dirtchat.sourceforge.net/",
+		"About", wxICON_INFORMATION);
 }
 
 ClientUIMDICanvas* ClientUIMDIFrame::GetContext(const wxString &context, bool create_if_not_exist)
