@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.53 2003-04-30 03:11:29 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.54 2003-04-30 04:58:26 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
@@ -271,12 +271,11 @@ void ServerDefault::OnBroadcast(BroadcastSocketEvent &event)
 	ByteBuffer data;
 	if (DecodeMessage(event.GetData(), context, cmd, data))
 	{
-		ByteBufferArray params = Unpack(data);
 		cmd.MakeUpper();
 		if (cmd == wxT("PING"))
 		{
 			ByteBuffer reply = PackStringHashMap(GetPublicPostData(false));
-			reply = Pack(params.GetCount()?params[0u]:ByteBuffer(), reply);
+			reply = Pack(data, reply);
 			m_bcast->Send(event.GetIP(), event.GetPort(), EncodeMessage(context, wxT("PONG"), reply));
 		}
 	}
