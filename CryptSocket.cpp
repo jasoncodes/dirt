@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: CryptSocket.cpp,v 1.22 2003-03-29 05:30:07 jason Exp $)
+RCS_ID($Id: CryptSocket.cpp,v 1.23 2003-04-27 07:02:42 jason Exp $)
 
 #include "CryptSocket.h"
 #include "Crypt.h"
@@ -565,104 +565,3 @@ void CryptSocketServer::OnSocketConnection()
 //////// CryptSocketEvent ////////
 
 const wxEventType wxEVT_CRYPTSOCKET = wxNewEventType();
-
-//////// IPV4 Utility Functions ////////
-
-wxUint32 GetIPV4Address(wxSockAddress &addr)
-{
-	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, 0, wxT("Not an IPV4 address"));
-	return GAddress_INET_GetHostAddress(addr.GetAddress());
-}
-
-wxString GetIPV4AddressString(wxUint32 ip)
-{
-	
-	ip = wxUINT32_SWAP_ON_LE(ip);
-	
-	wxString result = wxString()
-		<< ((ip >> 24) & 0xff) << wxT(".")
-		<< ((ip >> 16) & 0xff) << wxT(".")
-		<< ((ip >> 8)  & 0xff) << wxT(".")
-		<< ((ip >> 0)  & 0xff);
-	
-	return result;
-	
-}
-
-wxString GetIPV4AddressString(wxSockAddress &addr)
-{
-	return GetIPV4AddressString(GetIPV4Address(addr));
-}
-
-wxString GetIPV4String(wxSockAddress &addr, bool include_port)
-{
-	wxCHECK_MSG(addr.Type() == wxSockAddress::IPV4, wxEmptyString, wxT("Not an IPV4 address"));
-	wxIPV4address *ipv4 = static_cast<wxIPV4address*>(&addr);
-	wxString retval;
-	wxString ip = GetIPV4AddressString(*ipv4);
-	if (ip == wxT("127.0.0.1"))
-	{
-		retval << wxT("localhost");
-	}
-	else if (ip == wxT("0.0.0.0"))
-	{
-		retval << wxT("*");
-	}
-	else if (LeftEq(ip, wxT("127.")))
-	{
-		retval << ip;
-	}
-	else
-	{
-		retval << ipv4->Hostname();
-	}
-	if (include_port)
-	{
-		retval << wxT(":") << (int)ipv4->Service();
-	}
-	return retval;
-}
-
-#ifdef __WXMSW__
-	#include <windows.h>
-	#include <wx/msw/winundef.h>
-#else
-	#include <unistd.h>
-	#include <sys/socket.h>
-	#include <netdb.h>
-	#include <netinet/in.h>
-	#include <arpa/inet.h>
-#endif
-
-wxArrayString GetIPAddresses()
-{
-
-	wxArrayString IPs;
-
-	char ac[80];
-	if (gethostname(ac, sizeof(ac)) != 0)
-	{
-		return IPs;
-	}
-
-	struct hostent *phe = gethostbyname(ac);
-	if (phe == 0)
-	{
-		return IPs;
-	}
-
-	for (int i = 0; phe->h_addr_list[i] != 0; ++i)
-	{
-		struct in_addr addr;
-		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-		const char *ip = inet_ntoa(addr);
-		IPs.Add(ByteBuffer((const byte*)ip, strlen(ip)));
-	}
-
-	if (IPs.GetCount() == 0)
-	{
-		IPs.Add(wxT("127.0.0.1"));
-	}
-
-	return IPs;
-}

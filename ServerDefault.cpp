@@ -6,11 +6,12 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.49 2003-04-26 03:01:10 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.50 2003-04-27 07:02:43 jason Exp $)
 
 #include "ServerDefault.h"
 #include <wx/filename.h>
 #include "Modifiers.h"
+#include "IPInfo.h"
 
 const wxLongLong_t initial_ping_delay = 5000;
 const wxLongLong_t ping_interval = 30000;
