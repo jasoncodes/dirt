@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogControl.cpp,v 1.40 2003-04-12 11:33:04 jason Exp $)
+RCS_ID($Id: LogControl.cpp,v 1.41 2003-04-18 10:23:01 jason Exp $)
 
 #include <wx/image.h>
 #include <wx/sysopt.h>
@@ -1172,6 +1172,9 @@ void LogControl::OnMouseEvent(wxMouseEvent& event)
 				wxTheClipboard->Close();
 			}
 		}
+
+		m_tmpLastCell = NULL;
+		m_tmpLastLink = NULL;
 
 		Refresh();
 

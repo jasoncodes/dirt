@@ -1,7 +1,5 @@
 * change all config file code to use utf-8 for file storage
 
-* highlight part of url and mouse pointer should reset back to hand after release
-
 * file transfers
 
 * firewall traversal: try connecting both ways at same time, close alt route if main succeeds
