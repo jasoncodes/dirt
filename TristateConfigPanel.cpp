@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: TristateConfigPanel.cpp,v 1.4 2003-06-02 10:46:05 jason Exp $)
+RCS_ID($Id: TristateConfigPanel.cpp,v 1.5 2003-06-12 05:54:50 jason Exp $)
 
 #include "TristateConfigPanel.h"
 #include <wx/filename.h>
@@ -40,6 +40,7 @@ TristateConfigPanel::TristateConfigPanel(
 	wxSizer *szrPanel = new wxBoxSizer(wxHORIZONTAL);
 	{
 		m_txt = new wxTextCtrl(pnl, ID_TEXT);
+		FixBorder(m_txt);
 		m_txt->Enable(false);
 		szrPanel->Add(m_txt, 1, wxEXPAND, 0);
 		wxSize size_button = wxSize(m_txt->GetBestSize().y, m_txt->GetBestSize().y);

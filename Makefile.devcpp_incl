@@ -1,0 +1,1 @@
+WINDRES := $(WINDRES) $(subst -I,--include-dir=,$(CXXINCS))
