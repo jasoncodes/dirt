@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: FileTransfers.cpp,v 1.18 2003-05-07 12:23:00 jason Exp $)
+RCS_ID($Id: FileTransfers.cpp,v 1.19 2003-05-07 12:57:39 jason Exp $)
 
 #include "FileTransfer.h"
 #include "FileTransfers.h"
@@ -164,28 +164,35 @@ int FileTransfers::SendFile(const wxString &nickname, const wxString &filename)
 
 }
 
-void FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
+bool FileTransfers::DeleteTransfer(int transferid, bool user_initiated)
 {
 	
 	int index = FindTransfer(transferid);
 	
-	wxASSERT(index > -1);
-	
-	FileTransfer &transfer = m_transfers.Item(index);
-	if (transfer.state != ftsSendComplete && transfer.state != ftsGetComplete)
+	if (index > -1)
 	{
-		transfer.state = transfer.issend ? ftsSendFail : ftsGetFail;
-		transfer.status = wxT("Transfer cancelled");
-		m_client->m_event_handler->OnClientTransferState(transfer);
-	}
-	m_client->m_event_handler->OnClientTransferDelete(transfer, user_initiated);
 	
- 	m_transfers.RemoveAt(index);
-	
-	if (GetTransferCount() == 0)
-	{
-		tmr->Stop();
+		FileTransfer &transfer = m_transfers.Item(index);
+		if (transfer.state != ftsSendComplete && transfer.state != ftsGetComplete)
+		{
+			transfer.state = transfer.issend ? ftsSendFail : ftsGetFail;
+			transfer.status = wxT("Transfer cancelled");
+			m_client->m_event_handler->OnClientTransferState(transfer);
+		}
+		m_client->m_event_handler->OnClientTransferDelete(transfer, user_initiated);
+		
+ 		m_transfers.RemoveAt(index);
+		
+		if (GetTransferCount() == 0)
+		{
+			tmr->Stop();
+		}
+
+		return true;
+
 	}
+
+	return false;
 
 }
 

@@ -27,7 +27,8 @@ public:
 	const FileTransfer& GetTransferByIndex(int index);
 
 	int SendFile(const wxString &nickname, const wxString &filename);
-	void DeleteTransfer(int transferid, bool user_initiated);
+	bool AcceptTransfer(int transferid, const wxString &filename);
+	bool DeleteTransfer(int transferid, bool user_initiated);
 
 protected:
 	void OnTimer(wxTimerEvent &event);
