@@ -2,6 +2,7 @@
 #define Server_H_
 
 #include <wx/datetime.h>
+#include "util.h"
 
 class ServerEventHandler
 {
@@ -31,14 +32,17 @@ public:
 	}
 
 public:
-	virtual wxString GetNickname() { return wxEmptyString; } // not implemented
-	virtual wxString GetRemoteHost() { return wxEmptyString; } // not implemented
-	virtual wxString GetUserDetails() { return wxEmptyString; } // not implemented
-	virtual wxString GetAwayMessage() { return wxEmptyString; } // not implemented
-	virtual long GetIdleTime() { return wxGetUTCTime() - m_lastactive; }
-	virtual time_t GetLatency() { return -1; } // not implemented
-	virtual wxString GetUserAgent() { return wxEmptyString; } // not implemented
-	virtual wxDateTime GetJoinTime() { return m_jointime; }
+	virtual wxString GetNickname() const { return wxEmptyString; } // not implemented
+	virtual wxString GetRemoteHost() const { return wxEmptyString; } // not implemented
+	virtual wxString GetUserDetails() const { return wxEmptyString; } // not implemented
+	virtual wxString GetAwayMessage() const { return wxEmptyString; } // not implemented
+	virtual long GetIdleTime() const { return wxGetUTCTime() - m_lastactive; }
+	virtual wxString GetIdleTimeString() const { return GetIdleTime() > -1 ? SecondsToMMSS(GetIdleTime()) : "N/A"; }
+	virtual time_t GetLatency() const { return -1; } // not implemented
+	virtual wxString GetLatencyString() const { return GetLatency() > -1 ? AddCommas((off_t)GetLatency()) + " ms" : "N/A"; }
+	virtual wxString GetUserAgent() const { return wxEmptyString; } // not implemented
+	virtual wxDateTime GetJoinTime() const { return m_jointime; }
+	virtual wxString GetJoinTimeString() const { return FormatISODateTime(GetJoinTime()); }
 
 protected:
 	virtual void ResetIdleTime() { m_lastactive = ::wxGetUTCTime(); }

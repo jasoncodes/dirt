@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.15 2003-02-15 12:03:26 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.16 2003-02-15 12:38:25 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -290,7 +290,7 @@ void ServerUIFrame::OnServerConnectionChange()
 	}
 	for (size_t i = 0; i < m_server->GetConnectionCount(); ++i)
 	{
-		m_lstConnections->SetItemData(i, (long)(void*)&m_server->GetConnection(i));
+		m_lstConnections->SetItemData(i, (long)(const void*)&m_server->GetConnection(i));
 	}
 	UpdateConnectionList();
 }
@@ -304,15 +304,15 @@ void ServerUIFrame::UpdateConnectionList()
 {
 	for (int i = 0; i < m_lstConnections->GetItemCount(); ++i)
 	{
-		ServerConnection *conn = (ServerConnection*)(void*)m_lstConnections->GetItemData(i);	
+		const ServerConnection *conn = (const ServerConnection*)(const void*)m_lstConnections->GetItemData(i);	
 		SetItemText(m_lstConnections, i, 0, conn->GetNickname());
 		SetItemText(m_lstConnections, i, 1, conn->GetRemoteHost());
 		SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
 		SetItemText(m_lstConnections, i, 3, conn->GetAwayMessage());
-		SetItemText(m_lstConnections, i, 4, conn->GetIdleTime() > -1 ? SecondsToMMSS(conn->GetIdleTime()) : "N/A");
-		SetItemText(m_lstConnections, i, 5, conn->GetLatency() > -1 ? AddCommas((off_t)conn->GetLatency()) + " ms" : "N/A");
+		SetItemText(m_lstConnections, i, 4, conn->GetIdleTimeString());
+		SetItemText(m_lstConnections, i, 5, conn->GetLatencyString());
 		SetItemText(m_lstConnections, i, 6, conn->GetUserAgent());
-		SetItemText(m_lstConnections, i, 7, FormatISODateTime(conn->GetJoinTime()));
+		SetItemText(m_lstConnections, i, 7, conn->GetJoinTimeString());
 	}
 }
 
