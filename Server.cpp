@@ -3,7 +3,7 @@
 #endif
 #include "wx/wxprec.h"
 #include "RCS.h"
-RCS_ID($Id: Server.cpp,v 1.27 2003-03-04 06:54:33 jason Exp $)
+RCS_ID($Id: Server.cpp,v 1.28 2003-03-04 13:08:14 jason Exp $)
 
 #include "Server.h"
 #include "Modifiers.h"
@@ -109,6 +109,16 @@ wxString ServerConfig::GetAdminPassword(bool decrypt) const
 	return GetPassword(wxT("Server/Admin Password"), decrypt);
 }
 
+long ServerConfig::GetMaxUsers() const
+{
+	return m_config->Read(wxT("Server/Max Users"), 32);
+}
+
+long ServerConfig::GetMaxUsersIP() const
+{
+	return m_config->Read(wxT("Server/Max Users Per IP"), 4);
+}
+
 wxString ServerConfig::GetServerName() const
 {
 	return m_config->Read(wxT("Server/Server Name"), wxEmptyString);
@@ -176,6 +186,16 @@ bool ServerConfig::SetUserPassword(const wxString &password)
 bool ServerConfig::SetAdminPassword(const wxString &password)
 {
 	return SetPassword(wxT("Server/Admin Password"), password);
+}
+
+bool ServerConfig::SetMaxUsers(long max_users)
+{
+	return m_config->Write(wxT("Server/Max Users"), max_users);
+}
+
+bool ServerConfig::SetMaxUsersIP(long max_users_ip)
+{
+	return m_config->Write(wxT("Server/Max Users Per IP"), max_users_ip);
 }
 
 bool ServerConfig::SetServerName(const wxString &server_name)
@@ -325,6 +345,7 @@ Server::Server(ServerEventHandler *event_handler)
 {
 	m_connections.Alloc(10);
 	m_config = new ServerConfig;
+	m_peak_users = 0;
 }
 
 Server::~Server()
@@ -456,7 +477,83 @@ void Server::ProcessClientInput(ServerConnection *conn, const ByteBuffer &msg)
 
 }
 
-ServerConnection* Server::GetConnection(const wxString &nickname)
+size_t Server::GetUserCount() const
+{
+	size_t count = 0;
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		if (GetConnection(i)->GetNickname().Length())
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+size_t Server::GetAwayCount() const
+{
+	size_t count = 0;
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		if (GetConnection(i)->IsAway())
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+long Server::GetLowestIdleTime() const
+{
+	long lowest_idle = 0;
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		long idle_time = GetConnection(i)->GetIdleTime();
+		if (i == 0 || lowest_idle > idle_time)
+		{
+			lowest_idle = idle_time;
+		}
+	}
+	return lowest_idle;
+}
+
+time_t Server::GetAverageLatency() const
+{
+
+	size_t count = 0;
+	time_t sum = 0;
+
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		ServerConnection *conn = GetConnection(i);
+		if (conn->GetNickname().Length())
+		{
+			if (conn->GetLatency() > 0)
+			{
+				count++;
+				sum += conn->GetLatency();
+			}
+		}
+	}
+
+	return (count)?(sum / count):0;
+
+}
+
+size_t Server::GetConnectionsFromHost(const wxString &hostname) const
+{
+	size_t count = 0;
+	for (size_t i = 0; i < GetConnectionCount(); ++i)
+	{
+		if (GetConnection(i)->GetRemoteHost() == hostname)
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+ServerConnection* Server::GetConnection(const wxString &nickname) const
 {
 	for (size_t i = 0; i < GetConnectionCount(); ++i)
 	{
@@ -527,7 +624,7 @@ bool Server::IsValidNickname(const wxString &nickname)
 	return true;
 }
 
-ByteBuffer Server::GetNickList()
+ByteBuffer Server::GetNickList() const
 {
 	ByteBufferArray nicks;
 	for (size_t i = 0; i < GetConnectionCount(); ++i)
@@ -702,6 +799,7 @@ void Server::ProcessClientInput(ServerConnection *conn, const wxString &context,
 					Information(conn->GetId() + wxT(" has entered the chat"));
 					SendToAll(wxEmptyString, wxT("JOIN"), Pack(data, conn->GetInlineDetails()), true);
 					conn->Send(context, wxT("NICKLIST"), nicklist);
+					m_peak_users = wxMax(m_peak_users, GetUserCount());
 					for (size_t i = 0; i < GetConnectionCount(); ++i)
 					{
 						ServerConnection *conn2 = GetConnection(i);

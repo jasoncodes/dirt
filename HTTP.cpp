@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: HTTP.cpp,v 1.4 2003-03-04 00:41:30 jason Exp $)
+RCS_ID($Id: HTTP.cpp,v 1.5 2003-03-04 13:08:14 jason Exp $)
 
 #include "HTTP.h"
 #include "util.h"
@@ -272,6 +272,7 @@ void HTTP::OnSocket(wxSocketEvent &event)
 			break;
 
 		case wxSOCKET_CONNECTION:
+			m_connect_ok = true;
 			m_active = true;
 			m_tmrTimeout->Start(1000);
 			m_last_active = GetMillisecondTicks();
@@ -285,17 +286,24 @@ void HTTP::OnSocket(wxSocketEvent &event)
 			break;
 
 		case wxSOCKET_LOST:
+			if (m_connect_ok)
+			{
+				if (m_content_length > -1)
+				{
+					m_transfer_complete = (m_content_received == m_content_length);
+				}
+				else if (!m_chunked)
+				{
+					// cannot tell if complete or not as no content-length and
+					// no chunked encoding. will have to hope all went well.
+					m_transfer_complete = true;
+				}
+			}
+			else
+			{
+				m_transfer_complete = false;
+			}
 			Close();
-			if (m_content_length > -1)
-			{
-				m_transfer_complete = (m_content_received == m_content_length);
-			}
-			else if (!m_chunked)
-			{
-				// cannot tell if complete or not as no content-length and
-				// no chunked encoding. will have to hope all went well.
-				m_transfer_complete = true;
-			}
 			if (m_handler)
 			{
 				HTTPEvent evt(m_id, m_transfer_complete?HTTP_COMPLETE:HTTP_LOST, this);
@@ -769,6 +777,7 @@ void HTTP::Close()
 	m_tmrTimeout->Stop();
 	m_sck->Close();
 	m_active = false;
+	m_connect_ok = false;
 	ClearState();
 }
 

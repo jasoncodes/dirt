@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerDefault.cpp,v 1.31 2003-03-04 08:54:10 jason Exp $)
+RCS_ID($Id: ServerDefault.cpp,v 1.32 2003-03-04 13:08:15 jason Exp $)
 
 #include "ServerDefault.h"
 
@@ -16,6 +16,9 @@ const wxLongLong_t ping_timeout_delay = 45000;
 const long ping_timer_interval = 2500;
 //const wxString dirt_pl = wxT("http://dirtchat.sourceforge.net/cgi-bin/dirt.pl");
 const wxString dirt_pl = wxT("http://jason.darktech.org/cgi-bin/dirt.pl");
+const long http_update_good = 5*60;
+const long http_update_bad1 = 30;
+const long http_update_bad2 = 15*60;
 
 ServerDefaultConnection::ServerDefaultConnection()
 {
@@ -80,7 +83,10 @@ void ServerDefault::Start()
 		m_sckListen->GetLocal(addr);
 		Information(wxT("Server started on ") + GetIPV4String(addr, true));
 		m_event_handler->OnServerStateChange();
+		m_peak_users = 0;
+		m_start_tick = GetMillisecondTicks();
 		m_tmrPing->Start(ping_timer_interval);
+		m_last_failed = false;
 		ResetPublicListUpdate(3);
 	}
 	else
@@ -101,7 +107,7 @@ void ServerDefault::Stop()
 	m_list_updating = false;
 }
 
-bool ServerDefault::IsRunning()
+bool ServerDefault::IsRunning() const
 {
 	return m_sckListen->Ok();
 }
@@ -142,6 +148,16 @@ void ServerDefault::OnSocket(CryptSocketEvent &event)
 					conn->m_remotehostandport =
 						wxString() << conn->m_remotehost << wxT(':') << addr.Service();
 					Information(wxT("Incoming connection from ") + conn->GetId());
+					if (GetConnectionCount() > (size_t)m_config->GetMaxUsers())
+					{
+						conn->m_quitmsg = wxT("Too many connections");
+						conn->m_sck->CloseWithEvent();
+					}
+					if (GetConnectionsFromHost(conn->GetRemoteHost()) > (size_t)m_config->GetMaxUsersIP())
+					{
+						conn->m_quitmsg = wxT("Too many connections from this IP");
+						conn->m_sck->CloseWithEvent();
+					}
 				}
 				break;
 
@@ -241,20 +257,47 @@ void ServerDefault::OnTimerPing(wxTimerEvent &event)
 		m_http.Close();
 		m_http.ResetURLSettings();
 		m_http.SetPostData(GetPublicPostData(true));
+		if (m_config->GetHTTPProxyEnabled())
+		{
+			URL proxy;
+			proxy.SetProtocol(wxT("http"));
+			proxy.SetHostname(m_config->GetHTTPProxyHostname());
+			proxy.SetPort(m_config->GetHTTPProxyPort());
+			proxy.SetUsername(m_config->GetHTTPProxyUsername());
+			proxy.SetPassword(m_config->GetHTTPProxyPassword(true));
+			m_http.SetProxy(proxy);
+		}
 		m_http.Connect(dirt_pl);
 	}
 }
 
 void ServerDefault::HTTPError(const wxString &errmsg)
 {
-	Warning(wxT("Error updating public server list: ") + errmsg);
-	ResetPublicListUpdate(5*60);
+	if (m_show_http_result || !m_last_failed)
+	{
+		Warning(wxT("Error updating public server list: ") + errmsg);
+	}
+	if (m_last_failed)
+	{
+		ResetPublicListUpdate(http_update_bad2);
+	}
+	else
+	{
+		ResetPublicListUpdate(http_update_bad1);
+	}
+	m_last_failed = true;
+	m_show_http_result = false;
 }
 
 void ServerDefault::HTTPSuccess()
 {
-	Warning(wxT("Public server list successfully updated"));
-	ResetPublicListUpdate(1*60);
+	if (m_show_http_result || m_last_failed)
+	{
+		Information(wxT("Public server list successfully updated"));
+	}
+	ResetPublicListUpdate(http_update_good);
+	m_last_failed = false;
+	m_show_http_result = false;
 }
 
 void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update)
@@ -262,6 +305,8 @@ void ServerDefault::ResetPublicListUpdate(int num_secs_till_next_update)
 	m_public_server = m_config->GetPublicListEnabled();
 	m_next_list_update = GetMillisecondTicks() + num_secs_till_next_update*1000;
 	m_list_updating = false;
+	m_show_http_result = true;
+	m_last_failed = false;
 	m_http.Close();
 	m_http_data.Empty();
 }
@@ -286,7 +331,6 @@ void ServerDefault::OnHTTP(HTTPEvent &event)
 			{
 				HTTPError(wxT("Cannot connect to ") + m_http.GetURL().GetHostname());
 			}
-			Information(wxT("HTTP_LOST"));
 			break;
 
 		case HTTP_COMPLETE:
@@ -349,32 +393,37 @@ StringHashMap ServerDefault::GetPublicPostData(bool include_auth)
 		auth = m_config->GetPublicListAuthentication(true);
 		if (auth.Length())
 		{
-			auth = Crypt::MD5(auth);
+			auth = Crypt::MD5(auth).GetHexDump(false, false);
 		}
 		post_data[wxT("auth")] = auth;
     }
-	post_data[wxT("iplist")] = wxT("blah:11626"); // not implemented yet
-	post_data[wxT("usercount")] = wxString() << GetConnectionCount();
-	post_data[wxT("maxusers")] = wxString() << 999; // not implemented yet
-	post_data[wxT("avgping")] = wxString() << 999; // not implemented yet
+	post_data[wxT("iplist")] = wxT("not_implemented"); // not implemented yet
+	post_data[wxT("usercount")] = wxString() << GetUserCount();
+	post_data[wxT("maxusers")] = wxString() << m_config->GetMaxUsers();
+	post_data[wxT("avgping")] = wxString() << GetAverageLatency();
 	post_data[wxT("version")] = GetProductVersion() + wxT(' ') + SplitHeadTail(GetRCSDate(), wxT(' ')).head;
-	post_data[wxT("peakusers")] = wxString() << 999; // not implemented yet
-	post_data[wxT("uptime")] = wxString() << 999; // not implemented yet
-	post_data[wxT("idletime")] = wxString() << 999; // not implemented yet
+	post_data[wxT("peakusers")] = wxString() << m_peak_users;
+	post_data[wxT("uptime")] = wxString() << (long)((GetMillisecondTicks() - m_start_tick) / 1000);
+	post_data[wxT("idletime")] = wxString() << GetLowestIdleTime();
 	post_data[wxT("hostname")] = wxString() << m_config->GetHostname() << wxT(':') << m_config->GetListenPort();
-	post_data[wxT("away")] = wxString() << 999; // not implemented yet
+	post_data[wxT("away")] = wxString() << GetAwayCount();
 	post_data[wxT("comment")] = m_config->GetPublicListComment();
     
 	return post_data;
 
 }
 
-long ServerDefault::GetListenPort()
+long ServerDefault::GetListenPort() const
 {
 	wxASSERT(m_sckListen);
 	wxIPV4address addr;
 	m_sckListen->GetLocal(addr);
 	return addr.Service();
+}
+
+wxLongLong_t ServerDefault::GetNextPublicListUpdateTick() const
+{
+	return (IsRunning() && m_public_server)?m_next_list_update:0;
 }
 
 bool ServerDefault::ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data)

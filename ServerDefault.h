@@ -44,10 +44,11 @@ public:
 
 	virtual void Start();
 	virtual void Stop();
-	virtual bool IsRunning();
-	virtual long GetListenPort();
+	virtual bool IsRunning() const;
+	virtual long GetListenPort() const;
 	virtual bool ProcessClientInputExtra(bool preprocess, bool prenickauthcheck, ServerConnection *conn, const wxString &context, const wxString &cmd, const ByteBuffer &data);
 	virtual void ResetPublicListUpdate(int num_secs_till_next_update);
+	virtual wxLongLong_t GetNextPublicListUpdateTick() const;
 
 protected:
 	virtual StringHashMap GetPublicPostData(bool include_auth);
@@ -68,6 +69,9 @@ protected:
 	bool m_list_updating;
 	wxString m_http_data;
 	bool m_list_connect_ok;
+	wxLongLong_t m_start_tick;
+	bool m_last_failed;
+	bool m_show_http_result;
 
 private:
 	DECLARE_EVENT_TABLE()

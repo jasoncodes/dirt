@@ -14,6 +14,7 @@ protected:
 	void OnOK(wxCommandEvent &event);
 	void OnReset(wxCommandEvent &event);
 	void OnChange(wxCommandEvent &event);
+	void OnTimer(wxTimerEvent &event);
 
 protected:
 	virtual void LoadSettings();
@@ -23,9 +24,12 @@ protected:
 
 protected:
 	Server *m_server;
+
 	wxTextCtrl *m_txtListenPort;
 	wxTextCtrl *m_txtUserPassword;
 	wxTextCtrl *m_txtAdminPassword;
+	wxTextCtrl *m_txtMaxUsers;
+	wxTextCtrl *m_txtMaxUsersIP;
 	wxTextCtrl *m_txtServerName;
 	wxTextCtrl *m_txtHostname;
 
@@ -40,6 +44,9 @@ protected:
 	wxTextCtrl *m_txtHTTPProxyPassword;
 
 	wxButton *m_cmdApply;
+
+	wxTimer *m_tmrNextUpdate;
+	wxStaticText *m_lblNextUpdate;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.20 2003-03-04 08:01:41 jason Exp $)
+RCS_ID($Id: ServerUIFrameConfig.cpp,v 1.22 2003-03-04 13:11:06 jason Exp $)
 
 #include "ServerUIFrameConfig.h"
 
@@ -91,7 +91,8 @@ protected:
 
 enum
 {
-	ID_RESET = 1
+	ID_RESET = 1,
+	ID_TIMER
 };
 
 BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
@@ -100,6 +101,7 @@ BEGIN_EVENT_TABLE(ServerUIFrameConfig, wxDialog)
 	EVT_BUTTON(ID_RESET, ServerUIFrameConfig::OnReset)
 	EVT_TEXT(wxID_ANY, ServerUIFrameConfig::OnChange)
 	EVT_CHECKBOX(wxID_ANY, ServerUIFrameConfig::OnChange)
+	EVT_TIMER(ID_TIMER, ServerUIFrameConfig::OnTimer)
 END_EVENT_TABLE()
 
 ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
@@ -107,13 +109,17 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 {
 	
 	m_server = server;
-	
+
 	wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE | wxTAB_TRAVERSAL);
 
 	wxButton *cmdOK = new wxButton(panel, wxID_OK, wxT("OK"));
+	cmdOK->SetDefault();
 	wxButton *cmdCancel = new wxButton(panel, wxID_CANCEL, wxT("Cancel"));
 	m_cmdApply = new wxButton(panel, wxID_APPLY, wxT("&Apply"));
 	wxButton *cmdReset = new wxButton(panel, ID_RESET, wxT("&Reset"));
+
+	wxStaticText *m_lblNextUpdateLabel = new wxStaticText(panel, -1, wxT("Next update:"));
+	m_lblNextUpdate = new wxStaticText(panel, -1, wxT("N/A"));
 
 	wxStaticText *lblListenPort = new wxStaticText(panel, -1, wxT("Listen &Port:"));
 	m_txtListenPort = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
@@ -124,6 +130,12 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 	wxStaticText *lblAdminPassword = new wxStaticText(panel, -1, wxT("A&dmin Password:"));
 	m_txtAdminPassword = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	FixBorder(m_txtAdminPassword);
+	wxStaticText *lblMaxUsers = new wxStaticText(panel, -1, wxT("Max &Users:"));
+	m_txtMaxUsers = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtMaxUsers);
+	wxStaticText *lblMaxUsersIP = new wxStaticText(panel, -1, wxT("Max Users per &IP:"));
+	m_txtMaxUsersIP = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	FixBorder(m_txtMaxUsersIP);
 	wxStaticText *lblServerName = new wxStaticText(panel, -1, wxT("&Server Name:"));
 	m_txtServerName = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	FixBorder(m_txtServerName);
@@ -167,6 +179,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrLabels->Add(lblListenPort, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblUserPassword, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblAdminPassword, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblMaxUsers, 1, wxBOTTOM, 8);
+					szrLabels->Add(lblMaxUsersIP, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblServerName, 1, wxBOTTOM, 8);
 					szrLabels->Add(lblHostname, 1, wxBOTTOM, 8);
 				}
@@ -177,6 +191,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 					szrTextBoxes->Add(m_txtListenPort, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtUserPassword, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtAdminPassword, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtMaxUsers, 1, wxBOTTOM | wxEXPAND, 8);
+					szrTextBoxes->Add(m_txtMaxUsersIP, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtServerName, 1, wxBOTTOM | wxEXPAND, 8);
 					szrTextBoxes->Add(m_txtHostname, 1, wxBOTTOM | wxEXPAND, 8);
 				}
@@ -245,6 +261,8 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 			szrRight->Add(cmdCancel, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(m_cmdApply, 0, wxBOTTOM | wxEXPAND, 8);
 			szrRight->Add(cmdReset, 0, wxBOTTOM | wxEXPAND, 8);
+			szrRight->Add(m_lblNextUpdateLabel, 0, wxEXPAND, 0);
+			szrRight->Add(m_lblNextUpdate, 0, wxBOTTOM | wxEXPAND, 8);
 		}
 		szrAll->Add(szrRight, 0, wxALL | wxEXPAND, 8);
 
@@ -252,11 +270,15 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 	LoadSettings();
 
+	m_tmrNextUpdate = new wxTimer(this, ID_TIMER);
+	m_tmrNextUpdate->Start(500);
+	wxTimerEvent tmr_event;
+	OnTimer(tmr_event);
+	
 	panel->SetAutoLayout(TRUE);
 	panel->SetSizer(szrAll);
 	szrAll->SetSizeHints( this );
 
-	//SetClientSize(450, 250);
 	FitInside();
 	CentreOnParent();
 	ShowModal();
@@ -265,12 +287,14 @@ ServerUIFrameConfig::ServerUIFrameConfig(ServerUIFrame *parent, Server *server)
 
 ServerUIFrameConfig::~ServerUIFrameConfig()
 {
+	delete m_tmrNextUpdate;
 }
 
 void ServerUIFrameConfig::OnOK(wxCommandEvent &event)
 {
 	if (SaveSettings())
 	{
+		m_server->ResetPublicListUpdate(5);
 		event.Skip();
 	}
 }
@@ -296,12 +320,30 @@ void ServerUIFrameConfig::OnChange(wxCommandEvent &event)
 	m_cmdApply->Enable(true);
 }
 
+void ServerUIFrameConfig::OnTimer(wxTimerEvent &event)
+{
+	wxLongLong_t next_tick = m_server->GetNextPublicListUpdateTick();
+	wxLongLong_t now = GetMillisecondTicks();
+	if (next_tick == 0)
+	{
+		m_lblNextUpdate->SetLabel(wxT("N/A"));
+	}
+	else
+	{
+		wxLongLong_t time_left = next_tick - now;
+		if (time_left < 0) time_left = 0;
+		m_lblNextUpdate->SetLabel(SecondsToMMSS((long)(time_left/1000)));
+	}
+}
+
 void ServerUIFrameConfig::LoadSettings()
 {
 	ServerConfig *config = m_server->GetConfig();
 	m_txtListenPort->SetValue(wxString()<<config->GetListenPort());
 	m_txtUserPassword->SetValue(config->GetUserPassword(false));
 	m_txtAdminPassword->SetValue(config->GetAdminPassword(false));
+	m_txtMaxUsers->SetValue(wxString()<<config->GetMaxUsers());
+	m_txtMaxUsersIP->SetValue(wxString()<<config->GetMaxUsersIP());
 	m_txtServerName->SetValue(config->GetServerName());
 	m_txtHostname->SetValue(config->GetHostname());
 	m_chkPublicListEnabled->SetValue(config->GetPublicListEnabled());
@@ -345,6 +387,16 @@ bool ServerUIFrameConfig::SaveSettings()
 	if (!config->SetAdminPassword(m_txtAdminPassword->GetValue()))
 	{
 		ReportError(wxT("Invalid admin password"), m_txtAdminPassword);
+		return false;
+	}
+	if (!m_txtMaxUsers->GetValue().ToLong(&x) || !config->SetMaxUsers(x))
+	{
+		ReportError(wxT("Invalid max users"), m_txtMaxUsers);
+		return false;
+	}
+	if (!m_txtMaxUsersIP->GetValue().ToLong(&x) || !config->SetMaxUsersIP(x))
+	{
+		ReportError(wxT("Invalid max users per IP"), m_txtMaxUsersIP);
 		return false;
 	}
 	if (!config->SetServerName(m_txtServerName->GetValue()))

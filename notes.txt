@@ -33,7 +33,7 @@
 * gtk: cannot type into main canvas text box after using nicklist right click menu sometimes
 
 * file transfers
-* support for public listing
+* support for public listing -- sending of ip listing is all that's left
 * tray icon support
 * tab completion
 * /bind
@@ -42,15 +42,3 @@
 * hide /oper password when being typed or at least make sure doesn't go into history
 
 * hold ctrl to copy w/o formatting
-
-	wxString GetServerName() const;
-	wxString GetHostname() const;
-	bool GetPublicListEnabled() const;
-	wxString GetPublicListAuthentication(bool decrypt) const;
-	wxString GetPublicListComment() const;
-	
-	bool GetHTTPProxyEnabled() const;
-	wxString GetHTTPProxyHostname() const;
-	long GetHTTPProxyPort() const;
-	wxString GetHTTPProxyUsername() const;
-	wxString GetHTTPProxyPassword(bool decrypt) const;

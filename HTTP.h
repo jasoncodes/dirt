@@ -114,6 +114,7 @@ protected:
 	long m_chunk_remaining;
 	bool m_chunk_crlf_left;
 	bool m_transfer_complete;
+	bool m_connect_ok;
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -96,6 +96,8 @@ public:
 	long GetListenPort() const;
 	wxString GetUserPassword(bool decrypt) const;
 	wxString GetAdminPassword(bool decrypt) const;
+	long GetMaxUsers() const;
+	long GetMaxUsersIP() const;
 	
 	wxString GetServerName() const;
 	wxString GetHostname() const;
@@ -112,6 +114,8 @@ public:
 	bool SetListenPort(long port);
 	bool SetUserPassword(const wxString &password);
 	bool SetAdminPassword(const wxString &password);
+	bool SetMaxUsers(long max_users);
+	bool SetMaxUsersIP(long max_users_ip);
 
 	bool SetServerName(const wxString &server_name);
 	bool SetHostname(const wxString &hostname);
@@ -148,17 +152,23 @@ public:
 	virtual void ProcessConsoleInput(const wxString &input);
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
-	virtual bool IsRunning() = 0;
-	virtual long GetListenPort() = 0;
+	virtual bool IsRunning() const = 0;
+	virtual long GetListenPort() const = 0;
 	virtual ServerConfig* GetConfig() { return m_config; }
-	virtual size_t GetConnectionCount() { return m_connections.GetCount(); }
-	virtual ServerConnection* GetConnection(size_t index) { return m_connections.Item(index); }
-	virtual ServerConnection* GetConnection(const wxString &nickname);
+	virtual size_t GetConnectionCount() const { return m_connections.GetCount(); }
+	virtual ServerConnection* GetConnection(size_t index) const { return m_connections.Item(index); }
+	virtual ServerConnection* GetConnection(const wxString &nickname) const;
 	virtual void SendToAll(const wxString &context, const wxString &cmd, const ByteBuffer &data, bool with_nicks_only);
 	virtual ServerConnection* SendToNick(const wxString &nickname, const wxString &context, const wxString &cmd, const ByteBuffer &data);
-	virtual ByteBuffer GetNickList();
+	virtual ByteBuffer GetNickList() const;
 	virtual wxString GetServerNickname() const { return s_server_nickname; }
 	virtual void ResetPublicListUpdate(int num_secs_till_next_update) = 0;
+	virtual wxLongLong_t GetNextPublicListUpdateTick() const = 0;
+	virtual size_t GetUserCount() const;
+	virtual size_t GetAwayCount() const;
+	virtual long GetLowestIdleTime() const;
+	virtual time_t GetAverageLatency() const;
+	virtual size_t GetConnectionsFromHost(const wxString &hostname) const;
 
 protected:
 	virtual bool IsValidNickname(const wxString &nickname);
@@ -172,6 +182,7 @@ protected:
 	ServerConnectionArray m_connections;
 	ServerConfig *m_config;
 	static const wxString s_server_nickname;
+	size_t m_peak_users;
 
 private:
 	DECLARE_EVENT_TABLE()
