@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: IPInfo.cpp,v 1.6 2003-06-21 10:21:20 jason Exp $)
+RCS_ID($Id: IPInfo.cpp,v 1.7 2003-06-21 10:42:18 jason Exp $)
 
 #include "IPInfo.h"
 #include "util.h"
@@ -48,6 +48,8 @@ IPInfoEntry::IPInfoEntry()
 	#include <wx/msw/winundef.h>
 	#include <iphlpapi.h>
 
+	typedef DWORD (WINAPI *PFNGETIPADDRTABLE)(PMIB_IPADDRTABLE, PULONG, BOOL);
+
 #elif defined(__UNIX__)
 
 	#include <stdio.h>
@@ -74,8 +76,6 @@ IPInfoEntry::IPInfoEntry()
 	#include <arpa/inet.h>
 
 #endif
-
-typedef DWORD (WINAPI *PFNGETIPADDRTABLE)(PMIB_IPADDRTABLE, PULONG, BOOL);
 
 IPInfoEntryArray GetIPInfo()
 {
