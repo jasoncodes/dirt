@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.157 2004-06-26 06:08:52 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.158 2004-07-08 09:10:38 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarMDI.h"
@@ -1500,23 +1500,23 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHa
 {
 	ByteBufferHashMap details2(details);
 	wxString nickname = details2[wxT("NICK")];
-	AddLine(context, nickname + wxT(" is ") + details2[wxT("DETAILS")]);
-	AddLine(context, nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")]);
+	AddLine(context, nickname + wxT(" is ") + details2[wxT("DETAILS")], wxColour(0,0,128));
+	AddLine(context, nickname + wxT(" is connecting from ") + details2[wxT("HOSTNAME")], wxColour(0,0,128));
 	if (details2.find(wxT("ISADMIN")) != details2.end())
 	{
-		AddLine(context, nickname + wxT(" is a server administrator"));
+		AddLine(context, nickname + wxT(" is a server administrator"), wxColour(0,0,128));
 	}
 	if (details2.find(wxT("AWAY")) != details2.end())
 	{
-		AddLine(context, nickname + wxT(" is away: ") + details2[wxT("AWAY")]);
+		AddLine(context, nickname + wxT(" is away: ") + details2[wxT("AWAY")], wxColour(0,0,128));
 	}
 	if (details2.find(wxT("AWAYTIMEDIFFSTRING")) != details2.end())
 	{
-		AddLine(context, nickname + wxT(" has been away for ") + details2[wxT("AWAYTIMEDIFFSTRING")]);
+		AddLine(context, nickname + wxT(" has been away for ") + details2[wxT("AWAYTIMEDIFFSTRING")], wxColour(0,0,128));
 	}
-	AddLine(context, nickname + wxT(" is using ") + details2[wxT("AGENT")]);
-	AddLine(context, nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"));
-	AddLine(context, nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")]);
+	AddLine(context, nickname + wxT(" is using ") + details2[wxT("AGENT")], wxColour(0,0,128));
+	AddLine(context, nickname + wxT(" has been idle for ") + details2[wxT("IDLESTRING")] + wxT(" (") + details2[wxT("LATENCYSTRING")] + wxT(" lag)"), wxColour(0,0,128));
+	AddLine(context, nickname + wxT(" signed on at ") + details2[wxT("JOINTIMESTRING")], wxColour(0,0,128));
 	details2.erase(wxT("NICK"));
 	details2.erase(wxT("DETAILS"));
 	details2.erase(wxT("HOSTNAME"));
@@ -1534,9 +1534,9 @@ void ClientUIMDIFrame::OnClientWhoIs(const wxString &context, const ByteBufferHa
 	details2.erase(wxT("JOINTIMESTRING"));
 	for (ByteBufferHashMap::iterator i = details2.begin(); i != details2.end(); ++i)
 	{
-		AddLine(context, nickname + wxT(" ") + i->first + wxT(" = ") + i->second);
+		AddLine(context, nickname + wxT(" ") + i->first + wxT(" = ") + i->second, wxColour(0,0,128));
 	}
-	AddLine(context, nickname + wxT(" End of /WHOIS"));
+	AddLine(context, nickname + wxT(" End of /WHOIS"), wxColour(0,0,128));
 }
 
 void ClientUIMDIFrame::OnClientTransferNew(const FileTransfer &transfer)
