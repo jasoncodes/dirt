@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Client.cpp,v 1.20 2003-02-18 23:29:14 jason Exp $)
+RCS_ID($Id: Client.cpp,v 1.21 2003-02-20 13:02:45 jason Exp $)
 
 #include "Client.h"
 #include "util.h"
@@ -99,25 +99,6 @@ void Client::ProcessConsoleInput(const wxString &context, const wxString &input)
 		ASSERT_CONNECTED();
 		Disconnect();
 	}
-	/*else if (cmd == wxT("NICK"))
-	{
-		if (params.Length() == 0)
-		{
-			Output(wxT("*** Your nickname is ") + nickname);
-		}
-		else
-		{
-			if (socket->IsConnected())
-			{
-				SendData(wxT("*** ") + nickname + wxT(" is now known as ") + params);
-			}
-			else
-			{
-				Output(wxT("*** Your nickname is now ") + params);
-			}
-			nickname = params;
-		}
-	}*/
 	else if (cmd == wxT("NICK"))
 	{
 		ASSERT_CONNECTED();
