@@ -133,18 +133,32 @@ void LogViewerFrame::ResizeChildren()
 {
 
 	wxSize size = GetClientSize();
+
 	int x = m_sash1->GetSize().x;
 	int y = m_sash2->GetSize().y;
 
-	m_sash1->SetMinimumSizeX(128);
-	m_sash1->SetMaximumSizeX(size.x-128);
-	m_sash2->SetMinimumSizeY(64);
-	m_sash2->SetMaximumSizeY(size.y-64);
-	
-	m_sash1->SetSize(0,0,x, size.y);
-	m_sash2->SetSize(0,0,x-3, y);
-	m_dir->SetSize(0,0,x-3, y-3);
-	m_tree->SetSize(0,y,x-3,size.y-y);
+	static const int min_x1 = 128;
+	static const int min_x2 = 128;
+	static const int min_y1 = 64;
+	static const int min_y2 = 64;
+
+	m_sash1->SetMinimumSizeX(min_x1);
+	m_sash1->SetMaximumSizeX(size.x-min_x2);
+	m_sash2->SetMinimumSizeY(min_y1);
+	m_sash2->SetMaximumSizeY(size.y-min_y2);
+
+	x = wxMin(x, size.x-min_x2);
+	x = wxMax(x, min_x1);
+	y = wxMin(y, size.y-min_y2);
+	y = wxMax(y, min_y1);
+
+	int margin_x = m_sash1->GetEdgeMargin(wxSASH_RIGHT);
+	int margin_y = m_sash2->GetEdgeMargin(wxSASH_BOTTOM);
+
+	m_sash1->SetSize(0, 0, x, size.y);
+	m_sash2->SetSize(0, 0, x-margin_x, y);
+	m_dir->SetSize(0, 0, x-margin_x, y-margin_y);
+	m_tree->SetSize(0, y, x-margin_x, size.y-y);
 	m_log->SetSize(x, 0, size.x-x, size.y);
 
 }
