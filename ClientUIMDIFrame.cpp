@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.142 2004-03-14 09:00:02 jason Exp $)
+RCS_ID($Id: ClientUIMDIFrame.cpp,v 1.143 2004-03-24 08:02:21 jason Exp $)
 
 #include "ClientUIMDIFrame.h"
 #include "SwitchBarChild.h"
@@ -97,8 +97,16 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	m_flash = 0;
 	m_log_date_okay = false;
 	m_focused = true;
-	UpdateCaption();
+#ifdef __WXMSW__
+	m_hotkey_keycode = 0;
+	m_hotkey_mods = 0;
+#endif
 
+	m_client = new ClientDefault(this);
+	m_client->GetConfig().SetEventHandler(this, ID_CONFIG);
+
+	SetHotKey();
+	UpdateCaption();
 	SetIcon(wxIcon(dirt_xpm));
 
 	wxMenuBar *mnu = new wxMenuBar;
@@ -120,10 +128,6 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 
 	SetMenuBar(mnu);
 
-	m_client = new ClientDefault(this);
-
-	m_client->GetConfig().SetEventHandler(this, ID_CONFIG);
-
 	ClientUIMDICanvas *canvas = new ClientUIMDICanvas(this, wxT("[Main]"), ChannelCanvas);
 	NewWindow(canvas, true);
 	m_lstNickList = canvas->GetNickList();
@@ -133,12 +137,6 @@ ClientUIMDIFrame::ClientUIMDIFrame()
 	config->Read(wxT("/Client/WindowState/NickList"), &nicklist_width, nicklist_width);
 	canvas->GetNickList()->GetParent()->SetSize(nicklist_width, -1);
 	canvas->ResizeChildren();
-
-#ifdef __WXMSW__
-	m_hotkey_keycode = 0;
-	m_hotkey_mods = 0;
-#endif
-	SetHotKey();
 
 	SetFonts();
 
