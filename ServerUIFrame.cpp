@@ -6,7 +6,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: ServerUIFrame.cpp,v 1.14 2003-02-15 11:50:38 jason Exp $)
+RCS_ID($Id: ServerUIFrame.cpp,v 1.15 2003-02-15 12:03:26 jason Exp $)
 
 #include "ServerUIFrame.h"
 #include "ServerDefault.h"
@@ -310,7 +310,7 @@ void ServerUIFrame::UpdateConnectionList()
 		SetItemText(m_lstConnections, i, 2, conn->GetUserDetails());
 		SetItemText(m_lstConnections, i, 3, conn->GetAwayMessage());
 		SetItemText(m_lstConnections, i, 4, conn->GetIdleTime() > -1 ? SecondsToMMSS(conn->GetIdleTime()) : "N/A");
-		SetItemText(m_lstConnections, i, 5, conn->GetLatency() > -1 ? AddCommas(conn->GetLatency()) + " ms" : "N/A");
+		SetItemText(m_lstConnections, i, 5, conn->GetLatency() > -1 ? AddCommas((off_t)conn->GetLatency()) + " ms" : "N/A");
 		SetItemText(m_lstConnections, i, 6, conn->GetUserAgent());
 		SetItemText(m_lstConnections, i, 7, FormatISODateTime(conn->GetJoinTime()));
 	}
