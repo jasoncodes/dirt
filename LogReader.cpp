@@ -6,10 +6,13 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: LogReader.cpp,v 1.5 2003-03-18 13:37:06 jason Exp $)
+RCS_ID($Id: LogReader.cpp,v 1.6 2003-03-19 07:07:59 jason Exp $)
 
 #include "LogReader.h"
 #include <wx/filename.h>
+
+// todo: a 2nd pass is needed during SetPrivateKey to read
+// properties that are encrypted
 
 LogReader::LogReader(const wxString &filename)
 {
@@ -17,10 +20,31 @@ LogReader::LogReader(const wxString &filename)
 	{
 		m_first_pass = true;
 		Reset();
-		// read public key + properties here // not implemented yet
+		while (!Eof())
+		{
+			LogEntryType let = GetNext();
+			wxASSERT(let >= letInvalid);
+			switch (let)
+			{
+				case letPublicKey:
+					if (m_public_key.Length() > 0 && m_public_key != m_entry)
+					{
+						m_file.Close();
+						return;
+					}
+					m_public_key = m_entry;
+					break;
+				case letProperty:
+					if (m_public_key.Length() == 0)
+					{
+						ParsePropertyEntry(m_entry);
+					}
+					break;
+			}
+		}
+		m_first_pass = false;
+		Reset();
 	}
-	m_first_pass = false;
-	Reset();
 }
 
 LogReader::~LogReader()
@@ -56,6 +80,33 @@ bool LogReader::SetPrivateKey(const wxString &private_key)
 		if (success)
 		{
 			m_private_key = private_key;
+			m_first_pass = true;
+			off_t saved_pos = m_file.Tell();
+			Reset();
+			m_public_key = ByteBuffer();
+			while (!Eof())
+			{
+				LogEntryType let = GetNext();
+				wxASSERT(let >= letInvalid);
+				switch (let)
+				{
+					case letPublicKey:
+						m_public_key = m_entry;
+						break;
+					case letProperty:
+						{
+							ByteBuffer data = m_entry;
+							if (m_public_key.Length())
+							{
+								data = m_crypt.AESDecrypt(data);
+							}
+							ParsePropertyEntry(data);
+						}
+						break;
+				}
+			}
+			m_first_pass = false;
+			m_file.Seek(saved_pos);
 		}
 		return success;
 	}
@@ -76,10 +127,10 @@ ByteBuffer LogReader::GetProperty(const wxString &name) const
 	return (i != m_properties.end()) ? i->second : ByteBuffer();
 }
 
-bool LogReader::IsEof() const
+bool LogReader::Eof() const
 {
 	wxASSERT(Ok());
-	return m_file.Eof();
+	return !Ok() || m_file.Eof();
 }
 
 void LogReader::Reset()
@@ -100,11 +151,184 @@ off_t LogReader::GetLength() const
 	return m_file.Length();
 }
 
-LogEntryType LogReader::GetNext(); // not implemented yet
+LogEntryType LogReader::GetNext()
+{
+	do
+	{
+		ByteBuffer data = Read();
+		if (data.Length() >= 2)
+		{
+			const byte *ptr = data.LockRead();
+			m_entry_type = (LogEntryType)BytesToUint16(ptr, 2);
+			m_entry = ByteBuffer(ptr+2, data.Length() - 2);
+			data.Unlock();
+			if (m_entry_type == letBlockKey)
+			{
+				if (m_public_key.Length() && m_private_key.Length())
+				{
+					try
+					{
+						data = Crypt::RSADecrypt(m_private_key, m_entry);
+						m_crypt.SetAESDecryptKey(data);
+					}
+					catch (...)
+					{
+					}
+				}
+			}
+		}
+		else
+		{
+			m_entry_type = letInvalid;
+			m_entry = ByteBuffer();
+			break;
+		}
+	}
+	while (m_entry_type == letBlockKey ||
+		(!m_first_pass && m_entry_type != letText && m_entry_type != letSeparator));
+	return m_entry_type;
+}
 
-wxString LogReader::GetText(); // not implemented yet
+ByteBuffer LogReader::GetTextHelper()
+{
+	wxASSERT(m_entry_type == letText);
+	ByteBuffer data = m_entry;
+	if (m_public_key.Length() && m_private_key.Length())
+	{
+		data = m_crypt.AESDecrypt(data);
+	}
+	if (data.Length() > 4)
+	{
+		return data;
+	}
+	else
+	{
+		wxFAIL_MSG(wxT("Text entry must be at least 4 bytes"));
+		return wxEmptyString;
+	}
+}
 
-ByteBuffer LogReader::Read(); // not implemented yet
+wxString LogReader::GetText()
+{
+	ByteBuffer buff = GetTextHelper();
+	if (buff.Length() > 4)
+	{
+		const byte *ptr = buff.LockRead();
+		size_t data_len = BytesToUint16(ptr, 2);
+		if (data_len+4 > buff.Length())
+		{
+			buff.Unlock();
+			return wxEmptyString;
+		}
+		size_t text_len = BytesToUint16(ptr + 2 + data_len, 2);
+		if (data_len+text_len+4 > buff.Length())
+		{
+			buff.Unlock();
+			return wxEmptyString;
+		}
+		ByteBuffer text(ptr + 2 + data_len + 2, text_len);
+		buff.Unlock();
+		return text;
+	}
+	return wxEmptyString;
+}
+
+wxColour LogReader::GetTextColour()
+{
+	ByteBuffer buff = GetTextHelper();
+	if (buff.Length() > 4)
+	{
+		const byte *ptr = buff.LockRead();
+		size_t data_len = BytesToUint16(ptr, 2);
+		if (data_len+4 > buff.Length())
+		{
+			buff.Unlock();
+			return wxColour();
+		}
+		ByteBuffer data(ptr + 2, data_len);
+		buff.Unlock();
+		if (data_len >= 3)
+		{
+			ptr = data.LockRead();
+			wxColour colour(ptr[0], ptr[1], ptr[2]);
+			data.Unlock();
+			return colour;
+		}
+	}
+	return wxColour();
+}
+
+bool LogReader::GetTextConvertURLs()
+{
+	ByteBuffer buff = GetTextHelper();
+	if (buff.Length() > 4)
+	{
+		const byte *ptr = buff.LockRead();
+		size_t data_len = BytesToUint16(ptr, 2);
+		if (data_len+4 > buff.Length())
+		{
+			buff.Unlock();
+			return false;
+		}
+		ByteBuffer data(ptr + 2, data_len);
+		buff.Unlock();
+		if (data_len >= 4)
+		{
+			ptr = data.LockRead();
+			byte flags = ptr[3];
+			data.Unlock();
+			return (flags & 1) != 0;
+		}
+	}
+	return false;
+}
+
+ByteBuffer LogReader::Read()
+{
+	wxASSERT(Ok() && !Eof());
+	ByteBuffer buff(2);
+	off_t bytes_read = m_file.Read(buff.LockReadWrite(), buff.Length());
+	buff.Unlock();
+	if (bytes_read != (off_t)buff.Length())
+	{
+		return ByteBuffer();
+	}
+	wxUint16 len = BytesToUint16(buff.LockRead(), buff.Length());
+	buff.Unlock();
+	buff = ByteBuffer(len);
+	bytes_read = m_file.Read(buff.LockReadWrite(), buff.Length());
+	buff.Unlock();
+	if (bytes_read != (off_t)buff.Length())
+	{
+		return ByteBuffer();
+	}
+	return buff;
+}
+
+void LogReader::ParsePropertyEntry(const ByteBuffer &data)
+{
+	if (data.Length() > 4)
+	{
+		const byte *ptr = data.LockRead();
+		size_t name_len = BytesToUint16(ptr, 2);
+		if (name_len+4 > data.Length())
+		{
+			data.Unlock();
+			return;
+		}
+		size_t value_len = BytesToUint16(ptr + 2 + name_len, 2);
+		if (name_len+value_len+4 > data.Length())
+		{
+			data.Unlock();
+			return;
+		}
+		ByteBuffer name = ByteBuffer(ptr+2, name_len);
+		ByteBuffer value = ByteBuffer(ptr + 2 + name_len + 2, value_len);
+		m_properties[name] = value;
+		data.Unlock();
+	}
+}
+
 
 //	wxFile m_file;
 //	Crypt m_crypt;

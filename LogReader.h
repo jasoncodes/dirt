@@ -15,6 +15,7 @@ public:
 	virtual ~LogReader();
 
 	static wxString GetDefaultLogDirectory();
+	static bool ParseFilename(const wxString &filename, wxString &prefix, wxDateTime &date, wxString &suffix);
 
 	virtual bool Ok() const;
 
