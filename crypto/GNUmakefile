@@ -56,7 +56,7 @@ asn.cpp       eccrypto.cpp  mars.cpp      randpool.cpp  tea.cpp \
 base64.cpp    ecp.cpp       marss.cpp     rc2.cpp       \
 basecode.cpp  elgamal.cpp   md2.cpp       rc5.cpp       tftables.cpp \
               eprecomp.cpp  md4.cpp       rc6.cpp       tiger.cpp \
-bfinit.cpp    esign.cpp     md5.cpp       rdtables.cpp  tigertab.cpp \ 
+bfinit.cpp    esign.cpp     md5.cpp       rdtables.cpp  tigertab.cpp \
 blowfish.cpp  files.cpp     md5mac.cpp    trdlocal.cpp \
 blumshub.cpp  filters.cpp   misc.cpp      rijndael.cpp  twofish.cpp \
 cast.cpp      fips140.cpp   modes.cpp     ripemd.cpp     \
