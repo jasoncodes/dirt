@@ -1,3 +1,9 @@
+multiple connections per client window?
+
+repeat alert sound every x seconds
+
+OS X, maybe more: nicklist width not preserved
+
 prompt when pasting multiple lines
 
 win32: http://jason.darktech.org/~jason/dirt_options_render_problem.png
