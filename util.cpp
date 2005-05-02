@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.101 2004-07-20 18:13:38 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.102 2005-05-02 04:01:02 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -830,16 +830,19 @@ wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value,
 
 wxString GetOSDescription()
 {
-#if defined(__UNIX__) && !defined(__WXMAC__)
+#if defined(__UNIX__)
 	struct utsname name;
 	if (uname (&name) == -1)
 	{
 		return wxEmptyString;
 	}
 	wxString str;
-	str << wxString(name.sysname, wxConvLocal)
-	    << wxT(" ")
-	    << wxString(name.release, wxConvLocal);
+	str
+		<< wxString(name.machine, wxConvLocal)
+		<< wxT(" ")
+		<< wxString(name.sysname, wxConvLocal)
+		<< wxT(" ")
+		<< wxString(name.release, wxConvLocal);
 	return str;
 #else
 	return wxGetOsDescription();
