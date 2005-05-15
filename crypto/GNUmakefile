@@ -52,7 +52,7 @@ CXXFLAGS += -pipe
 endif
 
 ifeq ($(UNAME),Darwin)
-AR = libtool
+AR = /usr/bin/libtool
 ARFLAGS = -static -o
 CXX = c++
 CXXFLAGS += -D__pic__
