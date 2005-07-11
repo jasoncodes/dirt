@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Splash.cpp,v 1.40 2004-11-23 09:31:01 jason Exp $)
+RCS_ID($Id: Splash.cpp,v 1.41 2005-07-11 08:29:58 jason Exp $)
 
 #include "Splash.h"
 #include "ClientUIMDIFrame.h"
@@ -582,11 +582,14 @@ Splash::Splash()
 
 	Show();
 
+	wxGetApp().SetSplash(this);
+
 }
 
 Splash::~Splash()
 {
 	delete[] m_accels;
+	wxGetApp().SetSplash(NULL);
 }
 
 void Splash::OnButton(wxCommandEvent &event)

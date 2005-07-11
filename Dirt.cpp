@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: Dirt.cpp,v 1.59 2005-01-08 02:25:48 jason Exp $)
+RCS_ID($Id: Dirt.cpp,v 1.60 2005-07-11 08:29:58 jason Exp $)
 
 #include <stdio.h>
 #include <wx/cmdline.h>
@@ -50,6 +50,12 @@ IMPLEMENT_APP(DirtApp)
 BEGIN_EVENT_TABLE(DirtApp, wxApp)
 	EVT_IDLE(DirtApp::OnIdle)
 END_EVENT_TABLE()
+
+#ifdef __WXMAC__
+static OSErr AEHandleGURL(const AppleEvent *theAppleEvent,
+                          AppleEvent* reply,
+                          long handlerRefCon);
+#endif
 
 #ifdef __WIN32__
 
@@ -203,6 +209,7 @@ bool DirtApp::IsConsole()
 DirtApp::DirtApp()
 {
 	m_client = NULL;
+	m_splash = NULL;
 }
 
 bool DirtApp::OnInit()
@@ -312,6 +319,7 @@ bool DirtApp::OnInit()
 		io_object_t iterator;
 		s_root_port = IORegisterForSystemPower(0, &notify, DirtApp::MacPowerCallback, &iterator);
 		CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notify), kCFRunLoopCommonModes);
+		AEInstallEventHandler('GURL', 'GURL', NewAEEventHandlerUPP(AEHandleGURL), 0, FALSE);
 	#endif
 
 	return true;
@@ -637,6 +645,34 @@ void DirtApp::MacPowerCallback(void *x, io_service_t y, natural_t message_type, 
 			break;
 	}
 	IOAllowPowerChange(s_root_port, (long)message_argument);
+}
+
+static OSErr AEHandleGURL(const AppleEvent *theAppleEvent, 
+                          AppleEvent* reply, 
+                          long handlerRefCon)
+{
+
+    OSErr   err;  
+    DescType  returnedType;  
+    Size    actualSize;  
+    char    URLString[255];   
+  
+    if ((err = AEGetParamPtr(theAppleEvent, keyDirectObject, typeChar, &returnedType,   
+                             URLString, sizeof(URLString)-1, &actualSize)) != noErr){  
+        return err;  
+    }  
+  
+	URLString[actualSize] = 0;    // Terminate the C string  
+
+	ClientUIMDIFrame *ui = new ClientUIMDIFrame;
+	URL url = wxString(URLString, wxConvLocal);
+	ui->GetClient()->Connect(url, false);
+	if (wxGetApp().GetSplash() != NULL) wxGetApp().GetSplash()->Close();
+
+	puts(URLString);
+  
+	return noErr;  
+
 }
 
 #endif

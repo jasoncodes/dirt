@@ -33,12 +33,14 @@
 	#include <mach/mach_init.h>
 	#include <IOKit/pwr_mgt/IOPMLib.h>
 	#include <IOKit/IOMessage.h>
+	#include <AppleEvents.h>
 #endif
 
 #include <wx/file.h>
 
 class Console;
 class Client;
+class Splash;
 
 enum AppMode
 {
@@ -70,6 +72,8 @@ public:
 	wxString GetDefaultQuitMessage() { return m_default_quit_message; }
 
 	void SetClient(Client *client) { wxASSERT(!m_client && client); m_client = client; }
+	void SetSplash(Splash *splash) { m_splash = splash; }
+	Splash* GetSplash() const { return m_splash; }
 
 protected:
 	bool ProcessCommandLine();
@@ -87,6 +91,7 @@ protected:
 	wxString m_config_filename;
 	wxString m_default_quit_message;
 	Client *m_client;
+	Splash *m_splash;
 	wxString m_pid_filename;
 	wxFile m_pid_file;
 
