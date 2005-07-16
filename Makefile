@@ -163,7 +163,7 @@ $(BUNDLE)/Resources/wxmac.icns: res/dirt.icns
 
 $(BUNDLE)/PkgInfo:
 	@install -d `dirname $@`
-	echo -n "APPL????" > $@
+	echo -n "APPLDirt" > $@
 
 $(BUNDLE)/Info.plist: res/Info.plist.in
 	@install -d `dirname $@`
