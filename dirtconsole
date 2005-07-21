@@ -5,6 +5,7 @@ then
 	true
 else
 	echo dirtconsole: Xvfb not found!
+	echo "    try running \"apt-get install xvfb xbase-fonts\"."
 	exit 1
 fi
 
