@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: util.cpp,v 1.102 2005-05-02 04:01:02 jason Exp $)
+RCS_ID($Id: util.cpp,v 1.103 2005-07-24 11:56:15 jason Exp $)
 
 #include "util.h"
 #include <wx/datetime.h>
@@ -827,6 +827,9 @@ wxString CaseInsensitiveReplace(const wxString &text, const wxString &old_value,
 #ifdef __UNIX__
 #include <sys/utsname.h>
 #endif
+#ifdef __WXMAC__
+#include <CoreServices/CoreServices.h>
+#endif
 
 wxString GetOSDescription()
 {
@@ -843,6 +846,17 @@ wxString GetOSDescription()
 		<< wxString(name.sysname, wxConvLocal)
 		<< wxT(" ")
 		<< wxString(name.release, wxConvLocal);
+
+#ifdef __WXMAC__
+	signed long MacVersion;
+	if (Gestalt(gestaltSystemVersion, &MacVersion) == noErr)
+	{
+		wxString tmp = wxString::Format(wxT("%x"), MacVersion);
+		str = wxString::Format(wxT("Mac OS X %c%c.%c.%c ("),
+			tmp[0], tmp[1], tmp[2], tmp[3]) + str + wxT(")");
+	}
+#endif
+
 	return str;
 #else
 	return wxGetOsDescription();

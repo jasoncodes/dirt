@@ -28,7 +28,7 @@
 	#include "wx/wx.h"
 #endif
 #include "RCS.h"
-RCS_ID($Id: utilgui.cpp,v 1.3 2005-01-02 11:48:19 jason Exp $)
+RCS_ID($Id: utilgui.cpp,v 1.4 2005-07-24 11:56:15 jason Exp $)
 
 #include "utilgui.h"
 
@@ -458,7 +458,30 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 		return true;
 
 	#else
-		
+
+		wxArrayString data = SplitQuotedString(filename, wxT(" "));
+
+		wxChar **args = new wxChar*[data.GetCount()+1];
+		args[data.GetCount()] = 0;
+		for (int i = 0; i < data.GetCount(); ++i)
+		{
+			args[i] = new wxChar[data[i].Length()+1];
+			args[i][data[i].Length()] = 0;
+			wxStrcpy(args[i], data[i].c_str());
+		}
+		bool ok = wxExecute(args) != 0;
+		for (int i = 0; i < data.GetCount(); ++i)
+		{
+			delete args[i];
+		}
+		delete[] args;
+		if (show_error)
+		{
+			wxMessageBox(wxT("Error executing command:\n\n") + filename);
+		}
+		return ok;
+
+/*		
 		wxString ext = wxFileName(filename).GetExt();
 		wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
 		if ( !ft )
@@ -508,6 +531,7 @@ bool OpenFile(wxWindow *parent, const wxString &filename, bool show_error)
 		}
 				
 		return true;
+*/
 
 	#endif
 
