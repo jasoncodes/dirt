@@ -1,11 +1,25 @@
 <project name="Dirt" default="dist" basedir=".">
 
 	<description>Dirt Secure Chat build file</description>
-
+	
 	<property name="src" location="src" />
 	<property name="build" location="build" />
 	<property name="dist" location="dist" />
 	<property name="res" location="res" />
+	<property name="lib" location="lib" />
+
+	<loadproperties srcFile="${res}/strings.properties">
+		<filterchain>
+			<linecontains>
+				<contains value="version=" />
+			</linecontains>
+		</filterchain>
+	</loadproperties>
+	
+	<taskdef
+		name="jarbundler"
+		classpath="${lib}/jarbundler-1.4.jar"
+		classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 	
 	<target name="init">
 		<tstamp/>
@@ -13,11 +27,16 @@
 	</target>
 	
 	<target name="compile" depends="init">
-		<javac srcdir="${src}" destdir="${build}" compiler="javac1.5" deprecation="on" />
+		<javac
+			srcdir="${src}"
+			destdir="${build}"
+			compiler="javac1.5"
+			target="1.5"
+			deprecation="on" />
 	</target>
 	
-	<target name="dist" depends="compile">
-		<mkdir dir="${dist}"/>
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist}" />
 		<jar jarfile="${dist}/Dirt.jar" basedir="${build}">
 			<fileset dir="${build}" />
 			<fileset file="${res}/strings.properties" />
@@ -27,6 +46,27 @@
 			</manifest>
 		</jar>
 	</target>
+	
+	<target name="bundle" depends="jar">
+		<delete dir="${dist}/Dirt.app" />
+		<jarbundler
+			dir="${dist}"
+			jars="${dist}/Dirt.jar"
+			icon="${res}/Dirt.icns"
+			mainclass="Dirt"
+			name="Dirt"
+			aboutmenuname="Dirt Secure Chat"
+			antialiasedtext="true"
+			bundleid="au.com.gslabs.dirt"
+			infostring="${version}"
+			screenmenu="true"
+			signature="????"
+			version="${version}"
+			jvmversion="1.5+"
+			/>
+	</target>
+	
+	<target name="dist" depends="jar,bundle" />
 	
 	<target name="clean">
 		<delete dir="${build}"/>
