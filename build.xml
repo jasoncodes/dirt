@@ -31,7 +31,7 @@
 			srcdir="${src}"
 			destdir="${build}"
 			compiler="javac1.5"
-			target="1.4"
+			target="1.5"
 			deprecation="on" />
 	</target>
 	
@@ -62,7 +62,7 @@
 			screenmenu="true"
 			signature="????"
 			version="${version}"
-			jvmversion="1.4+"
+			jvmversion="1.5+"
 			/>
 	</target>
 	
