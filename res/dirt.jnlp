@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+<jnlp spec="0.2 1.0" codebase="http://dirt.gslabs.com.au/" href="dirt.jnlp">
+	<information> 
+		<title>Dirt Secure Chat</title> 
+		<vendor>General Software Laboratories</vendor>
+		<homepage href="http://dirt.gslabs.com.au/" />
+		<description>Dirt Secure Chat</description>
+		<description kind="short">Dirt Secure Chat</description>
+		<icon href="dirt.png" />
+		<offline-allowed /> 
+	</information> 
+	<resources>
+		<j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se" />
+		<j2se version="1.4+"/>
+		<jar href="dirt.jar" main="true" download="eager" />
+		<property name="apple.laf.useScreenMenuBar" value="true" />
+		<property name="com.apple.mrj.application.apple.menu.about.name" value="Dirt Secure Chat" />
+	</resources>
+	<application-desc main-class="Dirt" />
+</jnlp> 
