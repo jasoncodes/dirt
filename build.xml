@@ -18,7 +18,7 @@
 	
 	<taskdef
 		name="jarbundler"
-		classpath="${lib}/jarbundler-1.4.jar"
+		classpath="${lib}/ant/jarbundler-1.4.jar"
 		classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 	
 	<target name="init">

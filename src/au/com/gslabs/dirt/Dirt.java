@@ -19,7 +19,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import com.apple.eawt.*;
+////import com.apple.eawt.*;
 
 public class Dirt extends JFrame {
 	
@@ -27,7 +27,7 @@ public class Dirt extends JFrame {
 	protected ResourceBundle resbundle;
 	protected AboutBox aboutBox;
 	protected PrefPane prefs;
-	private Application fApplication = Application.getApplication();
+	////private Application fApplication = Application.getApplication();
 	protected Action newAction, openAction, closeAction, saveAction, saveAsAction,
 		undoAction, cutAction, copyAction, pasteAction, clearAction, selectAllAction;
 	static final JMenuBar mainMenuBar = new JMenuBar();	
@@ -46,6 +46,7 @@ public class Dirt extends JFrame {
 		createActions();
 		addMenus();
 		
+		/**
 		fApplication.setEnabledPreferencesMenu(true);
 		fApplication.addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
 			public void handleAbout(ApplicationEvent e) {
@@ -71,11 +72,13 @@ public class Dirt extends JFrame {
 				quit(e);
 			}
 		});
+		**/
 		
 		setSize(310, 150);
 		setVisible(true);
 	}
 	
+	/**
 	public void about(ApplicationEvent e)
 	{
 		aboutBox.setResizable(false);
@@ -91,6 +94,7 @@ public class Dirt extends JFrame {
 	public void quit(ApplicationEvent e) {	
 		System.exit(0);
 	}
+	**/
 	
 	public void createActions() {
 		int shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
