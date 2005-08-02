@@ -3,6 +3,9 @@ import java.util.ResourceBundle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.io.File;
 
 ////import com.apple.eawt.*;
 import org.jdesktop.jdic.misc.Alerter;
