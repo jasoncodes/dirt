@@ -77,7 +77,13 @@
 		<copy file="${lib}/one-jar/patch/JarClassLoader.java" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.java" />
 		<copy file="${lib}/one-jar/patch/JarClassLoader.class" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.class" />
 		<jar jarfile="${dist}/Dirt.jar">
-			<fileset dir="${build}/final" excludes="doc/**" />
+			<fileset
+				dir="${build}/final"
+				excludes="doc/** META-INF/**" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
+			</manifest>
 		</jar>
 	</target>
 	
