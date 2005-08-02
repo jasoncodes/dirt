@@ -1,25 +1,11 @@
-//
-//  Dirt.java
-//  Dirt
-//
-//  Created by Jason Weathered on 2005-07-31.
-//  Copyright (c) 2005 General Software Laboratories. All rights reserved.
-//
-//	For information on setting Java configuration information, including 
-//	setting Java properties, refer to the documentation at
-//		http://developer.apple.com/techpubs/java/java.html
-//
-
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
+import java.awt.event.*;
 import javax.swing.*;
 
 ////import com.apple.eawt.*;
+import org.jdesktop.jdic.misc.Alerter;
 
 public class Dirt extends JFrame {
 	
@@ -41,10 +27,28 @@ public class Dirt extends JFrame {
 		// New localities can be added by adding additional properties files.
 		resbundle = ResourceBundle.getBundle ("strings", Locale.getDefault());
 		setTitle(resbundle.getString("frameConstructor"));
-		this.getContentPane().setLayout(null);
 		
 		createActions();
 		addMenus();
+		
+		this.addWindowListener(new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent event)
+			{
+				onClose();
+			}
+		});	
+		
+		JButton cmdTest = new JButton("Test");
+		cmdTest.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent newEvent)
+			{
+				cmdTest_Click();
+			}
+		});
+		this.getContentPane().add(cmdTest);
+	
 		
 		/**
 		fApplication.setEnabledPreferencesMenu(true);
@@ -76,6 +80,48 @@ public class Dirt extends JFrame {
 		
 		setSize(310, 150);
 		setVisible(true);
+	}
+	
+	protected void cmdTest_Click()
+	{
+		new Thread(
+			new Runnable()
+			{
+				public void run()
+				{
+					try
+					{
+						Thread.currentThread().sleep(1000);
+					}
+					catch (Exception ex)
+					{
+					}
+					Alert();
+				}
+			}).start();
+	}
+	
+	protected void Alert()
+	{
+		try
+		{
+			System.out.println("calling");
+			Alerter alerter = Alerter.newInstance();
+			alerter.alert(this);
+		}
+		catch (Exception e)
+		{
+			System.err.println("Couldn't load the library.");
+		}
+	}
+	
+	protected void onClose()
+	{
+		dispose();
+		if (!Util.isMac())
+		{
+			System.exit(0);
+		}
 	}
 	
 	/**
@@ -146,14 +192,7 @@ public class Dirt extends JFrame {
 		
 		setJMenuBar (mainMenuBar);
 	}
-	
-	public void paint(Graphics g) {
-		super.paint(g);
-		g.setColor(Color.blue);
-		g.setFont (font);
-		g.drawString(resbundle.getString("message"), 40, 80);
-	}
-	
+		
 	public class newActionClass extends AbstractAction {
 		public newActionClass(String text, KeyStroke shortcut) {
 			super(text);
