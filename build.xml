@@ -35,6 +35,18 @@
 			target="1.5"
 			deprecation="on"
 			classpath="${lib}/win32/jdic_misc.jar" />
+		<java classname="com.rc.retroweaver.Weaver">
+			<arg value="-source" />
+			<arg value="${build}/main" />
+			<classpath>
+				<fileset dir="${lib}/retroweaver/lib">
+					<include name="**/*" />
+				</fileset>
+				<fileset dir="${lib}/retroweaver/release">
+					<include name="**/*" />
+				</fileset>
+			</classpath>
+		</java>
 	</target>
 	
 	<target name="jar-main" depends="compile">
@@ -50,20 +62,22 @@
 	</target>
 	
 	<target name="jar" depends="jar-main">
+		<delete dir="${build}/final" />
 		<mkdir dir="${build}/final" />
 		<mkdir dir="${build}/final/main" />
 		<mkdir dir="${build}/final/lib" />
 		<mkdir dir="${build}/final/lib/mac_ppc" />
 		<copy file="${build}/main.jar" todir="${build}/final/main" />
+		<copy file="${lib}/retroweaver/release/retroweaver.jar" todir="${build}/final/lib" />
 		<copy file="${lib}/mac_ppc/jdic_misc.jar" todir="${build}/final/lib/mac_ppc" />
 		<mkdir dir="${dist}" />
-		<copy file="${lib}/one-jar-boot.jar" tofile="${dist}/Dirt.jar" />
-		<copy file="${lib}/one-jar_Boot.java" tofile="${build}/final/com/simontuffs/onejar/Boot.java" />
-		<copy file="${lib}/one-jar_Boot.class" tofile="${build}/final/com/simontuffs/onejar/Boot.class" />
-		<copy file="${lib}/one-jar_JarClassLoader.java" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.java" />
-		<copy file="${lib}/one-jar_JarClassLoader.class" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.class" />
-		<jar jarfile="${dist}/Dirt.jar" update="true">
-			<fileset dir="${build}/final" />
+		<unjar src="${lib}/one-jar/one-jar-boot.jar" dest="${build}/final" />
+		<copy file="${lib}/one-jar/patch/Boot.java" tofile="${build}/final/com/simontuffs/onejar/Boot.java" />
+		<copy file="${lib}/one-jar/patch/Boot.class" tofile="${build}/final/com/simontuffs/onejar/Boot.class" />
+		<copy file="${lib}/one-jar/patch/JarClassLoader.java" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.java" />
+		<copy file="${lib}/one-jar/patch/JarClassLoader.class" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.class" />
+		<jar jarfile="${dist}/Dirt.jar">
+			<fileset dir="${build}/final" excludes="doc/**" />
 		</jar>
 	</target>
 	
@@ -82,9 +96,18 @@
 			screenmenu="true"
 			signature="????"
 			version="${version}"
-			jvmversion="1.5+"
+			jvmversion="1.4+"
 			extraclasspath="/System/Library/Java/"
 			/>
+		<tar destfile="${dist}/DirtMac.tbz" compression="bzip2">
+			<tarfileset dir="${dist}" mode="755">
+				<include name="Dirt.app/Contents/MacOS/JavaApplicationStub" />
+			</tarfileset>
+			<tarfileset dir="${dist}">
+				<include name="Dirt.app/**" />
+				<exclude name="Dirt.app/Contents/MacOS/JavaApplicationStub" />
+			</tarfileset>
+		</tar>
 	</target>
 	
 	<target name="dist" depends="jar,bundle" />

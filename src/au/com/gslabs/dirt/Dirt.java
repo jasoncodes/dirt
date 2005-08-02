@@ -120,9 +120,10 @@ public class Dirt extends JFrame {
 	
 	protected void onClose()
 	{
-		dispose();
+		setVisible(false);
 		if (!Util.isMac())
 		{
+			dispose();
 			System.exit(0);
 		}
 	}
