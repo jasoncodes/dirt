@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.io.File;
 import java.lang.reflect.Method;
+import au.com.gslabs.dirt.jni.Win32;
 
 ////import com.apple.eawt.*;
 
@@ -110,11 +111,19 @@ public class Dirt extends JFrame {
 	{
 		try
 		{
-			Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
-			Method new_instance = c.getMethod("newInstance", (Class[])null);
-			Object alerter = new_instance.invoke(null, (Object[])null);
-			Method do_alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
-			do_alert.invoke(alerter, new Object[] { this });
+			if (Util.isWin())
+			{
+				Win32 win32 = new Win32();
+				win32.alert(this);
+			}
+			else
+			{
+				Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
+				Method new_instance = c.getMethod("newInstance", (Class[])null);
+				Object alerter = new_instance.invoke(null, (Object[])null);
+				Method alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
+				alert.invoke(alerter, new Object[] { this });
+			}
 		}
 		catch (Exception e)
 		{
