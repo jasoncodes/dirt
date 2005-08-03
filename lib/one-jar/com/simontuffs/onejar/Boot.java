@@ -1,3 +1,4 @@
+// Patched by Jason Weathered <jason@gslabs.com.au>
 /*
  * Copyright (c) 2004, P. Simon Tuffs (simon@simontuffs.com)
  * All rights reserved.
@@ -110,10 +111,10 @@ public class Boot {
 		if (false) {
 			// What are the system properties.
 	    	Properties props = System.getProperties();
-	    	Enumeration enum = props.keys();
+	    	Enumeration propertyNames = props.keys();
 	    	
-	    	while (enum.hasMoreElements()) {
-	    		String key = (String)enum.nextElement();
+	    	while (propertyNames.hasMoreElements()) {
+	    		String key = (String)propertyNames.nextElement();
 	    		System.out.println(key + "=" + props.get(key));
 	    	}
 		}
@@ -144,9 +145,9 @@ public class Boot {
 				properties.load(is);
 			} 
 			// Set system properties only if not already specified.
-			Enumeration enum = properties.propertyNames();
-			while (enum.hasMoreElements()) {
-				String name = (String)enum.nextElement();
+			Enumeration propertyNames = properties.propertyNames();
+			while (propertyNames.hasMoreElements()) {
+				String name = (String)propertyNames.nextElement();
 				if (System.getProperty(name) == null) {
 					System.setProperty(name, properties.getProperty(name));
 				}
@@ -174,10 +175,15 @@ public class Boot {
 		// If no main-class specified, check the manifest of the main jar for
 		// a Boot-Class attribute.
 		if (mainClass == null) {
-	    	// Hack to obtain the name of this jar file.
-	    	String jar = System.getProperty(JarClassLoader.JAVA_CLASS_PATH);
-	    	JarFile jarFile = new JarFile(jar);
-	    	Manifest manifest = jarFile.getManifest();
+		    	// Hack to obtain the name of this jar file.
+			String jar = System.getProperty(JarClassLoader.JAVA_CLASS_PATH);
+			int i = jar.indexOf(java.io.File.pathSeparator);
+			if (i > -1)
+			{
+				jar = jar.substring(0, i);
+			}
+	    		JarFile jarFile = new JarFile(jar);
+	    		Manifest manifest = jarFile.getManifest();
 			Attributes attributes = manifest.getMainAttributes();
 			mainClass = attributes.getValue(BOOT_CLASS);
 		}

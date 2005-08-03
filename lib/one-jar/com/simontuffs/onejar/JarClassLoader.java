@@ -1,3 +1,4 @@
+// Patched by Jason Weathered <jason@gslabs.com.au>
 /*
  * Copyright (c) 2004, P. Simon Tuffs (simon@simontuffs.com)
  * All rights reserved.
@@ -235,8 +236,13 @@ public class JarClassLoader extends ClassLoader {
 				// classpath: ours!  So we open it.
 				jarName = System.getProperty(JAVA_CLASS_PATH);
 			}
+			int x = jarName.indexOf(java.io.File.pathSeparator);
+			if (x > -1)
+			{
+				jarName = jarName.substring(0, x);
+			}
 			JarFile jarFile = new JarFile(jarName);
-			Enumeration enum = jarFile.entries();
+			Enumeration entries = jarFile.entries();
 			Manifest manifest = jarFile.getManifest();
 			String expandPaths[] = null;
 			// TODO: Allow a destination directory (relative or absolute) to 
@@ -247,8 +253,8 @@ public class JarClassLoader extends ClassLoader {
 				VERBOSE(EXPAND + "=" + expand);
 				expandPaths = expand.split(",");
 			}
-			while (enum.hasMoreElements()) {
-				JarEntry entry = (JarEntry)enum.nextElement();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = (JarEntry)entries.nextElement();
 				if (entry.isDirectory()) continue;
 				
 				// The META-INF/MANIFEST.MF file can contain a property which names
@@ -431,7 +437,7 @@ public class JarClassLoader extends ClassLoader {
 					mux.printStackTrace(System.out);    			
 	    		}
 	    		
-	    		CodeSource source = new CodeSource(url, null);
+	    		CodeSource source = new CodeSource(url, (java.security.cert.Certificate[])null);
 	    		pd = new ProtectionDomain(source, null, this, null);
 	    		pdCache.put(bytecode.codebase, pd);
 			}
