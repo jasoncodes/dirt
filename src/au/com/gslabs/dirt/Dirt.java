@@ -1,3 +1,5 @@
+package au.com.gslabs.dirt;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.awt.*;

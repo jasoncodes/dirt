@@ -25,14 +25,15 @@
 		<tstamp/>
 	</target>
 	
-	<target name="compile" depends="init">
+	<target name="compile-main" depends="init">
 		<mkdir dir="${build}"/>
-		<mkdir dir="${build}/main"/>
+		<mkdir dir="${build}/main-classes"/>
 		<javac
 			srcdir="${src}"
-			destdir="${build}/main"
+			destdir="${build}/main-classes"
 			compiler="javac1.5"
 			target="1.5"
+			source="1.5"
 			deprecation="on"
 			classpath="${lib}/win32/jdic_misc.jar" />
 		<java classname="com.rc.retroweaver.Weaver">
@@ -49,27 +50,59 @@
 		</java>
 	</target>
 	
-	<target name="jar-main" depends="compile">
+	<target name="compile-onejar" depends="init">
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build}/onejar"/>
+		<javac
+			srcdir="${lib}/one-jar"
+			destdir="${build}/onejar"
+			compiler="javac1.4"
+			target="1.4"
+			source="1.4"
+			deprecation="on" />
+	</target>
+	
+	<target name="jar-main" depends="compile-main">
 		<mkdir dir="${build}" />
-		<jar jarfile="${build}/main.jar">
-			<fileset dir="${build}/main" />
+		<mkdir dir="${build}/main" />
+		<jar jarfile="${build}/main/main.jar">
+			<fileset dir="${build}/main-classes" />
 			<fileset file="${res}/strings.properties" />
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="Dirt" />
+				<attribute name="Main-Class" value="au.com.gslabs.dirt.Dirt" />
 			</manifest>
 		</jar>
 	</target>
 	
-	<target name="jar" depends="jar-main">
+	<target name="jar" depends="jar-main,compile-onejar">
+		<mkdir dir="${dist}" />
+		<jar jarfile="${dist}/Dirt.jar">
+			<fileset dir="${build}/onejar" excludes="doc/**" />
+			<fileset dir="${build}">
+				<include name="main/main.jar" />
+			</fileset>
+			<fileset dir="${lib}/..">
+				<include name="lib/preferences.properties" />
+				<include name="lib/retroweaver/release/retroweaver.jar" />
+				<include name="lib/mac/jdic_misc.jar" />
+			</fileset>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
+			</manifest>
+		</jar>
+		<!--
 		<delete dir="${build}/final" />
 		<mkdir dir="${build}/final" />
 		<mkdir dir="${build}/final/main" />
 		<mkdir dir="${build}/final/lib" />
-		<mkdir dir="${build}/final/lib/mac_ppc" />
+		<mkdir dir="${build}/final/lib" />
+		<mkdir dir="${build}/final/lib/mac" />
 		<copy file="${build}/main.jar" todir="${build}/final/main" />
+		<copy file="${lib}/preferences.properties" todir="${build}/final/lib" />
 		<copy file="${lib}/retroweaver/release/retroweaver.jar" todir="${build}/final/lib" />
-		<copy file="${lib}/mac_ppc/jdic_misc.jar" todir="${build}/final/lib/mac_ppc" />
+		<copy file="${lib}/mac/jdic_misc.jar" todir="${build}/final/lib/mac" />
 		<mkdir dir="${dist}" />
 		<unjar src="${lib}/one-jar/one-jar-boot.jar" dest="${build}/final" />
 		<copy file="${lib}/one-jar/patch/Boot.java" tofile="${build}/final/com/simontuffs/onejar/Boot.java" />
@@ -85,9 +118,17 @@
 				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
 			</manifest>
 		</jar>
+		-->
 	</target>
-	
-	<target name="bundle" depends="jar">
+
+	<condition property="isMac">
+		<and>
+			<os family="mac" />
+			<os family="unix" />
+		</and>
+	</condition>
+
+	<target name="mac-bundle" depends="jar" if="isMac">
 		<delete dir="${dist}/Dirt.app" />
 		<jarbundler
 			dir="${dist}"
@@ -116,7 +157,7 @@
 		</tar>
 	</target>
 	
-	<target name="dist" depends="jar,bundle" />
+	<target name="dist" depends="jar,mac-bundle" />
 	
 	<target name="clean">
 		<delete dir="${build}"/>
