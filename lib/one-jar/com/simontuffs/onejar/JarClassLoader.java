@@ -33,6 +33,8 @@
 
 package com.simontuffs.onejar;
 
+import java.util.ResourceBundle;
+import java.util.Locale;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -87,6 +89,8 @@ public class JarClassLoader extends ClassLoader {
 	
 	protected String name;
 
+	ResourceBundle prefs = ResourceBundle.getBundle ("lib/preferences", Locale.getDefault());
+	
 	static {
 		// Add our 'onejar:' protocol handler, but leave open the 
 		// possibility of a subsequent class taking over the 
@@ -292,6 +296,41 @@ public class JarClassLoader extends ClassLoader {
 				String jar = entry.getName();
 				if (wrapDir != null && jar.startsWith(wrapDir) || jar.startsWith(LIB_PREFIX) || jar.startsWith(MAIN_PREFIX)) {
 					if (wrapDir != null && !entry.getName().startsWith(wrapDir)) continue;
+					try
+					{
+						String os = System.getProperty("os.name").toLowerCase();
+						if (os.startsWith("mac os"))
+						{
+							os = "mac";
+						}
+						else if (os.startsWith("linux"))
+						{
+							os = "linux";
+						}
+						else if (os.startsWith("windows"))
+						{
+							os = "win";
+						}
+						String[] valid_os_list = prefs.getString(jar).split("[, ]");
+						boolean allowed = false;
+						for (int i = 0; i < valid_os_list.length; ++i)
+						{
+							if (valid_os_list[i].equals(os))
+							{
+								VERBOSE(jar + " allowed on " + os);
+								allowed = true;
+								break;
+							}
+						}
+						if (!allowed)
+						{
+							VERBOSE(jar + " NOT allowed on " + os);
+							continue;
+						}
+					}
+					catch (java.util.MissingResourceException ex)
+					{
+					}
 					// Load it! 
 					INFO("caching " + jar);
 					VERBOSE("using jarFile.getInputStream(" + entry + ")");

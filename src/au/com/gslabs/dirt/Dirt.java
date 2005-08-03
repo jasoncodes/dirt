@@ -8,9 +8,9 @@ import javax.swing.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.io.File;
+import java.lang.reflect.Method;
 
 ////import com.apple.eawt.*;
-import org.jdesktop.jdic.misc.Alerter;
 
 public class Dirt extends JFrame {
 	
@@ -110,13 +110,16 @@ public class Dirt extends JFrame {
 	{
 		try
 		{
-			System.out.println("calling");
-			Alerter alerter = Alerter.newInstance();
-			alerter.alert(this);
+			Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
+			Method new_instance = c.getMethod("newInstance", (Class[])null);
+			Object alerter = new_instance.invoke(null, (Object[])null);
+			Method do_alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
+			do_alert.invoke(alerter, new Object[] { this });
 		}
 		catch (Exception e)
 		{
-			System.err.println("Couldn't load the library.");
+			// todo: provide alternate alert (window caption hacking?)
+			System.err.println("Alert() not available");
 		}
 	}
 	
