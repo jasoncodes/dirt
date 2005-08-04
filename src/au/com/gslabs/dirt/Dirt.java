@@ -129,6 +129,8 @@ public class Dirt extends JFrame {
 		{
 			// todo: provide alternate alert (window caption hacking?)
 			System.err.println("Alert() not available");
+			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 	
