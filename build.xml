@@ -38,7 +38,7 @@
 			classpath="${lib}/win32/jdic_misc.jar" />
 		<java classname="com.rc.retroweaver.Weaver">
 			<arg value="-source" />
-			<arg value="${build}/main" />
+			<arg value="${build}/main-classes" />
 			<classpath>
 				<fileset dir="${lib}/retroweaver/lib">
 					<include name="**/*" />
@@ -144,7 +144,7 @@
 			screenmenu="true"
 			signature="????"
 			version="${version}"
-			jvmversion="1.4+"
+			jvmversion="1.4"
 			extraclasspath="/System/Library/Java/"
 			/>
 		<tar destfile="${dist}/DirtMac.tbz" compression="bzip2">
@@ -159,6 +159,8 @@
 	</target>
 	
 	<target name="dist" depends="jar,mac-bundle" />
+
+	<target name="all" depends="clean,dist" />
 	
 	<target name="clean">
 		<delete dir="${build}"/>
