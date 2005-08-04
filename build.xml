@@ -86,7 +86,7 @@
 				<include name="lib/preferences.properties" />
 				<include name="lib/retroweaver/release/retroweaver.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
-				<include name="lib/win32/jdic_misc.jar" />
+				<include name="lib/win32/dirt_jni.dll" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

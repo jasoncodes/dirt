@@ -113,16 +113,23 @@ public class Dirt extends JFrame {
 		{
 			if (Util.isWin())
 			{
-				Win32 win32 = new Win32();
-				win32.alert(this);
+				if (!isFocused())
+				{
+					Win32 win32 = new Win32();
+					win32.alert(this);
+				}
 			}
-			else
+			else if (Util.isMac())
 			{
 				Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
 				Method new_instance = c.getMethod("newInstance", (Class[])null);
 				Object alerter = new_instance.invoke(null, (Object[])null);
 				Method alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
 				alert.invoke(alerter, new Object[] { this });
+			}
+			else
+			{
+				throw new Exception("Unsupported OS");
 			}
 		}
 		catch (Exception e)
