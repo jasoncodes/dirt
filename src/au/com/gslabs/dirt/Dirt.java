@@ -115,6 +115,7 @@ public class Dirt extends JFrame {
 			{
 				if (!isFocused())
 				{
+					Util.loadLibrary("lib/win32/dirt_jni.dll");
 					Win32 win32 = new Win32();
 					win32.alert(this);
 				}
