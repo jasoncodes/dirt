@@ -144,7 +144,7 @@
 			screenmenu="true"
 			signature="????"
 			version="${version}"
-			jvmversion="1.4"
+			jvmversion="1.4*"
 			extraclasspath="/System/Library/Java/"
 			/>
 		<tar destfile="${dist}/DirtMac.tbz" compression="bzip2">
