@@ -331,6 +331,8 @@ public class Dirt extends JFrame {
 	
 	public static void main(String args[])
 	{
+	
+		Util.ShutdownCleanupCheck(args);
 
 		try
 		{
