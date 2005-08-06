@@ -35,7 +35,12 @@
 			target="1.5"
 			source="1.5"
 			deprecation="on"
-			classpath="${lib}/win32/jdic_misc.jar" />
+			debug="true"
+			debuglevel="lines,vars,source">
+			<classpath>
+				<pathelement location="${lib}/stub/jdic.jar" />
+			</classpath>
+		</javac>
 		<java classname="com.rc.retroweaver.Weaver">
 			<arg value="-source" />
 			<arg value="${build}/main-classes" />
@@ -65,6 +70,8 @@
 	<target name="jar-main" depends="compile-main">
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/main" />
+		<mkdir dir="${build}/main-classes/res" />
+		<copy file="${res}/dirt.png" todir="${build}/main-classes/res" />
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-classes" />
 			<fileset file="${res}/strings.properties" />
@@ -87,6 +94,11 @@
 				<include name="lib/retroweaver/release/retroweaver.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
 				<include name="lib/win32/dirt_jni.dll" />
+				<include name="lib/stub/jdic.jar" />
+				<include name="lib/win32/jdic.jar" />
+				<include name="lib/win32/tray.dll" />
+				<include name="lib/linux_x86/jdic.jar" />
+				<include name="lib/linux_x86/libtray.so" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
