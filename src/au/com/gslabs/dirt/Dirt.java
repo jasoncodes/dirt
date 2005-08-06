@@ -345,7 +345,7 @@ public class Dirt extends JFrame {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
 		new Dirt();
-
+		
 	}
 	
 }
