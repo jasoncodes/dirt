@@ -8,13 +8,15 @@ import javax.swing.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.io.File;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import au.com.gslabs.dirt.jni.Win32;
+import org.jdesktop.jdic.tray.*;
 
 ////import com.apple.eawt.*;
 
-public class Dirt extends JFrame {
-	
+public class Dirt extends JFrame
+{
+
 	private Font font = new Font("serif", Font.ITALIC+Font.BOLD, 36);
 	protected ResourceBundle resbundle;
 	protected AboutBox aboutBox;
@@ -45,17 +47,28 @@ public class Dirt extends JFrame {
 			}
 		});	
 		
-		JButton cmdTest = new JButton("Test");
-		cmdTest.addActionListener(new ActionListener()
+		getContentPane().setLayout(new GridLayout(2, 1));
+		
+		JButton cmdTestAlert = new JButton("Test Alert");
+		cmdTestAlert.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent newEvent)
 			{
-				cmdTest_Click();
+				cmdTestAlert_Click();
 			}
 		});
-		this.getContentPane().add(cmdTest);
-	
+		this.getContentPane().add(cmdTestAlert);
 		
+		JButton cmdTestTray = new JButton("Test Tray");
+		cmdTestTray.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent newEvent)
+			{
+				cmdTestTray_Click();
+			}
+		});
+		this.getContentPane().add(cmdTestTray);
+	
 		/**
 		fApplication.setEnabledPreferencesMenu(true);
 		fApplication.addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
@@ -88,7 +101,12 @@ public class Dirt extends JFrame {
 		setVisible(true);
 	}
 	
-	protected void cmdTest_Click()
+	protected void cmdPopupQuit_Click()
+	{
+		System.exit(0);
+	}
+	
+	protected void cmdTestAlert_Click()
 	{
 		new Thread(
 			new Runnable()
@@ -107,6 +125,85 @@ public class Dirt extends JFrame {
 			}).start();
 	}
 	
+	protected void cmdTestTray_Click()
+	{
+	
+		try
+		{
+		if (Util.isWin())
+		{
+		Util.loadLibrary("lib/win32/tray.dll");
+		}
+		if (Util.isLinux())
+		{
+		Util.loadLibrary("lib/linux_x86/libtray.so");
+		}
+		}
+		catch (Exception e)
+		{
+		System.err.println("Error loading native tray library"); 
+		return;
+		}	
+		
+		SystemTray tray = SystemTray.getDefaultSystemTray();
+		TrayIcon ti;
+		
+		JPopupMenu menu;
+		JMenu  submenu;
+		JMenuItem menuItem;
+		JRadioButtonMenuItem rbMenuItem;
+		JCheckBoxMenuItem cbMenuItem;
+		
+		if (Integer.parseInt(System.getProperty("java.version").substring(2,3)) >=5)
+		{
+			System.setProperty("javax.swing.adjustPopupLocationToFit", "false");
+		}
+		
+		menu = new JPopupMenu("A Menu");
+		
+		// "Quit" menu item
+		menu.addSeparator();
+		menuItem = new JMenuItem("Quit");
+		menuItem.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					cmdPopupQuit_Click();
+				}
+			});
+		menu.add(menuItem);
+		
+		ImageIcon i = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.png"));
+		
+		ti = new TrayIcon(i, "Dirt Secure Chat", menu);
+		
+		ti.setIconAutoSize(true);
+		ti.addActionListener(new ActionListener()
+			{
+				long firstWhen = 0;
+				public void actionPerformed(ActionEvent e)
+				{
+					if (firstWhen != 0 && (e.getWhen() - firstWhen) <= 700)
+					{
+						firstWhen = 0;
+						Popup_DblClick();
+					}
+					else
+					{
+						firstWhen = e.getWhen();
+					}
+				}
+			});
+		
+		tray.addTrayIcon(ti);
+	
+	}
+
+	protected void Popup_DblClick()
+	{
+		setVisible(!isVisible());
+	}
+		
 	protected void Alert()
 	{
 		try
