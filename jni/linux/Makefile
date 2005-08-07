@@ -30,19 +30,17 @@ USR_LIB_DIR = /usr/lib
 INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)
 
-LIBS = -L$(USR_LIB_DIR) -L$(X11LIB) -lXt -lX11
-
 SRC = dirt_jni.c
           
 SO_NAME = libdirt_jni.so
 
-all: clean $(SO_NAME)
-
 SO_OBJS = $(CPPSRCS:.cpp=.o)
 
 $(SO_NAME): $(SRC) au_com_gslabs_dirt_jni_Linux.h
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -lXt -lX11 $(SRC) -o $@
-	cp libdirt_jni.so ../../lib/linux
+	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/jre/lib/i386 -ljawt -lXt -lX11 $(SRC) -o $@
+	cp libdirt_jni.so ../../lib/linux_x86/
+
+all: clean $(SO_NAME)
 
 clean:
 	rm -f *.so *.o au_com_gslabs_dirt_jni_Linux.h

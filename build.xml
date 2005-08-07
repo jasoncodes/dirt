@@ -99,6 +99,7 @@
 				<include name="lib/win32/tray.dll" />
 				<include name="lib/linux_x86/jdic.jar" />
 				<include name="lib/linux_x86/libtray.so" />
+				<include name="lib/linux_x86/libdirt_jni.so" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

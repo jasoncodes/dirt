@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.io.File;
 import java.lang.reflect.*;
-import au.com.gslabs.dirt.jni.Win32;
+import au.com.gslabs.dirt.jni.*;
 import org.jdesktop.jdic.tray.*;
 
 ////import com.apple.eawt.*;
@@ -215,6 +215,15 @@ public class Dirt extends JFrame
 					Util.loadLibrary("lib/win32/dirt_jni.dll");
 					Win32 win32 = new Win32();
 					win32.alert(this);
+				}
+			}
+			else if (Util.isLinux())
+			{
+				if (!isFocused())
+				{
+					Util.loadLibrary("lib/linux_x86/libdirt_jni.so");
+					Linux linux = new Linux();
+					linux.alert(this);
 				}
 			}
 			else if (Util.isMac())
