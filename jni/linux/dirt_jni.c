@@ -31,6 +31,32 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Linux_setDemandsAttention
 */
 
 puts("testing");
+Display *xdisplay = qt_xdisplay();
+    Window rootwin = qt_xrootwin(), winId = this->winId();
+
+    static Atom demandsAttention = XInternAtom(xdisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", 1);
+    static Atom wmState = XInternAtom(xdisplay, "_NET_WM_STATE", 1);
+
+    XEvent e;
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = wmState;
+    e.xclient.display = xdisplay;
+    e.xclient.window = winId;
+    e.xclient.format = 32;
+    e.xclient.data.l[1] = demandsAttention;
+    e.xclient.data.l[2] = 0l;
+    e.xclient.data.l[3] = 0l;
+    e.xclient.data.l[4] = 0l;
+    
+    int yes = 1;
+
+    if (yes) {
+        e.xclient.data.l[0] = 1;
+   }
+    else {
+        e.xclient.data.l[0] = 0;
+    }
+    XSendEvent(xdisplay, rootwin, False, (SubstructureRedirectMask | SubstructureNotifyMask), &e);
 
 }
 
