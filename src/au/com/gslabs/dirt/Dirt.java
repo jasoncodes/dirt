@@ -220,7 +220,7 @@ public class Dirt extends JFrame
 		{
 			Util.loadLibrary("lib/win32/dirt_jni.dll");
 			Win32 win32 = new Win32();
-			win32.stealFocus(win32);
+			win32.stealFocus(this);
 		}
 	}
 		
