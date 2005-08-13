@@ -217,10 +217,17 @@ public class Dirt extends JFrame
 	{
 		setVisible(!isVisible());
 		if (isVisible() && Util.isWin())
-		{
-			Util.loadLibrary("lib/win32/dirt_jni.dll");
-			Win32 win32 = new Win32();
-			win32.stealFocus(this);
+		{	
+			try
+			{
+				Util.loadLibrary("lib/win32/dirt_jni.dll");
+				Win32 win32 = new Win32();
+				win32.stealFocus(this);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
 		}
 	}
 		
