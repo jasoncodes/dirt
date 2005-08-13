@@ -177,7 +177,8 @@ public class Dirt extends JFrame
 		 
 		if (Util.isWin())
 		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.ico"));
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt2.png"));
+			icon = new ImageIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 		}
 		else
 		{
@@ -215,6 +216,12 @@ public class Dirt extends JFrame
 	protected void Popup_DblClick()
 	{
 		setVisible(!isVisible());
+		if (isVisible() && Util.isWin())
+		{
+			Util.loadLibrary("lib/win32/dirt_jni.dll");
+			Win32 win32 = new Win32();
+			win32.stealFocus(win32);
+		}
 	}
 		
 	protected void Alert()
