@@ -35,6 +35,7 @@ public class Dirt extends JFrame
 		// New localities can be added by adding additional properties files.
 		resbundle = ResourceBundle.getBundle ("strings", Locale.getDefault());
 		setTitle(resbundle.getString("frameConstructor"));
+		setIconImage(loadImageIcon(false).getImage());
 		
 		createActions();
 		addMenus();
@@ -106,6 +107,25 @@ public class Dirt extends JFrame
 		System.exit(0);
 	}
 	
+	protected ImageIcon loadImageIcon(boolean small)
+	{
+		ImageIcon icon;
+		if (Util.isWin())
+		{
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt2.png"));
+			icon = new ImageIcon(icon.getImage().getScaledInstance(small?16:48, -1, Image.SCALE_SMOOTH));
+		}
+		else
+		{
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.png"));
+			if (Util.isLinux())
+			{
+				icon = new ImageIcon(icon.getImage().getScaledInstance(48, -1, Image.SCALE_SMOOTH));
+			}
+		}
+		return icon;
+	}
+	
 	protected void cmdTestAlert_Click()
 	{
 		new Thread(
@@ -173,23 +193,7 @@ public class Dirt extends JFrame
 			});
 		menu.add(menuItem);
 		
-		ImageIcon icon;
-		 
-		if (Util.isWin())
-		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt2.png"));
-			icon = new ImageIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH));
-		}
-		else
-		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.png"));
-			if (Util.isLinux())
-			{
-				icon = new ImageIcon(icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH));
-			}
-		}
-		
-		ti = new TrayIcon(icon, "Dirt Secure Chat", menu);
+		ti = new TrayIcon(loadImageIcon(true), "Dirt Secure Chat", menu);
 		
 		ti.setIconAutoSize(true);
 		ti.addActionListener(new ActionListener()
