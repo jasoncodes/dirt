@@ -173,9 +173,22 @@ public class Dirt extends JFrame
 			});
 		menu.add(menuItem);
 		
-		ImageIcon i = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.png"));
+		ImageIcon icon;
+		 
+		if (Util.isWin())
+		{
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.ico"));
+		}
+		else
+		{
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt.png"));
+			if (Util.isLinux())
+			{
+				icon = new ImageIcon(icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+			}
+		}
 		
-		ti = new TrayIcon(i, "Dirt Secure Chat", menu);
+		ti = new TrayIcon(icon, "Dirt Secure Chat", menu);
 		
 		ti.setIconAutoSize(true);
 		ti.addActionListener(new ActionListener()
