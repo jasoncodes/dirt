@@ -4,59 +4,53 @@
 #include "au_com_gslabs_dirt_jni_Linux.h"
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Linux_setDemandsAttention
-  (JNIEnv *env, jobject canvas, jobject frame) {    
-    //(JAWT_Win32DrawingSurfaceInfo)
-    JAWT awt;
-    JAWT_DrawingSurface* ds;
-    JAWT_DrawingSurfaceInfo* dsi;
-//    JAWT_Win32DrawingSurfaceInfo* dsi_win32;
-    jint lock;
-    jint result;
-  
-//    BOOL retorno;
-    
-    awt.version = JAWT_VERSION_1_4;
-    result = JAWT_GetAWT(env, &awt);
-  
-/*
-    ds = awt.GetDrawingSurface(env, frame);
-    lock = ds->Lock(ds);
-    dsi = ds->GetDrawingSurfaceInfo(ds);
-    dsi_win32 = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
-  
-    retorno = FlashWindow(dsi_win32->hwnd, TRUE);
-    ds->FreeDrawingSurfaceInfo(dsi);
-    ds->Unlock(ds);
-    awt.FreeDrawingSurface(ds);
-*/
+  (JNIEnv *env, jobject canvas, jobject frame)
+{
+	
+	JAWT awt;
+	JAWT_DrawingSurface* ds;
+	JAWT_DrawingSurfaceInfo* dsi;
+	JAWT_X11DrawingSurfaceInfo* dsi_x11;
+	jint lock;
+	jint result;
+	Window rootwin;
+	
+	static Atom demandsAttention = 0;
+	static Atom wmState = 0;
+	
+	XEvent e;
+	
+	awt.version = JAWT_VERSION_1_4;
+	result = JAWT_GetAWT(env, &awt);
+	
+	ds = awt.GetDrawingSurface(env, frame);
+	lock = ds->Lock(ds);
+	dsi = ds->GetDrawingSurfaceInfo(ds);
+	dsi_x11 = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 
-puts("testing");
-Display *xdisplay = qt_xdisplay();
-    Window rootwin = qt_xrootwin(), winId = this->winId();
-
-    static Atom demandsAttention = XInternAtom(xdisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", 1);
-    static Atom wmState = XInternAtom(xdisplay, "_NET_WM_STATE", 1);
-
-    XEvent e;
+	if (demandsAttention == 0)
+	{
+		demandsAttention = XInternAtom(dsi_x11->display, "_NET_WM_STATE_DEMANDS_ATTENTION", 1);
+		wmState = XInternAtom(dsi_x11->display, "_NET_WM_STATE", 1);
+	}
+	
     e.xclient.type = ClientMessage;
     e.xclient.message_type = wmState;
-    e.xclient.display = xdisplay;
-    e.xclient.window = winId;
+    e.xclient.display = dsi_x11->display;
+    e.xclient.window = dsi_x11->drawable;
     e.xclient.format = 32;
+    e.xclient.data.l[0] = 1; // true
     e.xclient.data.l[1] = demandsAttention;
     e.xclient.data.l[2] = 0l;
     e.xclient.data.l[3] = 0l;
     e.xclient.data.l[4] = 0l;
-    
-    int yes = 1;
-
-    if (yes) {
-        e.xclient.data.l[0] = 1;
-   }
-    else {
-        e.xclient.data.l[0] = 0;
-    }
-    XSendEvent(xdisplay, rootwin, False, (SubstructureRedirectMask | SubstructureNotifyMask), &e);
-
+	
+	rootwin = RootWindow(dsi_x11->display, DefaultScreen(dsi_x11->display));
+	
+	XSendEvent(dsi_x11->display, rootwin, False, (SubstructureRedirectMask | SubstructureNotifyMask), &e);
+	
+	ds->FreeDrawingSurfaceInfo(dsi);
+    ds->Unlock(ds);
+    awt.FreeDrawingSurface(ds);
+	
 }
-
