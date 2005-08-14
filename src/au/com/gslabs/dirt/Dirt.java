@@ -35,7 +35,28 @@ public class Dirt extends JFrame
 		// New localities can be added by adding additional properties files.
 		resbundle = ResourceBundle.getBundle ("strings", Locale.getDefault());
 		setTitle(resbundle.getString("frameConstructor"));
+		
 		setIconImage(loadImageIcon(false).getImage());
+		if (Util.isWin())
+		{
+			try
+			{
+				Util.loadLibrary("lib/win32/dirt_jni.dll");
+				File temp = new File(Util.temp_dir, "dirt.ico");
+				java.io.InputStream in = Util.class.getClassLoader().getResourceAsStream("res/dirt.ico");
+				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
+				Util.copy(in, out);
+				in.close();
+				out.close();
+				pack(); // ensure this frame is realised
+				Win32 win32 = new Win32();
+				win32.setIcon(this, temp.getAbsolutePath());
+			}
+			catch (Throwable ex)
+			{
+				ex.printStackTrace();
+			}
+		}
 		
 		createActions();
 		addMenus();
@@ -149,19 +170,19 @@ public class Dirt extends JFrame
 	
 		try
 		{
-		if (Util.isWin())
-		{
-		Util.loadLibrary("lib/win32/tray.dll");
-		}
-		if (Util.isLinux())
-		{
-		Util.loadLibrary("lib/linux_x86/libtray.so");
-		}
+			if (Util.isWin())
+			{
+				Util.loadLibrary("lib/win32/tray.dll");
+			}
+			if (Util.isLinux())
+			{
+				Util.loadLibrary("lib/linux_x86/libtray.so");
+			}
 		}
 		catch (Exception e)
 		{
-		System.err.println("Error loading native tray library"); 
-		return;
+			System.err.println("Error loading native tray library"); 
+			return;
 		}	
 		
 		SystemTray tray = SystemTray.getDefaultSystemTray();
