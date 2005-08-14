@@ -71,3 +71,17 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_ForceForegroundWindow
 	}
 	
 }
+
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_SetIcon
+  (JNIEnv *env, jobject canvas, jobject frame, jstring filename)
+{
+	int pxBig = GetSystemMetrics(SM_CXICON);
+	int pxSmall = GetSystemMetrics(SM_CXSMICON);
+	HWND hWnd = GetFrameHWND(env, frame);
+	const char *path = (*env)->GetStringUTFChars(env, filename, 0);
+	HANDLE icoBig = LoadImage(NULL, path, IMAGE_ICON, pxBig, pxBig, LR_LOADFROMFILE);
+	HANDLE icoSmall = LoadImage(NULL, path, IMAGE_ICON, pxSmall, pxSmall, LR_LOADFROMFILE);
+	(*env)->ReleaseStringUTFChars(env, filename, path);
+	SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)icoBig);
+	SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)icoSmall);
+}
