@@ -73,6 +73,7 @@
 		<mkdir dir="${build}/main-classes/res" />
 		<copy file="${res}/dirt.png" todir="${build}/main-classes/res" />
 		<copy file="${res}/dirt2.png" todir="${build}/main-classes/res" />
+		<copy file="${res}/dirt32.png" todir="${build}/main-classes/res" />
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-classes" />
 			<fileset file="${res}/strings.properties" />
