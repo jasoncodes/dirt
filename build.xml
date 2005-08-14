@@ -152,7 +152,7 @@
 		<jarbundler
 			dir="${dist}"
 			jars="${dist}/Dirt.jar"
-			icon="${res}/Dirt.icns"
+			icon="${res}/icons/dirt.icns"
 			mainclass="com.simontuffs.onejar.Boot"
 			name="Dirt"
 			aboutmenuname="Dirt Secure Chat"
