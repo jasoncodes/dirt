@@ -71,10 +71,12 @@
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/main" />
 		<mkdir dir="${build}/main-classes/res" />
-		<copy file="${res}/dirt.png" todir="${build}/main-classes/res" />
-		<copy file="${res}/dirt2.png" todir="${build}/main-classes/res" />
-		<copy file="${res}/dirt32.png" todir="${build}/main-classes/res" />
-		<copy file="${res}/dirt.ico" todir="${build}/main-classes/res" />
+		<mkdir dir="${build}/main-classes/res/icons" />
+		<copy file="${res}/icons/dirt.png" todir="${build}/main-classes/res/icons" />
+		<copy file="${res}/icons/dirt2.png" todir="${build}/main-classes/res/icons" />
+		<copy file="${res}/icons/dirt16.png" todir="${build}/main-classes/res/icons" />
+		<copy file="${res}/icons/dirt32.png" todir="${build}/main-classes/res/icons" />
+		<copy file="${res}/icons/dirt.ico" todir="${build}/main-classes/res/icons" />
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-classes" />
 			<fileset file="${res}/strings.properties" />

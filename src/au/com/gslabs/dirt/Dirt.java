@@ -43,7 +43,7 @@ public class Dirt extends JFrame
 			{
 				Util.loadLibrary("lib/win32/dirt_jni.dll");
 				File temp = new File(Util.temp_dir, "dirt.ico");
-				java.io.InputStream in = Util.class.getClassLoader().getResourceAsStream("res/dirt.ico");
+				java.io.InputStream in = Util.class.getClassLoader().getResourceAsStream("res/icons/dirt.ico");
 				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
 				Util.copy(in, out);
 				in.close();
@@ -133,15 +133,12 @@ public class Dirt extends JFrame
 		ImageIcon icon;
 		if (Util.isWin())
 		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt32.png"));
-			if (small)
-			{
-			//	icon = new ImageIcon(icon.getImage().getScaledInstance(16, -1, Image.SCALE_SMOOTH));
-			}
+			icon = new ImageIcon(getClass().getClassLoader().getResource(
+				small?"res/icons/dirt16.png":"res/icons/dirt32.png"));
 		}
 		else
 		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/dirt2.png"));
+			icon = new ImageIcon(getClass().getClassLoader().getResource("res/icons/dirt2.png"));
 		}
 		return icon;
 	}
