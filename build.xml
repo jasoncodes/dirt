@@ -21,6 +21,10 @@
 		classpath="${lib}/ant/jarbundler-1.4.jar"
 		classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 	
+	<taskdef name="launch4j"
+		classname="net.sf.launch4j.ant.Launch4jTask"
+		classpath="${lib}/l4j/launch4j.jar:${lib}/l4j/xstream.jar" />
+
 	<target name="init">
 		<tstamp/>
 	</target>
@@ -146,6 +150,14 @@
 			<os family="unix" />
 		</and>
 	</condition>
+	
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+	
+	<target name="win-bundle" depends="jar" if="isWindows">
+		<launch4j configFile="./lib/l4j/dirt.xml" />
+	</target>
 
 	<target name="mac-bundle" depends="jar" if="isMac">
 		<delete dir="${dist}/Dirt.app" />
@@ -176,7 +188,7 @@
 		</tar>
 	</target>
 	
-	<target name="dist" depends="jar,mac-bundle" />
+	<target name="dist" depends="jar,mac-bundle,win-bundle" />
 
 	<target name="all" depends="clean,dist" />
 	
