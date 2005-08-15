@@ -1,13 +1,13 @@
 <launch4jConfig>
   <headerType>0</headerType>
-  <jar>C:\Documents and Settings\Jason W\Desktop\DirtJava\dist\Dirt.jar</jar>
-  <outfile>C:\Documents and Settings\Jason W\Desktop\DirtJava\dist\Dirt.exe</outfile>
+  <jar>..\..\dist\Dirt.jar</jar>
+  <outfile>..\..\dist\Dirt.exe</outfile>
   <errTitle>Dirt Secure Chat</errTitle>
   <jarArgs></jarArgs>
   <chdir>.</chdir>
   <customProcName>false</customProcName>
   <stayAlive>false</stayAlive>
-  <icon>C:\Documents and Settings\Jason W\Desktop\DirtJava\res\icons\dirt.ico</icon>
+  <icon>..\..\res\icons\dirt.ico</icon>
   <jre>
     <path></path>
     <minVersion>1.4.0</minVersion>
