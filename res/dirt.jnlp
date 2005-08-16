@@ -13,7 +13,7 @@
 	<resources>
 		<j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se" />
 		<j2se version="1.4+"/>
-		<jar href="dirt.jar" main="true" download="eager" />
+		<jar href="Dirt.jar" main="true" download="eager" />
 		<property name="apple.laf.useScreenMenuBar" value="true" />
 		<property name="com.apple.mrj.application.apple.menu.about.name" value="Dirt Secure Chat" />
 	</resources>
