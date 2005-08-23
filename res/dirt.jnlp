@@ -16,6 +16,7 @@
 		<jar href="Dirt.jar" main="true" download="eager" />
 		<property name="apple.laf.useScreenMenuBar" value="true" />
 		<property name="com.apple.mrj.application.apple.menu.about.name" value="Dirt Secure Chat" />
+		<property name="sun.java2d.noddraw" value="true"/>
 	</resources>
 	<application-desc main-class="Dirt" />
 </jnlp> 
