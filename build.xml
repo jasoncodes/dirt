@@ -7,6 +7,7 @@
 	<property name="dist" location="dist" />
 	<property name="res" location="res" />
 	<property name="lib" location="lib" />
+	<property name="apple" location="/System/Library/Java/" />
 
 	<loadproperties srcFile="${res}/strings.properties">
 		<filterchain>
@@ -68,6 +69,8 @@
 			compiler="javac1.4"
 			target="1.4"
 			source="1.4"
+			debug="true"
+                        debuglevel="lines,vars,source"
 			deprecation="on" />
 	</target>
 	
@@ -115,33 +118,6 @@
 				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
 			</manifest>
 		</jar>
-		<!--
-		<delete dir="${build}/final" />
-		<mkdir dir="${build}/final" />
-		<mkdir dir="${build}/final/main" />
-		<mkdir dir="${build}/final/lib" />
-		<mkdir dir="${build}/final/lib" />
-		<mkdir dir="${build}/final/lib/mac" />
-		<copy file="${build}/main.jar" todir="${build}/final/main" />
-		<copy file="${lib}/preferences.properties" todir="${build}/final/lib" />
-		<copy file="${lib}/retroweaver/release/retroweaver.jar" todir="${build}/final/lib" />
-		<copy file="${lib}/mac/jdic_misc.jar" todir="${build}/final/lib/mac" />
-		<mkdir dir="${dist}" />
-		<unjar src="${lib}/one-jar/one-jar-boot.jar" dest="${build}/final" />
-		<copy file="${lib}/one-jar/patch/Boot.java" tofile="${build}/final/com/simontuffs/onejar/Boot.java" />
-		<copy file="${lib}/one-jar/patch/Boot.class" tofile="${build}/final/com/simontuffs/onejar/Boot.class" />
-		<copy file="${lib}/one-jar/patch/JarClassLoader.java" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.java" />
-		<copy file="${lib}/one-jar/patch/JarClassLoader.class" tofile="${build}/final/com/simontuffs/onejar/JarClassLoader.class" />
-		<jar jarfile="${dist}/Dirt.jar">
-			<fileset
-				dir="${build}/final"
-				excludes="doc/** META-INF/**" />
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
-			</manifest>
-		</jar>
-		-->
 	</target>
 
 	<condition property="isMac">
@@ -188,13 +164,28 @@
 		</tar>
 	</target>
 	
-	<target name="dist" depends="jar,mac-bundle,win-bundle" />
+	<target name="dist" depends="jar,mac-bundle,win-bundle,webstart" />
 
 	<target name="all" depends="clean,dist" />
 	
 	<target name="clean">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+	</target>
+	
+	
+	
+
+	<target name="webstart" depends="jar-main">
+		<mkdir dir="${dist}/webstart" />
+		<copy file="${build}/main/main.jar" todir="${dist}/webstart" />
+		<copy file="${res}/icons/dirt.gif" todir="${dist}/webstart" />
+		<copy file="${res}/dirt.jnlp" todir="${dist}/webstart" />
+		<mkdir dir="${dist}/webstart/mac" />
+		<copy file="${lib}/mac/jdic_misc.jar" todir="${dist}/webstart/mac" />
+		<jar jarfile="${dist}/webstart/mac/apple.jar">
+			<fileset dir="${apple}" excludes="Extensions/**" />
+		</jar>
 	</target>
 	
 </project>
