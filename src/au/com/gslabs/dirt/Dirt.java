@@ -8,7 +8,7 @@ public class Dirt
 	
 		Util.ShutdownCleanupCheck(args);
 
-		au.com.gslabs.dirt.ui.client.jfc.Client.init();
+		au.com.gslabs.dirt.ui.client.Launcher.startClient();
 		
 	}
 	
