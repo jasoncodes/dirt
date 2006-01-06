@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.ui.client.jfc;
+package au.com.gslabs.dirt.ui.jfc.client;
 
 import java.awt.*;
 import java.awt.event.*;

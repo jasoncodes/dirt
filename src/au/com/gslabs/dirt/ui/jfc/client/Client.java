@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.ui.client.jfc;
+package au.com.gslabs.dirt.ui.jfc.client;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
