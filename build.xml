@@ -176,7 +176,7 @@
 	
 	
 
-	<target name="webstart" depends="jar-main">
+	<target name="webstart" depends="jar-main" if="isMac">
 		<mkdir dir="${dist}/webstart" />
 		<copy file="${build}/main/main.jar" todir="${dist}/webstart" />
 		<copy file="${res}/icons/dirt.gif" todir="${dist}/webstart" />
