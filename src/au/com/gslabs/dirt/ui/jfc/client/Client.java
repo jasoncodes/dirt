@@ -5,20 +5,15 @@ import java.util.ResourceBundle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.io.File;
-import java.lang.reflect.*;
-import au.com.gslabs.dirt.jni.*;
 import org.jdesktop.jdic.tray.*;
-import au.com.gslabs.dirt.Util;
+import au.com.gslabs.dirt.util.*;
+import au.com.gslabs.dirt.ui.jfc.UIUtil;
 
 ////import com.apple.eawt.*;
 
 public class Client extends JFrame
 {
 
-	private Font font = new Font("serif", Font.ITALIC+Font.BOLD, 36);
 	protected ResourceBundle resbundle;
 	protected AboutBox aboutBox;
 	protected PrefPane prefs;
@@ -30,51 +25,17 @@ public class Client extends JFrame
 	
 	public static void init()
 	{
-		
-		try
-		{
-    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception ex)
-		{
-		}
-		
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		
+		UIUtil.initSwing();
 		new Client();
-		
 	}
 	
-	private Client() {
+	private Client()
+	{
 		
 		super("");
-		// The ResourceBundle below contains all of the strings used in this
-		// application.  ResourceBundles are useful for localizing applications.
-		// New localities can be added by adding additional properties files.
-		resbundle = ResourceBundle.getBundle ("strings", Locale.getDefault());
-		setTitle(resbundle.getString("frameConstructor"));
-		
-		setIconImage(loadImageIcon(false).getImage());
-		if (Util.isWin())
-		{
-			try
-			{
-				Util.loadLibrary("lib/win32/dirt_jni.dll");
-				File temp = new File(Util.getTempDir(), "dirt.ico");
-				java.io.InputStream in = Util.class.getClassLoader().getResourceAsStream("res/icons/dirt.ico");
-				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
-				Util.copy(in, out);
-				in.close();
-				out.close();
-				pack(); // ensure this frame is realised
-				Win32 win32 = new Win32();
-				win32.setIcon(this, temp.getAbsolutePath());
-			}
-			catch (Throwable ex)
-			{
-				ex.printStackTrace();
-			}
-		}
+		resbundle = ResourceBundle.getBundle("strings", Locale.getDefault());
+		setTitle(resbundle.getString("title"));
+		UIUtil.setIcon(this);
 		
 		createActions();
 		addMenus();
@@ -146,21 +107,6 @@ public class Client extends JFrame
 		System.exit(0);
 	}
 	
-	protected ImageIcon loadImageIcon(boolean small)
-	{
-		ImageIcon icon;
-		if (Util.isWin())
-		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource(
-				small?"res/icons/dirt16.png":"res/icons/dirt32.png"));
-		}
-		else
-		{
-			icon = new ImageIcon(getClass().getClassLoader().getResource("res/icons/dirt2.png"));
-		}
-		return icon;
-	}
-	
 	protected void cmdTestAlert_Click()
 	{
 		new Thread(
@@ -175,7 +121,7 @@ public class Client extends JFrame
 					catch (Exception ex)
 					{
 					}
-					Alert();
+					UIUtil.alert(Client.this);
 				}
 			}).start();
 	}
@@ -185,13 +131,13 @@ public class Client extends JFrame
 	
 		try
 		{
-			if (Util.isWin())
+			if (FileUtil.isWin())
 			{
-				Util.loadLibrary("lib/win32/tray.dll");
+				FileUtil.loadLibrary("lib/win32/tray.dll");
 			}
-			if (Util.isLinux())
+			if (FileUtil.isLinux())
 			{
-				Util.loadLibrary("lib/linux_x86/libtray.so");
+				FileUtil.loadLibrary("lib/linux_x86/libtray.so");
 			}
 		}
 		catch (Exception e)
@@ -228,7 +174,7 @@ public class Client extends JFrame
 			});
 		menu.add(menuItem);
 		
-		ti = new TrayIcon(loadImageIcon(true), "Dirt Secure Chat", menu);
+		ti = new TrayIcon(UIUtil.loadImageIcon(true), "Dirt Secure Chat", menu);
 		
 		ti.setIconAutoSize(true);
 		ti.addActionListener(new ActionListener()
@@ -255,69 +201,16 @@ public class Client extends JFrame
 	protected void Popup_DblClick()
 	{
 		setVisible(!isVisible());
-		if (isVisible() && Util.isWin())
+		if (isVisible())
 		{	
-			try
-			{
-				Util.loadLibrary("lib/win32/dirt_jni.dll");
-				Win32 win32 = new Win32();
-				win32.stealFocus(this);
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
+			UIUtil.stealFocus(this);
 		}
 	}
 		
-	protected void Alert()
-	{
-		try
-		{
-			if (Util.isWin())
-			{
-				if (!isFocused())
-				{
-					Util.loadLibrary("lib/win32/dirt_jni.dll");
-					Win32 win32 = new Win32();
-					win32.alert(this);
-				}
-			}
-			else if (Util.isLinux())
-			{
-				if (!isFocused())
-				{
-					Util.loadLibrary("lib/linux_x86/libdirt_jni.so");
-					Linux linux = new Linux();
-					linux.alert(this);
-				}
-			}
-			else if (Util.isMac())
-			{
-				Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
-				Method new_instance = c.getMethod("newInstance", (Class[])null);
-				Object alerter = new_instance.invoke(null, (Object[])null);
-				Method alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
-				alert.invoke(alerter, new Object[] { this });
-			}
-			else
-			{
-				throw new Exception("Unsupported OS");
-			}
-		}
-		catch (Exception e)
-		{
-			// todo: provide alternate alert (window caption hacking?)
-			System.err.println("Alert() not available");
-			System.err.println(e);
-			e.printStackTrace();
-		}
-	}
-	
 	protected void onClose()
 	{
 		setVisible(false);
-		if (!Util.isMac())
+		if (!FileUtil.isMac())
 		{
 			dispose();
 			System.exit(0);

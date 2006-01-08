@@ -1,15 +1,15 @@
 package au.com.gslabs.dirt;
 
+import au.com.gslabs.dirt.util.FileUtil;
+import au.com.gslabs.dirt.ui.Launcher;
+
 public class Dirt
 {
 
 	public static void main(String[] args)
 	{
-	
-		Util.ShutdownCleanupCheck(args);
-
-		au.com.gslabs.dirt.ui.Launcher.startClient();
-		
+		FileUtil.ShutdownCleanupCheck(args);
+		Launcher.startClient();	
 	}
-	
+                                                                               
 }
