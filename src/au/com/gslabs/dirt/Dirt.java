@@ -9,7 +9,7 @@ public class Dirt
 	public static void main(String[] args)
 	{
 		FileUtil.ShutdownCleanupCheck(args);
-		UI.startClient();	
+		UI.startClient();
 	}
                                                                                
 }

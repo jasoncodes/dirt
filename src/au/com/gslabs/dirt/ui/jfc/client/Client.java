@@ -8,6 +8,7 @@ import javax.swing.*;
 import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.util.*;
 import au.com.gslabs.dirt.ui.jfc.UIUtil;
+import au.com.gslabs.dirt.ui.jfc.*;
 
 ////import com.apple.eawt.*;
 
@@ -48,6 +49,7 @@ public class Client extends JFrame
 			}
 		});	
 		
+		/*
 		getContentPane().setLayout(new GridLayout(2, 1));
 		
 		JButton cmdTestAlert = new JButton("Test Alert");
@@ -69,7 +71,21 @@ public class Client extends JFrame
 			}
 		});
 		this.getContentPane().add(cmdTestTray);
-	
+		*/
+		
+		getContentPane().setLayout(new BorderLayout());
+		
+		LogPane txtLog = new LogPane();
+		getContentPane().add(new JScrollPane(txtLog), BorderLayout.CENTER);
+		
+		InputArea txtInput = new InputArea();
+		getContentPane().add(txtInput, BorderLayout.SOUTH);
+		
+		for (int i = 0; i < 3; ++i)
+		{
+			txtLog.appendText("Line " + i);
+		}
+		
 		/**
 		fApplication.setEnabledPreferencesMenu(true);
 		fApplication.addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
