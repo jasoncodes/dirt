@@ -59,7 +59,7 @@ public class FileUtil
 		{
 			path += ".exe";
 		}
-		return path;
+		return File.exists(path) ? path : null;
 	}
 
 	public static String getTempDir()
@@ -89,12 +89,12 @@ public class FileUtil
 			}
 		}
 	}
-	
+
+	// to be called first in Main()	
 	public static void ShutdownCleanupCheck(String[] args)
 	{
 		if (args.length == 2 && args[0].equals("--shutdown-cleanup"))
 		{
-			// 500, 1500, 3000, 5000, 7500
 			for (int i = 500; i < 2500; i += 500)
 			{
 				try
@@ -115,6 +115,7 @@ public class FileUtil
 				{
 				}
 			}
+			// don't want execution to contiune onto main app
 			System.exit(0);
 		}
 	}
