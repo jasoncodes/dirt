@@ -30,20 +30,20 @@ USR_LIB_DIR = /usr/lib
 INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)
 
-SRC = dirt_jni.c
+SRC = dirt_lib_ui_jfc_jni.c
           
-SO_NAME = libdirt_jni.so
+SO_NAME = libdirt_lib_ui_jfc_jni.so
 
 SO_OBJS = $(CPPSRCS:.cpp=.o)
 
-$(SO_NAME): $(SRC) au_com_gslabs_dirt_jni_Linux.h
+$(SO_NAME): $(SRC) au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h
 	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/jre/lib/i386 -ljawt -lXt -lX11 $(SRC) -o $@
-	cp libdirt_jni.so ../../lib/linux_x86/
+	cp $(SO_NAME) ../../lib/linux_x86/
 
 all: clean $(SO_NAME)
 
 clean:
 	rm -f *.so *.o au_com_gslabs_dirt_jni_Linux.h
 
-au_com_gslabs_dirt_jni_Linux.h: ../../build/main-classes/au/com/gslabs/dirt/jni/Linux.class
-	javah -classpath ../../build/main-classes au.com.gslabs.dirt.jni.Linux
+au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h: ../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Linux.class
+	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.ui.jfc.jni.Linux

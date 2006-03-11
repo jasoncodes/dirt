@@ -1,9 +1,9 @@
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
-#include "au_com_gslabs_dirt_jni_Linux.h"
+#include "au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h"
 
-JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Linux_setDemandsAttention
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Linux_setDemandsAttention
   (JNIEnv *env, jobject canvas, jobject frame)
 {
 	
