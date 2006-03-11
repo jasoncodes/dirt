@@ -32,7 +32,7 @@ INCLUDES = -I$(JAVA_HOME)/include \
 
 SRC = dirt_lib_ui_jfc_jni.c
           
-SO_NAME = libdirt_lib_ui_jfc_jni.so
+SO_NAME = libdirt_lib_ui_jfc.so
 
 SO_OBJS = $(CPPSRCS:.cpp=.o)
 

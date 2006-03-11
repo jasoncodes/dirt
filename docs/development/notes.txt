@@ -1,5 +1,1 @@
-recompile JNI and copy to final location in lib
-	lib/win32/dirt_lib_ui_jfc.dll
-	lib/linux_x86/libdirt_lib_ui_jfc.so
-
 http://en.wikipedia.org/wiki/STUN
