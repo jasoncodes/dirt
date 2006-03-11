@@ -12,26 +12,26 @@ CFLAGS =  -g -O2 -c $(INCLUDE) $(LIB)
 
 RM = rm -f
 
-OBJ = dirt_jni.o
-BIN = dirt_jni.dll
+OBJ = dirt_lib_ui_jfc.o
+BIN = dirt_lib_ui_jfc.dll
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before dirt_jni.dll all-after
+all: all-before dirt_lib_ui_jfc.dll all-after
 
 check: 
 	echo $(JAVA_HOME)
 clean: clean-custom
-	${RM} $(OBJ) $(BIN) au_com_gslabs_dirt_jni_Win32.h
+	${RM} $(OBJ) $(BIN) au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 
-dirt_jni.dll: dirt_jni.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) -o dirt_jni.dll -s dirt_jni.o $(DLLWRAP_LIB)
+dirt_lib_ui_jfc.dll: dirt_lib_ui_jfc.o
+	$(DLLWRAP) $(DLLWRAP_FLAGS) -o dirt_lib_ui_jfc.dll -s dirt_lib_ui_jfc.o $(DLLWRAP_LIB)
 
-dirt_jni.o: dirt_jni.c au_com_gslabs_dirt_jni_Win32.h
-	$(CC) $(CFLAGS) dirt_jni.c
+dirt_jni.o: dirt_lib_ui_jfc.c au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
+	$(CC) $(CFLAGS) dirt_lib_ui_jfc.c
 
-au_com_gslabs_dirt_jni_Win32.h: ../../build/main-classes/au/com/gslabs/dirt/jni/Win32.class
-	javah -classpath ../../build/main-classes au.com.gslabs.dirt.jni.Win32
+au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h: ../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.class
+	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.ui.jfc.jni.Win32
 
 all-after:
-	cp dirt_jni.dll ../../lib/win32
+	cp dirt_lib_ui_jfc.dll ../../lib/win32

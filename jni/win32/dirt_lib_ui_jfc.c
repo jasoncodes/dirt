@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
-#include "au_com_gslabs_dirt_jni_Win32.h"
+#include "au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h"
 
 static HWND GetFrameHWND(JNIEnv *env, jobject frame)
 { 
@@ -25,13 +25,13 @@ static HWND GetFrameHWND(JNIEnv *env, jobject frame)
 	return hWnd;
 }
 
-JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_FlashWindow
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_FlashWindow
   (JNIEnv *env, jobject canvas, jobject frame)
 {
 	FlashWindow(GetFrameHWND(env, frame), TRUE);
 }
 
-JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_ForceForegroundWindow
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_ForceForegroundWindow
   (JNIEnv *env, jobject canvas, jobject frame)
 {
 
@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_ForceForegroundWindow
 	
 }
 
-JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_jni_Win32_SetIcon
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetIcon
   (JNIEnv *env, jobject canvas, jobject frame, jstring filename)
 {
 	int pxBig = GetSystemMetrics(SM_CXICON);
