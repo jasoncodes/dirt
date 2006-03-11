@@ -5,7 +5,7 @@ import java.lang.reflect.*;
 import au.com.gslabs.dirt.lib.ui.jfc.jni.*;
 import java.awt.*;
 import javax.swing.*;
-import au.com.gslabs.dirt.util.FileUtil;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 import java.net.URL;
 
 public class UIUtil

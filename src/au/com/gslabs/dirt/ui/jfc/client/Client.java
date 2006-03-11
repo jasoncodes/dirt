@@ -6,8 +6,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import org.jdesktop.jdic.tray.*;
-import au.com.gslabs.dirt.util.*;
-import au.com.gslabs.dirt.ui.jfc.UIUtil;
+import au.com.gslabs.dirt.lib.util.*;
+import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
 import au.com.gslabs.dirt.ui.jfc.*;
 
 ////import com.apple.eawt.*;
@@ -49,8 +49,12 @@ public class Client extends JFrame
 			}
 		});	
 		
-		/*
-		getContentPane().setLayout(new GridLayout(2, 1));
+		
+		getContentPane().setLayout(new BorderLayout());
+		
+		JPanel pnl = new JPanel();
+		
+		pnl.setLayout(new GridLayout(2, 1));
 		
 		JButton cmdTestAlert = new JButton("Test Alert");
 		cmdTestAlert.addActionListener(new ActionListener()
@@ -60,7 +64,7 @@ public class Client extends JFrame
 				cmdTestAlert_Click();
 			}
 		});
-		this.getContentPane().add(cmdTestAlert);
+		pnl.add(cmdTestAlert);
 		
 		JButton cmdTestTray = new JButton("Test Tray");
 		cmdTestTray.addActionListener(new ActionListener()
@@ -70,10 +74,9 @@ public class Client extends JFrame
 				cmdTestTray_Click();
 			}
 		});
-		this.getContentPane().add(cmdTestTray);
-		*/
+		pnl.add(cmdTestTray);
 		
-		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(pnl, BorderLayout.NORTH);
 		
 		LogPane txtLog = new LogPane();
 		getContentPane().add(new JScrollPane(txtLog), BorderLayout.CENTER);
@@ -114,7 +117,7 @@ public class Client extends JFrame
 		});
 		**/
 		
-		setSize(310, 150);
+		setSize(350, 250);
 		setVisible(true);
 	}
 	

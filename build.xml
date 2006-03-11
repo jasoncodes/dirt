@@ -45,7 +45,7 @@
 			<classpath>
 				<pathelement location="${lib}/stub/jdic.jar" />
 			</classpath>
-			<compilerarg value="-Xlint:all" />
+			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
 		<java classname="com.rc.retroweaver.Weaver">
 			<arg value="-source" />
