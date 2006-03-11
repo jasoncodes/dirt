@@ -1,6 +1,6 @@
 package au.com.gslabs.dirt;
 
-import au.com.gslabs.dirt.util.FileUtil;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 import au.com.gslabs.dirt.ui.UI;
 
 public class Dirt

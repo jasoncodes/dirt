@@ -1,8 +1,8 @@
-package au.com.gslabs.dirt.ui.jfc;
+package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.io.File;
 import java.lang.reflect.*;
-import au.com.gslabs.dirt.jni.*;
+import au.com.gslabs.dirt.lib.ui.jfc.jni.*;
 import java.awt.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.util.FileUtil;
@@ -10,6 +10,9 @@ import java.net.URL;
 
 public class UIUtil
 {
+	
+	private static final String JNILib_Win32 = "lib/jni/win32/dirt_lib_ui_jfc.dll";
+	private static final String JNILib_LinuxX86 = "lib/linux_x86/libdirt_lib_ui_jfc.so";
 	
 	private UIUtil()
 	{
@@ -21,7 +24,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary("lib/win32/dirt_jni.dll");
+				FileUtil.loadLibrary(JNILibWin32);
 				File temp = FileUtil.getNewTempFile();
 				java.io.InputStream in = FileUtil.getResourceAsStream(path);
 				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
@@ -67,7 +70,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					FileUtil.loadLibrary("lib/win32/dirt_jni.dll");
+					FileUtil.loadLibrary(JNILib_Win32);
 					Win32 win32 = new Win32();
 					win32.alert(frame);
 				}
@@ -76,7 +79,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					FileUtil.loadLibrary("lib/linux_x86/libdirt_jni.so");
+					FileUtil.loadLibrary(JNILib_LinuxX86);
 					Linux linux = new Linux();
 					linux.alert(frame);
 				}
@@ -109,7 +112,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary("lib/win32/dirt_jni.dll");
+				FileUtil.loadLibrary(JNILibWin32);
 				Win32 win32 = new Win32();
 				win32.stealFocus(frame);
 			}

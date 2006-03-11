@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.util;
+package au.com.gslabs.dirt.lib.util;
 
 import java.io.*;
 import java.net.URL;
