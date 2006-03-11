@@ -45,6 +45,7 @@
 			<classpath>
 				<pathelement location="${lib}/stub/jdic.jar" />
 			</classpath>
+			<compilerarg value="-Xlint:all" />
 		</javac>
 		<java classname="com.rc.retroweaver.Weaver">
 			<arg value="-source" />
@@ -86,6 +87,12 @@
 		<copy file="${res}/icons/dirt.ico" todir="${build}/main-classes/res/icons" />
 		<mkdir dir="${build}/main-classes/res/styles" />
 		<copy file="${res}/styles/logpane.css" todir="${build}/main-classes/res/styles" />
+		<mkdir dir="${build}/main-classes/res/xml" />
+		<mkdir dir="${build}/main-classes/res/xml/xhtml" />
+		<mkdir dir="${build}/main-classes/res/xml/xhtml/dtd" />
+		<copy todir="${build}/main-classes/res/xml/xhtml/dtd">
+			<FileSet dir="${res}/xml/xhtml/dtd/" />
+		</copy>
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-classes" />
 			<fileset file="${res}/strings.properties" />
@@ -107,13 +114,13 @@
 				<include name="lib/preferences.properties" />
 				<include name="lib/retroweaver/release/retroweaver.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
-				<include name="lib/win32/dirt_jni.dll" />
+				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
 				<include name="lib/stub/jdic.jar" />
 				<include name="lib/win32/jdic.jar" />
 				<include name="lib/win32/tray.dll" />
 				<include name="lib/linux_x86/jdic.jar" />
 				<include name="lib/linux_x86/libtray.so" />
-				<include name="lib/linux_x86/libdirt_jni.so" />
+				<include name="lib/linux_x86/libdirt_lib_ui_jfc.so" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

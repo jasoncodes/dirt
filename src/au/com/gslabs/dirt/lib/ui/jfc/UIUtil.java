@@ -11,7 +11,7 @@ import java.net.URL;
 public class UIUtil
 {
 	
-	private static final String JNILib_Win32 = "lib/jni/win32/dirt_lib_ui_jfc.dll";
+	private static final String JNILib_Win32 = "lib/win32/dirt_lib_ui_jfc.dll";
 	private static final String JNILib_LinuxX86 = "lib/linux_x86/libdirt_lib_ui_jfc.so";
 	
 	private UIUtil()
@@ -24,7 +24,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary(JNILibWin32);
+				FileUtil.loadLibrary(JNILib_Win32);
 				File temp = FileUtil.getNewTempFile();
 				java.io.InputStream in = FileUtil.getResourceAsStream(path);
 				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
@@ -112,7 +112,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary(JNILibWin32);
+				FileUtil.loadLibrary(JNILib_Win32);
 				Win32 win32 = new Win32();
 				win32.stealFocus(frame);
 			}

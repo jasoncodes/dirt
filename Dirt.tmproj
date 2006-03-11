@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/au/com/gslabs/dirt/ui/jfc/LogPane.java</string>
+	<string>src/au/com/gslabs/dirt/lib/xml/LocalDTD.java</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -23,114 +23,145 @@
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
-		<key>src/au/com/gslabs/dirt/Dirt.java</key>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/UIUtil.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>31</integer>
 				<key>line</key>
-				<integer>15</integer>
+				<integer>114</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>101</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>25</integer>
+				<key>line</key>
+				<integer>114</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>31</integer>
+				<key>line</key>
+				<integer>114</integer>
+			</dict>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>101</integer>
+				<key>line</key>
+				<integer>82</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>66</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/jni/Linux.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/xml/LocalDTD.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>49</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>31</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/ui/UI.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>14</integer>
+				<integer>33</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/ui/jfc/InputArea.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>8</integer>
-				<key>line</key>
-				<integer>9</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>7</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/ui/jfc/LogPane.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>20</integer>
+				<integer>36</integer>
 				<key>line</key>
-				<integer>8</integer>
+				<integer>7</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/ui/jfc/UIUtil.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>9</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>27</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/ui/jfc/client/Client.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>46</integer>
+				<integer>21</integer>
 				<key>line</key>
-				<integer>78</integer>
+				<integer>28</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>65</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/util/FileUtil.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>39</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>26</integer>
+			<integer>13</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/au/com/gslabs/dirt/Dirt.java</string>
-		<string>src/au/com/gslabs/dirt/ui/UI.java</string>
-		<string>src/au/com/gslabs/dirt/ui/jfc/client/Client.java</string>
-		<string>src/au/com/gslabs/dirt/ui/jfc/InputArea.java</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/LogPane.java</string>
-		<string>src/au/com/gslabs/dirt/util/FileUtil.java</string>
-		<string>src/au/com/gslabs/dirt/ui/jfc/UIUtil.java</string>
+		<string>src/au/com/gslabs/dirt/ui/UI.java</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/UIUtil.java</string>
+		<string>src/au/com/gslabs/dirt/lib/xml/LocalDTD.java</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/jni/Linux.java</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.java</string>
+		<string>src/au/com/gslabs/dirt/ui/jfc/client/Client.java</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

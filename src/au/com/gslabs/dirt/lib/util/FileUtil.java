@@ -59,7 +59,7 @@ public class FileUtil
 		{
 			path += ".exe";
 		}
-		return File.exists(path) ? path : null;
+		return new File(path).exists() ? path : null;
 	}
 
 	public static String getTempDir()

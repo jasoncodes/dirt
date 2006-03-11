@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import au.com.gslabs.dirt.util.*;
-import net.sf.pw.ui.XHTMLEditorKit;
+import au.com.gslabs.dirt.lib.ui.jfc.XHTMLEditorKit;
 import java.net.URL;
 
 public class LogPane extends JEditorPane
