@@ -47,9 +47,14 @@
 			</classpath>
 			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
+		<delete dir="${build}/main-scratch" />
+		<mkdir dir="${build}/main-scratch" />
+		<copy todir="${build}/main-scratch">
+			<FileSet dir="build/main-classes" />
+		</copy>
 		<java classname="com.rc.retroweaver.Weaver">
 			<arg value="-source" />
-			<arg value="${build}/main-classes" />
+			<arg value="${build}/main-scratch" />
 			<classpath>
 				<fileset dir="${lib}/retroweaver/lib">
 					<include name="**/*" />
@@ -71,30 +76,30 @@
 			target="1.4"
 			source="1.4"
 			debug="true"
-                        debuglevel="lines,vars,source"
+			debuglevel="lines,vars,source"
 			deprecation="on" />
 	</target>
 	
 	<target name="jar-main" depends="compile-main">
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/main" />
-		<mkdir dir="${build}/main-classes/res" />
-		<mkdir dir="${build}/main-classes/res/icons" />
-		<copy file="${res}/icons/dirt.png" todir="${build}/main-classes/res/icons" />
-		<copy file="${res}/icons/dirt2.png" todir="${build}/main-classes/res/icons" />
-		<copy file="${res}/icons/dirt16.png" todir="${build}/main-classes/res/icons" />
-		<copy file="${res}/icons/dirt32.png" todir="${build}/main-classes/res/icons" />
-		<copy file="${res}/icons/dirt.ico" todir="${build}/main-classes/res/icons" />
-		<mkdir dir="${build}/main-classes/res/styles" />
-		<copy file="${res}/styles/logpane.css" todir="${build}/main-classes/res/styles" />
-		<mkdir dir="${build}/main-classes/res/xml" />
-		<mkdir dir="${build}/main-classes/res/xml/xhtml" />
-		<mkdir dir="${build}/main-classes/res/xml/xhtml/dtd" />
-		<copy todir="${build}/main-classes/res/xml/xhtml/dtd">
+		<mkdir dir="${build}/main-scratch/res" />
+		<mkdir dir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt2.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt16.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt32.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt.ico" todir="${build}/main-scratch/res/icons" />
+		<mkdir dir="${build}/main-scratch/res/styles" />
+		<copy file="${res}/styles/logpane.css" todir="${build}/main-scratch/res/styles" />
+		<mkdir dir="${build}/main-scratch/res/xml" />
+		<mkdir dir="${build}/main-scratch/res/xml/xhtml" />
+		<mkdir dir="${build}/main-scratch/res/xml/xhtml/dtd" />
+		<copy todir="${build}/main-scratch/res/xml/xhtml/dtd">
 			<FileSet dir="${res}/xml/xhtml/dtd/" />
 		</copy>
 		<jar jarfile="${build}/main/main.jar">
-			<fileset dir="${build}/main-classes" />
+			<fileset dir="${build}/main-scratch" />
 			<fileset file="${res}/strings.properties" />
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
@@ -112,7 +117,7 @@
 			</fileset>
 			<fileset dir="${lib}/..">
 				<include name="lib/preferences.properties" />
-				<include name="lib/retroweaver/release/retroweaver.jar" />
+				<include name="lib/retroweaver/release/retroweaver-rt-1.2.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
 				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
 				<include name="lib/stub/jdic.jar" />

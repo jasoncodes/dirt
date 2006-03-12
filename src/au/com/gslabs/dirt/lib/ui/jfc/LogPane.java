@@ -8,9 +8,10 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.XHTMLEditorKit;
 import java.net.URL;
 
-public class LogPane extends JEditorPane
+public class LogPane extends JScrollPane
 {
 	
+	protected JEditorPane editor;
 	protected XHTMLEditorKit kit;
 	
 	protected static String wrapInXHTMLTags(String data)
@@ -33,25 +34,47 @@ public class LogPane extends JEditorPane
 
 	public LogPane()
 	{
+		super();
+		editor = new JEditorPane();
+		setViewportView(editor);
 		kit = new XHTMLEditorKit();
-		setEditorKit(kit);
-		setEditable(false);
-		System.out.println(wrapInXHTMLTags(""));
+		editor.setEditorKit(kit);
+		editor.setEditable(false);
+	}
+	
+	public JEditorPane getEditor()
+	{
+		return editor;
 	}
 	
 	public void moveToEnd()
 	{
-		setCaretPosition(getDocument().getLength());
+		editor.setCaretPosition(editor.getDocument().getLength());
+	}
+	
+	public boolean isAtEnd()
+	{
+		
+		JScrollBar bar = getVerticalScrollBar();
+		
+		if (!bar.isVisible())
+		{
+			return true;
+		}
+		
+		return bar.getValue()+bar.getVisibleAmount() == bar.getMaximum();
+		
 	}
 	
 	public void appendXHTMLFragment(String xhtml)
 	{
-		moveToEnd();
-		HTMLDocument doc = (HTMLDocument)getDocument();
+		boolean wasAtEnd = this.isAtEnd();
+		int scrollPos = getVerticalScrollBar().getValue();
 		try
 		{
+			HTMLDocument doc = (HTMLDocument)editor.getDocument();
 			String data = wrapInXHTMLTags("<p>"+xhtml+"</p>");
-			kit.insertHTML(doc, doc.getEndPosition().getOffset()-1, data, 0, 0, HTML.Tag.P);
+			kit.insertHTML(doc, doc.getEndPosition().getOffset()-1, data, 1, 0, null);
 		}
 		catch (IOException ex)
 		{
@@ -60,6 +83,14 @@ public class LogPane extends JEditorPane
 		catch (BadLocationException ex)
 		{
 			throw new RuntimeException("Error appending to LogPane", ex);
+		}
+		if (wasAtEnd)
+		{
+			moveToEnd();
+		}
+		else
+		{
+			getVerticalScrollBar().setValue(scrollPos);
 		}
 	}
 	

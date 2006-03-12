@@ -1,6 +1,8 @@
 package au.com.gslabs.dirt.lib.util;
 
 import java.util.Random;
+import java.util.ArrayList;
+import java.text.MessageFormat;
 
 public class TextUtil
 {
@@ -10,6 +12,91 @@ public class TextUtil
 	}
 	
 	protected static Random random = null;
+	
+	public static ArrayList<String> split(String str, char delim)
+	{
+
+		ArrayList<String> tokens = new ArrayList<String>();
+
+		StringBuilder token = new StringBuilder();
+
+		for (int i = 0; i < str.length(); ++i)
+		{
+			if (str.charAt(i) == delim)
+			{
+				tokens.add(token.toString());
+				token = new StringBuilder();
+			}
+			else
+			{
+				token.append(str.charAt(i));
+			}
+		}
+
+		tokens.add(token.toString());
+
+		return tokens;
+
+	}
+	
+	public static String replace(String text, String repl, String with)
+	{
+		return replace(text, repl, with, -1);
+	}
+
+	public static String replace(String text, String repl, String with, int max)
+	{
+		
+		if (text == null)
+		{
+			return null;
+		}
+		
+		StringBuilder sb = new StringBuilder(text.length()+with.length());
+		
+		int start = 0, end = 0;
+		while ((end = text.indexOf(repl, start)) >= 0)
+		{
+			sb.append(text.substring(start, end));
+			sb.append(with);
+			start = end + repl.length();
+			if (--max == 0) break;
+		}
+		sb.append(text.substring(start));
+		
+		return sb.toString();
+		
+	}
+	
+	public static String join(String[] array, String sep)
+	{
+		
+		int count = 0;
+		for (String str : array)
+		{
+			count += str.length() + sep.length();
+		}
+		
+		StringBuilder sb = new StringBuilder(count);
+		
+		for (int i = 0; i < array.length; ++i)
+		{
+			if (i > 0)
+			{
+				sb.append(sep);
+			}
+			sb.append(array[i]);
+		}
+		
+		return sb.toString();
+		
+	}
+	
+	public static String format(String format, Object... params)
+	{
+		MessageFormat mf = new MessageFormat(format);
+		return mf.format(params);
+	}
 	
 	public static String generateRandomChars(int count)
 	{

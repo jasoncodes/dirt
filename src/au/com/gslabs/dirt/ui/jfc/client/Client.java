@@ -10,6 +10,10 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
 import au.com.gslabs.dirt.ui.jfc.*;
 
+// this whole file is currently very messy
+// when I get around to implementing OS X specifics
+// and then abstracting them it will get much cleaner
+// this will be done using MRJAdapter
 ////import com.apple.eawt.*;
 
 public class Client extends JFrame
@@ -29,6 +33,9 @@ public class Client extends JFrame
 		UIUtil.initSwing();
 		new Client();
 	}
+	
+	LogPane txtLog;
+	InputArea txtInput;
 	
 	private Client()
 	{
@@ -78,11 +85,19 @@ public class Client extends JFrame
 		
 		getContentPane().add(pnl, BorderLayout.NORTH);
 		
-		LogPane txtLog = new LogPane();
-		getContentPane().add(new JScrollPane(txtLog), BorderLayout.CENTER);
+		txtLog = new LogPane();
+		getContentPane().add(txtLog, BorderLayout.CENTER);
 		
-		InputArea txtInput = new InputArea();
+		txtInput = new InputArea();
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
+		
+		txtInput.addInputListener(new InputArea.InputListener()
+			{
+				public void inputPerformed(InputArea.InputEvent e)
+				{
+					txtInput_Input(e.getLines());
+				}
+			});
 		
 		for (int i = 0; i < 3; ++i)
 		{
@@ -119,6 +134,14 @@ public class Client extends JFrame
 		
 		setSize(350, 250);
 		setVisible(true);
+	}
+	
+	protected void txtInput_Input(String[] lines)
+	{
+		for (String line : lines)
+		{
+			txtLog.appendText(line);
+		}
 	}
 	
 	protected void cmdPopupQuit_Click()
@@ -331,7 +354,7 @@ public class Client extends JFrame
 			putValue(ACCELERATOR_KEY, shortcut);
 		}
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Close...");
+			dispose();
 		}
 	}
 	
