@@ -1,2 +1,1 @@
-ant dist
-java -jar dist/Dirt.jar
+ant && java -jar dist/Dirt.jar

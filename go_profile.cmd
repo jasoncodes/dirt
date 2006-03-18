@@ -1,2 +1,1 @@
-ant dist
-java -agentlib:yjpagent -jar dist/Dirt.jar
+ant && java -agentlib:yjpagent -jar dist/Dirt.jar
