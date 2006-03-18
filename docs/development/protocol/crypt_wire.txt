@@ -1,0 +1,29 @@
+Low level Dirt crypt protocol documentation:
+
+All integers are in network byte order (big endian)
+All integers are unsigned unless otherwise specified
+
+Every message is prefixed with a 16 bit length
+
+The next 16 bits are the app data length
+(as app messages are not always a multiple of the AES block size)
+If this length is greater than 0, decrypt the remainder of the message,
+trim it to the length specified by the app data length and send to app
+
+if the app data length is 0, this means the message is non-app data
+the next 16 bits define the control message type:
+0 = new public key
+1 = new block key
+if new public key, the following data is an RSA public key to be used for encrypting AES keys being sent to the remote
+if new block key, the following data is a random AES key encrypted with your RSA public key you sent previously. decrypt this key and use it to decrypt all following app data messages
+
+general protocol rules:
+after connection, send your public key
+when you receive a public key, send your block key
+you cannot send app data until you have sent a block key
+you cannot send a block key until you have received the public key
+you can send new block keys as often as you like but you can't send more than one public key
+
+suggested implementation for sending messages:
+keep a buffer of unencrypted messages (ArrayList<byte[]> perhaps) and process these after sending a block key
+rotate the sending block key every so often. Dirt 3.0 does this every 512 KiB or 300 seconds (whichever is sooner). This may be somewhat excessive.
