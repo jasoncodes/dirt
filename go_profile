@@ -1,4 +1,5 @@
 #!/bin/bash -e
+ant
 if [ "`uname -s`" == "Darwin" ]
 then
 	export DYLD_LIBRARY_PATH=/Applications/YourKit\ Java\ Profiler\ 5.1.1.app/bin/mac
