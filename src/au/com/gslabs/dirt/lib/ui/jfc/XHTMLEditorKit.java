@@ -35,6 +35,8 @@ public class XHTMLEditorKit extends HTMLEditorKit
 				
 				if (parser == null)
 				{
+					System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
+						"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					factory.setValidating(true);
 					parser = factory.newSAXParser();
