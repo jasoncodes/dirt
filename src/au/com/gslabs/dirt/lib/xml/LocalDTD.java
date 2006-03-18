@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class LocalDTD implements EntityResolver
 {
-
+	
 	private Hashtable<String,String> entities = new Hashtable<String,String>();
 	
 	// fill the list of URLs
@@ -22,7 +22,7 @@ public class LocalDTD implements EntityResolver
 			"res/xml/xhtml/dtd/xhtml1-transitional.dtd");
 		this.addMapping("-//W3C//DTD XHTML 1.0 Frameset//EN",
 			"res/xml/xhtml/dtd/xhtml1-frameset.dtd");
-
+		
 		// The XHTML 1.0 entity sets
 		this.addMapping("-//W3C//ENTITIES Latin 1 for XHTML//EN",
 			"res/xml/xhtml/dtd/xhtml-lat1.ent");
@@ -30,11 +30,11 @@ public class LocalDTD implements EntityResolver
 			"res/xml/xhtml/dtd/xhtml-symbol.ent");
 		this.addMapping("-//W3C//ENTITIES Special for XHTML//EN",
 			"res/xml/xhtml/dtd/xhtml-special.ent");
-	 
+		
 		// The XHTML 1.1 DTD
 		this.addMapping("-//W3C//DTD XHTML 1.1//EN",
 			"res/xml/xhtml/dtd/xhtml11-flat.dtd");
-
+		
 	}
 
 	private void addMapping(String publicID, String res)
@@ -56,5 +56,5 @@ public class LocalDTD implements EntityResolver
 		throw new SAXException("Unable to resolve \"" + publicID + "\", \"" + systemID + "\"");
 		
 	}
-		
+	
 }

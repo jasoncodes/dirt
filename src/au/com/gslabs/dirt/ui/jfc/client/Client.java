@@ -168,7 +168,6 @@ public class Client extends JFrame
 				params = line.substring(i+1);
 			}
 			cmd = cmd.toUpperCase().trim();
-			params = params.trim();
 			if (cmd.equals("SAY"))
 			{
 				txtLog.appendText(params);
