@@ -7,6 +7,7 @@ import javax.swing.text.html.*;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+import au.com.gslabs.dirt.lib.util.TextUtil;
  
 public class XHTMLEditorKit extends HTMLEditorKit
 {
@@ -35,11 +36,20 @@ public class XHTMLEditorKit extends HTMLEditorKit
 				
 				if (parser == null)
 				{
-					System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
-						"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					factory.setValidating(true);
 					parser = factory.newSAXParser();
+					final String XercesImpl = "org.apache.xerces.jaxp.SAXParserImpl";
+					String implName = parser.getClass().getName();
+					if (!implName.equals(XercesImpl))
+					{
+						System.err.println(TextUtil.format(
+							"Expected \"{0}\" but got \"{1}\"",
+							XercesImpl, implName));
+					}
+					Class poolClass = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl");
+					Object pool = poolClass.newInstance();
+					parser.setProperty("http://apache.org/xml/properties/internal/grammar-pool", pool);
 				}
 			
 				XHTMLSaxHandler handler = new XHTMLSaxHandler(callback);

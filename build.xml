@@ -187,9 +187,6 @@
 		<delete dir="${dist}"/>
 	</target>
 	
-	
-	
-
 	<target name="webstart" depends="jar-main" if="isMac">
 		<mkdir dir="${dist}/webstart" />
 		<copy file="${build}/main/main.jar" todir="${dist}/webstart" />
