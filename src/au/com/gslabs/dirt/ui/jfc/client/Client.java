@@ -7,8 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
-import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
-import au.com.gslabs.dirt.ui.jfc.*;
+import au.com.gslabs.dirt.lib.ui.jfc.*;
 
 // this whole file is currently very messy
 // when I get around to implementing OS X specifics

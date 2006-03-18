@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.ui.jfc;
+package au.com.gslabs.dirt.lib.ui.jfc;
 
 import javax.swing.*;
 import javax.swing.event.*;

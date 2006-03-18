@@ -1,4 +1,1 @@
 http://en.wikipedia.org/wiki/STUN
-
-Possibly move InputArea.java and LogPane.java into src\au\com\gslabs\dirt\ui\jfc\{common|shared|core}
-Possibly create docs, docs/development and docs/release and move notes.txt into docs/development

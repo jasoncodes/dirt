@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.ui.jfc;
+package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.io.IOException;
 import javax.swing.*;
