@@ -39,17 +39,6 @@ public class XHTMLEditorKit extends HTMLEditorKit
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					factory.setValidating(true);
 					parser = factory.newSAXParser();
-					final String XercesImpl = "org.apache.xerces.jaxp.SAXParserImpl";
-					String implName = parser.getClass().getName();
-					if (!implName.equals(XercesImpl))
-					{
-						System.err.println(TextUtil.format(
-							"Expected \"{0}\" but got \"{1}\"",
-							XercesImpl, implName));
-					}
-					Class poolClass = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl");
-					Object pool = poolClass.newInstance();
-					parser.setProperty("http://apache.org/xml/properties/internal/grammar-pool", pool);
 				}
 			
 				XHTMLSaxHandler handler = new XHTMLSaxHandler(callback);
