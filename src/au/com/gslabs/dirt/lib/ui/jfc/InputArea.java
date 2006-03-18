@@ -2,6 +2,7 @@ package au.com.gslabs.dirt.lib.ui.jfc;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import java.awt.event.*;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -29,15 +30,7 @@ public class InputArea extends JScrollPane
 		public void inputPerformed(InputEvent e);
 	}
 	
-	public enum DefaultCommandMode
-	{
-		Never,
-		Always,
-		SingleLine
-	}
-	
 	JTextArea txt;
-	protected DefaultCommandMode defaultCommandMode;
 	protected String defaultCommand;
 	protected String commandPrefix;
 	protected ArrayList<InputListener> listeners;
@@ -50,7 +43,6 @@ public class InputArea extends JScrollPane
 		txt = new JTextArea(1, 0);
 		txt.setRows(1);
 		setViewportView(txt);
-		defaultCommandMode = DefaultCommandMode.Always;
 		defaultCommand = "SAY";
 		commandPrefix = "/";
 		listeners = new ArrayList<InputListener>();
@@ -73,25 +65,43 @@ public class InputArea extends JScrollPane
 				{
 					OnChange();
 				}
-			});	
+			});
+		txt.addKeyListener(new KeyAdapter()
+			{
+				public void keyTyped(KeyEvent e)
+				{
+					if ((e.getKeyChar() == 13 || e.getKeyChar() == 10) && e.isControlDown())
+					{
+						SwingUtilities.invokeLater(new OnChangeHandler(true));
+					}
+				}
+			});
 	}
 	
 	protected void OnChange()
 	{
 		if (txt.getText().indexOf("\n") > -1)
 		{
-			SwingUtilities.invokeLater(new OnChangeHandler());
+			SwingUtilities.invokeLater(new OnChangeHandler(false));
 		}
 	}
 	
 	protected class OnChangeHandler implements Runnable
 	{
+		
+		protected boolean forceDefaultCommand;
+		
+		public OnChangeHandler(boolean forceDefaultCommand)
+		{
+			this.forceDefaultCommand = forceDefaultCommand;
+		}
+		
 		public void run()
 		{
 
 			ArrayList<String> lines = TextUtil.split(txt.getText(), '\n');
 
-			if (lines.size() > 1)
+			if (lines.size() > 1 || forceDefaultCommand)
 			{
 				
 				txt.setText(null);
@@ -108,7 +118,7 @@ public class InputArea extends JScrollPane
 				
 				String[] tmp = null;
 				tmp = lines.toArray(new String[0]);
-				processInput(tmp);
+				processInput(tmp, forceDefaultCommand);
 				
 			}
 			
@@ -116,39 +126,20 @@ public class InputArea extends JScrollPane
 
 	}
 	
-	protected void processInput(String[] lines)
+	protected void processInput(String[] lines, boolean forceDefaultCommand)
 	{
 		
 		if (commandPrefix != null && defaultCommand != null)
 		{
 			
-			boolean ok = false;
-			switch (defaultCommandMode)
+			boolean forceAdd = forceDefaultCommand || lines.length > 1;
+
+			for (int i = 0; i < lines.length; ++i)
 			{
-				case Always:
-					ok = true;
-					break;
-				case SingleLine:
-					ok = lines.length == 1;
-					break;
-				case Never:
-					ok = false;
-					break;
-				default:
-					throw new IllegalArgumentException("Unexpected default command mode");
-			}
-			
-			if (ok)
-			{
-				
-				for (int i = 0; i < lines.length; ++i)
+				if (!lines[i].startsWith(commandPrefix) || forceAdd)
 				{
-					if (!lines[i].startsWith(commandPrefix))
-					{
-						lines[i] = commandPrefix + defaultCommand + " " + lines[i];
-					}
+					lines[i] = commandPrefix + defaultCommand + " " + lines[i];
 				}
-				
 			}
 			
 		}
@@ -179,16 +170,6 @@ public class InputArea extends JScrollPane
 	public void setCommandPrefix(String commandPrefix)
 	{
 		this.commandPrefix = commandPrefix;
-	}
-	
-	public DefaultCommandMode getDefaultCommandMode()
-	{
-		return this.defaultCommandMode;
-	}
-	
-	public void setDefaultCommandMode(DefaultCommandMode defaultCommandMode)
-	{
-		this.defaultCommandMode = defaultCommandMode;
 	}
 	
 	public void addInputListener(InputListener l)

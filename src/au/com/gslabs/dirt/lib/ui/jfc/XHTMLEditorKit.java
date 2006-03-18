@@ -36,6 +36,8 @@ public class XHTMLEditorKit extends HTMLEditorKit
 				
 				if (parser == null)
 				{
+					System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
+						"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					factory.setValidating(true);
 					parser = factory.newSAXParser();
@@ -102,12 +104,17 @@ public class XHTMLEditorKit extends HTMLEditorKit
 		
 		public void error(SAXParseException e) throws SAXException
 		{
-			callback.handleError(e.getMessage(), -1);
+			throw new SAXException("Error", e);
 		}
 		
 		public void fatalError(SAXParseException e) throws SAXException
 		{
-			callback.handleError(e.getMessage(), -1);
+			throw new SAXException("Fatal Error", e);
+		}
+		
+		public void warning(SAXParseException e) throws SAXException
+		{
+			throw new SAXException("Warning", e);
 		}
 		
 		protected EntityResolver resolver = null;

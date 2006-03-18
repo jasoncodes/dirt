@@ -14,17 +14,18 @@ public class LogPane extends JScrollPane
 	protected JEditorPane editor;
 	protected XHTMLEditorKit kit;
 	
+	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
+	
 	protected static String wrapInXHTMLTags(String data)
 	{
-		URL stylesheet = FileUtil.getResource("res/styles/logpane.css");
 		return
 			"<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>\n" +
 			"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \n" +
 			"\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
 			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
-			"<head>\n" +
+			"<head>" +
 			"<title/>\n" +
-			"<link rel=\"stylesheet\" href=\""+stylesheet+"\" type=\"text/css\"/>\n"+
+			"<link rel=\"stylesheet\" href=\""+strStylesheetURL+"\" type=\"text/css\"/>\n"+
 			"</head>\n" +
 			"<body>\n" +
 			data +
