@@ -1,5 +1,13 @@
-p
+div
 {
 	margin: 1px 0px 0px 0px;
 	padding: 0px;
+}
+div.error
+{
+	color: red;
+}
+div.info
+{
+	color: #00008B;
 }

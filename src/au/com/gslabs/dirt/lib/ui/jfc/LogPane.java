@@ -1,18 +1,53 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.io.IOException;
+import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.XHTMLEditorKit;
 import java.net.URL;
+import java.util.*;
 
 public class LogPane extends JScrollPane
 {
 	
+	public class LinkEvent extends EventObject
+	{
+		protected URL url;
+		public LinkEvent(LogPane source, URL url)
+		{
+			super(source);
+			this.url = url;
+		}
+		public URL getURL()
+		{
+			return this.url;
+		}
+	}
+	
+	public interface LinkListener extends EventListener
+	{
+		public void linkClicked(LinkEvent e);
+	}
+
 	protected JEditorPane editor;
 	protected XHTMLEditorKit kit;
+	protected ArrayList<LinkListener> listeners;
+	
+	public LogPane()
+	{
+		super();
+		editor = new JEditorPane();
+		setViewportView(editor);
+		kit = new XHTMLEditorKit();
+		editor.setEditorKit(kit);
+		editor.setEditable(false);
+		addEventListeners();
+		listeners = new ArrayList<LinkListener>();
+	}
 	
 	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
 	
@@ -32,15 +67,33 @@ public class LogPane extends JScrollPane
 			"</body>\n"+
 			"</html>\n";			
 	}
-
-	public LogPane()
+	
+	protected void addEventListeners()
 	{
-		super();
-		editor = new JEditorPane();
-		setViewportView(editor);
-		kit = new XHTMLEditorKit();
-		editor.setEditorKit(kit);
-		editor.setEditable(false);
+		editor.addHyperlinkListener(new HyperlinkListener()
+			{
+				public void hyperlinkUpdate(HyperlinkEvent evt)
+				{
+					if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+					{
+						raiseLinkEvent(evt.getURL());
+					}
+				}
+			});
+	}
+	
+	protected void raiseLinkEvent(URL url)
+	{
+		LinkEvent e = new LinkEvent(this, url);
+		for (int i = listeners.size()-1; i >= 0; --i)
+		{
+			listeners.get(i).linkClicked(e);
+		}	
+	}
+	
+	public void clearText()
+	{
+		editor.setText(wrapInXHTMLTags(""));
 	}
 	
 	public JEditorPane getEditor()
@@ -67,14 +120,21 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	public void appendXHTMLFragment(String xhtml)
+	public void appendXHTMLFragment(String xhtml, String className)
 	{
 		boolean wasAtEnd = this.isAtEnd();
 		int scrollPos = getVerticalScrollBar().getValue();
 		try
 		{
 			HTMLDocument doc = (HTMLDocument)editor.getDocument();
-			String data = wrapInXHTMLTags("<p>"+xhtml+"</p>");
+			String data;
+			data = "<div";
+			if (className != null && className.trim().length() > 0)
+			{
+				data += " class=\""+className+"\"";
+			}
+			data += ">"+xhtml+"</div>";
+			data = wrapInXHTMLTags(data);
 			kit.insertHTML(doc, doc.getEndPosition().getOffset()-1, data, 1, 0, null);
 		}
 		catch (IOException ex)
@@ -97,7 +157,22 @@ public class LogPane extends JScrollPane
 	
 	public void appendText(String text)
 	{
-		appendXHTMLFragment(TextUtil.stringToHTMLString(text));
+		appendText(text, null);
 	}
 	
+	public void appendText(String text, String className)
+	{
+		appendXHTMLFragment(TextUtil.stringToHTMLString(text), className);
+	}
+	
+	public void addLinkListener(LinkListener l)
+	{
+		listeners.add(l);
+	}
+	
+	public void removeLinkListener(LinkListener l)
+	{
+		listeners.remove(l);
+	}
+
 }

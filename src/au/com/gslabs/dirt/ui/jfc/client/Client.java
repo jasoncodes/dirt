@@ -97,6 +97,13 @@ public class Client extends JFrame
 					txtInput_Input(e.getLines());
 				}
 			});
+		txtLog.addLinkListener(new LogPane.LinkListener()
+			{
+				public void linkClicked(LogPane.LinkEvent e)
+				{
+					txtLog_LinkClick(e.getURL());
+				}
+			});
 		
 		for (int i = 0; i < 3; ++i)
 		{
@@ -135,11 +142,72 @@ public class Client extends JFrame
 		setVisible(true);
 	}
 	
+	protected void txtLog_LinkClick(java.net.URL url)
+	{
+		txtLog.appendText("Link clicked: " + url, "info");
+	}
+	
 	protected void txtInput_Input(String[] lines)
 	{
 		for (String line : lines)
 		{
-			txtLog.appendText(line);
+			if (!line.startsWith("/"))
+			{
+				throw new IllegalArgumentException("Expected input to start with slash");
+			}
+			String cmd, params;
+			int i = line.indexOf(" ");
+			if (i < 0)
+			{
+				cmd = line.substring(1);
+				params = "";
+			}
+			else
+			{
+				cmd = line.substring(1, i);
+				params = line.substring(i+1);
+			}
+			cmd = cmd.toUpperCase().trim();
+			params = params.trim();
+			if (cmd.equals("SAY"))
+			{
+				txtLog.appendText(params);
+			}
+			else if (cmd.equals("XHTML"))
+			{
+				try
+				{
+					txtLog.appendXHTMLFragment(params, null);
+				}
+				catch (Exception ex)
+				{
+					Throwable t = ex.getCause();
+					if (t != null)
+					{
+						while (t != null)
+						{
+							txtLog.appendText(t.toString(), "error");
+							t = t.getCause();
+						}
+					}
+					else
+					{
+						txtLog.appendText(ex.toString(), "error");
+					}
+				}
+			}
+			else if (cmd.equals("CLEAR"))
+			{
+				txtLog.clearText();
+			}
+			else if (cmd.equals("HELP"))
+			{
+				txtLog.appendText("Supported commands: CLEAR HELP SAY XHTML", "info");
+			}
+			else
+			{
+				txtLog.appendText("Unknown command: " + cmd, "error");
+			}
 		}
 	}
 	
