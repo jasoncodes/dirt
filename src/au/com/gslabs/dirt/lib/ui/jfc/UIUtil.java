@@ -128,10 +128,16 @@ public class UIUtil
 
 		try
 		{
-    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 		}
 		catch (Exception ex)
 		{
+		}
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		if ( Boolean.TRUE.equals( toolkit.getDesktopProperty( "awt.dynamicLayoutSupported" ) ) )
+		{
+			toolkit.setDynamicLayout( true );
 		}
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
