@@ -1,0 +1,9 @@
+--- config.h.org	2006-08-06 21:40:31.000000000 +1000
++++ config.h	2006-08-06 21:40:04.000000000 +1000
+@@ -84,5 +84,5 @@
+ // To work around this, TYPE_OF_SOCKLEN_T is a macro so that you can change it from the makefile.
+ #ifndef TYPE_OF_SOCKLEN_T
+-#	if defined(_WIN32) || defined(__CYGWIN__) || defined(__MACH__)
++#	if defined(_WIN32) || defined(__CYGWIN__)
+ #		define TYPE_OF_SOCKLEN_T int
+ #	else
