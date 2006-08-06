@@ -1,0 +1,3 @@
+#!/bin/bash
+/bin/ls -1 *.h dll.cpp | while read FILE; do cp "$FILE" /tmp/foo && tr -d '\r' < /tmp/foo > "$FILE"; done
+patch < crypto521gcc41.patch
