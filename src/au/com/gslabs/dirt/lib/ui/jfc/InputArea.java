@@ -49,6 +49,11 @@ public class InputArea extends JScrollPane
 		addEventListeners();
 	}
 	
+	public boolean requestFocusInWindow()
+	{
+		return txt.requestFocusInWindow();
+	}
+	
 	protected void addEventListeners()
 	{
 		txt.getDocument().addDocumentListener(new DocumentListener()

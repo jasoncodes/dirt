@@ -1,1 +1,20 @@
 http://en.wikipedia.org/wiki/STUN
+
+when window is resized, check the scroll position and preserve it (but use percentages not absolute)
+
+inputarea needs a line buffer for previous input
+
+logpane needs support for rendering IRC colours
+
+inputarea needs support for inputting colour
+
+sockets in J2SE and J2ME are going to be implemented using threads for client side
+and probably nio server side. This means the core crypt socket system needs to be abstract and work with buffers. there's an SSL library in maybe 1.5 or 1.6 that uses this paradigm.
+
+Our socket API will invoke callbacks when interesting things happen. All of J2SE, nio and J2ME implementations will implement this API. The crypt socket will wrap the base socket instance and provide transparent encryption and a message (rather than stream) based interface like the 3.0 CryptSocket.
+
+sane initial frame rect
+
+save/restore frame rect
+
+focus detection red line

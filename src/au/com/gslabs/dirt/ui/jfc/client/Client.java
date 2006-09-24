@@ -55,37 +55,7 @@ public class Client extends JFrame
 			}
 		});	
 		
-		
 		getContentPane().setLayout(new BorderLayout());
-		
-		JPanel pnl = new JPanel();
-		
-		pnl.setLayout(new GridLayout(2, 1));
-		
-		JButton cmdTestAlert = new JButton("Test Alert");
-		cmdTestAlert.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent newEvent)
-			{
-				cmdTestAlert_Click();
-			}
-		});
-		pnl.add(cmdTestAlert);
-		
-		JButton cmdTestTray = new JButton("Test Tray");
-		cmdTestTray.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent newEvent)
-			{
-				cmdTestTray_Click();
-			}
-		});
-		pnl.add(cmdTestTray);
-		
-		getContentPane().add(pnl, BorderLayout.NORTH);
-		
-		txtLog = new LogPane();
-		getContentPane().add(txtLog, BorderLayout.CENTER);
 		
 		txtInput = new InputArea();
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
@@ -97,6 +67,10 @@ public class Client extends JFrame
 					txtInput_Input(e.getLines());
 				}
 			});
+		
+		txtLog = new LogPane();
+		getContentPane().add(txtLog, BorderLayout.CENTER);
+		
 		txtLog.addLinkListener(new LogPane.LinkListener()
 			{
 				public void linkClicked(LogPane.LinkEvent e)
@@ -104,11 +78,6 @@ public class Client extends JFrame
 					txtLog_LinkClick(e.getURL());
 				}
 			});
-		
-		for (int i = 0; i < 3; ++i)
-		{
-			txtLog.appendText("Line " + i);
-		}
 		
 		/**
 		fApplication.setEnabledPreferencesMenu(true);
@@ -140,6 +109,8 @@ public class Client extends JFrame
 		
 		setSize(350, 250);
 		setVisible(true);
+		txtInput.requestFocusInWindow();
+		
 	}
 	
 	protected void txtLog_LinkClick(java.net.URL url)
@@ -156,27 +127,60 @@ public class Client extends JFrame
 				throw new IllegalArgumentException("Expected input to start with slash");
 			}
 			String cmd, params;
-			int i = line.indexOf(" ");
-			if (i < 0)
+			int idx = line.indexOf(" ");
+			if (idx < 0)
 			{
 				cmd = line.substring(1);
 				params = "";
 			}
 			else
 			{
-				cmd = line.substring(1, i);
-				params = line.substring(i+1);
+				cmd = line.substring(1, idx);
+				params = line.substring(idx+1);
 			}
 			cmd = cmd.toUpperCase().trim();
 			if (cmd.equals("SAY"))
 			{
 				txtLog.appendText(params);
 			}
+			else if (cmd.equals("TEST"))
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					StringBuilder sb = new StringBuilder();
+					for (int j = 0; j < 7; ++j)
+					{
+						sb.append("Line ");
+						sb.append(i);
+						sb.append(' ');
+					}
+					String tmp = sb.toString().trim();
+					txtLog.appendText(tmp);
+				}
+				txtLog.appendText("Testing 1 2 3. http://dirt.gslabs.com.au/.");
+				char ctrl_b = '\u0002';
+				char ctrl_c = '\u0003';
+				char ctrl_r = '\u0016';
+				char ctrl_u = '\u001f';
+				txtLog.appendText("this " + ctrl_b + "is" + ctrl_b + " " + ctrl_u + "a " + ctrl_c + "9,1test" + ctrl_c + " line");
+				txtLog.appendXHTMLFragment("alpha <font color=green>beta</font> <span style='background: yellow;'>delta</span> gamma -- green white black yellow");
+				txtLog.appendXHTMLFragment("alpha <span style=\"background-color: yellow\">beta</span> <font color=green>delta</font></span> gamma -- black yellow green white");
+				txtLog.appendXHTMLFragment("alpha <font color=green>beta <span style='background: yellow'>delta</span></font></span> gamma -- green white green yellow");
+				txtLog.appendXHTMLFragment("<span style='background: #e0e0e0'><font color='#000080'>these words should be on a single line</font></span>");
+				txtLog.appendText(ctrl_c + "9,1green black " + ctrl_c + "4red black");
+				txtLog.appendText(ctrl_c + "9,1green black" + ctrl_c + " black white");
+				txtLog.appendText(ctrl_c + "3,green");
+				txtLog.appendXHTMLFragment("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line");
+				txtLog.appendXHTMLFragment("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--");
+				txtLog.appendText(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
+				txtLog.appendText("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
+				txtLog.appendText("Space Test: 1 2  3   4    . exclamation line up -> !");
+			}
 			else if (cmd.equals("XHTML"))
 			{
 				try
 				{
-					txtLog.appendXHTMLFragment(params, null);
+					txtLog.appendXHTMLFragment(params);
 				}
 				catch (Exception ex)
 				{
@@ -199,9 +203,17 @@ public class Client extends JFrame
 			{
 				txtLog.clearText();
 			}
+			else if (cmd.equals("ALERT"))
+			{
+				doAlert();
+			}
+			else if (cmd.equals("MINTOTRAY"))
+			{
+				doMinToTray();
+			}
 			else if (cmd.equals("HELP"))
 			{
-				txtLog.appendText("Supported commands: CLEAR HELP SAY XHTML", "info");
+				txtLog.appendText("Supported commands: ALERT CLEAR HELP MINTOTRAY SAY TEST XHTML", "info");
 			}
 			else
 			{
@@ -215,7 +227,7 @@ public class Client extends JFrame
 		System.exit(0);
 	}
 	
-	protected void cmdTestAlert_Click()
+	protected void doAlert()
 	{
 		new Thread(
 			new Runnable()
@@ -234,7 +246,7 @@ public class Client extends JFrame
 			}).start();
 	}
 	
-	protected void cmdTestTray_Click()
+	protected void doMinToTray()
 	{
 	
 		try

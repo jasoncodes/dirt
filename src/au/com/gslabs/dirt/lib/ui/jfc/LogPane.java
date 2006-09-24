@@ -120,10 +120,40 @@ public class LogPane extends JScrollPane
 		
 	}
 	
+	public void appendXHTMLFragment(String xhtml)
+	{
+		appendXHTMLFragment(xhtml, null);
+	}
+	
+	protected class DoScroll implements Runnable
+	{
+		
+		protected int pos;
+		
+		public DoScroll(int pos)
+		{
+			this.pos = pos;
+		}
+		
+		public void run()
+		{
+			if (pos < 0) // wasAtEnd
+			{
+				moveToEnd();
+			}
+			else
+			{
+				getVerticalScrollBar().setValue(pos);
+			}
+		}
+		
+	}
+	
 	public void appendXHTMLFragment(String xhtml, String className)
 	{
-		boolean wasAtEnd = this.isAtEnd();
-		int scrollPos = getVerticalScrollBar().getValue();
+		
+		int scrollPos = this.isAtEnd() ? -1 : getVerticalScrollBar().getValue();
+		
 		try
 		{
 			HTMLDocument doc = (HTMLDocument)editor.getDocument();
@@ -145,14 +175,9 @@ public class LogPane extends JScrollPane
 		{
 			throw new RuntimeException("Error appending to LogPane", ex);
 		}
-		if (wasAtEnd)
-		{
-			moveToEnd();
-		}
-		else
-		{
-			getVerticalScrollBar().setValue(scrollPos);
-		}
+		
+		SwingUtilities.invokeLater(new DoScroll(scrollPos));
+		
 	}
 	
 	public void appendText(String text)

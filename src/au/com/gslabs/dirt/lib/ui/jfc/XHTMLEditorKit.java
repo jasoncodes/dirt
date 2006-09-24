@@ -36,11 +36,23 @@ public class XHTMLEditorKit extends HTMLEditorKit
 				
 				if (parser == null)
 				{
-					System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
-						"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
+					
+					/* The following makes things a lot faster but unfortunately causes 
+					   rather unfortunate side affect:
+					     org.xml.sax.SAXParseException: The entity "nbsp" was referenced, but not declared.
+					   This would appear to be an xerces bug. The problem also exists when
+					   setting http://apache.org/xml/properties/internal/grammar-pool directly
+					   with a org.apache.xerces.util.XMLGrammarPoolImpl */
+					//System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
+					//	"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
+					
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					factory.setValidating(true);
+					factory.setFeature("http://xml.org/sax/features/validation", true);
+					//factory.setFeature("http://apache.org/xml/features/validation/schema", true);
+					
 					parser = factory.newSAXParser();
+					
 				}
 			
 				XHTMLSaxHandler handler = new XHTMLSaxHandler(callback);
@@ -114,7 +126,18 @@ public class XHTMLEditorKit extends HTMLEditorKit
 		
 		public void warning(SAXParseException e) throws SAXException
 		{
+			
+			if (e.getPublicId().equals("-//W3C//DTD XHTML 1.1//EN") &&
+				e.getMessage().startsWith("Using original entity definition for "))
+			{
+				return;
+			}
+			
+			System.err.println("SAX Warning:");
+			System.err.println(e.getPublicId());
+			System.err.println(e.getMessage());
 			throw new SAXException("Warning", e);
+			
 		}
 		
 		protected EntityResolver resolver = null;
