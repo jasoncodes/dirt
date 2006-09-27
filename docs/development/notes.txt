@@ -1,6 +1,6 @@
 http://en.wikipedia.org/wiki/STUN
 
-when window is resized, check the scroll position and preserve it (but use percentages not absolute)
+when window is resized the scroll position doesn't preserve when the text wrapping changes
 
 inputarea needs a line buffer for previous input
 
@@ -18,3 +18,6 @@ sane initial frame rect
 save/restore frame rect
 
 focus detection red line
+
+wrapping of long tokens
+	http://innovative-java.com/articles/Hyphenation_In_JEditorPane.html

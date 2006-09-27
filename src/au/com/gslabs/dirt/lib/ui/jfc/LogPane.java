@@ -3,6 +3,8 @@ package au.com.gslabs.dirt.lib.ui.jfc;
 import java.io.IOException;
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
@@ -36,17 +38,45 @@ public class LogPane extends JScrollPane
 	protected JEditorPane editor;
 	protected XHTMLEditorKit kit;
 	protected ArrayList<LinkListener> listeners;
+	protected boolean lastIsAtEnd;
 	
 	public LogPane()
 	{
+		
 		super();
+		
+		lastIsAtEnd = true;
+
 		editor = new JEditorPane();
-		setViewportView(editor);
 		kit = new XHTMLEditorKit();
 		editor.setEditorKit(kit);
 		editor.setEditable(false);
+		setViewportView(editor);
+		setLayout(new LogPaneLayout());
+
 		addEventListeners();
+
 		listeners = new ArrayList<LinkListener>();
+
+	}
+	
+	protected class LogPaneLayout extends ScrollPaneLayout
+	{
+
+	 	public void layoutContainer(java.awt.Container parent)
+		{
+			
+			super.layoutContainer(parent);
+			
+			int pref = editor.getPreferredSize().height;
+			int actual = editor.getSize().height;
+			if (actual > pref)
+			{
+				editor.setLocation(0, actual-pref);
+			}
+			
+		}
+
 	}
 	
 	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
@@ -70,6 +100,34 @@ public class LogPane extends JScrollPane
 	
 	protected void addEventListeners()
 	{
+		
+		getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
+			{
+				public void adjustmentValueChanged(AdjustmentEvent evt)
+				{
+					SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+								System.err.println("adjustmentValueChanged " + lastIsAtEnd + " " + isAtEnd());
+								lastIsAtEnd = isAtEnd();
+							}
+						});
+				}
+			});
+		
+		this.addComponentListener(new ComponentAdapter()
+			{
+				public void componentResized(ComponentEvent e)
+				{
+					System.err.println("componentResized " + lastIsAtEnd + " " + isAtEnd());
+					if (lastIsAtEnd)
+					{
+						SwingUtilities.invokeLater(new DoScroll(-1));
+					}
+				}
+			});
+		
 		editor.addHyperlinkListener(new HyperlinkListener()
 			{
 				public void hyperlinkUpdate(HyperlinkEvent evt)
@@ -80,6 +138,7 @@ public class LogPane extends JScrollPane
 					}
 				}
 			});
+		
 	}
 	
 	protected void raiseLinkEvent(URL url)
@@ -94,6 +153,7 @@ public class LogPane extends JScrollPane
 	public void clearText()
 	{
 		editor.setText(wrapInXHTMLTags(""));
+		lastIsAtEnd = true;
 	}
 	
 	public JEditorPane getEditor()
@@ -103,7 +163,16 @@ public class LogPane extends JScrollPane
 	
 	public void moveToEnd()
 	{
+		
 		editor.setCaretPosition(editor.getDocument().getLength());
+		
+		JScrollBar bar = getVerticalScrollBar();
+		bar.setValue(bar.getMaximum());
+		
+		System.err.println("moveToEnd " + lastIsAtEnd + " " + isAtEnd() + " " + bar.getMaximum());
+		
+		lastIsAtEnd = true;
+		
 	}
 	
 	public boolean isAtEnd()
@@ -145,6 +214,8 @@ public class LogPane extends JScrollPane
 			{
 				getVerticalScrollBar().setValue(pos);
 			}
+			System.err.println("DoScroll " + lastIsAtEnd + " " + isAtEnd());
+			lastIsAtEnd = isAtEnd();
 		}
 		
 	}
