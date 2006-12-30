@@ -1,7 +1,8 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import au.com.gslabs.dirt.lib.xml.LocalDTD;
-import java.io.*; 
+import java.io.*;
+import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.xml.parsers.*;
@@ -152,4 +153,50 @@ public class XHTMLEditorKit extends HTMLEditorKit
 		}
 		
 	}
+	
+	private static class WordSplittingParagraphView extends javax.swing.text.html.ParagraphView
+	{
+		
+		public WordSplittingParagraphView(Element elem)
+		{
+			super(elem);
+		}
+		
+		protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r)
+		{
+			SizeRequirements sup = super.calculateMinorAxisRequirements(axis, r);
+			sup.minimum = 1;
+			return sup;
+		}
+		
+	}
+	
+	public ViewFactory getViewFactory()
+	{
+		return new MyViewFactory(super.getViewFactory());
+	}
+	
+	private static class MyViewFactory implements ViewFactory
+	{
+		
+		private final ViewFactory parent;
+		
+		public MyViewFactory(ViewFactory parent)
+		{
+			this.parent = parent;
+		}
+		
+		public View create(Element elem)
+		{
+			AttributeSet attr = elem.getAttributes();
+			Object name = attr.getAttribute(StyleConstants.NameAttribute);
+			if (name == HTML.Tag.P || name == HTML.Tag.IMPLIED)
+			{
+				return new WordSplittingParagraphView(elem);
+			}
+			return parent.create(elem);
+		}
+		
+	}
+	
 }
