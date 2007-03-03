@@ -49,11 +49,18 @@ public class Client extends JFrame
 		
 		this.addWindowListener(new WindowAdapter()
 		{
+			
 			public void windowClosing(WindowEvent event)
 			{
 				onClose();
 			}
-		});	
+			
+			public void windowActivated(WindowEvent e)
+			{
+				txtInput.requestFocusInWindow();
+			}
+			
+		});
 		
 		getContentPane().setLayout(new BorderLayout());
 		
