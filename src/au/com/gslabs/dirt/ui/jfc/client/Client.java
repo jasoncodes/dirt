@@ -29,11 +29,8 @@ public class Client extends JFrame
 	
 	public static void init()
 	{
-		System.out.println("1");
 		UIUtil.initSwing();
-		System.out.println("2");
 		new Client();
-		System.out.println("3");
 	}
 	
 	LogPane txtLog;

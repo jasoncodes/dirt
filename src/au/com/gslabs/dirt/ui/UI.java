@@ -11,7 +11,6 @@ public class UI
 	{
 		
 		boolean cli = false;
-		boolean gui = false;
 		
 		for (String arg : args)
 		{
@@ -19,17 +18,9 @@ public class UI
 			{
 				cli = true;
 			}
-			if (arg.equals("--gui"))
-			{
-				gui = true;
-			}
 		}
 		
-		if (gui)
-		{
-			au.com.gslabs.dirt.ui.jfc.client.Client.init();
-		}
-		else if (cli)
+		if (cli)
 		{
 			au.com.gslabs.dirt.ui.cli.client.Client.init();
 		}
@@ -39,7 +30,7 @@ public class UI
 			{
 				au.com.gslabs.dirt.ui.jfc.client.Client.init();
 			}
-			catch (Exception ex)
+			catch (java.lang.reflect.InvocationTargetException ex)
 			{
 				au.com.gslabs.dirt.ui.cli.client.Client.init();
 			}
