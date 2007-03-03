@@ -15,5 +15,9 @@ p.error
 }
 p.info
 {
-	color: #00008B;
+	color: #000080;
+}
+p.status
+{
+	color: #008000;
 }

@@ -11,6 +11,7 @@ public class UI
 	{
 		
 		boolean cli = false;
+		boolean gui = false;
 		
 		for (String arg : args)
 		{
@@ -18,15 +19,30 @@ public class UI
 			{
 				cli = true;
 			}
+			if (arg.equals("--gui"))
+			{
+				gui = true;
+			}
 		}
 		
-		if (cli)
+		if (gui)
+		{
+			au.com.gslabs.dirt.ui.jfc.client.Client.init();
+		}
+		else if (cli)
 		{
 			au.com.gslabs.dirt.ui.cli.client.Client.init();
 		}
 		else
 		{
-			au.com.gslabs.dirt.ui.jfc.client.Client.init();
+			try
+			{
+				au.com.gslabs.dirt.ui.jfc.client.Client.init();
+			}
+			catch (Exception ex)
+			{
+				au.com.gslabs.dirt.ui.cli.client.Client.init();
+			}
 		}
 		
 	}
