@@ -115,7 +115,7 @@ public class Client extends JFrame
 	
 	protected void txtLog_LinkClick(java.net.URL url)
 	{
-		txtLog.appendText("Link clicked: " + url, "info");
+		txtLog.appendTextLine("Link clicked: " + url, "info");
 	}
 	
 	protected void txtInput_Input(String[] lines)
@@ -141,7 +141,7 @@ public class Client extends JFrame
 			cmd = cmd.toUpperCase().trim();
 			if (cmd.equals("SAY"))
 			{
-				txtLog.appendText(params);
+				txtLog.appendTextLine(params);
 			}
 			else if (cmd.equals("TEST"))
 			{
@@ -155,49 +155,30 @@ public class Client extends JFrame
 						sb.append(' ');
 					}
 					String tmp = sb.toString().trim();
-					txtLog.appendText(tmp);
+					txtLog.appendTextLine(tmp);
 				}
-				txtLog.appendText("Testing 1 2 3. http://dirt.gslabs.com.au/.");
+				txtLog.appendTextLine("Testing 1 2 3. http://dirt.gslabs.com.au/.");
 				char ctrl_b = '\u0002';
 				char ctrl_c = '\u0003';
 				char ctrl_r = '\u0016';
 				char ctrl_u = '\u001f';
-				txtLog.appendText("this " + ctrl_b + "is" + ctrl_b + " " + ctrl_u + "a " + ctrl_c + "9,1test" + ctrl_c + " line");
-				txtLog.appendXHTMLFragment("alpha <font color=green>beta</font> <span style='background: yellow;'>delta</span> gamma -- green white black yellow");
-				txtLog.appendXHTMLFragment("alpha <span style=\"background-color: yellow\">beta</span> <font color=green>delta</font></span> gamma -- black yellow green white");
-				txtLog.appendXHTMLFragment("alpha <font color=green>beta <span style='background: yellow'>delta</span></font></span> gamma -- green white green yellow");
-				txtLog.appendXHTMLFragment("<span style='background: #e0e0e0'><font color='#000080'>these words should be on a single line</font></span>");
-				txtLog.appendText(ctrl_c + "9,1green black " + ctrl_c + "4red black");
-				txtLog.appendText(ctrl_c + "9,1green black" + ctrl_c + " black white");
-				txtLog.appendText(ctrl_c + "3,green");
-				txtLog.appendXHTMLFragment("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line");
-				txtLog.appendXHTMLFragment("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--");
-				txtLog.appendText(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
-				txtLog.appendText("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
-				txtLog.appendText("Space Test: 1 2  3   4    . exclamation line up -> !");
+				txtLog.appendTextLine("this " + ctrl_b + "is" + ctrl_b + " " + ctrl_u + "a " + ctrl_c + "9,1test" + ctrl_c + " line");
+				txtLog.appendXHTMLLine("alpha <font color=green>beta</font> <span style='background: yellow;'>delta</span> gamma -- green white black yellow");
+				txtLog.appendXHTMLLine("alpha <span style=\"background-color: yellow\">beta</span> <font color=green>delta</font></span> gamma -- black yellow green white");
+				txtLog.appendXHTMLLine("alpha <font color=green>beta <span style='background: yellow'>delta</span></font></span> gamma -- green white green yellow");
+				txtLog.appendXHTMLLine("<span style='background: #e0e0e0'><font color='#000080'>these words should be on a single line</font></span>");
+				txtLog.appendTextLine(ctrl_c + "9,1green black " + ctrl_c + "4red black");
+				txtLog.appendTextLine(ctrl_c + "9,1green black" + ctrl_c + " black white");
+				txtLog.appendTextLine(ctrl_c + "3,green");
+				txtLog.appendXHTMLLine("no <span style='background: yellow'></span> colour<span style='background: #e0e0e0'></span> on <b></b>this <font color=red></font>line");
+				txtLog.appendXHTMLLine("a single 'x' with yellow bg --&gt; <span style='background: yellow'>x</span> &lt;--");
+				txtLog.appendTextLine(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
+				txtLog.appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
+				txtLog.appendTextLine("Space Test: 1 2  3   4    . exclamation line up -> !");
 			}
 			else if (cmd.equals("XHTML"))
 			{
-				try
-				{
-					txtLog.appendXHTMLFragment(params);
-				}
-				catch (Exception ex)
-				{
-					Throwable t = ex.getCause();
-					if (t != null)
-					{
-						while (t != null)
-						{
-							txtLog.appendText(t.toString(), "error");
-							t = t.getCause();
-						}
-					}
-					else
-					{
-						txtLog.appendText(ex.toString(), "error");
-					}
-				}
+				txtLog.appendXHTMLLine(params);
 			}
 			else if (cmd.equals("CLEAR"))
 			{
@@ -213,11 +194,11 @@ public class Client extends JFrame
 			}
 			else if (cmd.equals("HELP"))
 			{
-				txtLog.appendText("Supported commands: ALERT CLEAR HELP MINTOTRAY SAY TEST XHTML", "info");
+				txtLog.appendTextLine("Supported commands: ALERT CLEAR HELP MINTOTRAY SAY TEST XHTML", "info");
 			}
 			else
 			{
-				txtLog.appendText("Unknown command: " + cmd, "error");
+				txtLog.appendTextLine("Unknown command: " + cmd, "error");
 			}
 		}
 	}

@@ -3,15 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>docs/development/notes.txt</string>
+	<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>children</key>
 			<array>
 				<dict>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>docs</string>
 					<key>regexFolderFilter</key>
@@ -20,8 +18,6 @@
 					<string>docs</string>
 				</dict>
 				<dict>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>dirt</string>
 					<key>regexFolderFilter</key>
@@ -29,9 +25,15 @@
 					<key>sourceDirectory</key>
 					<string>src/au/com/gslabs/dirt</string>
 				</dict>
+				<dict>
+					<key>name</key>
+					<string>res</string>
+					<key>regexFolderFilter</key>
+					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+					<key>sourceDirectory</key>
+					<string>res</string>
+				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>DirtJava</string>
 		</dict>
@@ -39,7 +41,7 @@
 			<key>filename</key>
 			<string>build.xml</string>
 			<key>lastUsed</key>
-			<date>2006-09-26T20:04:01Z</date>
+			<date>2006-09-26T20:17:00Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
@@ -51,23 +53,100 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>43</integer>
+				<integer>90</integer>
 				<key>line</key>
-				<integer>11</integer>
+				<integer>2</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>res/styles/logpane.css</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>23</integer>
+				<key>line</key>
+				<integer>3</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>49</integer>
+				<key>line</key>
+				<integer>62</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>60</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>39</integer>
+				<key>line</key>
+				<integer>62</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>55</integer>
+				<key>line</key>
+				<integer>62</integer>
+			</dict>
+		</dict>
+		<key>src/au/com/gslabs/dirt/ui/jfc/client/Client.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>33</integer>
+				<key>line</key>
+				<integer>117</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>98</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>26</integer>
+				<key>line</key>
+				<integer>117</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>33</integer>
+				<key>line</key>
+				<integer>117</integer>
+			</dict>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>docs/development/notes.txt</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
+		<string>src/au/com/gslabs/dirt/ui/jfc/client/Client.java</string>
+		<string>res/styles/logpane.css</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{283, 120}, {813, 529}}</string>
+	<string>{{296, 177}, {762, 532}}</string>
 </dict>
 </plist>

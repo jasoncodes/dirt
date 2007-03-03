@@ -154,14 +154,15 @@ public class XHTMLEditorKit extends HTMLEditorKit
 		
 	}
 	
-	private static class WordSplittingParagraphView extends javax.swing.text.html.ParagraphView
+	private static class MyParagraphView extends javax.swing.text.html.ParagraphView
 	{
 		
-		public WordSplittingParagraphView(Element elem)
+		public MyParagraphView(Element elem)
 		{
 			super(elem);
 		}
 		
+		/* make sure long words don't prevent wrapping */
 		protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r)
 		{
 			SizeRequirements sup = super.calculateMinorAxisRequirements(axis, r);
@@ -192,7 +193,7 @@ public class XHTMLEditorKit extends HTMLEditorKit
 			Object name = attr.getAttribute(StyleConstants.NameAttribute);
 			if (name == HTML.Tag.P || name == HTML.Tag.IMPLIED)
 			{
-				return new WordSplittingParagraphView(elem);
+				return new MyParagraphView(elem);
 			}
 			return parent.create(elem);
 		}

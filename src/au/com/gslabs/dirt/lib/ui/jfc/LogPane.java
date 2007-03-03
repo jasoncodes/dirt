@@ -53,6 +53,7 @@ public class LogPane extends JScrollPane
 		editor.setEditable(false);
 		setViewportView(editor);
 		setLayout(new LogPaneLayout());
+		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		addEventListeners();
 
@@ -65,20 +66,23 @@ public class LogPane extends JScrollPane
 
 	 	public void layoutContainer(java.awt.Container parent)
 		{
-			
 			super.layoutContainer(parent);
-			
-			int pref = editor.getPreferredSize().height;
-			int actual = editor.getSize().height;
-			if (actual > pref)
-			{
-				editor.setLocation(0, actual-pref);
-			}
-			
+			positionContentArea();
 		}
-
+		
 	}
 	
+	protected void positionContentArea()
+	{
+		FileUtil.debugMsg("LogPane", "positionContentArea");
+		int pref = editor.getPreferredSize().height;
+		int actual = editor.getSize().height;
+		if (actual > pref)
+		{
+			editor.setLocation(0, actual-pref);
+		}
+	}
+
 	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
 	
 	protected static String wrapInXHTMLTags(String data)
@@ -109,7 +113,7 @@ public class LogPane extends JScrollPane
 						{
 							public void run()
 							{
-								System.err.println("adjustmentValueChanged " + lastIsAtEnd + " " + isAtEnd());
+								FileUtil.debugMsg("LogPane", "adjustmentValueChanged " + lastIsAtEnd + " " + isAtEnd());
 								lastIsAtEnd = isAtEnd();
 							}
 						});
@@ -120,7 +124,7 @@ public class LogPane extends JScrollPane
 			{
 				public void componentResized(ComponentEvent e)
 				{
-					System.err.println("componentResized " + lastIsAtEnd + " " + isAtEnd());
+					FileUtil.debugMsg("LogPane", "componentResized " + lastIsAtEnd + " " + isAtEnd());
 					if (lastIsAtEnd)
 					{
 						SwingUtilities.invokeLater(new DoScroll(-1));
@@ -169,7 +173,7 @@ public class LogPane extends JScrollPane
 		JScrollBar bar = getVerticalScrollBar();
 		bar.setValue(bar.getMaximum());
 		
-		System.err.println("moveToEnd " + lastIsAtEnd + " " + isAtEnd() + " " + bar.getMaximum());
+		FileUtil.debugMsg("LogPane", "moveToEnd " + lastIsAtEnd + " " + isAtEnd() + " " + bar.getMaximum());
 		
 		lastIsAtEnd = true;
 		
@@ -187,11 +191,6 @@ public class LogPane extends JScrollPane
 		
 		return bar.getValue()+bar.getVisibleAmount() == bar.getMaximum();
 		
-	}
-	
-	public void appendXHTMLFragment(String xhtml)
-	{
-		appendXHTMLFragment(xhtml, null);
 	}
 	
 	protected class DoScroll implements Runnable
@@ -214,29 +213,80 @@ public class LogPane extends JScrollPane
 			{
 				getVerticalScrollBar().setValue(pos);
 			}
-			System.err.println("DoScroll " + lastIsAtEnd + " " + isAtEnd());
+			positionContentArea();
+			FileUtil.debugMsg("LogPane", "DoScroll " + lastIsAtEnd + " " + isAtEnd());
 			lastIsAtEnd = isAtEnd();
 		}
 		
 	}
 	
-	public void appendXHTMLFragment(String xhtml, String className)
+	StringBuilder buffer = new StringBuilder();
+	WorkQueue queue = new WorkQueue(1);
+	
+	private class AppendXHTMLWorker implements Runnable
 	{
+		public void run()
+		{
+			String xhtml;
+			synchronized (queue)
+			{
+				xhtml = buffer.toString();
+				buffer = new StringBuilder();
+			}
+			if (xhtml.length() > 0)
+			{
+				synchronized (editor)
+				{
+					try
+					{
+						doAppendXHTMLFragment(xhtml);
+					}
+					catch (Exception ex)
+					{
+						handleAppendError(ex);
+					}
+				}
+			}
+		}
+	}
+	
+	private void handleAppendError(Exception ex)
+	{
+		Throwable t = ex.getCause();
+		if (t != null)
+		{
+			while (t != null)
+			{
+				appendTextLine(t.toString(), "error");
+				t = t.getCause();
+			}
+		}
+		else
+		{
+			appendTextLine(ex.toString(), "error");
+		}
+	}
+	
+	private void appendXHTMLFragment(String xhtml)
+	{
+		synchronized (queue)
+		{
+			buffer.append(xhtml);
+			queue.execute(new AppendXHTMLWorker());
+		}
+	}
+	
+	private void doAppendXHTMLFragment(String xhtml)
+	{
+		
+		xhtml = wrapInXHTMLTags(xhtml);
 		
 		int scrollPos = this.isAtEnd() ? -1 : getVerticalScrollBar().getValue();
 		
 		try
 		{
 			HTMLDocument doc = (HTMLDocument)editor.getDocument();
-			String data;
-			data = "<div";
-			if (className != null && className.trim().length() > 0)
-			{
-				data += " class=\""+className+"\"";
-			}
-			data += ">"+xhtml+"</div>";
-			data = wrapInXHTMLTags(data);
-			kit.insertHTML(doc, doc.getEndPosition().getOffset()-1, data, 1, 0, null);
+			kit.insertHTML(doc, doc.getEndPosition().getOffset()-1, xhtml, 1, 0, null);
 		}
 		catch (IOException ex)
 		{
@@ -251,14 +301,31 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	public void appendText(String text)
+	public void appendXHTMLLine(String xhtml)
 	{
-		appendText(text, null);
+		appendXHTMLLine(xhtml, null);
 	}
 	
-	public void appendText(String text, String className)
+	public void appendXHTMLLine(String xhtml, String className)
 	{
-		appendXHTMLFragment(TextUtil.stringToHTMLString(text), className);
+		String data;
+		data = "<p";
+		if (className != null && className.trim().length() > 0)
+		{
+			data += " class=\""+className+"\"";
+		}
+		data += ">"+xhtml+"</p>\n";
+		appendXHTMLFragment(data);
+	}
+	
+	public void appendTextLine(String text)
+	{
+		appendTextLine(text, null);
+	}
+	
+	public void appendTextLine(String text, String className)
+	{
+		appendXHTMLLine(TextUtil.stringToHTMLString(text), className);
 	}
 	
 	public void addLinkListener(LinkListener l)

@@ -1,12 +1,23 @@
+http://retrotranslator.sourceforge.net/
+
 http://en.wikipedia.org/wiki/STUN
 
+Mac OS X integration
+
 when window is resized the scroll position doesn't preserve when the text wrapping changes
+
+select all or dragging the caret past the end of the text when there are multiple lines causes all the text to jump to the top of the window
 
 inputarea needs a line buffer for previous input
 
 logpane needs support for rendering IRC colours
 
+longpane URL highlighting
+
 inputarea needs support for inputting colour
+
+indented wrapping of long lines
+	http://groups.google.com.au/group/comp.lang.java.gui/browse_thread/thread/db1d177fe760cb77
 
 sockets in J2SE and J2ME are going to be implemented using threads for client side
 and probably nio server side. This means the core crypt socket system needs to be abstract and work with buffers. there's an SSL library in maybe 1.5 or 1.6 that uses this paradigm.
@@ -18,6 +29,3 @@ sane initial frame rect
 save/restore frame rect
 
 focus detection red line
-
-wrapping of long tokens
-	http://innovative-java.com/articles/Hyphenation_In_JEditorPane.html

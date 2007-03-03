@@ -1,17 +1,19 @@
 body
 {
 	font-family: "Frutiger", "Lucida Grande", "Tahoma", "Arial Unicode MS", "Helvetica", "Arial", san-serif;
+	word-wrap: break-word;
 }
-div
+p
 {
-	margin: 1px 0px 0px 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
+	margin-top: 1px;
 }
-div.error
+p.error
 {
 	color: red;
 }
-div.info
+p.info
 {
 	color: #00008B;
 }

@@ -253,5 +253,12 @@ public class FileUtil
 			out.write(buf, 0, read);
 		}
 	}
-
+	
+	public static void debugMsg(String src, String msg)
+	{
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+		java.util.Calendar c = java.util.Calendar.getInstance(); // today
+		System.err.println(sdf.format(c.getTime()) + src + ": " + msg);
+	}
+	
 }
