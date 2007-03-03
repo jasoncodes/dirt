@@ -31,7 +31,7 @@ public class UI
 		}
 		else if (cli)
 		{
-			au.com.gslabs.dirt.ui.cli.client.Client.init();
+			au.com.gslabs.dirt.ui.cli.client.ClientCLI.init();
 		}
 		else
 		{
@@ -41,7 +41,7 @@ public class UI
 			}
 			catch (RuntimeException ex)
 			{
-				au.com.gslabs.dirt.ui.cli.client.Client.init();
+				au.com.gslabs.dirt.ui.cli.client.ClientCLI.init();
 			}
 		}
 		

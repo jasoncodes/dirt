@@ -44,6 +44,7 @@
 			debuglevel="lines,vars,source">
 			<classpath>
 				<pathelement location="${lib}/stub/jdic.jar" />
+				<pathelement location="${lib}/common/jline.jar" />
 			</classpath>
 			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
@@ -118,6 +119,7 @@
 			<fileset dir="${lib}/..">
 				<include name="lib/preferences.properties" />
 				<include name="lib/retroweaver/release/retroweaver-rt-1.2.jar" />
+				<include name="lib/common/jline.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
 				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
 				<include name="lib/stub/jdic.jar" />

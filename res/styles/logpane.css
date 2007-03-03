@@ -1,6 +1,7 @@
 body
 {
-	font-family: "Frutiger", "Lucida Grande", "Tahoma", "Arial Unicode MS", "Helvetica", "Arial", san-serif;
+	/* font-family: "Frutiger", "Lucida Grande", "Tahoma", "Arial Unicode MS", "Helvetica", "Arial", san-serif; */
+	font-family: Monaco, monospace;
 	word-wrap: break-word;
 }
 p
@@ -9,6 +10,7 @@ p
 	padding: 0;
 	margin-top: 1px;
 }
+p.warning,
 p.error
 {
 	color: red;
@@ -20,4 +22,8 @@ p.info
 p.status
 {
 	color: #008000;
+}
+p.debug
+{
+	color: #888;
 }
