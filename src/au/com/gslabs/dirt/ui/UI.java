@@ -30,7 +30,7 @@ public class UI
 			{
 				au.com.gslabs.dirt.ui.jfc.client.Client.init();
 			}
-			catch (java.lang.reflect.InvocationTargetException ex)
+			catch (Exception ex)
 			{
 				au.com.gslabs.dirt.ui.cli.client.Client.init();
 			}
