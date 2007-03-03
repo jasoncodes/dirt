@@ -7,9 +7,28 @@ public class UI
 	{
 	}
 
-	public static void startClient()
+	public static void startClient(String[] args)
 	{
-		au.com.gslabs.dirt.ui.jfc.client.Client.init();
+		
+		boolean cli = false;
+		
+		for (String arg : args)
+		{
+			if (arg.equals("--console"))
+			{
+				cli = true;
+			}
+		}
+		
+		if (cli)
+		{
+			au.com.gslabs.dirt.ui.cli.client.Client.init();
+		}
+		else
+		{
+			au.com.gslabs.dirt.ui.jfc.client.Client.init();
+		}
+		
 	}
 
 }
