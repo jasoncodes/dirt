@@ -36,4 +36,9 @@ public class ByteBuffer
 		}
 	}
 	
+	public int length()
+	{
+		return data.length;
+	}
+	
 }
