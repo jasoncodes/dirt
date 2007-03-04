@@ -1,10 +1,10 @@
 package au.com.gslabs.dirt.core.client;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import au.com.gslabs.dirt.lib.util.ByteBuffer;
+import java.util.Map;
 import au.com.gslabs.dirt.core.client.enums.*;
+import au.com.gslabs.dirt.lib.util.ByteBuffer;
+import au.com.gslabs.dirt.lib.util.Duration;
 
 public interface ClientListener extends java.util.EventListener
 {
@@ -16,11 +16,11 @@ public interface ClientListener extends java.util.EventListener
 	public void clientStateChanged(Client source);
 	public void clientChatMessage(Client source, String context, String nick, String text, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility);
 	public void clientCTCP(Client source, String context, String nick, String type, ByteBuffer data, MessageDirection direction, CTCPStage stage);
-	public void clientUserListReceived(Client source, ArrayList<String> nicklist);
+	public void clientUserListReceived(Client source, String[] nicklist);
 	public void clientUserJoin(Client source, String nick, String details);
 	public void clientUserPart(Client source, String nick, String details, String message);
-	public void clientUserNick(Client source, String nick, String new_nick);
-	public void clientUserStatus(Client source, String nick, String message, Date away_time, long away_duration_secs, long previous_away_duration_secs, String previous_away_message);
-	public void clientUserWhois(Client source, String context, HashMap<String,ByteBuffer> details);
+	public void clientUserNick(Client source, String old_nick, String new_nick);
+	public void clientUserStatus(Client source, String nick, UserStatus status, String message, Date away_start, Duration away_duration, Duration previous_away_duration, String previous_away_message);
+	public void clientUserWhois(Client source, String context, Map<String,ByteBuffer> details);
 	
 }

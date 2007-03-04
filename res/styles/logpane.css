@@ -19,7 +19,8 @@ p.ctcp
 {
 	color: red;
 }
-p.info
+p.info,
+p.whois
 {
 	color: #000080;
 }
