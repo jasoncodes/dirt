@@ -2,6 +2,7 @@ package au.com.gslabs.dirt.core.client;
 
 import java.util.*;
 import au.com.gslabs.dirt.core.client.enums.*;
+import au.com.gslabs.dirt.lib.util.*;
 
 public class Client
 {

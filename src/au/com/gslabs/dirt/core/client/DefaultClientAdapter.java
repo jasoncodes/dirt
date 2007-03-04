@@ -139,7 +139,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		StringBuilder buff = new StringBuilder();
 		if (direction == MessageDirection.OUTBOUND)
 		{
-			buff.append("->");
+			buff.append("-> ");
 		}
 		buff.append("[");
 		buff.append(nick);
@@ -147,7 +147,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		{
 			buff.append("]");
 		}
-		if (type.length() > 0)
+		if (type != null && type.length() > 0)
 		{
 			buff.append(' ');
 			buff.append(type);
@@ -161,7 +161,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 			}
 			buff.append("]");
 		}
-		if (data.length() > 0)
+		if (data != null && data.length() > 0)
 		{
 			if (stage == CTCPStage.RESPONSE)
 			{
