@@ -3,6 +3,8 @@ body
 	/* font-family: "Frutiger", "Lucida Grande", "Tahoma", "Arial Unicode MS", "Helvetica", "Arial", san-serif; */
 	font-family: Monaco, monospace;
 	word-wrap: break-word;
+	background: white;
+	color: black;
 }
 p
 {
@@ -10,6 +12,7 @@ p
 	padding: 0;
 	margin-top: 1px;
 }
+
 p.warning,
 p.error
 {
@@ -26,4 +29,9 @@ p.status
 p.debug
 {
 	color: #888;
+}
+
+p.chat-action
+{
+	color: #800080;
 }

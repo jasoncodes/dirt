@@ -8,6 +8,7 @@ import javax.swing.*;
 import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
+import au.com.gslabs.dirt.core.client.*;
 
 // this whole file is currently very messy
 // when I get around to implementing OS X specifics
@@ -15,7 +16,7 @@ import au.com.gslabs.dirt.lib.ui.jfc.*;
 // this will be done using MRJAdapter
 ////import com.apple.eawt.*;
 
-public class Client extends JFrame
+public class MainFrame extends JFrame
 {
 
 	protected ResourceBundle resbundle;
@@ -26,17 +27,18 @@ public class Client extends JFrame
 		undoAction, cutAction, copyAction, pasteAction, clearAction, selectAllAction;
 	static final JMenuBar mainMenuBar = new JMenuBar();	
 	protected JMenu fileMenu, editMenu; 
+	protected Client client;
 	
 	public static void init()
 	{
 		UIUtil.initSwing();
-		new Client();
+		new MainFrame();
 	}
 	
 	LogPane txtLog;
 	InputArea txtInput;
 	
-	private Client()
+	private MainFrame()
 	{
 		
 		super("");
@@ -85,6 +87,9 @@ public class Client extends JFrame
 					txtLog_LinkClick(e.getURL());
 				}
 			});
+			
+		client = new Client();
+		client.addClientListener(new ClientAdapter());
 		
 		/**
 		fApplication.setEnabledPreferencesMenu(true);
@@ -120,35 +125,47 @@ public class Client extends JFrame
 		
 	}
 	
-	protected void txtLog_LinkClick(java.net.URL url)
+	protected class ClientAdapter extends DefaultClientAdapter
 	{
-		txtLog.appendTextLine("Link clicked: " + url, "info");
-	}
-	
-	protected void txtInput_Input(String[] lines)
-	{
-		for (String line : lines)
+		
+		public void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			if (!line.startsWith("/"))
+			txtLog.appendTextLine(message, className);
+		}
+		
+		public String[] getClientSupportedCommands(Client source)
+		{
+			return new String[]
+				{
+					"CLEAR",
+					"ALERT",
+					"MINTOTRAY",
+					"XHTML",
+					"TEST"
+				};
+		}
+		
+		public boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params)
+		{
+			if (cmd.equals("CLEAR"))
 			{
-				throw new IllegalArgumentException("Expected input to start with slash");
+				txtLog.clearText();
+				return true;
 			}
-			String cmd, params;
-			int idx = line.indexOf(" ");
-			if (idx < 0)
+			else if (cmd.equals("ALERT"))
 			{
-				cmd = line.substring(1);
-				params = "";
+				doAlert();
+				return true;
 			}
-			else
+			else if (cmd.equals("MINTOTRAY"))
 			{
-				cmd = line.substring(1, idx);
-				params = line.substring(idx+1);
+				doMinToTray();
+				return true;
 			}
-			cmd = cmd.toUpperCase().trim();
-			if (cmd.equals("SAY"))
+			else if (cmd.equals("XHTML"))
 			{
-				txtLog.appendTextLine(params);
+				txtLog.appendXHTMLLine(params);
+				return true;
 			}
 			else if (cmd.equals("TEST"))
 			{
@@ -182,32 +199,24 @@ public class Client extends JFrame
 				txtLog.appendTextLine(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
 				txtLog.appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
 				txtLog.appendTextLine("Space Test: 1 2  3   4    . exclamation line up -> !");
-			}
-			else if (cmd.equals("XHTML"))
-			{
-				txtLog.appendXHTMLLine(params);
-			}
-			else if (cmd.equals("CLEAR"))
-			{
-				txtLog.clearText();
-			}
-			else if (cmd.equals("ALERT"))
-			{
-				doAlert();
-			}
-			else if (cmd.equals("MINTOTRAY"))
-			{
-				doMinToTray();
-			}
-			else if (cmd.equals("HELP"))
-			{
-				txtLog.appendTextLine("Supported commands: ALERT CLEAR HELP MINTOTRAY SAY TEST XHTML", "info");
+				return true;
 			}
 			else
 			{
-				txtLog.appendTextLine("Unknown command: " + cmd, "error");
+				return false;
 			}
 		}
+		
+	}
+	
+	protected void txtLog_LinkClick(java.net.URL url)
+	{
+		txtLog.appendTextLine("Link clicked: " + url, "info");
+	}
+	
+	protected void txtInput_Input(String[] lines)
+	{
+		client.processConsoleInput(null, lines);
 	}
 	
 	protected void cmdPopupQuit_Click()
@@ -229,7 +238,7 @@ public class Client extends JFrame
 					catch (Exception ex)
 					{
 					}
-					UIUtil.alert(Client.this);
+					UIUtil.alert(MainFrame.this);
 				}
 			}).start();
 	}

@@ -27,7 +27,7 @@ public class UI
 		
 		if (gui)
 		{
-			au.com.gslabs.dirt.ui.jfc.client.Client.init();
+			au.com.gslabs.dirt.ui.jfc.client.MainFrame.init();
 		}
 		else if (cli)
 		{
@@ -37,7 +37,7 @@ public class UI
 		{
 			try
 			{
-				au.com.gslabs.dirt.ui.jfc.client.Client.init();
+				au.com.gslabs.dirt.ui.jfc.client.MainFrame.init();
 			}
 			catch (RuntimeException ex)
 			{
