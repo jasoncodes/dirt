@@ -169,6 +169,9 @@
 			jvmversion="1.4*"
 			extraclasspath="/System/Library/Java/"
 			/>
+	</target>
+	
+	<target name="mac-dist" depends="mac-bundle" if="isMac">
 		<tar destfile="${dist}/DirtMac.tbz" compression="bzip2">
 			<tarfileset dir="${dist}" mode="755">
 				<include name="Dirt.app/Contents/MacOS/JavaApplicationStub" />

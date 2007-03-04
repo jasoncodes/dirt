@@ -128,9 +128,12 @@ public class MainFrame extends JFrame
 	protected class ClientAdapter extends DefaultClientAdapter
 	{
 		
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+		
 		public void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			txtLog.appendTextLine(message, className);
+			java.util.Calendar c = java.util.Calendar.getInstance();
+			txtLog.appendTextLine(sdf.format(c.getTime()) + message, className);
 		}
 		
 		public String[] getClientSupportedCommands(Client source)

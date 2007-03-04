@@ -22,9 +22,12 @@ public class ClientCLI
 	protected class ClientAdapter extends DefaultClientAdapter
 	{
 		
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+		
 		public void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			output(message);
+			java.util.Calendar c = java.util.Calendar.getInstance();
+			output(sdf.format(c.getTime()) + message);
 		}
 		
 		public String[] getClientSupportedCommands(Client source)
