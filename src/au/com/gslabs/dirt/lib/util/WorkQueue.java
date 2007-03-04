@@ -2,7 +2,8 @@ package au.com.gslabs.dirt.lib.util;
 
 import java.util.LinkedList;
 
-// src: http://www-128.ibm.com/developerworks/java/library/j-jtp0730.html
+// heavily based on:
+// http://www-128.ibm.com/developerworks/java/library/j-jtp0730.html
 
 public class WorkQueue
 {
@@ -45,7 +46,7 @@ public class WorkQueue
 						}
 					}
 
-					r = (Runnable) queue.removeFirst();
+					r = queue.removeFirst();
 				}
 
 				// If we don't catch RuntimeException, 

@@ -266,8 +266,9 @@ public class MainFrame extends JFrame
 			return;
 		}	
 		
-		SystemTray tray = SystemTray.getDefaultSystemTray();
-		TrayIcon ti;
+		org.jdesktop.jdic.tray.SystemTray tray =
+			org.jdesktop.jdic.tray.SystemTray.getDefaultSystemTray();
+		org.jdesktop.jdic.tray.TrayIcon ti;
 		
 		JPopupMenu menu;
 		JMenu  submenu;
@@ -294,7 +295,9 @@ public class MainFrame extends JFrame
 			});
 		menu.add(menuItem);
 		
-		ti = new TrayIcon(UIUtil.loadImageIcon(true), "Dirt Secure Chat", menu);
+		ti = new org.jdesktop.jdic.tray.TrayIcon(
+			UIUtil.loadImageIcon(true),
+			"Dirt Secure Chat", menu);
 		
 		ti.setIconAutoSize(true);
 		ti.addActionListener(new ActionListener()
