@@ -1,7 +1,7 @@
 #!/bin/bash -e
-if [ "`uname -s`" == "Darwin" ]
+if [ "`uname -s`" == "Darwin" -a "$1" == "" ]
 then
 	dist/Dirt.app/Contents/MacOS/JavaApplicationStub
 else
-	java -jar dist/Dirt.jar
+	java -jar dist/Dirt.jar "$@"
 fi
