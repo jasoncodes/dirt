@@ -128,8 +128,9 @@ public class TextUtil
 	
 	public static String stringToHTMLString(String string)
 	{
+		
 		StringBuffer sb = new StringBuffer(string.length());
-		// true if last char was blank
+		
 		boolean lastWasBlankChar = false;
 		int len = string.length();
 		char c;
@@ -139,10 +140,12 @@ public class TextUtil
 			c = string.charAt(i);
 			if (c == ' ')
 			{
-				// blank gets extra work,
-				// this solves the problem you get if you replace all
-				// blanks with &nbsp;, if you do that you loss 
-				// word breaking
+				// blanks get special treatment:
+				// since continuous whitespace in HTML collapses to one space
+				// we need to insert non-breaking spaces to pad it out
+				// unfortunately if we add just non-breaking spaces,
+				// we'll lose the ability to word wrap. A nice compromise
+				// is to replace every second whitespace character with an &nbsp;
 				if (lastWasBlankChar)
 				{
 					lastWasBlankChar = false;
@@ -157,48 +160,47 @@ public class TextUtil
 			else
 			{
 				lastWasBlankChar = false;
-				//
+				
 				// HTML Special Chars
-				if (c == '"')
+				switch (c)
 				{
-					sb.append("&quot;");
+					case '"':
+						sb.append("&quot;");
+						break;
+					case '&':
+						sb.append("&amp;");
+						break;
+					case '<':
+						sb.append("&lt;");
+						break;
+					case '>':
+						sb.append("&gt;");
+						break;
+					case '\n':
+						sb.append("&lt;br/&gt;");
+						break;
+					default:
+						int ci = 0xffff & c;
+						if (ci < 160 && ci > 31)
+						{
+							// ASCII7 character
+							sb.append(c);
+						}
+						else
+						{
+							// outside of ASCII7, better escape it
+							sb.append("&#");
+							sb.append(new Integer(ci).toString());
+							sb.append(';');
+						}
+						break;
 				}
-				else if (c == '&')
-				{
-					sb.append("&amp;");
-				}
-				else if (c == '<')
-				{
-					sb.append("&lt;");
-				}
-				else if (c == '>')
-				{
-					sb.append("&gt;");
-				}
-				else if (c == '\n')
-				{
-					// Handle Newline
-					sb.append("&lt;br/&gt;");
-				}
-				else
-				{
-					int ci = 0xffff & c;
-					if (ci < 160 )
-					{
-						// nothing special only 7 Bit
-						sb.append(c);
-					}
-					else
-					{
-						// Not 7 Bit use the unicode system
-						sb.append("&#");
-						sb.append(new Integer(ci).toString());
-						sb.append(';');
-					}
-				}
+				
 			}
 		}
+		
 		return sb.toString();
+		
 	}
 	
 }

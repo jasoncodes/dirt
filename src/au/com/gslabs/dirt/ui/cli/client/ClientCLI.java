@@ -4,6 +4,7 @@ import au.com.gslabs.dirt.core.client.*;
 import jline.*;
 import java.io.*;
 import java.util.*;
+import au.com.gslabs.dirt.lib.util.TextModifierParser;
 
 public class ClientCLI
 {
@@ -131,7 +132,8 @@ public class ClientCLI
 	{
 		try
 		{
-			console.printString(message + "\n");
+			String text = TextModifierParser.parseText(message, TextModifierParser.OutputFormat.TEXT);
+			console.printString(text + "\n");
 			console.flushConsole();
 		}
 		catch (IOException ex)
