@@ -132,7 +132,8 @@ public class ClientCLI
 	{
 		try
 		{
-			String text = TextModifierParser.parseText(message, TextModifierParser.OutputFormat.TEXT);
+			String text = TextModifierParser.parseText(
+				message, TextModifierParser.OutputFormat.TEXT);
 			console.printString(text + "\n");
 			console.flushConsole();
 		}

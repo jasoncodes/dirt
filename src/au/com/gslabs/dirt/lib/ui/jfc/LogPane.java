@@ -325,7 +325,7 @@ public class LogPane extends JScrollPane
 	
 	public void appendTextLine(String text, String className)
 	{
-		String html = TextModifierParser.parseText(text, TextModifierParser.OutputFormat.HTML);
+		String html = TextModifierParser.parseText(text, TextModifierParser.OutputFormat.XHTML);
 		appendXHTMLLine(html, className);
 	}
 	

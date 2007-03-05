@@ -203,4 +203,28 @@ public class TextUtil
 		
 	}
 	
+	public static String convertUrlsToLinks(String html)
+	{
+		URLExtractor extractor = new URLExtractor(html);
+		StringBuffer sb = new StringBuffer(html.length());
+		for (URLExtractor.Token token : extractor.getTokens())
+		{
+			if (token.getUrl() != null)
+			{
+				String href = TextModifierParser.parseText(
+					token.getUrl(), TextModifierParser.OutputFormat.TEXT);
+				sb.append("<a href=\"");
+				sb.append(href);
+				sb.append("\">");
+				sb.append(token.getText());
+				sb.append("</a>");
+			}
+			else
+			{
+				sb.append(token.getText());
+			}
+		}
+		return sb.toString();
+	}
+	
 }

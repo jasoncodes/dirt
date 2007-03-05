@@ -6,22 +6,22 @@ public class TextModifierParser
 	public enum OutputFormat
 	{
 		TEXT,
-		HTML
+		XHTML
 	}
 	
 	public static String parseText(String text, OutputFormat outputFormat)
 	{
 		
-		// todo
-		
 		switch (outputFormat)
 		{
 			
-			case HTML:
-				return TextUtil.stringToHTMLString(text);
+			case XHTML:
+				String html = TextUtil.stringToHTMLString(text);
+				html = TextUtil.convertUrlsToLinks(html);
+				return html; //todo
 			
 			case TEXT:
-				return text;
+				return text; //todo
 			
 			default:
 				throw new IllegalArgumentException("Unknown OutputFormat");
