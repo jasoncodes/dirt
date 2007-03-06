@@ -20,57 +20,44 @@ public class ClientCLI
 	protected PrintWriter out;
 	protected boolean bailingOut;
 	
-	protected class ClientAdapter extends DefaultClientAdapter
+	protected enum SupportedCommand
+	{
+		CLEAR,
+		EXIT
+	}
+	
+	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
 	{
 		
-		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+		public ClientAdapter()
+		{
+			super(SupportedCommand.class);
+		}
 		
 		public void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			java.util.Calendar c = java.util.Calendar.getInstance();
-			output(sdf.format(c.getTime()) + message);
+			output(getOutputPrefix() + message);
 		}
 		
-		public String[] getClientSupportedCommands(Client source)
+		public boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
 		{
-			return new String[]
-				{
-					"EXIT",
-					"CLEAR"
-				};
-		}
-		
-		public boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params)
-		{
-			if (cmd.equals("EXIT"))
+			
+			switch (cmd)
 			{
-				bailingOut = true;
-				try
-				{
-					console.getInput().close();
+				
+				case CLEAR:
+					clearScreen();
 					return true;
-				}
-				catch (IOException ex)
-				{
-					return false;
-				}
-			}
-			else if (cmd.equals("CLEAR"))
-			{
-				try
-				{
-					console.clearScreen();
+				
+				case EXIT:
+					close();
 					return true;
-				}
-				catch (IOException ex)
-				{
+					
+				default:
 					return false;
-				}
+				
 			}
-			else
-			{
-				return false;
-			}
+			
 		}
 		
 		public String getClientExtraVersionInfo(Client source)
@@ -126,6 +113,30 @@ public class ClientCLI
 			}
 		}
 		
+	}
+	
+	protected void clearScreen()
+	{
+		try
+		{
+			console.clearScreen();
+		}
+		catch (IOException ex)
+		{
+		}
+	}
+	
+	protected void close()
+	{
+		bailingOut = true;
+		try
+		{
+			console.getInput().close();
+		}
+		catch (IOException ex)
+		{
+			System.exit(1);
+		}
 	}
 	
 	protected void output(String message)

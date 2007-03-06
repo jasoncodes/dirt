@@ -10,6 +10,14 @@ import au.com.gslabs.dirt.core.client.enums.*;
 public abstract class DefaultClientAdapter implements ClientListener
 {
 	
+	protected java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+
+	protected String getOutputPrefix()
+	{
+		java.util.Calendar c = java.util.Calendar.getInstance();
+		return sdf.format(c.getTime());
+	}
+	
 	public abstract void clientConsoleOutput(Client source, String context, String className, String message);
 	
 	public String[] getClientSupportedCommands(Client source)
