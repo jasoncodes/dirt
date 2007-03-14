@@ -1,7 +1,25 @@
 #!/bin/bash -e
+
 if [ "`uname -s`" == "Darwin" -a "$1" == "" ]
 then
+
 	dist/Dirt.app/Contents/MacOS/JavaApplicationStub
+
 else
-	java -jar dist/Dirt.jar "$@"
+
+	OPTIONS=""
+	if [ "$1" == "--profile" ]
+	then
+		PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
+		if [ ! -d "$PROFILER_LIB_DIR" ]
+		then
+			echo YourKit Java Profiler not found. >&2
+			exit 1;
+		fi
+		export DYLD_LIBRARY_PATH="$PROFILER_LIB_DIR"
+		OPTIONS="-agentlib:yjpagent"
+	fi
+
+	java $OPTIONS -jar dist/Dirt.jar "$@"
+
 fi

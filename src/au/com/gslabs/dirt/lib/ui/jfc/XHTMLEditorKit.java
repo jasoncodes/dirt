@@ -48,9 +48,10 @@ public class XHTMLEditorKit extends HTMLEditorKit
 					//	"org.apache.xerces.parsers.XMLGrammarCachingConfiguration");
 					
 					SAXParserFactory factory = SAXParserFactory.newInstance();
-					factory.setValidating(true);
-					factory.setFeature("http://xml.org/sax/features/validation", true);
-					//factory.setFeature("http://apache.org/xml/features/validation/schema", true);
+					boolean validating = false;
+					factory.setValidating(validating);
+					factory.setFeature("http://xml.org/sax/features/validation", validating);
+					factory.setFeature("http://apache.org/xml/features/validation/schema", validating);
 					
 					parser = factory.newSAXParser();
 					
