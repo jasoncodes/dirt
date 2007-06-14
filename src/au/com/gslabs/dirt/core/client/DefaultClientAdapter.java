@@ -75,7 +75,10 @@ public abstract class DefaultClientAdapter implements ClientListener
 				break;
 		}
 		
-		String sep = text.startsWith("'s") ? "" : " ";
+		String sep = (
+				text.startsWith("'s ") ||
+				text.startsWith("'d ")
+			) ? "" : " ";
 		
 		switch (direction)
 		{

@@ -1,8 +1,12 @@
+HTML renderer is not working
+
 http://retrotranslator.sourceforge.net/
 
 http://en.wikipedia.org/wiki/STUN
 
 Mac OS X integration
+	To bounce the dock icon once use the NSInformationalRequest option with http://www.onjava.com/pub/a/onjava/2005/08/10/swinghacks.html
+	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html
 
 when window is resized the scroll position doesn't preserve when the text wrapping changes
 

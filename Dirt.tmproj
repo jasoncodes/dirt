@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>build.xml</string>
+	<string>docs/development/notes.txt</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -41,37 +41,50 @@
 			<key>filename</key>
 			<string>build.xml</string>
 			<key>lastUsed</key>
-			<date>2007-06-14T10:08:22Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2007-06-14T10:16:47Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
-	<integer>187</integer>
+	<integer>277</integer>
 	<key>metaData</key>
 	<dict>
-		<key>build.xml</key>
+		<key>docs/development/notes.txt</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>39</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>4</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>8</integer>
+				<key>line</key>
+				<integer>132</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>203</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>build.xml</string>
+		<string>docs/development/notes.txt</string>
+		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{260, 154}, {888, 615}}</string>
+	<string>{{359, 149}, {888, 615}}</string>
 </dict>
 </plist>

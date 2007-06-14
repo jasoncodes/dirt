@@ -3,7 +3,7 @@ package au.com.gslabs.dirt.lib.util;
 import java.text.NumberFormat;
 import java.util.Date;
 
-public class Duration implements Comparable
+public class Duration implements Comparable<Duration>
 {
 	
 	public enum Precision
@@ -36,9 +36,8 @@ public class Duration implements Comparable
 		return this.milliseconds == other.milliseconds;
 	}
 	
-	public int compareTo(Object obj)
+	public int compareTo(Duration other)
 	{
-		Duration other = (Duration)obj;
 		if (this.milliseconds == other.milliseconds)
 		{
 			return 0;

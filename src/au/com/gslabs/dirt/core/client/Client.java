@@ -27,8 +27,6 @@ public class Client
 		}
 	}
 	
-	protected static final String SUPPORTED_COMMANDS = "SAY ME MY HELP";
-	
 	public void processConsoleInput(String context, String line)
 	{
 		
@@ -59,53 +57,95 @@ public class Client
 			}
 		}
 		
-		if (cmd.equals("SAY") || cmd.equals("ME"))
-		{
-			ChatMessageType type = cmd.equals("ME") ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-			for (ClientListener l : listeners)
-			{
-				// test stub
-				l.clientChatMessage(this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
-				l.clientChatMessage(this, context, getNickname(), params, MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
-			}
-		}
-		else if (cmd.equals("MY"))
-		{
-			processConsoleInput(context, "/me 's " + params);
-		}
-		else if (cmd.length() > 3 && cmd.substring(0, 3).equals("ME'"))
+		if (cmd.length() > 3 && cmd.substring(0, 3).equals("ME'"))
 		{
 			processConsoleInput(context, "/me " + org_cmd.substring(2) + " " + params);
+			return;
 		}
-		else if (cmd.equals("HELP"))
+		
+		ConsoleCommand cmdEnum;
+		
+		try
 		{
-			
-			SortedSet<String> cmds = new TreeSet<String>();
-			for (String entry : SUPPORTED_COMMANDS.split(" "))
-			{
-				cmds.add(entry);
-			}
-			for (ClientListener l : listeners)
-			{
-				for (String entry : l.getClientSupportedCommands(this))
-				{
-					cmds.add(entry);
-				}
-			}
-			
-			StringBuilder buff = new StringBuilder();
-			buff.append("Supported commands:");
-			for (String entry : cmds)
-			{
-				buff.append(" ");
-				buff.append(entry);
-			}
-			notification(context, NotificationSeverity.INFO, cmd, buff.toString());
-			
+			cmdEnum = ConsoleCommand.valueOf(cmd);
 		}
-		else
+		catch (Exception ex)
 		{
 			notification(context, NotificationSeverity.ERROR, cmd, "Unknown command");
+			return;
+		}
+		
+		if (!processConsoleCommand(context, cmdEnum, params))
+		{
+			notification(context, NotificationSeverity.ERROR, cmd, "Not implemented");
+		}
+		
+	}
+	
+	protected enum ConsoleCommand
+	{
+		SAY,
+		ME,
+		MY,
+		HELP,
+		HEXDUMP
+	}
+	
+	protected boolean processConsoleCommand(String context, ConsoleCommand cmd, String params)
+	{
+		
+		switch (cmd)
+		{
+			
+			case SAY:
+			case ME:
+				ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+				for (ClientListener l : listeners)
+				{
+					// test stub
+					l.clientChatMessage(this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
+					l.clientChatMessage(this, context, getNickname(), params, MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
+				}
+				return true;
+				
+			case MY:
+				processConsoleInput(context, "/me 's " + params);
+				return true;
+				
+			case HEXDUMP:
+				notification(context, NotificationSeverity.DEBUG, cmd.toString(), new ByteBuffer(params).toHexString());
+				return true;
+				
+			case HELP:
+				SortedSet<String> cmds = new TreeSet<String>();
+			
+				for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
+				{
+					cmds.add(entry.toString());
+				}
+			
+				for (ClientListener l : listeners)
+				{
+					for (String entry : l.getClientSupportedCommands(this))
+					{
+						cmds.add(entry);
+					}
+				}
+			
+				StringBuilder buff = new StringBuilder();
+				buff.append("Supported commands:");
+				for (String entry : cmds)
+				{
+					buff.append(" ");
+					buff.append(entry);
+				}
+				notification(context, NotificationSeverity.INFO, cmd.toString(), buff.toString());
+				
+				return true;
+			
+			default:
+				return false;
+				
 		}
 		
 	}
