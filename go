@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+BASEDIR="`dirname "$0"`"
+
+chmod +x "$BASEDIR"/{go,run}
+
 ANT_PARAMS=""
 RUN_PARAMS=""
 for PARAM in "$@"
@@ -13,4 +17,4 @@ do
 done
 
 ant $ANT_PARAMS
-`dirname $0`/run $RUN_PARAMS
+"$BASEDIR"/run $RUN_PARAMS
