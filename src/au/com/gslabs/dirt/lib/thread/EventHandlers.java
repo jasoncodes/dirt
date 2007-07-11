@@ -5,17 +5,17 @@ import java.util.ArrayList;
 public class EventHandlers<L extends Object>
 {
 	
-	protected ArrayList<L> listeners;
-	protected Invoker invoker;
+	protected final ArrayList<L> listeners = new ArrayList<L>();
+	protected final Invoker invoker;
 	
 	public EventHandlers(Invoker invoker)
 	{
-		this.dispatcher = dispatcher;
+		this.invoker = invoker;
 	}
 	
 	public void add(L listener)
 	{
-		listeners.add(listeners);
+		listeners.add(listener);
 	}
 	
 	public void remove(L listener)
@@ -35,11 +35,16 @@ public class EventHandlers<L extends Object>
 		}
 	}
 	
-	public void dispatchEvent(EventSource<L> source)
+	public void dispatchEvent(EventSource<L> source, boolean synchronous)
 	{
 		Dispatcher d = new Dispatcher();
 		d.source = source;
-		invoker.invoke(d);
+		invoker.invoke(d, synchronous);
+	}
+	
+	public void dispatchEvent(EventSource<L> source)
+	{
+		dispatchEvent(source, false);
 	}
 	
 }

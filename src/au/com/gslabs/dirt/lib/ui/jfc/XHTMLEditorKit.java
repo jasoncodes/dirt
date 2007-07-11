@@ -51,12 +51,32 @@ public class XHTMLEditorKit extends HTMLEditorKit
 					boolean validating = false;
 					factory.setValidating(validating);
 					factory.setFeature("http://xml.org/sax/features/validation", validating);
-					factory.setFeature("http://apache.org/xml/features/validation/schema", validating);
+					try
+					{
+						factory.setFeature("http://apache.org/xml/features/validation/schema", validating);
+					}
+					catch (org.xml.sax.SAXNotRecognizedException ex)
+					{
+					}
 					
 					parser = factory.newSAXParser();
 					
 				}
+				
+			}
+			catch (Exception inner)
+			{
+				System.err.println("Error loading SAX parser: " + inner);
+				String[] options = { "Quit" };
+				JOptionPane.showOptionDialog(
+					null, inner.toString(), "Error loading SAX parser",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
+					null, options, options[0]);
+				System.exit(1);
+			}
 			
+			try
+			{
 				XHTMLSaxHandler handler = new XHTMLSaxHandler(callback);
 				InputSource source = new InputSource(reader);
 				parser.parse(source, handler);

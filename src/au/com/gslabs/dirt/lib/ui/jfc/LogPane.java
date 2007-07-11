@@ -250,21 +250,38 @@ public class LogPane extends JScrollPane
 		}
 	}
 	
+	private int handleAppendErrorDepth = 0;
+	
 	private void handleAppendError(Exception ex)
 	{
+		
+		String message = "";
 		Throwable t = ex.getCause();
 		if (t != null)
 		{
 			while (t != null)
 			{
-				appendTextLine(t.toString(), "error");
+				message += t.toString() + "\n";
 				t = t.getCause();
 			}
 		}
 		else
 		{
-			appendTextLine(ex.toString(), "error");
+			message += ex.toString() + "\n";
 		}
+		
+		if (handleAppendErrorDepth > 0)
+		{
+			System.err.println("LogPane failed: " + message);
+			throw new RuntimeException(ex);
+		}
+		else
+		{
+			++handleAppendErrorDepth;
+			appendTextLine(message, "error");
+			--handleAppendErrorDepth;
+		}
+		
 	}
 	
 	private void appendXHTMLFragment(String xhtml)

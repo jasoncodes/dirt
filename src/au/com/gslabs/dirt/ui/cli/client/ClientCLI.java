@@ -5,6 +5,7 @@ import jline.*;
 import java.io.*;
 import java.util.*;
 import au.com.gslabs.dirt.lib.util.TextModifierParser;
+import au.com.gslabs.dirt.lib.thread.SameThreadInvoker;
 
 public class ClientCLI
 {
@@ -76,7 +77,7 @@ public class ClientCLI
 			Terminal.getTerminal().initializeTerminal();
 			console = new ConsoleReader();
 			
-			client = new Client();
+			client = new Client(new SameThreadInvoker());
 			client.addClientListener(new ClientAdapter());
 			
 			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);

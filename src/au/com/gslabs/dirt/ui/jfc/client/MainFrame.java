@@ -88,7 +88,7 @@ public class MainFrame extends JFrame
 				}
 			});
 			
-		client = new Client();
+		client = new Client(new JFCInvoker());
 		client.addClientListener(new ClientAdapter());
 		
 		/**

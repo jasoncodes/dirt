@@ -3,11 +3,12 @@ package au.com.gslabs.dirt.core.client;
 import java.util.*;
 import au.com.gslabs.dirt.core.client.enums.*;
 import au.com.gslabs.dirt.lib.util.*;
+import au.com.gslabs.dirt.lib.thread.*;
 
 public class Client
 {
 	
-	protected ArrayList<ClientListener> listeners = new ArrayList<ClientListener>();
+	protected final EventHandlers<ClientListener> listeners;
 	
 	public void addClientListener(ClientListener l)
 	{
@@ -16,7 +17,12 @@ public class Client
 	
 	public void removeClientListener(ClientListener l)
 	{
-		listeners.remove(listeners.indexOf(l));
+		listeners.remove(l);
+	}
+	
+	public Client(Invoker eventInvoker)
+	{
+		this.listeners = new EventHandlers<ClientListener>(eventInvoker);
 	}
 	
 	public void processConsoleInput(String context, String[] lines)
@@ -27,34 +33,40 @@ public class Client
 		}
 	}
 	
-	public void processConsoleInput(String context, String line)
+	public void processConsoleInput(final String context, final String line)
 	{
 		
 		if (!line.startsWith("/"))
 		{
 			throw new IllegalArgumentException("Expected input to start with slash");
 		}
-		String cmd, params;
-		int idx = line.indexOf(" ");
+		final String org_cmd, params;
+		final int idx = line.indexOf(" ");
 		if (idx < 0)
 		{
-			cmd = line.substring(1);
+			org_cmd = line.substring(1);
 			params = "";
 		}
 		else
 		{
-			cmd = line.substring(1, idx);
+			org_cmd = line.substring(1, idx);
 			params = line.substring(idx+1);
 		}
-		String org_cmd = cmd;
-		cmd = cmd.toUpperCase().trim();
+		final String cmd = org_cmd.toUpperCase().trim();
 		
-		for (ClientListener l : listeners)
+		class ConsoleInputPreprocessor implements EventSource<ClientListener>
 		{
-			if (l.clientPreprocessConsoleInput(this, context, cmd, params))
+			public boolean done = false;
+			public void dispatchEvent(ClientListener l)
 			{
-				return;
+				done |= l.clientPreprocessConsoleInput(Client.this, context, cmd, params);
 			}
+		}
+		ConsoleInputPreprocessor cip = new ConsoleInputPreprocessor();
+		listeners.dispatchEvent(cip, true);
+		if (cip.done)
+		{
+			return;
 		}
 		
 		if (cmd.length() > 3 && cmd.substring(0, 3).equals("ME'"))
@@ -63,7 +75,7 @@ public class Client
 			return;
 		}
 		
-		ConsoleCommand cmdEnum;
+		final ConsoleCommand cmdEnum;
 		
 		try
 		{
@@ -91,7 +103,7 @@ public class Client
 		HEXDUMP
 	}
 	
-	protected boolean processConsoleCommand(String context, ConsoleCommand cmd, String params)
+	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
 	{
 		
 		switch (cmd)
@@ -99,13 +111,15 @@ public class Client
 			
 			case SAY:
 			case ME:
-				ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-				for (ClientListener l : listeners)
-				{
-					// test stub
-					l.clientChatMessage(this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
-					l.clientChatMessage(this, context, getNickname(), params, MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
-				}
+				final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+				listeners.dispatchEvent(new EventSource<ClientListener>()
+					{
+						public void dispatchEvent(ClientListener l)
+						{
+							l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
+							l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
+						}
+					});
 				return true;
 				
 			case MY:
@@ -117,21 +131,24 @@ public class Client
 				return true;
 				
 			case HELP:
-				SortedSet<String> cmds = new TreeSet<String>();
-			
+				final SortedSet<String> cmds = new TreeSet<String>();
+				
 				for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
 				{
 					cmds.add(entry.toString());
 				}
-			
-				for (ClientListener l : listeners)
-				{
-					for (String entry : l.getClientSupportedCommands(this))
+				
+				listeners.dispatchEvent(new EventSource<ClientListener>()
 					{
-						cmds.add(entry);
-					}
-				}
-			
+						public void dispatchEvent(ClientListener l)
+						{
+							for (String entry : l.getClientSupportedCommands(Client.this))
+							{
+								cmds.add(entry);
+							}
+						}
+					}, true);
+				
 				StringBuilder buff = new StringBuilder();
 				buff.append("Supported commands:");
 				for (String entry : cmds)
@@ -150,12 +167,15 @@ public class Client
 		
 	}
 	
-	protected void notification(String context, NotificationSeverity severity, String type, String message)
+	protected void notification(final String context, final NotificationSeverity severity, final String type, final String message)
 	{
-		for (ClientListener l : listeners)
-		{
-			l.clientNotification(this, context, severity, type, message);
-		}
+		listeners.dispatchEvent(new EventSource<ClientListener>()
+			{
+				public void dispatchEvent(ClientListener l)
+				{
+					l.clientNotification(Client.this, context, severity, type, message);
+				}
+			});
 	}
 	
 	public String getNickname()
