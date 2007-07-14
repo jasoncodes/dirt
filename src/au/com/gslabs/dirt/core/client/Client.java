@@ -4,15 +4,17 @@ import java.util.*;
 import au.com.gslabs.dirt.core.client.enums.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.thread.*;
+import au.com.gslabs.dirt.lib.net.*;
+import au.com.gslabs.dirt.lib.net.crypt.*;
 
 public class Client
 {
 	
-	protected final EventHandlers<ClientListener> listeners;
+	protected final EventListeners<ClientListener> listeners = new EventListeners<ClientListener>();
 	
-	public void addClientListener(ClientListener l)
+	public void addClientListener(ClientListener l, Invoker i)
 	{
-		listeners.add(l);
+		listeners.add(l, i);
 	}
 	
 	public void removeClientListener(ClientListener l)
@@ -20,9 +22,22 @@ public class Client
 		listeners.remove(l);
 	}
 	
-	public Client(Invoker eventInvoker)
+	protected CryptSocket socket;
+
+	public Client()
 	{
-		this.listeners = new EventHandlers<ClientListener>(eventInvoker);
+		socket = new CryptSocket();
+		socket.addCryptListener(new CryptListener()
+			{
+				public void cryptError(java.io.IOException ex)
+				{
+					notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection error: "+ex);
+				}
+				public void cryptConnected()
+				{
+					notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
+				}
+			}, new SameThreadInvoker());
 	}
 	
 	public void processConsoleInput(String context, String[] lines)
@@ -100,7 +115,8 @@ public class Client
 		ME,
 		MY,
 		HELP,
-		HEXDUMP
+		HEXDUMP,
+		CONNECT
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -109,6 +125,19 @@ public class Client
 		switch (cmd)
 		{
 			
+			case CONNECT:
+				URL url = new URL(params, "dirt", 11626);
+				notification(context, NotificationSeverity.INFO, "CONNECT", "Connecting to " + url);
+				if (!url.getProtocol().equals("dirt"))
+				{
+					notification(context, NotificationSeverity.ERROR, "CONNECT", "Unknown protocol: " + url.getProtocol());
+				}
+				else
+				{
+					socket.connect(url.getHostname(), url.getPort());
+				}
+				return true;
+				
 			case SAY:
 			case ME:
 				final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;

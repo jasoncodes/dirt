@@ -48,7 +48,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 				buff.append("Error: ");
 				break;
 		}
-		if (type != null && type.length() > 0)
+		if (type != null && type.length() > 0 && !type.equals("CONNECT"))
 		{
 			buff.append(type);
 			buff.append(": ");

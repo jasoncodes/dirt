@@ -77,8 +77,8 @@ public class ClientCLI
 			Terminal.getTerminal().initializeTerminal();
 			console = new ConsoleReader();
 			
-			client = new Client(new SameThreadInvoker());
-			client.addClientListener(new ClientAdapter());
+			client = new Client();
+			client.addClientListener(new ClientAdapter(), new SameThreadInvoker());
 			
 			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);
 			

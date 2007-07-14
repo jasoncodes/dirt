@@ -68,6 +68,13 @@ public class ByteBuffer
 		}
 	}
 	
+	public byte[] getBytes()
+	{
+		byte bytes[] = new byte[this.length];
+		System.arraycopy(this.data, this.offset, bytes, 0, this.length);
+		return bytes;
+	}
+	
 	public String toHexString()
 	{
 		StringBuffer buff = new StringBuffer(this.length*3);
