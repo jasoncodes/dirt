@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -18,8 +16,6 @@
 					<string>docs</string>
 				</dict>
 				<dict>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>dirt</string>
 					<key>regexFolderFilter</key>
@@ -36,8 +32,6 @@
 					<string>res</string>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>DirtJava</string>
 		</dict>
@@ -50,120 +44,9 @@
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>277</integer>
-	<key>metaData</key>
-	<dict>
-		<key>docs/development/notes.txt</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>28</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/core/client/ClientListener.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/core/client/EnumClientAdapter.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/ui/cli/client/ClientCLI.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>14</integer>
-				<key>line</key>
-				<integer>89</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>42</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>8</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>35</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>docs/development/notes.txt</string>
-		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
-		<string>src/au/com/gslabs/dirt/ui/cli/client/ClientCLI.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/ClientListener.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/EnumClientAdapter.java</string>
-	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{359, 149}, {888, 615}}</string>
+	<string>{{434, 187}, {896, 634}}</string>
 </dict>
 </plist>

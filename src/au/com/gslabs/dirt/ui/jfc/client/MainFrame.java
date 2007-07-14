@@ -87,7 +87,7 @@ public class MainFrame extends JFrame
 					txtLog_LinkClick(e.getURL());
 				}
 			});
-			
+		
 		client = new Client(new JFCInvoker());
 		client.addClientListener(new ClientAdapter());
 		

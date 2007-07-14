@@ -3,8 +3,6 @@ package au.com.gslabs.dirt.lib.ui.jfc;
 import java.io.IOException;
 import java.awt.event.*;
 import javax.swing.*;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
@@ -12,6 +10,8 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.XHTMLEditorKit;
 import java.net.URL;
 import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class LogPane extends JScrollPane
 {
@@ -47,12 +47,15 @@ public class LogPane extends JScrollPane
 		
 		lastIsAtEnd = true;
 
-		editor = new JEditorPane();
-		kit = new XHTMLEditorKit();
-		editor.setEditorKit(kit);
-		editor.setEditable(false);
-		setViewportView(editor);
-		setLayout(new LogPaneLayout());
+		editor = createEditor();
+		kit = (XHTMLEditorKit)editor.getEditorKit();
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(createEditor(), BorderLayout.CENTER);
+		panel.add(editor, BorderLayout.SOUTH);
+		setViewportView(panel);
+		
 		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		addEventListeners();
@@ -61,28 +64,26 @@ public class LogPane extends JScrollPane
 
 	}
 	
-	protected class LogPaneLayout extends ScrollPaneLayout
+	protected JEditorPane createEditor()
 	{
-
-	 	public void layoutContainer(java.awt.Container parent)
-		{
-			super.layoutContainer(parent);
-			positionContentArea();
-		}
-		
+		JEditorPane editor = new Editor();
+		editor.setEditorKit(new XHTMLEditorKit());
+		editor.setEditable(false);
+		editor.setText(wrapInXHTMLTags(""));
+		return editor;
 	}
 	
-	protected void positionContentArea()
+	protected class Editor extends JEditorPane
 	{
-		FileUtil.debugMsg("LogPane", "positionContentArea");
-		int pref = editor.getPreferredSize().height;
-		int actual = editor.getSize().height;
-		if (actual > pref)
+		public Dimension getPreferredSize()
 		{
-			editor.setLocation(0, actual-pref);
+			Dimension d = super.getPreferredSize();
+			d.width = 0;
+			d.height = Math.max(1, d.height);
+			return d;
 		}
 	}
-
+	
 	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
 	
 	protected static String wrapInXHTMLTags(String data)
@@ -113,7 +114,6 @@ public class LogPane extends JScrollPane
 						{
 							public void run()
 							{
-								FileUtil.debugMsg("LogPane", "adjustmentValueChanged " + lastIsAtEnd + " " + isAtEnd());
 								lastIsAtEnd = isAtEnd();
 							}
 						});
@@ -124,7 +124,6 @@ public class LogPane extends JScrollPane
 			{
 				public void componentResized(ComponentEvent e)
 				{
-					FileUtil.debugMsg("LogPane", "componentResized " + lastIsAtEnd + " " + isAtEnd());
 					if (lastIsAtEnd)
 					{
 						SwingUtilities.invokeLater(new DoScroll(-1));
@@ -140,6 +139,14 @@ public class LogPane extends JScrollPane
 					{
 						raiseLinkEvent(evt.getURL());
 					}
+				}
+			});
+		
+		editor.addMouseListener(new MouseAdapter()
+			{
+				public void mouseClicked(MouseEvent e)
+				{
+					editor.transferFocus();
 				}
 			});
 		
@@ -172,8 +179,6 @@ public class LogPane extends JScrollPane
 		
 		JScrollBar bar = getVerticalScrollBar();
 		bar.setValue(bar.getMaximum());
-		
-		FileUtil.debugMsg("LogPane", "moveToEnd " + lastIsAtEnd + " " + isAtEnd() + " " + bar.getMaximum());
 		
 		lastIsAtEnd = true;
 		
@@ -213,8 +218,6 @@ public class LogPane extends JScrollPane
 			{
 				getVerticalScrollBar().setValue(pos);
 			}
-			positionContentArea();
-			FileUtil.debugMsg("LogPane", "DoScroll " + lastIsAtEnd + " " + isAtEnd());
 			lastIsAtEnd = isAtEnd();
 		}
 		
