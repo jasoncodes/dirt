@@ -32,8 +32,10 @@ public class CryptSocket
 		{
 			try
 			{
+				
 				socket = SocketFactory.getInstance().createSocket();
 				socket.connect(connectHost, connectPort);
+				
 				listeners.dispatchEvent(new EventSource<CryptListener>()
 					{
 						public void dispatchEvent(CryptListener l)
@@ -41,6 +43,9 @@ public class CryptSocket
 							l.cryptConnected();
 						}
 					});
+				
+				// TODO: begin reading from stream
+				
 			}
 			catch (IOException ex)
 			{
