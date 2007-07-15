@@ -1,6 +1,4 @@
-TextModifierParser needs rewriting
-
-inputarea needs a line buffer for previous input
+InputArea needs a line buffer for previous input
 
 CryptSocket implementation
 

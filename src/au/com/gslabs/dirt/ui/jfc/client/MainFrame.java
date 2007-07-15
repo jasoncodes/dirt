@@ -165,7 +165,7 @@ public class MainFrame extends JFrame
 					txtLog.appendTextLine(ctrl_c + "9,1green black " + ctrl_c + "4red black");
 					txtLog.appendTextLine(ctrl_c + "9,1green black" + ctrl_c + " black white");
 					txtLog.appendTextLine(ctrl_c + "3,green");
-					txtLog.appendXHTMLLine("no <span style=\"background: yellow\"></span> colour<span style=\"background: #e0e0e0\"></span> on <b></b>this <span style=\"color: red\"></span>line");
+					txtLog.appendXHTMLLine("no <span style=\"background: yellow\"></span>colour<span style=\"background: #e0e0e0\"></span> on <b></b>this <span style=\"color: red\"></span>line");
 					txtLog.appendXHTMLLine("a single 'x' with yellow bg --&gt; <span style=\"background: yellow\">x</span> &lt;--");
 					txtLog.appendTextLine(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
 					txtLog.appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");

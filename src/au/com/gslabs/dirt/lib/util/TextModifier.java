@@ -16,11 +16,6 @@ public enum TextModifier
 		this.charValue = charValue;
 	}
 	
-	public String toString()
-	{
-		return ""+getChar();
-	}
-	
 	public char getChar()
 	{
 		return charValue;
