@@ -19,8 +19,8 @@
 	
 	<taskdef
 		name="jarbundler"
-		classpath="${lib}/ant/jarbundler-1.4.jar"
-		classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
+		classpath="${lib}/ant/jarbundler-1.9.jar"
+		classname="net.sourceforge.jarbundler.JarBundler" />
 	
 	<taskdef name="launch4j"
 		classname="net.sf.launch4j.ant.Launch4jTask"
@@ -159,10 +159,11 @@
 			icon="${res}/icons/dirt.icns"
 			mainclass="com.simontuffs.onejar.Boot"
 			name="Dirt"
-			aboutmenuname="Dirt Secure Chat"
+			shortname="Dirt"
+			stubfile="Dirt"
 			antialiasedtext="true"
 			bundleid="au.com.gslabs.dirt"
-			infostring="${version}"
+			infostring="Dirt Secure Chat ${version}"
 			screenmenu="true"
 			signature="????"
 			version="${version}"

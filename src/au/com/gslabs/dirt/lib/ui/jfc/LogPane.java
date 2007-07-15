@@ -46,13 +46,16 @@ public class LogPane extends JScrollPane
 		super();
 		
 		lastIsAtEnd = true;
-
+		
 		editor = createEditor();
 		kit = (XHTMLEditorKit)editor.getEditorKit();
 		
+		JEditorPane fill = createEditor();
+		fill.setEnabled(false);
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(createEditor(), BorderLayout.CENTER);
+		panel.add(fill, BorderLayout.CENTER);
 		panel.add(editor, BorderLayout.SOUTH);
 		setViewportView(panel);
 		
@@ -149,7 +152,7 @@ public class LogPane extends JScrollPane
 					editor.transferFocus();
 				}
 			});
-		
+			
 	}
 	
 	protected void raiseLinkEvent(URL url)

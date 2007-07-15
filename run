@@ -3,7 +3,7 @@
 if [ "`uname -s`" == "Darwin" -a "$1" == "" ]
 then
 
-	dist/Dirt.app/Contents/MacOS/JavaApplicationStub
+	dist/Dirt.app/Contents/MacOS/Dirt
 
 else
 
