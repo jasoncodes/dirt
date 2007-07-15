@@ -6,7 +6,6 @@ import au.com.gslabs.dirt.lib.ui.jfc.jni.*;
 import java.awt.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
-import java.net.URL;
 
 public class UIUtil
 {
@@ -62,6 +61,50 @@ public class UIUtil
 		return new ImageIcon(FileUtil.getResource(path));
 	}
 	
+	public static void openURL(String url)
+	{
+		try
+		{
+			if (FileUtil.isMac())
+			{
+				Class fileMgr = Class.forName("com.apple.eio.FileManager");
+				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] {String.class});
+				openURL.invoke(null, new Object[] {url});
+			}
+			else if (FileUtil.isWin())
+			{
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+			}
+			else
+			{
+				
+				String[] browsers = { "firefox", "konqueror", "mozilla", "netscape" };
+				String browser = null;
+				for (int count = 0; count < browsers.length && browser == null; count++)
+				{
+					if (Runtime.getRuntime().exec(new String[] {"which", browsers[count]}).waitFor() == 0)
+					{
+						browser = browsers[count];
+					}
+				}
+				
+				if (browser == null)
+				{
+					throw new Exception("Could not find web browser");
+				}
+				else
+				{
+					Runtime.getRuntime().exec(new String[] {browser, url});
+				}
+				
+			}
+		}
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "Error opening URL:\n" + e.getLocalizedMessage());
+		}
+	}
+	
 	public static void alert(Frame frame)
 	{
 		try
@@ -86,14 +129,17 @@ public class UIUtil
 			}
 			else if (FileUtil.isMac())
 			{
-				final String mode = "UserAttentionRequestInformational";
+				
 				final Class c = Class.forName("com.apple.cocoa.application.NSApplication");
 				final Method shared_app = c.getMethod("sharedApplication", (Class[])null);
 				final Object app = shared_app.invoke(null, (Object[])null);
+				
 				final Class[] int_param = new Class[] { Integer.TYPE };
 				final Method request_attention = c.getMethod("requestUserAttention", int_param);
-				final Field f = c.getField(mode);Object[] request_params = new Object[] { f.getInt(null) };
+				final Field f = c.getField("UserAttentionRequestInformational");
+				final Object[] request_params = new Object[] { f.getInt(null) };
 				final Integer requestID = (Integer)request_attention.invoke(app, request_params);
+				
 				final Method cancel_attention = c.getMethod("cancelUserAttentionRequest", int_param);
 				final Object[] cancel_params = new Object[] { requestID };
 				final Thread t = new Thread()
@@ -111,6 +157,7 @@ public class UIUtil
 						}
 					};
 				t.start();
+				
 			}
 			else
 			{

@@ -10,19 +10,12 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
 
-// this whole file is currently very messy
-// when I get around to implementing OS X specifics
-// and then abstracting them it will get much cleaner
-// this will be done using MRJAdapter
-////import com.apple.eawt.*;
+// this needs MRJAdapter support
 
 public class MainFrame extends JFrame
 {
 
 	protected ResourceBundle resbundle;
-	protected AboutBox aboutBox;
-	protected PrefPane prefs;
-	////private Application fApplication = Application.getApplication();
 	protected Action newAction, openAction, closeAction, saveAction, saveAsAction,
 		undoAction, cutAction, copyAction, pasteAction, clearAction, selectAllAction;
 	static final JMenuBar mainMenuBar = new JMenuBar();	
@@ -45,9 +38,6 @@ public class MainFrame extends JFrame
 		resbundle = ResourceBundle.getBundle("strings", Locale.getDefault());
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
-		
-		createActions();
-		addMenus();
 		
 		this.addWindowListener(new WindowAdapter()
 		{
@@ -90,34 +80,6 @@ public class MainFrame extends JFrame
 		
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
-		
-		/**
-		fApplication.setEnabledPreferencesMenu(true);
-		fApplication.addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
-			public void handleAbout(ApplicationEvent e) {
-				if (aboutBox == null) {
-					aboutBox = new AboutBox();
-				}
-				about(e);
-				e.setHandled(true);
-			}
-			public void handleOpenApplication(ApplicationEvent e) {
-			}
-			public void handleOpenFile(ApplicationEvent e) {
-			}
-			public void handlePreferences(ApplicationEvent e) {
-				if (prefs == null) {
-					prefs = new PrefPane();
-				}
-				preferences(e);
-			}
-			public void handlePrintFile(ApplicationEvent e) {
-			}
-			public void handleQuit(ApplicationEvent e) {
-				quit(e);
-			}
-		});
-		**/
 		
 		setSize(350, 250);
 		setVisible(true);
@@ -221,7 +183,7 @@ public class MainFrame extends JFrame
 	
 	protected void txtLog_LinkClick(java.net.URL url)
 	{
-		txtLog.appendTextLine("Link clicked: " + url, "info");
+		UIUtil.openURL(url.toString());
 	}
 	
 	protected void txtInput_Input(String[] lines)
@@ -236,8 +198,7 @@ public class MainFrame extends JFrame
 	
 	protected void doAlert()
 	{
-		new Thread(
-			new Runnable()
+		new Thread()
 			{
 				public void run()
 				{
@@ -250,7 +211,7 @@ public class MainFrame extends JFrame
 					}
 					UIUtil.alert(MainFrame.this);
 				}
-			}).start();
+			}.start();
 	}
 	
 	protected void doMinToTray()
@@ -336,7 +297,7 @@ public class MainFrame extends JFrame
 			UIUtil.stealFocus(this);
 		}
 	}
-		
+	
 	protected void onClose()
 	{
 		setVisible(false);
@@ -346,182 +307,5 @@ public class MainFrame extends JFrame
 			System.exit(0);
 		}
 	}
-	
-	/**
-	public void about(ApplicationEvent e)
-	{
-		aboutBox.setResizable(false);
-		aboutBox.setVisible(true);
-	}
-	
-	public void preferences(ApplicationEvent e)
-	{
-		prefs.setResizable(false);
-		prefs.setVisible(true);
-	}
-	
-	public void quit(ApplicationEvent e) {	
-		System.exit(0);
-	}
-	**/
-	
-	public void createActions() {
-		int shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-		
-		//Create actions that can be used by menus, buttons, toolbars, etc.
-		newAction = new newActionClass( resbundle.getString("newItem"),
-										KeyStroke.getKeyStroke(KeyEvent.VK_N, shortcutKeyMask) );
-		openAction = new openActionClass( resbundle.getString("openItem"),
-										  KeyStroke.getKeyStroke(KeyEvent.VK_O, shortcutKeyMask) );
-		closeAction = new closeActionClass( resbundle.getString("closeItem"),
-											KeyStroke.getKeyStroke(KeyEvent.VK_W, shortcutKeyMask) );
-		saveAction = new saveActionClass( resbundle.getString("saveItem"),
-										  KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutKeyMask) );
-		saveAsAction = new saveAsActionClass( resbundle.getString("saveAsItem") );
-		
-		undoAction = new undoActionClass( resbundle.getString("undoItem"),
-										  KeyStroke.getKeyStroke(KeyEvent.VK_Z, shortcutKeyMask) );
-		cutAction = new cutActionClass( resbundle.getString("cutItem"),
-										KeyStroke.getKeyStroke(KeyEvent.VK_X, shortcutKeyMask) );
-		copyAction = new copyActionClass( resbundle.getString("copyItem"),
-										  KeyStroke.getKeyStroke(KeyEvent.VK_C, shortcutKeyMask) );
-		pasteAction = new pasteActionClass( resbundle.getString("pasteItem"),
-											KeyStroke.getKeyStroke(KeyEvent.VK_V, shortcutKeyMask) );
-		clearAction = new clearActionClass( resbundle.getString("clearItem") );
-		selectAllAction = new selectAllActionClass( resbundle.getString("selectAllItem"),
-													KeyStroke.getKeyStroke(KeyEvent.VK_A, shortcutKeyMask) );
-	}
-	
-	public void addMenus() {
-		
-		fileMenu = new JMenu(resbundle.getString("fileMenu"));
-		fileMenu.add(new JMenuItem(newAction));
-		fileMenu.add(new JMenuItem(openAction));
-		fileMenu.add(new JMenuItem(closeAction));
-		fileMenu.add(new JMenuItem(saveAction));
-		fileMenu.add(new JMenuItem(saveAsAction));
-		mainMenuBar.add(fileMenu);
-		
-		editMenu = new JMenu(resbundle.getString("editMenu"));
-		editMenu.add(new JMenuItem(undoAction));
-		editMenu.addSeparator();
-		editMenu.add(new JMenuItem(cutAction));
-		editMenu.add(new JMenuItem(copyAction));
-		editMenu.add(new JMenuItem(pasteAction));
-		editMenu.add(new JMenuItem(clearAction));
-		editMenu.addSeparator();
-		editMenu.add(new JMenuItem(selectAllAction));
-		mainMenuBar.add(editMenu);
-		
-		setJMenuBar (mainMenuBar);
-	}
-		
-	public class newActionClass extends AbstractAction {
-		public newActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("New...");
-		}
-	}
-	
-	public class openActionClass extends AbstractAction {
-		public openActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Open...");
-		}
-	}
-	
-	public class closeActionClass extends AbstractAction {
-		public closeActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			dispose();
-		}
-	}
-	
-	public class saveActionClass extends AbstractAction {
-		public saveActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Save...");
-		}
-	}
-	
-	public class saveAsActionClass extends AbstractAction {
-		public saveAsActionClass(String text) {
-			super(text);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Save As...");
-		}
-	}
-	
-	public class undoActionClass extends AbstractAction {
-		public undoActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Undo...");
-		}
-	}
-	
-	public class cutActionClass extends AbstractAction {
-		public cutActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Cut...");
-		}
-	}
-	
-	public class copyActionClass extends AbstractAction {
-		public copyActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Copy...");
-		}
-	}
-	
-	public class pasteActionClass extends AbstractAction {
-		public pasteActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Paste...");
-		}
-	}
-	
-	public class clearActionClass extends AbstractAction {
-		public clearActionClass(String text) {
-			super(text);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Clear...");
-		}
-	}
-	
-	public class selectAllActionClass extends AbstractAction {
-		public selectAllActionClass(String text, KeyStroke shortcut) {
-			super(text);
-			putValue(ACCELERATOR_KEY, shortcut);
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Select All...");
-		}
-	}
-	
+
 }
