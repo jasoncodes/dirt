@@ -61,8 +61,11 @@ public class LogPane extends JScrollPane
 		panel.add(editor, BorderLayout.SOUTH);
 		setViewportView(panel);
 		
-		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
+		if (FileUtil.isMac())
+		{
+			setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		}
+		
 		addEventListeners();
 
 		listeners = new ArrayList<LinkListener>();
@@ -75,6 +78,7 @@ public class LogPane extends JScrollPane
 		editor.setEditorKit(new XHTMLEditorKit());
 		editor.setEditable(false);
 		editor.setText(wrapInXHTMLTags(""));
+		editor.setBorder(BorderFactory.createEmptyBorder());
 		return editor;
 	}
 	
@@ -89,23 +93,49 @@ public class LogPane extends JScrollPane
 		}
 	}
 	
-	protected static String strStylesheetURL = FileUtil.getResource("res/styles/logpane.css").toString();
+	protected static boolean tagWrap_InitDone = false;
+	protected static String tagWrap_Pre;
+	protected static String tagWrap_Post;
 	
-	protected static String wrapInXHTMLTags(String data)
+	protected static void tagWrapInit()
 	{
-		return
+		
+		if (tagWrap_InitDone) return;
+		
+		tagWrap_Pre =
 			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
 			"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \n" +
 			"\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
 			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
 			"<head>" +
-			"<title/>\n" +
-			"<link rel=\"stylesheet\" href=\""+strStylesheetURL+"\" type=\"text/css\"/>\n"+
+			"<title/>\n";
+		
+		tagWrap_Pre +=
+			"<link rel=\"stylesheet\" href=\"" +
+			FileUtil.getResource("res/styles/logpane/base.css").toString() +
+			"\" type=\"text/css\"/>\n";
+		
+		tagWrap_Pre +=
+			"<link rel=\"stylesheet\" href=\"" +
+			FileUtil.getResource("res/styles/logpane/platform-mac.css").toString() +
+			"\" type=\"text/css\"/>\n";
+		
+		tagWrap_Pre +=
 			"</head>\n" +
-			"<body>\n" +
-			data +
+			"<body>\n";
+			
+		tagWrap_Post =
 			"</body>\n"+
-			"</html>\n";			
+			"</html>\n";
+			
+		tagWrap_InitDone = true;
+		
+	}
+	
+	protected static String wrapInXHTMLTags(String data)
+	{
+		tagWrapInit();
+		return tagWrap_Pre + data + tagWrap_Post;
 	}
 	
 	protected void addEventListeners()

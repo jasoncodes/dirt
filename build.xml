@@ -93,7 +93,9 @@
 		<copy file="${res}/icons/dirt32.png" todir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt.ico" todir="${build}/main-scratch/res/icons" />
 		<mkdir dir="${build}/main-scratch/res/styles" />
-		<copy file="${res}/styles/logpane.css" todir="${build}/main-scratch/res/styles" />
+		<copy todir="${build}/main-scratch/res/styles/logpane/">
+			<FileSet dir="${res}/styles/logpane/" />
+		</copy>
 		<mkdir dir="${build}/main-scratch/res/xml" />
 		<mkdir dir="${build}/main-scratch/res/xml/xhtml" />
 		<mkdir dir="${build}/main-scratch/res/xml/xhtml/dtd" />

@@ -1,7 +1,6 @@
 body
 {
-	/* font-family: "Frutiger", "Lucida Grande", "Tahoma", "Arial Unicode MS", "Helvetica", "Arial", san-serif; */
-	font-family: Monaco, monospace;
+	font-family: monospace;
 	word-wrap: break-word;
 	background: white;
 	color: black;
