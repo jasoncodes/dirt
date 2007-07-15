@@ -86,11 +86,31 @@ public class UIUtil
 			}
 			else if (FileUtil.isMac())
 			{
-				Class c = Class.forName("org.jdesktop.jdic.misc.Alerter");
-				Method new_instance = c.getMethod("newInstance", (Class[])null);
-				Object alerter = new_instance.invoke(null, (Object[])null);
-				Method alert = c.getMethod("alert", new Class[] { Class.forName("java.awt.Frame") });
-				alert.invoke(alerter, new Object[] { frame });
+				final String mode = "UserAttentionRequestInformational";
+				final Class c = Class.forName("com.apple.cocoa.application.NSApplication");
+				final Method shared_app = c.getMethod("sharedApplication", (Class[])null);
+				final Object app = shared_app.invoke(null, (Object[])null);
+				final Class[] int_param = new Class[] { Integer.TYPE };
+				final Method request_attention = c.getMethod("requestUserAttention", int_param);
+				final Field f = c.getField(mode);Object[] request_params = new Object[] { f.getInt(null) };
+				final Integer requestID = (Integer)request_attention.invoke(app, request_params);
+				final Method cancel_attention = c.getMethod("cancelUserAttentionRequest", int_param);
+				final Object[] cancel_params = new Object[] { requestID };
+				final Thread t = new Thread()
+					{
+						public void run()
+						{
+							try
+							{
+								Thread.sleep(1000);
+								cancel_attention.invoke(app, cancel_params);
+							}
+							catch (Exception ex)
+							{
+							}
+						}
+					};
+				t.start();
 			}
 			else
 			{
