@@ -2,6 +2,7 @@
 
 	<description>Dirt Secure Chat build file</description>
 	
+	<property name="base" location="." />
 	<property name="src" location="src" />
 	<property name="build" location="build" />
 	<property name="dist" location="dist" />
@@ -184,7 +185,16 @@
 		</tar>
 	</target>
 	
-	<target name="dist" depends="jar,mac-bundle,win-bundle,webstart" />
+	<target name="scripts">
+		<chmod perm="ugo+rx">
+			<fileset dir="${base}">
+				<include name="go" />
+				<include name="run" />
+			</fileset>
+		</chmod>
+	</target>
+	
+	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,webstart" />
 
 	<target name="all" depends="clean,dist" />
 	
