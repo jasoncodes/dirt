@@ -38,6 +38,8 @@ p.chat-action
 	color: #800080;
 }
 
+.reverse { color: black; background-color: white; }
+
 .fg0 { color: #ffffff; }
 .fg1 { color: #000000; }
 .fg2 { color: #000080; }

@@ -58,95 +58,119 @@ public class InputArea extends JScrollPane
 	{
 		txt.getDocument().addDocumentListener(new DocumentListener()
 			{
+				
 				public void changedUpdate(DocumentEvent e)
 				{
-					OnChange();
+					onChange();
 				}
 				public void insertUpdate(DocumentEvent e)
 				{
-					OnChange();
+					onChange();
 				}
 				public void removeUpdate(DocumentEvent e)
 				{
-					OnChange();
+					onChange();
 				}
+				
 			});
 		txt.addKeyListener(new KeyAdapter()
 			{
-				public void keyTyped(KeyEvent e)
+				public void keyPressed(KeyEvent e)
 				{
-					if ((e.getKeyChar() == 13 || e.getKeyChar() == 10) && e.isControlDown())
+					if ((e.getKeyChar() == 13 || e.getKeyChar() == 10))
 					{
-						SwingUtilities.invokeLater(new OnChangeHandler(true));
+						inputCompleted(e.isControlDown());
 					}
 				}
 			});
 	}
 	
-	protected void OnChange()
+	protected void onChange()
 	{
 		if (txt.getText().indexOf("\n") > -1)
 		{
-			SwingUtilities.invokeLater(new OnChangeHandler(false));
+			SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						inputCompleted(true);
+					}
+				});
 		}
 	}
 	
-	protected class OnChangeHandler implements Runnable
+	protected void inputCompleted(boolean forceDefaultCommand)
 	{
 		
-		protected boolean forceDefaultCommand;
+		ArrayList<String> lines = TextUtil.split(txt.getText(), '\n');
+		txt.setText(null);
 		
-		public OnChangeHandler(boolean forceDefaultCommand)
+		while (lines.size() > 0 && lines.get(0).trim().length() == 0)
 		{
-			this.forceDefaultCommand = forceDefaultCommand;
+			lines.remove(0);
 		}
 		
-		public void run()
+		while (lines.size() > 0 && lines.get(lines.size()-1).trim().length() == 0)
 		{
-
-			ArrayList<String> lines = TextUtil.split(txt.getText(), '\n');
-
-			if (lines.size() > 1 || forceDefaultCommand)
-			{
-				
-				txt.setText(null);
-				
-				while (lines.size() > 0 && lines.get(0).trim().length() == 0)
-				{
-					lines.remove(0);
-				}
-				
-				while (lines.size() > 0 && lines.get(lines.size()-1).trim().length() == 0)
-				{
-					lines.remove(lines.size()-1);
-				}
-				
-				String[] tmp = null;
-				tmp = lines.toArray(new String[0]);
-				processInput(tmp, forceDefaultCommand);
-				
-			}
-			
+			lines.remove(lines.size()-1);
 		}
-
+		
+		String[] tmp = null;
+		tmp = lines.toArray(new String[0]);
+		processInput(tmp, forceDefaultCommand);
+		
 	}
 	
 	protected void processInput(String[] lines, boolean forceDefaultCommand)
 	{
 		
-		if (commandPrefix != null && defaultCommand != null)
+		boolean again = lines.length > 1;
+		while (again)
 		{
-			
-			boolean forceAdd = forceDefaultCommand || lines.length > 1;
-
+			int minTabDepth = Integer.MAX_VALUE;
+			int minSpaceDepth = Integer.MAX_VALUE;
 			for (int i = 0; i < lines.length; ++i)
 			{
-				if (!lines[i].startsWith(commandPrefix) || forceAdd)
+				int thisTabDepth = 0;
+				int thisSpaceDepth = 0;
+				System.out.println(lines[i]);
+				for (int j = 0; j < lines[i].length(); ++j)
+				{
+					System.out.print((lines[i].charAt(j) == '\t') + " " + (lines[i].charAt(j) == ' ') + " ");
+					if (lines[i].charAt(j) == '\t' && thisTabDepth == j)
+					{
+						thisTabDepth++;
+					}
+					if (lines[i].charAt(j) == ' ' && thisSpaceDepth == j)
+					{
+						thisSpaceDepth++;
+					}
+				}
+				minTabDepth = Math.min(minTabDepth, thisTabDepth);
+				minSpaceDepth = Math.min(minSpaceDepth, thisSpaceDepth);
+				System.out.println(minTabDepth + " " + minSpaceDepth);
+			}
+			int minDepth = Math.max(minTabDepth, minSpaceDepth);
+			System.out.println(minDepth);
+			if (minDepth > 0)
+			{
+				for (int i = 0; i < lines.length; ++i)
+				{
+					lines[i] = lines[i].substring(minDepth);
+				}
+			}
+			again = minDepth > 0;
+		}
+		
+		if (commandPrefix != null && defaultCommand != null)
+		{
+			for (int i = 0; i < lines.length; ++i)
+			{
+				if (!lines[i].startsWith(commandPrefix) || forceDefaultCommand)
 				{
 					lines[i] = commandPrefix + defaultCommand + " " + lines[i];
 				}
 			}
-			
 		}
 		
 		InputEvent e = new InputEvent(this, lines);

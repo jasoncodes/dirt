@@ -105,13 +105,22 @@ public class XHTMLEditorKit extends HTMLEditorKit
 		
 		public void endElement(String uri, String name, String qName) throws SAXException
 		{
-			callback.handleEndTag(HTML.getTag(qName), -1);
+			callback.handleEndTag(HTML.getTag(mapTagName(qName)), -1);
 		}
 		
 		public void startElement(String uri, String name, String qName, Attributes atts) throws SAXException
 		{
 			SimpleAttributeSet attributeSet = convertAttributes(atts);
-			callback.handleStartTag(HTML.getTag(qName), attributeSet, -1);
+			callback.handleStartTag(HTML.getTag(mapTagName(qName)), attributeSet, -1);
+		}
+		
+		protected String mapTagName(String tagName)
+		{
+			if (tagName.toLowerCase().equals("span"))
+			{
+				tagName = "font";
+			}
+			return tagName;
 		}
 		
 		private SimpleAttributeSet convertAttributes(Attributes atts)

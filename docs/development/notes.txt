@@ -1,22 +1,16 @@
-HTML renderer is not working
+TextModifierParser needs rewriting
+
+inputarea needs a line buffer for previous input
+
+CryptSocket implementation
 
 http://retrotranslator.sourceforge.net/
 
 http://en.wikipedia.org/wiki/STUN
 
 Mac OS X integration
-	To bounce the dock icon once use the NSInformationalRequest option with http://www.onjava.com/pub/a/onjava/2005/08/10/swinghacks.html
 	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html
-
-when window is resized the scroll position doesn't preserve when the text wrapping changes
-
-select all or dragging the caret past the end of the text when there are multiple lines causes all the text to jump to the top of the window
-
-inputarea needs a line buffer for previous input
-
-logpane needs support for rendering IRC colours
-
-longpane URL highlighting
+	http://homepage.mac.com/sroy/mrjadapter/
 
 inputarea needs support for inputting colour
 

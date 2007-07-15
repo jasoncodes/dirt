@@ -7,7 +7,7 @@ then
 
 else
 
-	OPTIONS=""
+	OPTIONS="-Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
 	if [ "$1" == "--profile" ]
 	then
 		PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
@@ -17,7 +17,7 @@ else
 			exit 1;
 		fi
 		export DYLD_LIBRARY_PATH="$PROFILER_LIB_DIR"
-		OPTIONS="-agentlib:yjpagent"
+		OPTIONS="$OPTIONS -agentlib:yjpagent"
 	fi
 
 	java $OPTIONS -jar dist/Dirt.jar "$@"

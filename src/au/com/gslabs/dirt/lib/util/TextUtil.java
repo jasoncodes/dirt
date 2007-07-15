@@ -180,19 +180,7 @@ public class TextUtil
 						sb.append("&lt;br/&gt;");
 						break;
 					default:
-						int ci = 0xffff & c;
-						if (ci < 160 && ci > 31)
-						{
-							// ASCII7 character
-							sb.append(c);
-						}
-						else
-						{
-							// outside of ASCII7, better escape it
-							sb.append("&#");
-							sb.append(new Integer(ci).toString());
-							sb.append(';');
-						}
+						sb.append(c);
 						break;
 				}
 				
@@ -211,8 +199,8 @@ public class TextUtil
 		{
 			if (token.getUrl() != null)
 			{
-				String href = TextModifierParser.parseText(
-					token.getUrl(), TextModifierParser.OutputFormat.TEXT);
+				String href = TextModifierParser.parse(
+					token.getUrl(), TextModifierParser.OutputFormat.PLAIN);
 				sb.append("<a href=\"");
 				sb.append(href);
 				sb.append("\">");

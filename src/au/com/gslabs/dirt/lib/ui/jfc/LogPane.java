@@ -16,6 +16,8 @@ import java.awt.Dimension;
 public class LogPane extends JScrollPane
 {
 	
+	protected final boolean synchronousAppend = false;
+	
 	public class LinkEvent extends EventObject
 	{
 		protected URL url;
@@ -249,7 +251,7 @@ public class LogPane extends JScrollPane
 					}
 					catch (Exception ex)
 					{
-						handleAppendError(ex);
+						handleAppendError(ex, xhtml);
 					}
 				}
 			}
@@ -258,7 +260,7 @@ public class LogPane extends JScrollPane
 	
 	private int handleAppendErrorDepth = 0;
 	
-	private void handleAppendError(Exception ex)
+	private void handleAppendError(Exception ex, String content)
 	{
 		
 		String message = "";
@@ -276,9 +278,10 @@ public class LogPane extends JScrollPane
 			message += ex.toString() + "\n";
 		}
 		
+		System.err.println("LogPane append failed: " + message);
+		System.err.println("Content that caused exception: " + content);
 		if (handleAppendErrorDepth > 0)
 		{
-			System.err.println("LogPane failed: " + message);
 			throw new RuntimeException(ex);
 		}
 		else
@@ -294,8 +297,22 @@ public class LogPane extends JScrollPane
 	{
 		synchronized (queue)
 		{
-			buffer.append(xhtml);
-			queue.execute(new AppendXHTMLWorker());
+			if (synchronousAppend)
+			{
+				try
+				{
+					doAppendXHTMLFragment(xhtml);
+				}
+				catch (Exception ex)
+				{
+					handleAppendError(ex, xhtml);
+				}
+			}
+			else
+			{
+				buffer.append(xhtml);
+				queue.execute(new AppendXHTMLWorker());
+			}
 		}
 	}
 	
@@ -348,7 +365,8 @@ public class LogPane extends JScrollPane
 	
 	public void appendTextLine(String text, String className)
 	{
-		String html = TextModifierParser.parseText(text, TextModifierParser.OutputFormat.XHTML);
+		String html = TextModifierParser.parse(
+			text, TextModifierParser.OutputFormat.XHTML);
 		appendXHTMLLine(html, className);
 	}
 	
