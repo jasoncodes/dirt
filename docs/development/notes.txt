@@ -10,7 +10,11 @@ Mac OS X integration
 	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html
 	http://homepage.mac.com/sroy/mrjadapter/
 
-inputarea needs support for inputting colour
+inputarea needs colour popup on Cmd-K
+
+text is always bold with Monaco on Mac
+monospace font preference not working on Windows
+modifier keys don't render in input area on Mac
 
 indented wrapping of long lines
 	http://groups.google.com.au/group/comp.lang.java.gui/browse_thread/thread/db1d177fe760cb77

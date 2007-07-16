@@ -3,10 +3,14 @@ package au.com.gslabs.dirt.lib.ui.jfc;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.*;
-import au.com.gslabs.dirt.lib.util.TextUtil;
+import javax.swing.border.*;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.EventObject;
+import au.com.gslabs.dirt.lib.util.TextUtil;
+import au.com.gslabs.dirt.lib.util.TextModifier;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 
 public class InputArea extends JScrollPane
 {
@@ -43,10 +47,19 @@ public class InputArea extends JScrollPane
 		txt = new JTextArea(1, 0);
 		txt.setRows(1);
 		setViewportView(txt);
+		
 		defaultCommand = "SAY";
 		commandPrefix = "/";
+		
 		listeners = new ArrayList<InputListener>();
 		addEventListeners();
+		
+		if (FileUtil.isMac())
+		{
+			Border border = BorderFactory.createEmptyBorder(0, 0, 0, 14);
+			setBorder(new CompoundBorder(getBorder(), border));
+		}
+		
 	}
 	
 	public boolean requestFocusInWindow()
@@ -77,12 +90,36 @@ public class InputArea extends JScrollPane
 			{
 				public void keyPressed(KeyEvent e)
 				{
-					if ((e.getKeyChar() == 13 || e.getKeyChar() == 10))
+					if (e.getKeyChar() == 13 || e.getKeyChar() == 10)
 					{
 						inputCompleted(e.isControlDown());
 					}
+					if (e.getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())
+					{
+						for (TextModifier mod : TextModifier.class.getEnumConstants())
+						{
+							if (KeyEvent.getKeyText(e.getKeyCode()).toUpperCase().equals(""+Character.toUpperCase(mod.getKeyChar())))
+							{
+								e.consume();
+								processModifierKey(mod);
+								break;
+							}
+						}
+					}
 				}
 			});
+	}
+	
+	protected void processModifierKey(TextModifier mod)
+	{
+		if (txt.getSelectedText() == null)
+		{
+			txt.replaceSelection(""+mod.getChar());
+		}
+		else
+		{
+			txt.replaceSelection(mod.getChar()+txt.getSelectedText()+mod.getChar());
+		}
 	}
 	
 	protected void onChange()
