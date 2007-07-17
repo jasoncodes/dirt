@@ -388,7 +388,6 @@ public class TextModifierParser
 		colourCodeEnd();
 		tagClearAll();
 		
-		System.out.println(result);
 		return result.toString();
 		
 	}

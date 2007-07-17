@@ -38,6 +38,10 @@ public class InputArea extends JScrollPane
 	protected String defaultCommand;
 	protected String commandPrefix;
 	protected ArrayList<InputListener> listeners;
+	protected ArrayList<String> history;
+	protected int history_pos;
+	protected String edit_text;
+	protected int edit_row;
 	
 	public InputArea()
 	{
@@ -50,6 +54,10 @@ public class InputArea extends JScrollPane
 		
 		defaultCommand = "SAY";
 		commandPrefix = "/";
+		history = new ArrayList<String>();
+		history_pos = 0;
+		edit_text = "";
+		edit_row = -1;
 		
 		listeners = new ArrayList<InputListener>();
 		addEventListeners();
@@ -60,6 +68,28 @@ public class InputArea extends JScrollPane
 			setBorder(new CompoundBorder(getBorder(), border));
 		}
 		
+	}
+	
+	protected void addToHistory(String line)
+	{
+		if (history.size() < 1 || !history.get(history.size()-1).equals(line))
+		{
+			if (line.length() > 0)
+			{
+				history.add(line);
+			}
+		}
+		history_pos = history.size();
+		edit_text = "";
+		edit_row = -1;
+	}
+	
+	protected void removeLastHistoryEntry()
+	{
+		if (history.size() > 0)
+		{
+			history.remove(history.size() - 1);
+		}
 	}
 	
 	public boolean requestFocusInWindow()
@@ -106,8 +136,120 @@ public class InputArea extends JScrollPane
 							}
 						}
 					}
+					if (e.getKeyCode() == KeyEvent.VK_UP)
+					{
+						onHistoryUp();
+						e.consume();
+					}
+					if (e.getKeyCode() == KeyEvent.VK_DOWN)
+					{
+						onHistoryDown();
+						e.consume();
+					}
 				}
 			});
+	}
+	
+	protected boolean hasChangedHistoryItem()
+	{
+		if (history_pos >= 0 && history_pos < history.size())
+		{
+			return !history.get(history_pos).equals(txt.getText());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	protected void onHistoryUp()
+	{
+		if (history_pos > 0)
+		{
+			if (hasChangedHistoryItem())
+			{
+				edit_text = txt.getText();
+				edit_row = history_pos;
+				if (edit_text.length() == 0)
+				{
+					history_pos = edit_row = history.size();
+				}
+			}
+			history_pos--;
+			displayHistoryItem();
+		}
+		else
+		{
+			if (hasChangedHistoryItem())
+			{
+				if (txt.getText().length() == 0)
+				{
+					history_pos = edit_row = history.size();
+					return;
+				}
+			}
+			alert();
+		}
+	}
+	
+	protected void onHistoryDown()
+	{
+		if ((history_pos+1) < history.size())
+		{
+			if (hasChangedHistoryItem())
+			{
+				edit_text = txt.getText();
+				edit_row = history_pos;
+				if (edit_text.length() == 0)
+				{
+					history_pos = edit_row = history.size();
+					return;
+				}
+			}
+			history_pos++;
+			displayHistoryItem();
+		}
+		else
+		{
+			if (history_pos+1 == edit_row)
+			{
+				if (history_pos == history.size())
+				{
+					txt.setText("");
+				}
+				else
+				{
+					txt.setText(edit_text);
+				}
+				setInsertionPointEnd();
+				history_pos = history.size();
+			}
+		}
+	}
+	
+	protected void setInsertionPointEnd()
+	{
+		int len = txt.getText().length();
+		txt.setSelectionStart(len);
+		txt.setSelectionEnd(len);
+	}
+	
+	protected void displayHistoryItem()
+	{
+		if (edit_row == history_pos)
+		{
+			txt.setText(edit_text);
+		}
+		else
+		{
+			txt.setText(history.get(history_pos));
+		}
+		setInsertionPointEnd();
+	}
+	
+	protected void alert()
+	{
+		// do nothing
 	}
 	
 	protected void processModifierKey(TextModifier mod)
@@ -197,6 +339,11 @@ public class InputArea extends JScrollPane
 				}
 			}
 			again = minDepth > 0;
+		}
+		
+		for (int i = 0; i < lines.length; ++i)
+		{
+			addToHistory(lines[i]);
 		}
 		
 		if (commandPrefix != null && defaultCommand != null)
