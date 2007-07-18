@@ -1,4 +1,11 @@
 body
 {
 	font-family: Monaco;
+	font-size: 13pt;
+}
+/* No font-weight or font-style support with Monaco */
+/* Fake strong by increasing the font size */
+strong, b
+{
+	font-size: 14.5pt;
 }
