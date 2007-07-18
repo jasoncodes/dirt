@@ -115,10 +115,13 @@ public class LogPane extends JScrollPane
 			FileUtil.getResource("res/styles/logpane/base.css").toString() +
 			"\" type=\"text/css\"/>\n";
 		
-		tagWrap_Pre +=
-			"<link rel=\"stylesheet\" href=\"" +
-			FileUtil.getResource("res/styles/logpane/platform-mac.css").toString() +
-			"\" type=\"text/css\"/>\n";
+		if (FileUtil.isMac())
+		{
+			tagWrap_Pre +=
+				"<link rel=\"stylesheet\" href=\"" +
+				FileUtil.getResource("res/styles/logpane/platform-mac.css").toString() +
+				"\" type=\"text/css\"/>\n";
+		}
 		
 		tagWrap_Pre +=
 			"</head>\n" +
