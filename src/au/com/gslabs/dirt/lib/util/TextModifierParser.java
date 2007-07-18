@@ -222,18 +222,21 @@ public class TextModifierParser
 	
 	protected void outputTag(String tagName, boolean opening, String attributes)
 	{
-		result.append('<');
-		if (!opening)
+		if (outputFormat == OutputFormat.XHTML)
 		{
-			result.append('/');
+			result.append('<');
+			if (!opening)
+			{
+				result.append('/');
+			}
+			result.append(tagName);
+			if (opening && attributes != null && attributes.length() > 0)
+			{
+				result.append(' ');
+				result.append(attributes);
+			}
+			result.append('>');
 		}
-		result.append(tagName);
-		if (opening && attributes != null && attributes.length() > 0)
-		{
-			result.append(' ');
-			result.append(attributes);
-		}
-		result.append('>');
 	}
 	
 	protected int colour_pos;
@@ -280,6 +283,37 @@ public class TextModifierParser
 		{
 			
 			char c = text.charAt(i);
+			
+			// if we find an XML element it will be an <a />
+			// rollback any tags we have open to prevent any nesting issues
+			// and restore the tags we have open after this anchor is finished
+			if (c == '<')
+			{
+				
+				// rollback
+				for (int idx = active.size()-1; idx >= 0; --idx)
+				{
+					outputTag(active.get(idx), false);
+				}
+				
+				// skip past all the characters for this XML element
+				while (i < text.length() && c != '>')
+				{
+					result.append(c);
+					c = text.charAt(++i);
+				}
+				result.append(c);
+				
+				// restore
+				for (int idx = 0; idx < active.size(); ++idx)
+				{
+					outputTag(active.get(idx), true);
+				}
+				
+				// restart the main loop
+				continue;
+				
+			}
 			
 			if (colour_pos == 0)
 			{

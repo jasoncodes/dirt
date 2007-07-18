@@ -256,11 +256,17 @@ public class InputArea extends JScrollPane
 	{
 		if (txt.getSelectedText() == null)
 		{
-			txt.replaceSelection(""+mod.getChar());
+			txt.replaceSelection(""+mod.getSafeInputChar());
 		}
 		else
 		{
-			txt.replaceSelection(mod.getChar()+txt.getSelectedText()+mod.getChar());
+			int start = txt.getSelectionStart();
+			txt.replaceSelection(mod.getSafeInputChar()+txt.getSelectedText()+mod.getSafeInputChar());
+			if (mod == TextModifier.COLOUR)
+			{
+				txt.setSelectionStart(start+1);
+				txt.setSelectionEnd(start+1);
+			}
 		}
 	}
 	
@@ -281,7 +287,14 @@ public class InputArea extends JScrollPane
 	protected void inputCompleted(boolean forceDefaultCommand)
 	{
 		
-		ArrayList<String> lines = TextUtil.split(txt.getText(), '\n');
+		String text = txt.getText();
+		
+		for (TextModifier mod : TextModifier.class.getEnumConstants())
+		{
+			text = text.replace(mod.getSafeInputChar(), mod.getChar());
+		}
+		
+		ArrayList<String> lines = TextUtil.split(text, '\n');
 		txt.setText(null);
 		
 		while (lines.size() > 0 && lines.get(0).trim().length() == 0)
@@ -312,10 +325,8 @@ public class InputArea extends JScrollPane
 			{
 				int thisTabDepth = 0;
 				int thisSpaceDepth = 0;
-				System.out.println(lines[i]);
 				for (int j = 0; j < lines[i].length(); ++j)
 				{
-					System.out.print((lines[i].charAt(j) == '\t') + " " + (lines[i].charAt(j) == ' ') + " ");
 					if (lines[i].charAt(j) == '\t' && thisTabDepth == j)
 					{
 						thisTabDepth++;
@@ -327,10 +338,8 @@ public class InputArea extends JScrollPane
 				}
 				minTabDepth = Math.min(minTabDepth, thisTabDepth);
 				minSpaceDepth = Math.min(minSpaceDepth, thisSpaceDepth);
-				System.out.println(minTabDepth + " " + minSpaceDepth);
 			}
 			int minDepth = Math.max(minTabDepth, minSpaceDepth);
-			System.out.println(minDepth);
 			if (minDepth > 0)
 			{
 				for (int i = 0; i < lines.length; ++i)

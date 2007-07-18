@@ -25,5 +25,5 @@ you cannot send a block key until you have received the public key
 you can send new block keys as often as you like but you can't send more than one public key
 
 suggested implementation for sending messages:
-keep a buffer of unencrypted messages (ArrayList<byte[]> perhaps) and process these after sending a block key
+keep a buffer of unencrypted messages (ArrayList<ByteBuffer>) and process these after sending a block key
 rotate the sending block key every so often. Dirt 3.0 does this every 512 KiB or 300 seconds (whichever is sooner). This may be somewhat excessive.

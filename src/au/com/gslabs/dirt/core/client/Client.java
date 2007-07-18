@@ -37,6 +37,10 @@ public class Client
 				{
 					notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
 				}
+				public void cryptMessage(ByteBuffer data)
+				{
+					notification(null, NotificationSeverity.DEBUG, null, "Incoming data: " + new ByteBuffer(data).toHexString());
+				}
 			}, new SameThreadInvoker());
 	}
 	
