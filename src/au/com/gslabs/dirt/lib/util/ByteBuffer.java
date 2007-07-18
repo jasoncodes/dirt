@@ -12,10 +12,7 @@ public class ByteBuffer
 	
 	public ByteBuffer()
 	{
-		this.data = new byte[16];
-		this.offset = 0;
-		this.length = 0;
-		this.shared = false;
+		clear();
 	}
 	
 	public ByteBuffer(ByteBuffer src)
@@ -25,6 +22,12 @@ public class ByteBuffer
 		this.offset = src.offset;
 		this.length = src.length;
 		this.shared = src.shared;
+	}
+	
+	public ByteBuffer(byte[] bytes)
+	{
+		clear();
+		append(bytes, 0, bytes.length);
 	}
 	
 	public ByteBuffer(ByteBuffer src, int offset, int len)
@@ -54,6 +57,14 @@ public class ByteBuffer
 		{
 			throw new RuntimeException("UTF-8 Conversion Error", ex);
 		}
+	}
+	
+	public void clear()
+	{
+		this.data = new byte[16];
+		this.offset = 0;
+		this.length = 0;
+		this.shared = false;
 	}
 	
 	public String toString()
@@ -130,7 +141,7 @@ public class ByteBuffer
 			System.arraycopy(this.data, this.offset, newData, 0, this.length);
 			this.offset = 0;
 			this.data = newData;
-			shared = false;
+			this.shared = false;
 		}
 	}
 	
