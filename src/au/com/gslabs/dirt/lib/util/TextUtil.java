@@ -177,7 +177,7 @@ public class TextUtil
 						sb.append("&gt;");
 						break;
 					case '\n':
-						sb.append("&lt;br/&gt;");
+						sb.append("<br />");
 						break;
 					default:
 						sb.append(c);

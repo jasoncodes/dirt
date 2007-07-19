@@ -39,7 +39,7 @@ public class Client
 				}
 				public void cryptMessage(ByteBuffer data)
 				{
-					notification(null, NotificationSeverity.DEBUG, null, "Incoming data: " + new ByteBuffer(data).toHexString());
+					notification(null, NotificationSeverity.DEBUG, null, "Incoming data: \n" + data.toHexString(true));
 				}
 			}, new SameThreadInvoker());
 	}

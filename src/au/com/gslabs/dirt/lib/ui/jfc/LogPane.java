@@ -393,13 +393,19 @@ public class LogPane extends JScrollPane
 	
 	public void appendTextLine(String text)
 	{
-		appendTextLine(text, null);
+		appendTextLine(text, null, true);
 	}
 	
 	public void appendTextLine(String text, String className)
 	{
+		boolean detectURLs = "debug".compareToIgnoreCase(className) != 0;
+		appendTextLine(text, className, detectURLs);
+	}
+	
+	public void appendTextLine(String text, String className, boolean detectURLs)
+	{
 		String html = TextModifierParser.parse(
-			text, TextModifierParser.OutputFormat.XHTML);
+			text, TextModifierParser.OutputFormat.XHTML, detectURLs);
 		appendXHTMLLine(html, className);
 	}
 	

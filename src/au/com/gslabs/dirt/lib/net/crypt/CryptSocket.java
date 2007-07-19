@@ -4,6 +4,7 @@ import au.com.gslabs.dirt.lib.thread.*;
 import java.io.*;
 import au.com.gslabs.dirt.lib.net.socket.*;
 import au.com.gslabs.dirt.lib.util.ByteBuffer;
+import au.com.gslabs.dirt.lib.crypt.*;
 
 public class CryptSocket
 {
@@ -23,7 +24,19 @@ public class CryptSocket
 	protected Socket socket;
 	protected Worker worker;
 	protected boolean active;
+	protected Crypt crypt;
+	protected KeyPair keypair;
+	protected ByteBuffer remotePublicKey;
 	
+	protected void clearState()
+	{
+		socket = null;
+		worker = null;
+		active = false;
+		crypt = null;
+		keypair = null;
+		remotePublicKey = null;
+	}
 	
 	protected class Worker extends Thread
 	{
@@ -44,7 +57,16 @@ public class CryptSocket
 							l.cryptConnected();
 						}
 					});
+					
+				keypair = crypt.generateKeyPair("RSA", 1024);
 				
+				listeners.dispatchEvent(new EventSource<CryptListener>()
+					{
+						public void dispatchEvent(CryptListener l)
+						{
+							//l.cryptMessage(keypair.getPublicKeyData());
+						}
+					});
 				DataInputStream in = new DataInputStream(socket.getInputStream());
 				while (!isInterrupted())
 				{
@@ -87,6 +109,7 @@ public class CryptSocket
 		{
 			active = true;
 			socket = null;
+			crypt = CryptFactory.getInstance();
 			worker = new Worker();
 			worker.connectHost = host;
 			worker.connectPort = port;
@@ -142,6 +165,7 @@ public class CryptSocket
 			}
 			worker = null;
 		}
+		clearState();
 	}
 	
 	public String getPeerName()

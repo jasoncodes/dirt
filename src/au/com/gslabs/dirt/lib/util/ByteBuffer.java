@@ -86,19 +86,105 @@ public class ByteBuffer
 		return bytes;
 	}
 	
+	protected static String makeHexString(byte val, int width)
+	{
+		return makeHexString(val&0xff, width);
+	}
+	
+	protected static String makeHexString(int val, int width)
+	{
+		
+		String str = Integer.toHexString(val);
+		
+		StringBuffer buff = new StringBuffer(width);
+		for (int i = 0; i < (width - str.length()); ++i)
+		{
+			buff.append('0');
+		}
+		buff.append(str);
+		
+		return buff.toString();
+		
+	}
+	
+	public String toHexString(boolean verbose)
+	{
+		if (verbose)
+		{
+			
+			int posWidth = (int)Math.ceil(Math.log(this.length) / Math.log(16));
+			if (posWidth < 4)
+			{
+				posWidth = 4;
+			}
+			else if (posWidth < 8)
+			{
+				posWidth = 8;
+			}
+			
+			StringBuffer buff = new StringBuffer(this.length*5);
+			for (int i = 0; i < this.length; i += 16)
+			{
+				if (i > 0)
+				{
+					buff.append("\n");
+				}
+				buff.append(makeHexString(i, posWidth)+ " ");
+				int lineEnd = Math.min(this.length, i+16);
+				for (int j = i; j < lineEnd; ++j)
+				{
+					if (j == i + 8)
+					{
+						buff.append(" ");
+					}
+					buff.append(" " + makeHexString(this.data[this.offset+j], 2));
+				}
+				if ((lineEnd % 16) > 0)
+				{
+					int buffNeeded = (16 - (lineEnd%16));
+					for (int j = 0; j < buffNeeded; ++j)
+					{
+						buff.append("   ");
+					}
+					if (buffNeeded >= 8)
+					{
+						buff.append(" ");
+					}
+				}
+				buff.append("  ");
+				buff.append("|");
+				for (int j = i; j < lineEnd; ++j)
+				{
+					byte b = this.data[this.offset+j];
+					if (b >= 0x20 && b < 0x80)
+					{
+						buff.append((char)b);
+					}
+					else
+					{
+						buff.append('.');
+					}
+				}
+				buff.append("|");
+			}
+			
+			return buff.toString();
+		
+		}
+		else
+		{
+			StringBuffer buff = new StringBuffer(this.length*3);
+			for (int i = 0; i < this.length; i++)
+			{
+				buff.append((i>0?" ":"") + makeHexString(this.data[this.offset+i], 2));
+			}
+			return buff.toString();
+		}
+	}
+	
 	public String toHexString()
 	{
-		StringBuffer buff = new StringBuffer(this.length*3);
-		for (int i = 0; i < this.length; i++)
-		{
-			byte nibbleLo = (byte)( this.data[this.offset+i] & 0x0F );
-			byte hibbleHi = (byte)( (this.data[this.offset+i]>>4) & 0x0F );
-			buff.append(
-				(i>0?" ":"") + 
-				Integer.toHexString(hibbleHi) +
-				Integer.toHexString(nibbleLo));
-		}
-		return buff.toString();
+		return toHexString(false);
 	}
 	
 	public int length()

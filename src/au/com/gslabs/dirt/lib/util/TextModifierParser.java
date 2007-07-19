@@ -23,17 +23,24 @@ public class TextModifierParser
 	
 	public static String parse(String text, OutputFormat outputFormat)
 	{
-		TextModifierParser parser = new TextModifierParser(outputFormat);
+		return parse(text, outputFormat, true);
+	}
+	
+	public static String parse(String text, OutputFormat outputFormat, boolean detectURLs)
+	{
+		TextModifierParser parser = new TextModifierParser(outputFormat, detectURLs);
 		return parser.parse(text);
 	}
 	
 	protected OutputFormat outputFormat;
+	protected boolean detectURLs;
 	protected StringBuffer result;
 	protected ArrayList<Entry> active;
 	
-	public TextModifierParser(OutputFormat outputFormat)
+	public TextModifierParser(OutputFormat outputFormat, boolean detectURLs)
 	{
 		this.outputFormat = outputFormat;
+		this.detectURLs = detectURLs;
 		reset();
 	}
 	
@@ -274,7 +281,10 @@ public class TextModifierParser
 		if (outputFormat == OutputFormat.XHTML)
 		{
 			text = TextUtil.stringToHTMLString(text);
-			text = TextUtil.convertUrlsToLinks(text);
+			if (detectURLs)
+			{
+				text = TextUtil.convertUrlsToLinks(text);
+			}
 		}
 		
 		result.ensureCapacity(result.length() + text.length() * 3);
