@@ -54,18 +54,6 @@
 		<copy todir="${build}/main-scratch">
 			<FileSet dir="build/main-classes" />
 		</copy>
-		<java classname="com.rc.retroweaver.Weaver">
-			<arg value="-source" />
-			<arg value="${build}/main-scratch" />
-			<classpath>
-				<fileset dir="${lib}/retroweaver/lib">
-					<include name="**/*" />
-				</fileset>
-				<fileset dir="${lib}/retroweaver/release">
-					<include name="**/*" />
-				</fileset>
-			</classpath>
-		</java>
 	</target>
 	
 	<target name="compile-onejar" depends="init">
@@ -170,7 +158,7 @@
 			screenmenu="true"
 			signature="????"
 			version="${version}"
-			jvmversion="1.4*"
+			jvmversion="1.5*"
 			extraclasspath="/System/Library/Java/"
 			/>
 	</target>

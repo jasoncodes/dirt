@@ -11,8 +11,8 @@
 		<offline-allowed />
 	</information>
 	<resources>
-		<j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se" />
-		<j2se version="1.4+"/>
+		<j2se version="1.5+" href="http://java.sun.com/products/autodl/j2se" />
+		<j2se version="1.5+"/>
 		<jar href="main.jar" main="true" download="eager" />
 		<property name="apple.laf.useScreenMenuBar" value="true" />
 		<property name="com.apple.mrj.application.apple.menu.about.name" value="Dirt Secure Chat" />
