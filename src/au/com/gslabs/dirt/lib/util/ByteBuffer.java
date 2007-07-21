@@ -156,7 +156,7 @@ public class ByteBuffer
 				for (int j = i; j < lineEnd; ++j)
 				{
 					byte b = this.data[this.offset+j];
-					if (b >= 0x20 && b < 0x80)
+					if (b >= 0x20 && b < 0x7f)
 					{
 						buff.append((char)b);
 					}
@@ -231,7 +231,12 @@ public class ByteBuffer
 		}
 	}
 	
-	public ByteBuffer append(byte[] buff, int offset, int len)
+	public void append(byte[] buff)
+	{
+		append(buff, 0, buff.length);
+	}
+	
+	public void append(byte[] buff, int offset, int len)
 	{
 		int newLength = this.length + len;
 		if (newLength > currentCapacity())
@@ -241,12 +246,11 @@ public class ByteBuffer
 		ensureOwnCopy();
 		System.arraycopy(buff, offset, this.data, this.offset+this.length, len);
 		this.length += len;
-		return this;
 	}
 	
-	public ByteBuffer append(ByteBuffer buff)
+	public void append(ByteBuffer buff)
 	{
-		return append(buff.data, buff.offset, buff.length);
+		append(buff.data, buff.offset, buff.length);
 	}
 	
 	public ByteBuffer extract(int offset, int len)

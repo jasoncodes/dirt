@@ -35,6 +35,7 @@
 		<mkdir dir="${build}"/>
 		<mkdir dir="${build}/main-classes"/>
 		<javac
+			failonerror="true"
 			srcdir="${src}"
 			destdir="${build}/main-classes"
 			compiler="javac1.5"
@@ -46,33 +47,36 @@
 			<classpath>
 				<pathelement location="${lib}/stub/jdic.jar" />
 				<pathelement location="${lib}/common/jline.jar" />
+				<pathelement location="${lib}/common/jzlib-1.0.7.jar" />
 			</classpath>
 			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
-		<delete dir="${build}/main-scratch" />
-		<mkdir dir="${build}/main-scratch" />
-		<copy todir="${build}/main-scratch">
-			<FileSet dir="build/main-classes" />
-		</copy>
 	</target>
 	
 	<target name="compile-onejar" depends="init">
 		<mkdir dir="${build}"/>
 		<mkdir dir="${build}/onejar"/>
 		<javac
+			failonerror="true"
 			srcdir="${lib}/one-jar"
 			destdir="${build}/onejar"
-			compiler="javac1.5"
-			target="1.5"
-			source="1.5"
+			compiler="javac1.4"
+			target="1.4"
+			source="1.4"
 			debug="true"
 			debuglevel="lines,vars,source"
-			deprecation="on" />
+			deprecation="on">
+			<compilerarg value="-Xlint:all,-serial" />
+		</javac>
 	</target>
 	
 	<target name="jar-main" depends="compile-main">
 		<mkdir dir="${build}" />
-		<mkdir dir="${build}/main" />
+		<delete dir="${build}/main-scratch" />
+		<mkdir dir="${build}/main-scratch" />
+		<copy todir="${build}/main-scratch">
+			<FileSet dir="build/main-classes" />
+		</copy>
 		<mkdir dir="${build}/main-scratch/res" />
 		<mkdir dir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt.png" todir="${build}/main-scratch/res/icons" />
@@ -90,6 +94,7 @@
 		<copy todir="${build}/main-scratch/res/xml/xhtml/dtd">
 			<FileSet dir="${res}/xml/xhtml/dtd/" />
 		</copy>
+		<mkdir dir="${build}/main" />
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-scratch" />
 			<fileset file="${res}/strings.properties" />
@@ -111,6 +116,7 @@
 				<include name="lib/preferences.properties" />
 				<include name="lib/retroweaver/release/retroweaver-rt-1.2.jar" />
 				<include name="lib/common/jline.jar" />
+				<include name="lib/common/jzlib-1.0.7.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
 				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
 				<include name="lib/stub/jdic.jar" />
