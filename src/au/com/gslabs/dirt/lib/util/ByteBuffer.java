@@ -15,6 +15,11 @@ public class ByteBuffer
 		clear();
 	}
 	
+	public ByteBuffer(int initialCapacity)
+	{
+		clear(initialCapacity);
+	}
+	
 	public ByteBuffer(ByteBuffer src)
 	{
 		src.shared = true;
@@ -32,15 +37,25 @@ public class ByteBuffer
 	
 	public ByteBuffer(ByteBuffer src, int offset, int len)
 	{
+		
 		if (offset < 0 || len < 0 || src.length < offset + len)
 		{
 			throw new IndexOutOfBoundsException();
 		}
-		src.shared = true;
-		this.data = src.data;
-		this.offset = src.offset + offset;
-		this.length = len;
-		this.shared = src.shared;
+		
+		if (len == 0)
+		{
+			// no point in sharing a buffer if we aren't using anything in it
+			clear();
+		}
+		else
+		{
+			src.shared = true;
+			this.data = src.data;
+			this.offset = src.offset + offset;
+			this.length = len;
+			this.shared = src.shared;
+		}
 		
 	}
 	
@@ -61,7 +76,12 @@ public class ByteBuffer
 	
 	public void clear()
 	{
-		this.data = new byte[16];
+		clear(16);
+	}
+	
+	public void clear(int initialCapacity)
+	{
+		this.data = new byte[initialCapacity];
 		this.offset = 0;
 		this.length = 0;
 		this.shared = false;
@@ -256,6 +276,30 @@ public class ByteBuffer
 	public ByteBuffer extract(int offset, int len)
 	{
 		return new ByteBuffer(this, offset, len);
+	}
+	
+	public ByteBuffer extract(int offset)
+	{
+		return new ByteBuffer(this, offset, this.length - offset);
+	}
+	
+	public void set(int offset, byte value)
+	{
+		ensureOwnCopy();
+		if (offset < 0 || offset >= length)
+		{
+			throw new IndexOutOfBoundsException();
+		}
+		this.data[this.offset+offset] = value;
+	}
+	
+	public byte get(int offset)
+	{
+		if (offset < 0 || offset >= length)
+		{
+			throw new IndexOutOfBoundsException();
+		}
+		return this.data[this.offset+offset];
 	}
 	
 }

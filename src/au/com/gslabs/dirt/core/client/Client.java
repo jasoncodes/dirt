@@ -36,6 +36,11 @@ public class Client
 				public void cryptConnected()
 				{
 					notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
+					socket.send(new ByteBuffer("\0NICK\0"+getNickname()));
+				}
+				public void cryptClosed()
+				{
+					notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
 				}
 				public void cryptMessage(ByteBuffer data)
 				{

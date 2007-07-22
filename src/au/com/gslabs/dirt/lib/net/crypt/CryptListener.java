@@ -8,5 +8,6 @@ public interface CryptListener
 {
 	public void cryptError(IOException ex);
 	public void cryptConnected();
+	public void cryptClosed();
 	public void cryptMessage(ByteBuffer data);
 }

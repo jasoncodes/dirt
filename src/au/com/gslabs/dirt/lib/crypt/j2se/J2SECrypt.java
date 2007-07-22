@@ -15,8 +15,22 @@ import javax.crypto.spec.SecretKeySpec;
 public class J2SECrypt implements Crypt
 {
 	
-	public KeyPair generateKeyPair(String cipher, int keySize) throws CryptException
+	protected static String getCipherFromTransformation(String transformation)
 	{
+		int i = transformation.indexOf("/");
+		if (i > -1)
+		{
+			return transformation.substring(0, i);
+		}
+		else
+		{
+			return transformation;
+		}
+	}
+	
+	public KeyPair generateKeyPair(String transformation, int keySize) throws CryptException
+	{
+		String cipher = getCipherFromTransformation(transformation);
 		KeyPairGenerator gen;
 		try
 		{
@@ -57,11 +71,12 @@ public class J2SECrypt implements Crypt
 		}
 	}
 	
-	public ByteBuffer encryptAsymmetric(String cipher, ByteBuffer publicKey, ByteBuffer data) throws CryptException
+	public ByteBuffer encryptAsymmetric(String transformation, ByteBuffer publicKey, ByteBuffer data) throws CryptException
 	{
 		try
 		{
-			Cipher c = Cipher.getInstance(cipher);
+			String cipher = getCipherFromTransformation(transformation);
+			Cipher c = Cipher.getInstance(transformation);
 			c.init(Cipher.ENCRYPT_MODE, getKeyFromBuffer(cipher, publicKey, true));
 			return new ByteBuffer(c.doFinal(data.getBytes()));
 		}
@@ -71,11 +86,12 @@ public class J2SECrypt implements Crypt
 		}
 	}
 	
-	public ByteBuffer decryptAsymmetric(String cipher, ByteBuffer privateKey, ByteBuffer data) throws CryptException
+	public ByteBuffer decryptAsymmetric(String transformation, ByteBuffer privateKey, ByteBuffer data) throws CryptException
 	{
 		try
 		{
-			Cipher c = Cipher.getInstance(cipher);
+			String cipher = getCipherFromTransformation(transformation);
+			Cipher c = Cipher.getInstance(transformation);
 			c.init(Cipher.DECRYPT_MODE, getKeyFromBuffer(cipher, privateKey, false));
 			return new ByteBuffer(c.doFinal(data.getBytes()));
 		}
@@ -105,12 +121,13 @@ public class J2SECrypt implements Crypt
 		}
 	}
 	
-	public ByteBuffer encryptBlockCipher(String cipher, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
+	public ByteBuffer encryptBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
 	{
 		try
 		{
+			String cipher = getCipherFromTransformation(transformation);
 			SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
-			Cipher c = Cipher.getInstance(cipher+"/ECB/NoPadding");
+			Cipher c = Cipher.getInstance(transformation);
 			c.init(Cipher.ENCRYPT_MODE, spec);
 			return new ByteBuffer(c.doFinal(data.getBytes()));
 		}
@@ -120,12 +137,13 @@ public class J2SECrypt implements Crypt
 		}
 	}
 	
-	public ByteBuffer decryptBlockCipher(String cipher, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
+	public ByteBuffer decryptBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
 	{
 		try
 		{
+			String cipher = getCipherFromTransformation(transformation);
 			SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
-			Cipher c = Cipher.getInstance(cipher+"/ECB/NoPadding");
+			Cipher c = Cipher.getInstance(transformation);
 			c.init(Cipher.DECRYPT_MODE, spec);
 			return new ByteBuffer(c.doFinal(data.getBytes()));
 		}
