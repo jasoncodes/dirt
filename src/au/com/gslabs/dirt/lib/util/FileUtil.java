@@ -2,6 +2,8 @@ package au.com.gslabs.dirt.lib.util;
 
 import java.io.*;
 import java.net.URL;
+import java.util.*;
+import java.util.zip.*;
 
 public class FileUtil
 {
@@ -174,6 +176,24 @@ public class FileUtil
 			jar_path = jar_path.replace('/', '\\');
 		}
 		return jar_path;	
+	}
+	
+	public static Date getJarBuildDate()
+	{
+		try
+		{
+			ZipFile file = new ZipFile(getJarSystemPath());
+			ZipEntry entry = file.getEntry("META-INF/MANIFEST.MF");
+			long time = entry.getTime();
+			if (time > 0)
+			{
+				return new Date(time);
+			}
+		}
+		catch (IOException ex)
+		{
+		}
+		return null;
 	}
 	
 	protected static void initTempDir() throws IOException

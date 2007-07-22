@@ -10,4 +10,16 @@ public class J2SESocketFactory extends SocketFactory
 		return new J2SESocket();
 	}
 	
+	public String getHostName()
+	{
+		try
+		{
+			return java.net.InetAddress.getLocalHost().getHostName();
+		}
+		catch (java.net.UnknownHostException ex)
+		{
+			return null;
+		}
+	}
+	
 }

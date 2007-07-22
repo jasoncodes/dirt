@@ -3,13 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/au/com/gslabs/dirt/Dirt.java</string>
+	<string>docs/development/notes.txt</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>children</key>
 			<array>
 				<dict>
+					<key>expanded</key>
+					<true/>
 					<key>name</key>
 					<string>docs</string>
 					<key>regexFolderFilter</key>
@@ -34,6 +36,8 @@
 					<string>res</string>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>DirtJava</string>
 		</dict>
@@ -41,74 +45,52 @@
 			<key>filename</key>
 			<string>build.xml</string>
 			<key>lastUsed</key>
-			<date>2007-07-19T23:25:19Z</date>
+			<date>2007-07-22T10:36:58Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>../Dirt/CryptSocket.cpp</string>
+			<string>../Dirt/Client.cpp</string>
 			<key>lastUsed</key>
-			<date>2007-07-19T21:14:16Z</date>
+			<date>2007-07-22T09:59:32Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>../Dirt/ClientDefault.cpp</string>
+			<key>lastUsed</key>
+			<date>2007-07-22T07:27:26Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>222</integer>
 	<key>metaData</key>
 	<dict>
-		<key>../Dirt/CryptSocket.cpp</key>
+		<key>docs/development/notes.txt</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>9</integer>
+				<integer>15</integer>
 				<key>line</key>
-				<integer>150</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>107</integer>
-		</dict>
-		<key>docs/development/protocol/crypt_wire.txt</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>60</integer>
-				<key>line</key>
-				<integer>27</integer>
+				<integer>2</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/au/com/gslabs/dirt/Dirt.java</key>
+		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>20</integer>
-				<key>line</key>
 				<integer>21</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/lib/crypt/Crypt.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>33</integer>
 				<key>line</key>
-				<integer>9</integer>
+				<integer>192</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>175</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/crypt/CryptException.java</key>
 		<dict>
@@ -124,63 +106,15 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/au/com/gslabs/dirt/lib/crypt/j2se/J2SECrypt.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>84</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>10</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/lib/net/crypt/CryptListener.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>26</integer>
-				<key>line</key>
-				<integer>10</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/lib/net/crypt/CryptSocket.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>119</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>105</integer>
-		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>docs/development/protocol/crypt_wire.txt</string>
-		<string>../Dirt/CryptSocket.cpp</string>
-		<string>src/au/com/gslabs/dirt/lib/net/crypt/CryptSocket.java</string>
-		<string>src/au/com/gslabs/dirt/lib/crypt/CryptException.java</string>
-		<string>src/au/com/gslabs/dirt/lib/net/crypt/CryptListener.java</string>
-		<string>src/au/com/gslabs/dirt/lib/crypt/j2se/J2SECrypt.java</string>
-		<string>src/au/com/gslabs/dirt/Dirt.java</string>
-		<string>src/au/com/gslabs/dirt/lib/crypt/Crypt.java</string>
+		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
+		<string>docs/development/notes.txt</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{505, 289}, {896, 634}}</string>
+	<string>{{487, 282}, {896, 634}}</string>
 </dict>
 </plist>

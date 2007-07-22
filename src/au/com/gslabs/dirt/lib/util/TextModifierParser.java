@@ -310,9 +310,16 @@ public class TextModifierParser
 				while (i < text.length() && c != '>')
 				{
 					result.append(c);
-					c = text.charAt(++i);
+					if (++i >= text.length())
+					{
+						break;
+					}
+					c = text.charAt(i);
 				}
-				result.append(c);
+				if (i < text.length())
+				{
+					result.append(c);
+				}
 				
 				// restore
 				for (int idx = 0; idx < active.size(); ++idx)

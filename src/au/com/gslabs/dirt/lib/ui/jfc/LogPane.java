@@ -65,6 +65,7 @@ public class LogPane extends JScrollPane
 		{
 			setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		}
+		getVerticalScrollBar().setUnitIncrement(4);
 		
 		addEventListeners();
 

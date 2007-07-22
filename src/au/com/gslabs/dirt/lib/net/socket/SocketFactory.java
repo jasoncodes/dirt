@@ -9,5 +9,6 @@ public abstract class SocketFactory
 	}
 	
 	public abstract Socket createSocket();
+	public abstract String getHostName();
 	
 }

@@ -37,7 +37,7 @@ public class ClientCLI
 		
 		public void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			output(getOutputPrefix() + message);
+			output(message);
 		}
 		
 		public boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
@@ -146,7 +146,7 @@ public class ClientCLI
 		{
 			String text = TextModifierParser.parse(
 				message, TextModifierParser.OutputFormat.PLAIN);
-			console.printString(text + "\n");
+			console.printString(DefaultClientAdapter.getOutputPrefix() + text + "\n");
 			console.flushConsole();
 		}
 		catch (IOException ex)

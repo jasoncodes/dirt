@@ -1,7 +1,7 @@
 package au.com.gslabs.dirt.lib.net.crypt;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import au.com.gslabs.dirt.lib.thread.*;
 import au.com.gslabs.dirt.lib.net.socket.*;
 import au.com.gslabs.dirt.lib.util.*;
@@ -35,7 +35,7 @@ public class CryptSocket
 	protected ByteBuffer remotePublicKey;
 	protected ByteBuffer remoteBlockKey;
 	protected ByteBuffer localBlockKey;
-	protected ArrayList<ByteBuffer> bufferSendUser;
+	protected Queue<ByteBuffer> bufferSendUser;
 	protected ByteBuffer bufferSendRaw;
 	protected ZlibDeflater deflater;
 	protected ZlibInflator inflator;
@@ -79,8 +79,15 @@ public class CryptSocket
 	
 	protected class InputThread extends Thread
 	{
+		
 		public String connectHost;
 		public int connectPort;
+		
+		public InputThread()
+		{
+			super("CryptSocket.InputThread");
+		}
+		
 		public void run()
 		{
 			try
@@ -92,7 +99,7 @@ public class CryptSocket
 				deflater = crypt.createZlibDeflater(9);
 				inflator = crypt.createZlibInflator();
 					
-				bufferSendUser = new ArrayList<ByteBuffer>();
+				bufferSendUser = new LinkedList<ByteBuffer>();
 				bufferSendRaw = new ByteBuffer();
 				
 				threadOutput = new OutputThread();
@@ -129,6 +136,12 @@ public class CryptSocket
 	
 	protected class OutputThread extends Thread
 	{
+		
+		public OutputThread()
+		{
+			super("CryptSocket.OutputThread");
+		}
+		
 		public void run()
 		{
 			try
@@ -149,6 +162,7 @@ public class CryptSocket
 							}
 							catch (InterruptedException iex)
 							{
+								return;
 							}
 						}
 						if (bufferSendRaw.length() > sendBlockSize)
@@ -175,6 +189,7 @@ public class CryptSocket
 				onException(ex);
 			}
 		}
+		
 	}
 	
 	protected void outputRaw(ByteBuffer data)
@@ -227,13 +242,19 @@ public class CryptSocket
 	
 	protected void sendBufferedUserData() throws CryptException
 	{
-		synchronized (this)
+		boolean again = true;
+		while (again)
 		{
-			for (ByteBuffer entry : bufferSendUser)
+			ByteBuffer entry = null;
+			synchronized (this)
+			{
+				entry = bufferSendUser.poll();
+			}
+			if (entry != null)
 			{
 				outputUserData(entry);
 			}
-			bufferSendUser.clear();
+			again = (entry != null);
 		}
 	}
 	
@@ -245,7 +266,6 @@ public class CryptSocket
 			crypt.encryptBlockCipher(
 				transformationBlock, localBlockKey,
 				padToLocalBlockKeySize(compressedData));
-		
 		ByteBuffer data = new ByteBuffer(payload.length() + 2);
 		data.append(ByteConvert.fromU16(compressedData.length()));
 		data.append(payload);
@@ -277,7 +297,6 @@ public class CryptSocket
 	
 	protected void processPacket(final ByteBuffer data) throws IOException
 	{
-		
 		if (data.length() < 4)
 		{
 			throw new IOException("Packet too short");
@@ -409,10 +428,6 @@ public class CryptSocket
 		if (thread != null)
 		{
 			thread.interrupt();
-			synchronized (thread)
-			{
-				thread.notify();
-			}
 			try
 			{
 				thread.join();

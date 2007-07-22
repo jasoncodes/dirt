@@ -1,4 +1,8 @@
-CryptSocket implementation
+Win32 and Linux need local_policy.jar for AES-256. Third party implementation?
+
+cryptbuffer needs AES key rotation
+
+add PING/PONG support to Client
 
 http://retrotranslator.sourceforge.net/
 

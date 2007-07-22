@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.text.MessageFormat;
 
-public class TextUtil
+public final class TextUtil
 {
 	
 	private TextUtil()
@@ -213,6 +213,13 @@ public class TextUtil
 			}
 		}
 		return sb.toString();
+	}
+	
+	protected static java.text.SimpleDateFormat sdfDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	public static String formatDateTime(java.util.Date d)
+	{
+		return sdfDateTime.format(d.getTime());
 	}
 	
 }

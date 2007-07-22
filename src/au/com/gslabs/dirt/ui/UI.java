@@ -39,7 +39,7 @@ public class UI
 			{
 				au.com.gslabs.dirt.ui.jfc.client.MainFrame.init();
 			}
-			catch (RuntimeException ex)
+			catch (Throwable ex)
 			{
 				au.com.gslabs.dirt.ui.cli.client.ClientCLI.init();
 			}

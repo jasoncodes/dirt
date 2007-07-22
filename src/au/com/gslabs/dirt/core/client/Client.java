@@ -23,30 +23,192 @@ public class Client
 	}
 	
 	protected CryptSocket socket;
+	protected boolean connected;
 
 	public Client()
 	{
+		connected = false;
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
 			{
 				public void cryptError(java.io.IOException ex)
 				{
-					notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection error: "+ex);
+					onConnectionError(ex);
 				}
 				public void cryptConnected()
 				{
-					notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
-					socket.send(new ByteBuffer("\0NICK\0"+getNickname()));
+					onConnected();
 				}
 				public void cryptClosed()
 				{
-					notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
+					onDisconnected();
 				}
 				public void cryptMessage(ByteBuffer data)
 				{
-					notification(null, NotificationSeverity.DEBUG, null, "Incoming data: \n" + data.toHexString(true));
+					processServerMessage(data);
 				}
 			}, new SameThreadInvoker());
+	}
+	
+	protected String getUserDetails()
+	{
+		
+		String hostname = au.com.gslabs.dirt.lib.net.socket.SocketFactory.getInstance().getHostName();
+		String userID = System.getProperty("user.name") + "@" + hostname;
+		String osInfo =
+			System.getProperty("os.name") + " " + System.getProperty("os.version") +
+			" (" + System.getProperty("os.arch") + ")";
+		return userID + " on " + osInfo;
+	}
+	
+	protected String getUserAgent()
+	{
+		
+		final HashSet<String> extras = new HashSet<String>();
+		listeners.dispatchEvent(new EventSource<ClientListener>()
+			{
+				public void dispatchEvent(ClientListener l)
+				{
+					String extra = l.getClientExtraVersionInfo(Client.this);
+					if (extra != null && extra.length() > 0)
+					{
+						extras.add(extra);
+					}
+				}
+			}, true);
+		
+		String version = au.com.gslabs.dirt.Dirt.VERSION;
+		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate());
+		
+		if (extras.size() > 0)
+		{
+			version += " (";
+			boolean pastFirst = false;
+			for (String extra : extras)
+			{
+				if (pastFirst)
+				{
+					version += ", ";
+				}
+				version += extra;
+				pastFirst = true;
+			}
+			version += ")";
+		}
+		
+		return version;
+		
+	}
+	
+	protected void onConnected()
+	{
+		connected = true;
+		notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
+		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
+		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
+		sendToServer(null, "NICK", new ByteBuffer(getNickname()));
+	}
+	
+	protected void onDisconnected()
+	{
+		connected = false;
+		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
+	}
+	
+	protected void onConnectionError(java.io.IOException ex)
+	{
+		System.err.println("Connection error:");
+		ex.printStackTrace();
+		connected = false;
+		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection error: "+ex);
+	}
+	
+	public boolean isConnected()
+	{
+		return connected;
+	}
+	
+	protected void processServerMessage(ByteBuffer data)
+	{
+		
+		ArrayList<ByteBuffer> tokens = data.tokenizeNull(3);
+		if (tokens.size() != 3)
+		{
+			throw new IllegalArgumentException("Not enough tokens in server message");
+		}
+		
+		String context = tokens.get(0).toString();
+		String cmdString = tokens.get(1).toString();
+		ByteBuffer params = tokens.get(2);
+		
+		final ServerCommand cmd;
+		try
+		{
+			cmd = ServerCommand.valueOf(cmdString);
+		}
+		catch (Exception ex)
+		{
+			notification(context, NotificationSeverity.ERROR, null, "Server message type unknown: " + cmdString);
+			dumpMessageData(context, cmdString, params);
+			return;
+		}
+		
+		processServerMessage(context, cmd, params);
+		
+	}
+	
+	protected enum ServerCommand
+	{
+		PING,
+		INFO
+	}
+	
+	protected void processServerMessage(String context, ServerCommand cmd, ByteBuffer params)
+	{
+		
+		switch (cmd)
+		{
+			
+			case INFO:
+				notification(context, NotificationSeverity.INFO, null, params.toString());
+				break;
+			
+			case PING:
+				sendToServer(context, "PONG", params);
+				break;
+				
+			default:
+				notification(context, NotificationSeverity.ERROR, null, "Server message type not implemented: " + cmd);
+				dumpMessageData(context, cmd.toString(), params);
+				break;
+				
+		}
+		
+	}
+	
+	protected void dumpMessageData(String context, String cmdString, ByteBuffer params)
+	{
+		notification(context, NotificationSeverity.DEBUG, null,
+			"Message data:\n\tContext: " + context + "\n\tCommand: "+cmdString+
+			"\n\tParams:\n\t\t"+params.toHexString(true).replace("\n","\n\t\t"));
+	}
+	
+	protected void sendToServer(String context, String command, ByteBuffer params)
+	{
+		if (context == null) context = "";
+		if (command == null) command = "";
+		if (params == null) params = new ByteBuffer();
+		if (context.indexOf(0) > -1 || command.indexOf(0) > -1)
+		{
+			throw new IllegalArgumentException("Context and command cannot contain null characters");
+		}
+		ByteBuffer data = new ByteBuffer(context.length()+command.length()+params.length()+2);
+		data.append(context);
+		data.append((byte)0x00);
+		data.append(command);
+		data.append((byte)0x00);
+		data.append(params);
+		socket.send(data);
 	}
 	
 	public void processConsoleInput(String context, String[] lines)
@@ -125,7 +287,8 @@ public class Client
 		MY,
 		HELP,
 		HEXDUMP,
-		CONNECT
+		CONNECT,
+		RAW
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -133,6 +296,25 @@ public class Client
 		
 		switch (cmd)
 		{
+			
+			case RAW:
+				if (!isConnected())
+				{
+					notification(context, NotificationSeverity.ERROR, "RAW", "Not connected");
+				}
+				else
+				{
+					int i = params.indexOf(' ');
+					if (i > 0)
+					{
+						sendToServer(context, params.substring(0, i), new ByteBuffer(params.substring(i+1)));
+					}
+					else
+					{
+						sendToServer(context, params, null);
+					}
+				}
+				return true;
 			
 			case CONNECT:
 				URL url = new URL(params, "dirt", 11626);

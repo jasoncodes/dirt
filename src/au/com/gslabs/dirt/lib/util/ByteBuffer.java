@@ -1,6 +1,7 @@
 package au.com.gslabs.dirt.lib.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class ByteBuffer
 {
@@ -143,6 +144,12 @@ public class ByteBuffer
 			}
 			
 			StringBuffer buff = new StringBuffer(this.length*5);
+			
+			if (this.length == 0)
+			{
+				buff.append(makeHexString(0, posWidth)+ " ");
+			}
+			
 			for (int i = 0; i < this.length; i += 16)
 			{
 				if (i > 0)
@@ -251,6 +258,18 @@ public class ByteBuffer
 		}
 	}
 	
+	public void append(byte value)
+	{
+		byte[] buff = new byte[1];
+		buff[0] = value;
+		append(buff);
+	}
+	
+	public void append(String value)
+	{
+		append(new ByteBuffer(value));
+	}
+	
 	public void append(byte[] buff)
 	{
 		append(buff, 0, buff.length);
@@ -300,6 +319,63 @@ public class ByteBuffer
 			throw new IndexOutOfBoundsException();
 		}
 		return this.data[this.offset+offset];
+	}
+	
+	public int indexOf(byte value)
+	{
+		return indexOf(value, 0);
+	}
+	
+	public int indexOf(byte value, int startPos)
+	{
+		for (int i = startPos; i < this.length; ++i)
+		{
+			if (this.data[this.offset+i] == value)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public ArrayList<ByteBuffer> tokenizeNull()
+	{
+		return tokenizeNull(-1);
+	}
+	
+	public ArrayList<ByteBuffer> tokenizeNull(int maxTokens)
+	{
+		
+		ArrayList<ByteBuffer> tokens = new ArrayList<ByteBuffer>();
+		
+		int startPos = 0;
+		int tokensLeft = (maxTokens > 0) ? (maxTokens-1) : Integer.MAX_VALUE;
+		
+		while (tokensLeft-- > 0 && startPos < length())
+		{
+			int endPos = indexOf((byte)0x00, startPos);
+			if (endPos >= 0)
+			{
+				tokens.add(extract(startPos, endPos-startPos));
+				startPos = endPos + 1;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		if (startPos < length())
+		{
+			tokens.add(extract(startPos));
+		}
+		else if (startPos == length())
+		{
+			tokens.add(new ByteBuffer());
+		}
+		
+		return tokens;
+		
 	}
 	
 }

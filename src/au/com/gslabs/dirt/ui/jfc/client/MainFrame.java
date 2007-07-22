@@ -81,7 +81,7 @@ public class MainFrame extends JFrame
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
 		
-		setSize(350, 250);
+		setSize(850, 330);
 		setVisible(true);
 		txtInput.requestFocusInWindow();
 		
