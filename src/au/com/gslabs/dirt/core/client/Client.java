@@ -120,7 +120,14 @@ public class Client
 		System.err.println("Connection error:");
 		ex.printStackTrace();
 		connected = false;
-		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection error: "+ex);
+		String msg = "Connection error: " + ex.toString();
+		Throwable t = ex.getCause();
+		while (t != null)
+		{
+			msg += ", " + t.toString();
+			t = t.getCause();
+		}
+		notification(null, NotificationSeverity.ERROR, "CONNECT", msg);
 	}
 	
 	public boolean isConnected()
@@ -153,17 +160,23 @@ public class Client
 			return;
 		}
 		
-		processServerMessage(context, cmd, params);
+		if (!processServerMessage(context, cmd, params))
+		{
+			notification(context, NotificationSeverity.ERROR, null, "Server message type not implemented: " + cmd);
+			dumpMessageData(context, cmdString, params);
+		}
 		
 	}
 	
 	protected enum ServerCommand
 	{
 		PING,
-		INFO
+		INFO,
+		PUBMSG,
+		PUBACTION
 	}
 	
-	protected void processServerMessage(String context, ServerCommand cmd, ByteBuffer params)
+	protected boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
 	{
 		
 		switch (cmd)
@@ -171,16 +184,27 @@ public class Client
 			
 			case INFO:
 				notification(context, NotificationSeverity.INFO, null, params.toString());
-				break;
+				return true;
 			
 			case PING:
 				sendToServer(context, "PONG", params);
-				break;
+				return true;
+				
+			case PUBMSG:
+			case PUBACTION:
+				final ChatMessageType type = (cmd == ServerCommand.PUBACTION) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+				final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+				listeners.dispatchEvent(new EventSource<ClientListener>()
+					{
+						public void dispatchEvent(ClientListener l)
+						{
+							l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
+						}
+					});
+				return true;
 				
 			default:
-				notification(context, NotificationSeverity.ERROR, null, "Server message type not implemented: " + cmd);
-				dumpMessageData(context, cmd.toString(), params);
-				break;
+				return false;
 				
 		}
 		
@@ -331,15 +355,23 @@ public class Client
 				
 			case SAY:
 			case ME:
-				final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-				listeners.dispatchEvent(new EventSource<ClientListener>()
-					{
-						public void dispatchEvent(ClientListener l)
+				if (!isConnected())
+				{
+					notification(context, NotificationSeverity.ERROR, "RAW", "Not connected");
+				}
+				else
+				{
+					final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+					String srvCmd = (cmd == ConsoleCommand.ME) ? "PUBACTION" : "PUBMSG";
+					sendToServer(context, srvCmd, new ByteBuffer(params));
+					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
-							l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
-							l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
-						}
-					});
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
+							}
+						});
+				}
 				return true;
 				
 			case MY:
