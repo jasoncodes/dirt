@@ -11,6 +11,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import javax.crypto.spec.SecretKeySpec;
+import au.com.gslabs.dirt.lib.crypt.generic.AES;
+import au.com.gslabs.dirt.lib.crypt.generic.BlockCipher;
 
 public class J2SECrypt implements Crypt
 {
@@ -123,33 +125,68 @@ public class J2SECrypt implements Crypt
 	
 	public ByteBuffer encryptBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
 	{
-		try
-		{
-			String cipher = getCipherFromTransformation(transformation);
-			SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
-			Cipher c = Cipher.getInstance(transformation);
-			c.init(Cipher.ENCRYPT_MODE, spec);
-			return new ByteBuffer(c.doFinal(data.getBytes()));
-		}
-		catch (GeneralSecurityException ex)
-		{
-			throw new CryptException("Error encrypting with block cipher", ex);
-		}
+		return doBlockCipher(transformation, sharedKey, data, true);
 	}
 	
 	public ByteBuffer decryptBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data) throws CryptException
 	{
+		return doBlockCipher(transformation, sharedKey, data, false);
+	}
+	
+	protected static ByteBuffer doBlockCipher_J2SE(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws GeneralSecurityException
+	{
+		String cipher = getCipherFromTransformation(transformation);
+		SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
+		Cipher c = Cipher.getInstance(transformation);
+		c.init(forEncryption?Cipher.ENCRYPT_MODE:Cipher.DECRYPT_MODE, spec);
+		return new ByteBuffer(c.doFinal(data.getBytes()));
+	}
+	
+	protected static final String transform_AES = "AES/ECB/NoPadding";
+	
+	protected static ByteBuffer doBlockCipher_AES(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
+	{
+		if (!transformation.equals(transform_AES))
+		{
+			throw new CryptException("Unsupported transformation: " + transformation, null);
+		}
+		BlockCipher aes = new AES();
+		aes.init(forEncryption, sharedKey.getBytes());
+		byte[] buff = new byte[data.length()];
+		int offset = 0;
+		while (offset < buff.length)
+		{
+			aes.transformBlock(data.getBytes(), offset, buff, offset);
+			offset += aes.getBlockSize();
+		}
+		return new ByteBuffer(buff);
+	}
+	
+	protected static boolean cipher_BadSystemAES = false;
+	
+	protected ByteBuffer doBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
+	{
+		
+		if (cipher_BadSystemAES)
+		{
+			return doBlockCipher_AES(transformation, sharedKey, data, forEncryption);
+		}
+		
 		try
 		{
-			String cipher = getCipherFromTransformation(transformation);
-			SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
-			Cipher c = Cipher.getInstance(transformation);
-			c.init(Cipher.DECRYPT_MODE, spec);
-			return new ByteBuffer(c.doFinal(data.getBytes()));
+			return doBlockCipher_J2SE(transformation, sharedKey, data, forEncryption);
 		}
 		catch (GeneralSecurityException ex)
 		{
-			throw new CryptException("Error encrypting with block cipher", ex);
+			if (transformation.equals(transform_AES))
+			{
+				cipher_BadSystemAES = true;
+				return doBlockCipher_AES(transformation, sharedKey, data, forEncryption);
+			}
+			else
+			{
+				throw new CryptException("Error encrypting with block cipher", ex);
+			}
 		}
 	}
 	
