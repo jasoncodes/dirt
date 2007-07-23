@@ -12,7 +12,9 @@ public class CryptSocket
 	
 	protected static final String transformationPublic = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
 	protected static final String transformationBlock = "AES/ECB/NoPadding";
-	protected static final int sendBlockSize = 8;
+	protected static final int sendBlockSize = 4096;
+	protected static final int maxBlockKeyAgeBytes = 1024 * 128; // 128 KiB
+	protected static final int maxBlockKeyAgeSeconds = 300; // 5 minutes
 	
 	protected EventListeners<CryptListener> listeners = new EventListeners<CryptListener>();
 	
@@ -39,6 +41,8 @@ public class CryptSocket
 	protected ByteBuffer bufferSendRaw;
 	protected ZlibDeflater deflater;
 	protected ZlibInflator inflator;
+	protected long blockKeyTTL_Bytes;
+	protected long blockKeyExpire_Time;
 	
 	protected void clearState()
 	{
@@ -55,6 +59,8 @@ public class CryptSocket
 		bufferSendRaw = null;
 		deflater = null;
 		inflator = null;
+		blockKeyTTL_Bytes = 0;
+		blockKeyExpire_Time = 0;
 	}
 	
 	protected enum MessageType
@@ -261,6 +267,12 @@ public class CryptSocket
 	protected void outputUserData(ByteBuffer userData) throws CryptException
 	{
 		
+		blockKeyTTL_Bytes -= userData.length();
+		if (blockKeyTTL_Bytes <= 0 || System.currentTimeMillis() >= blockKeyExpire_Time)
+		{
+			newBlockKey();
+		}
+		
 		ByteBuffer compressedData = deflater.deflate(userData, true);
 		ByteBuffer payload =
 			crypt.encryptBlockCipher(
@@ -269,6 +281,7 @@ public class CryptSocket
 		ByteBuffer data = new ByteBuffer(payload.length() + 2);
 		data.append(ByteConvert.fromU16(compressedData.length()));
 		data.append(payload);
+		
 		outputRaw(data);
 		
 	}
@@ -293,6 +306,14 @@ public class CryptSocket
 				}
 			}
 		}
+	}
+	
+	protected void newBlockKey() throws CryptException
+	{
+		blockKeyTTL_Bytes = maxBlockKeyAgeBytes;
+		blockKeyExpire_Time = System.currentTimeMillis() + maxBlockKeyAgeSeconds * 1000;
+		localBlockKey = crypt.generateRandomBytes(32);
+		sendBlockKey();
 	}
 	
 	protected void processPacket(final ByteBuffer data) throws IOException
@@ -329,8 +350,7 @@ public class CryptSocket
 			if (messageType == MessageType.PUBLIC_KEY.getValue())
 			{
 				remotePublicKey = data.extract(4);
-				localBlockKey = crypt.generateRandomBytes(32);
-				sendBlockKey();
+				newBlockKey();
 				sendBufferedUserData();
 			}
 			else if (messageType == MessageType.BLOCK_KEY.getValue())

@@ -1,5 +1,3 @@
-cryptbuffer needs AES key rotation
-
 http://retrotranslator.sourceforge.net/
 
 http://en.wikipedia.org/wiki/STUN
@@ -14,9 +12,7 @@ tab completion in both Swing and curses interfaces
 
 keyboard support for scrolling logpane (pgup/down in inputarea)
 
-text is always bold with Monaco on Mac
 monospace font preference not working on Windows
-modifier keys don't render in input area on Mac
 
 indented wrapping of long lines
 	http://groups.google.com.au/group/comp.lang.java.gui/browse_thread/thread/db1d177fe760cb77
