@@ -310,7 +310,6 @@ public class Client
 		ME,
 		MY,
 		HELP,
-		HEXDUMP,
 		CONNECT,
 		RAW
 	}
@@ -324,7 +323,7 @@ public class Client
 			case RAW:
 				if (!isConnected())
 				{
-					notification(context, NotificationSeverity.ERROR, "RAW", "Not connected");
+					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
 				}
 				else
 				{
@@ -342,10 +341,10 @@ public class Client
 			
 			case CONNECT:
 				URL url = new URL(params, "dirt", 11626);
-				notification(context, NotificationSeverity.INFO, "CONNECT", "Connecting to " + url);
+				notification(context, NotificationSeverity.INFO, cmd.toString(), "Connecting to " + url);
 				if (!url.getProtocol().equals("dirt"))
 				{
-					notification(context, NotificationSeverity.ERROR, "CONNECT", "Unknown protocol: " + url.getProtocol());
+					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Unknown protocol: " + url.getProtocol());
 				}
 				else
 				{
@@ -357,7 +356,7 @@ public class Client
 			case ME:
 				if (!isConnected())
 				{
-					notification(context, NotificationSeverity.ERROR, "RAW", "Not connected");
+					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
 				}
 				else
 				{
@@ -376,10 +375,6 @@ public class Client
 				
 			case MY:
 				processConsoleInput(context, "/me 's " + params);
-				return true;
-				
-			case HEXDUMP:
-				notification(context, NotificationSeverity.DEBUG, cmd.toString(), new ByteBuffer(params).toHexString());
 				return true;
 				
 			case HELP:

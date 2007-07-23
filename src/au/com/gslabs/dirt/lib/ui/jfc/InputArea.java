@@ -76,6 +76,10 @@ public class InputArea extends JScrollPane
 		{
 			if (line.length() > 0)
 			{
+				for (TextModifier mod : TextModifier.class.getEnumConstants())
+				{
+					line = line.replace(mod.getChar(), mod.getSafeInputChar());
+				}
 				history.add(line);
 			}
 		}
