@@ -35,7 +35,7 @@ public class ClientCLI
 			super(SupportedCommand.class);
 		}
 		
-		public void clientConsoleOutput(Client source, String context, String className, String message)
+		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
 			output(message);
 		}
@@ -66,6 +66,28 @@ public class ClientCLI
 			return "Console";
 		}
 		
+		public void clientNeedNickname(Client source, String defaultNick)
+		{
+			String prompt = "/nick " + defaultNick;
+			setText(prompt);
+		}
+		
+	}
+	
+	protected void setText(String text)
+	{
+		CursorBuffer buffer = console.getCursorBuffer();
+		buffer.clearBuffer();
+		buffer.write(text);
+		try
+		{
+			console.drawLine();
+			console.flushConsole();
+		}
+		catch (IOException ex)
+		{
+			throw new RuntimeException(ex);
+		}
 	}
 	
 	public ClientCLI()
@@ -82,11 +104,10 @@ public class ClientCLI
 			
 			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);
 			
-			completor = new SimpleCompletor(new String[0]);
-			console.addCompletor(completor);
-			
-			completor.addCandidateString("Foo");
-			completor.addCandidateString("Bar");
+			//completor = new SimpleCompletor(new String[0]);
+			//console.addCompletor(completor);
+			//completor.addCandidateString("Foo");
+			//completor.addCandidateString("Bar");
 			
 			bailingOut = false;
 			

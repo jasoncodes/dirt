@@ -105,7 +105,7 @@ public class MainFrame extends JFrame
 			super(SupportedCommand.class);
 		}
 		
-		public void clientConsoleOutput(Client source, String context, String className, String message)
+		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
 		}
@@ -177,6 +177,12 @@ public class MainFrame extends JFrame
 				
 			}
 			
+		}
+		
+		public void clientNeedNickname(Client source, String defaultNick)
+		{
+			String prompt = "/nick " + defaultNick;
+			txtInput.setText(prompt, 6, prompt.length());
 		}
 		
 	}

@@ -18,7 +18,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		return sdf.format(c.getTime());
 	}
 	
-	public abstract void clientConsoleOutput(Client source, String context, String className, String message);
+	protected abstract void clientConsoleOutput(Client source, String context, String className, String message);
 	
 	public String[] getClientSupportedCommands(Client source)
 	{
@@ -37,24 +37,34 @@ public abstract class DefaultClientAdapter implements ClientListener
 	
 	public void clientNotification(Client source, String context, NotificationSeverity severity, String type, String message)
 	{
+		
+		final boolean haveType = type != null && type.length() > 0 && !type.equals("CONNECT");
+		
 		StringBuilder buff = new StringBuilder();
 		buff.append("*** ");
 		switch (severity)
 		{
 			case DEBUG:
-				buff.append("Debug: ");
+				buff.append("Debug");
 				break;
 			case ERROR:
-				buff.append("Error: ");
+				buff.append("Error");
+				buff.append(haveType ? " " : ": ");
 				break;
 		}
-		if (type != null && type.length() > 0 && !type.equals("CONNECT"))
+		if (haveType)
 		{
 			buff.append(type);
 			buff.append(": ");
 		}
 		buff.append(message);
+		
 		clientConsoleOutput(source, context, severity.toString().toLowerCase(), buff.toString());
+	}
+	
+	public void clientNeedNickname(Client source, String defaultNick)
+	{
+		clientConsoleOutput(source, null, "info", "Nickname required.");
 	}
 	
 	public void clientStateChanged(Client source)
@@ -260,7 +270,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("*** ");
-		if (new_nick.equals(source.getNickname()))
+		if (source.getNickname() == null && new_nick == null)
+		{
+			sb.append("You have no nickname");
+		}
+		else if (new_nick.equals(source.getNickname()))
 		{
 			if (old_nick.equals(new_nick))
 			{
@@ -353,10 +367,10 @@ public abstract class DefaultClientAdapter implements ClientListener
 		}
 	}
 	
-	public void clientUserWhois(Client source, String context, Map<String,ByteBuffer> details)
+	public void clientUserWhois(Client source, String context, Map<String,String> details)
 	{
 		
-		Map<String,ByteBuffer> data = new HashMap<String,ByteBuffer>(details);
+		Map<String,String> data = new HashMap<String,String>(details);
 		String nickname = data.get("NICK").toString();
 		WhoisOutputter out = new WhoisOutputter(source, context, nickname);
 		

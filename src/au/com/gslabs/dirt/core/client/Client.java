@@ -24,10 +24,13 @@ public class Client
 	
 	protected CryptSocket socket;
 	protected boolean connected;
+	protected String nickname_current;
+	protected String nickname_last;
 
 	public Client()
 	{
 		connected = false;
+		nickname_last = System.getProperty("user.name");
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
 			{
@@ -103,15 +106,16 @@ public class Client
 	protected void onConnected()
 	{
 		connected = true;
+		nickname_current = null;
 		notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
 		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
-		sendToServer(null, "NICK", new ByteBuffer(getNickname()));
 	}
 	
 	protected void onDisconnected()
 	{
 		connected = false;
+		nickname_current = null;
 		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
 	}
 	
@@ -120,6 +124,7 @@ public class Client
 		System.err.println("Connection error:");
 		ex.printStackTrace();
 		connected = false;
+		nickname_current = null;
 		String msg = "Connection error: " + ex.toString();
 		Throwable t = ex.getCause();
 		while (t != null)
@@ -173,7 +178,11 @@ public class Client
 		PING,
 		INFO,
 		PUBMSG,
-		PUBACTION
+		PUBACTION,
+		AUTHOK,
+		IPLIST,
+		IPSELF,
+		ERROR
 	}
 	
 	protected boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
@@ -182,27 +191,67 @@ public class Client
 		switch (cmd)
 		{
 			
+			case IPLIST:
+			case IPSELF:
+				// do not care about these messages (yet)
+				return true;
+			
 			case INFO:
-				notification(context, NotificationSeverity.INFO, null, params.toString());
+				{
+					notification(context, NotificationSeverity.INFO, null, params.toString());
+				}
 				return true;
 			
 			case PING:
-				sendToServer(context, "PONG", params);
+				{
+					sendToServer(context, "PONG", params);
+				}
 				return true;
 				
 			case PUBMSG:
 			case PUBACTION:
-				final ChatMessageType type = (cmd == ServerCommand.PUBACTION) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-				final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
-				listeners.dispatchEvent(new EventSource<ClientListener>()
-					{
-						public void dispatchEvent(ClientListener l)
+				{
+					final ChatMessageType type = (cmd == ServerCommand.PUBACTION) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
-							l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
-						}
-					});
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
+							}
+						});
+				}
 				return true;
 				
+			case AUTHOK:
+				{
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientNeedNickname(Client.this, nickname_last);
+							}
+						});
+				}
+				return true;
+			
+			case ERROR:
+				{
+					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					notification(context, NotificationSeverity.ERROR, tokens.get(0).toString(), tokens.get(1).toString());
+					if (tokens.size() > 1 && tokens.get(0).toString().equalsIgnoreCase("NICK"))
+					{
+						listeners.dispatchEvent(new EventSource<ClientListener>()
+							{
+								public void dispatchEvent(ClientListener l)
+								{
+									l.clientNeedNickname(Client.this, nickname_last);
+								}
+							});
+					}
+				}
+				return true;
+			
 			default:
 				return false;
 				
@@ -311,7 +360,21 @@ public class Client
 		MY,
 		HELP,
 		CONNECT,
-		RAW
+		RAW,
+		NICK
+	}
+	
+	protected boolean ensureConnected(String context, ConsoleCommand cmd)
+	{
+		if (isConnected())
+		{
+			return true;
+		}
+		else
+		{
+			notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
+			return false;
+		}
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -321,11 +384,7 @@ public class Client
 		{
 			
 			case RAW:
-				if (!isConnected())
-				{
-					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
-				}
-				else
+				if (ensureConnected(context, cmd))
 				{
 					int i = params.indexOf(' ');
 					if (i > 0)
@@ -335,6 +394,26 @@ public class Client
 					else
 					{
 						sendToServer(context, params, null);
+					}
+				}
+				return true;
+				
+			case NICK:
+				if (ensureConnected(context, cmd))
+				{
+					if (params.length() > 0)
+					{
+						setNickname(context, params);
+					}
+					else
+					{
+						listeners.dispatchEvent(new EventSource<ClientListener>()
+							{
+								public void dispatchEvent(ClientListener l)
+								{
+									l.clientUserNick(Client.this, getNickname(), getNickname());
+								}
+							});
 					}
 				}
 				return true;
@@ -378,33 +457,36 @@ public class Client
 				return true;
 				
 			case HELP:
-				final SortedSet<String> cmds = new TreeSet<String>();
-				
-				for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
 				{
-					cmds.add(entry.toString());
-				}
-				
-				listeners.dispatchEvent(new EventSource<ClientListener>()
+					
+					final SortedSet<String> cmds = new TreeSet<String>();
+					
+					for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
 					{
-						public void dispatchEvent(ClientListener l)
+						cmds.add(entry.toString());
+					}
+					
+					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
-							for (String entry : l.getClientSupportedCommands(Client.this))
+							public void dispatchEvent(ClientListener l)
 							{
-								cmds.add(entry);
+								for (String entry : l.getClientSupportedCommands(Client.this))
+								{
+									cmds.add(entry);
+								}
 							}
-						}
-					}, true);
-				
-				StringBuilder buff = new StringBuilder();
-				buff.append("Supported commands:");
-				for (String entry : cmds)
-				{
-					buff.append(" ");
-					buff.append(entry);
+						}, true);
+					
+					StringBuilder buff = new StringBuilder();
+					buff.append("Supported commands:");
+					for (String entry : cmds)
+					{
+						buff.append(" ");
+						buff.append(entry);
+					}
+					notification(context, NotificationSeverity.INFO, cmd.toString(), buff.toString());
+					
 				}
-				notification(context, NotificationSeverity.INFO, cmd.toString(), buff.toString());
-				
 				return true;
 			
 			default:
@@ -427,8 +509,13 @@ public class Client
 	
 	public String getNickname()
 	{
-		// test stub
-		return System.getProperty("user.name");
+		return nickname_current;
+	}
+	
+	public void setNickname(String context, String nickname)
+	{
+		nickname_last = nickname;
+		sendToServer(context, "NICK", new ByteBuffer(nickname));
 	}
 	
 }

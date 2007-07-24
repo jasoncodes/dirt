@@ -238,6 +238,13 @@ public class InputArea extends JScrollPane
 		txt.setSelectionEnd(len);
 	}
 	
+	public void setText(String text, int selStart, int selEnd)
+	{
+		txt.setText(text);
+		txt.setSelectionStart(selStart);
+		txt.setSelectionEnd(selEnd);
+	}
+	
 	protected void displayHistoryItem()
 	{
 		if (edit_row == history_pos)

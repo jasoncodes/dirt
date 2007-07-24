@@ -8,7 +8,6 @@ import au.com.gslabs.dirt.lib.util.Duration;
 
 public interface ClientListener extends java.util.EventListener
 {
-	
 	public String[] getClientSupportedCommands(Client source);
 	public boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params);
 	public String getClientExtraVersionInfo(Client source);
@@ -21,6 +20,6 @@ public interface ClientListener extends java.util.EventListener
 	public void clientUserPart(Client source, String nick, String details, String message);
 	public void clientUserNick(Client source, String old_nick, String new_nick);
 	public void clientUserStatus(Client source, String nick, UserStatus status, String message, Date away_start, Duration away_duration, Duration previous_away_duration, String previous_away_message);
-	public void clientUserWhois(Client source, String context, Map<String,ByteBuffer> details);
-	
+	public void clientUserWhois(Client source, String context, Map<String,String> details);
+	public void clientNeedNickname(Client source, String defaultNick);
 }
