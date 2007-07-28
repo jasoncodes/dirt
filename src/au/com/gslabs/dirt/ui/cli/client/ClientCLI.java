@@ -72,6 +72,23 @@ public class ClientCLI
 			setText(prompt);
 		}
 		
+		public void clientNeedAuthentication(Client source, String prompt)
+		{
+			super.clientNeedAuthentication(source, prompt);
+			setText("");
+			console.setEchoCharacter(new Character('*'));
+		}
+		
+		public void clientStateChanged(Client source)
+		{
+			super.clientStateChanged(source);
+			if (console.getEchoCharacter() != null)
+			{
+				setText("");
+				console.setEchoCharacter(null);
+			}
+		}
+		
 	}
 	
 	protected void setText(String text)
@@ -114,11 +131,20 @@ public class ClientCLI
 			String line;
 			while ((line = console.readLine("")) != null)
 			{
-				if (!line.startsWith("/"))
+				if (console.getEchoCharacter() != null)
 				{
-					line = "/SAY " + line;
+					setText("");
+					console.setEchoCharacter(null);
+					client.authenticate(null, line);
 				}
-				client.processConsoleInput(null, line);
+				else
+				{
+					if (line.length() > 0 && !line.startsWith("/"))
+					{
+						line = "/SAY " + line;
+					}
+					client.processConsoleInput(null, line);
+				}
 			}
 			
 			if (!bailingOut)

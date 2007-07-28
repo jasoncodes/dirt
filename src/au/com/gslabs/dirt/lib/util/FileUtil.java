@@ -196,6 +196,25 @@ public class FileUtil
 		return null;
 	}
 	
+	public static String getMyFullName()
+	{
+		try
+		{
+			if (FileUtil.isMac())
+			{
+				FileUtil.loadLibrary("lib/mac/libDirtJNI.jnilib");
+				au.com.gslabs.dirt.lib.util.jni.MacOS mac =
+					new au.com.gslabs.dirt.lib.util.jni.MacOS();
+				return mac.getMyFullName();
+			}
+		}
+		catch (Throwable ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
 	protected static void initTempDir() throws IOException
 	{
 		if (temp_dir == null)

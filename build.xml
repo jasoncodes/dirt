@@ -84,6 +84,7 @@
 		<copy file="${res}/icons/dirt16.png" todir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt32.png" todir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt.ico" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/dirt_highlight.png" todir="${build}/main-scratch/res/icons" />
 		<mkdir dir="${build}/main-scratch/res/styles" />
 		<copy todir="${build}/main-scratch/res/styles/logpane/">
 			<FileSet dir="${res}/styles/logpane/" />
@@ -118,6 +119,7 @@
 				<include name="lib/common/jline-0.9.91.jar" />
 				<include name="lib/common/jzlib-1.0.7.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
+				<include name="lib/mac/libDirtJNI.jnilib" />
 				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
 				<include name="lib/stub/jdic.jar" />
 				<include name="lib/win32/jdic.jar" />

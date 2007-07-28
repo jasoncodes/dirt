@@ -64,7 +64,12 @@ public abstract class DefaultClientAdapter implements ClientListener
 	
 	public void clientNeedNickname(Client source, String defaultNick)
 	{
-		clientConsoleOutput(source, null, "info", "Nickname required.");
+		clientNotification(source, null, NotificationSeverity.WARNING, "NICK", "Nickname required");
+	}
+	
+	public void clientNeedAuthentication(Client source, String prompt)
+	{
+		clientNotification(source, null, NotificationSeverity.WARNING, "AUTH", prompt);
 	}
 	
 	public void clientStateChanged(Client source)

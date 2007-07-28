@@ -36,10 +36,17 @@ public abstract class EnumClientAdapter<SupportedCommand extends Enum<SupportedC
 		}
 		catch (Exception ex)
 		{
-			return false;
+			return super.clientPreprocessConsoleInput(source, context, cmd, params);
 		}
 		
-		return clientPreprocessConsoleInput(source, context, cmdEnum, params);
+		if (clientPreprocessConsoleInput(source, context, cmdEnum, params))
+		{
+			return true;
+		}
+		else
+		{
+			return super.clientPreprocessConsoleInput(source, context, cmd, params);
+		}
 		
 	}
 	

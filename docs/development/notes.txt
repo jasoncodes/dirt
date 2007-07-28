@@ -1,3 +1,7 @@
+MD5Mac authentication support
+AUTH support in JFC UI
+nicklist
+
 http://retrotranslator.sourceforge.net/
 
 http://en.wikipedia.org/wiki/STUN
@@ -27,3 +31,5 @@ sane initial frame rect
 save/restore frame rect
 
 focus detection red line
+
+in order to be able to mask passwords in CLI we'd have to interrupt ConsoleReader.readLine(). The only way I can think of doing this at the moment is to have a custom InputStream that does a new FileInputStream(FileDescriptor.in) on a second thread that allows a -1 return value which should flow back up the main loop and allow the main thread to recall readLine with masking params. If -1 doesn't work, try an IOException. Mention http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4514257 in any workaround class.

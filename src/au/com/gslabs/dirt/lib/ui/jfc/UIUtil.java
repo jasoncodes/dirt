@@ -1,9 +1,9 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.io.File;
-import java.lang.reflect.*;
 import au.com.gslabs.dirt.lib.ui.jfc.jni.*;
 import java.awt.*;
+import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
 
@@ -46,13 +46,17 @@ public class UIUtil
 		frame.setIconImage(loadImageIcon(false).getImage());
 		setWin32Icon(frame, "res/icons/dirt.ico");
 	}
-
+	
 	public static ImageIcon loadImageIcon(boolean small)
 	{
 		String path;
 		if (FileUtil.isWin())
 		{
 			path = small ? "res/icons/dirt16.png" : "res/icons/dirt32.png";
+		}
+		else if (FileUtil.isMac())
+		{
+			path = "res/icons/dirt.png";
 		}
 		else
 		{
@@ -105,6 +109,8 @@ public class UIUtil
 		}
 	}
 	
+	protected static MacDockBouncer dockBouncer = null;
+		
 	public static void alert(Frame frame)
 	{
 		try
@@ -129,35 +135,14 @@ public class UIUtil
 			}
 			else if (FileUtil.isMac())
 			{
-				
-				final Class c = Class.forName("com.apple.cocoa.application.NSApplication");
-				final Method shared_app = c.getMethod("sharedApplication", (Class[])null);
-				final Object app = shared_app.invoke(null, (Object[])null);
-				
-				final Class[] int_param = new Class[] { Integer.TYPE };
-				final Method request_attention = c.getMethod("requestUserAttention", int_param);
-				final Field f = c.getField("UserAttentionRequestInformational");
-				final Object[] request_params = new Object[] { f.getInt(null) };
-				final Integer requestID = (Integer)request_attention.invoke(app, request_params);
-				
-				final Method cancel_attention = c.getMethod("cancelUserAttentionRequest", int_param);
-				final Object[] cancel_params = new Object[] { requestID };
-				final Thread t = new Thread()
+				synchronized (FileUtil.class)
+				{
+					if (dockBouncer == null)
 					{
-						public void run()
-						{
-							try
-							{
-								Thread.sleep(1000);
-								cancel_attention.invoke(app, cancel_params);
-							}
-							catch (Exception ex)
-							{
-							}
-						}
-					};
-				t.start();
-				
+						dockBouncer = new MacDockBouncer();
+					}
+				}
+				dockBouncer.addFrame(frame);
 			}
 			else
 			{

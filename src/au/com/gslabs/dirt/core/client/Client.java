@@ -26,10 +26,11 @@ public class Client
 	protected boolean connected;
 	protected String nickname_current;
 	protected String nickname_last;
+	protected ByteBuffer authseed;
 
 	public Client()
 	{
-		connected = false;
+		resetState();
 		nickname_last = System.getProperty("user.name");
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
@@ -56,12 +57,23 @@ public class Client
 	protected String getUserDetails()
 	{
 		
+		String username = System.getProperty("user.name");
 		String hostname = au.com.gslabs.dirt.lib.net.socket.SocketFactory.getInstance().getHostName();
-		String userID = System.getProperty("user.name") + "@" + hostname;
+		String userDetails = username + "@" + hostname;
+		
+		String fullName = FileUtil.getMyFullName();
+		if (fullName != null && !fullName.equalsIgnoreCase(username))
+		{
+			userDetails += " \"" + fullName + "\"";
+		}
+		
 		String osInfo =
 			System.getProperty("os.name") + " " + System.getProperty("os.version") +
 			" (" + System.getProperty("os.arch") + ")";
-		return userID + " on " + osInfo;
+		userDetails += " on " + osInfo;
+		
+		return userDetails;
+		
 	}
 	
 	protected String getUserAgent()
@@ -106,25 +118,42 @@ public class Client
 	protected void onConnected()
 	{
 		connected = true;
-		nickname_current = null;
 		notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
 		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
+		raiseStateChanged();
 	}
 	
 	protected void onDisconnected()
 	{
+		resetState();
+		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
+		raiseStateChanged();
+	}
+	
+	protected void resetState()
+	{
 		connected = false;
 		nickname_current = null;
-		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
+		authseed = null;
+	}
+	
+	protected void raiseStateChanged()
+	{
+		listeners.dispatchEvent(new EventSource<ClientListener>()
+			{
+				public void dispatchEvent(ClientListener l)
+				{
+					l.clientStateChanged(Client.this);
+				}
+			});
 	}
 	
 	protected void onConnectionError(java.io.IOException ex)
 	{
 		System.err.println("Connection error:");
 		ex.printStackTrace();
-		connected = false;
-		nickname_current = null;
+		resetState();
 		String msg = "Connection error: " + ex.toString();
 		Throwable t = ex.getCause();
 		while (t != null)
@@ -133,6 +162,7 @@ public class Client
 			t = t.getCause();
 		}
 		notification(null, NotificationSeverity.ERROR, "CONNECT", msg);
+		raiseStateChanged();
 	}
 	
 	public boolean isConnected()
@@ -182,7 +212,10 @@ public class Client
 		AUTHOK,
 		IPLIST,
 		IPSELF,
-		ERROR
+		ERROR,
+		AUTHSEED,
+		AUTH,
+		AUTHBAD
 	}
 	
 	protected boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
@@ -196,6 +229,36 @@ public class Client
 				// do not care about these messages (yet)
 				return true;
 			
+			case AUTHSEED:
+				this.authseed = params;
+				return true;
+				
+			case AUTH:
+			case AUTHBAD:
+				{
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientNeedAuthentication(Client.this, params.toString());
+							}
+						});
+				}
+				return true;
+				
+			case AUTHOK:
+				{
+					raiseStateChanged();
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientNeedNickname(Client.this, nickname_last);
+							}
+						});
+				}
+				return true;
+				
 			case INFO:
 				{
 					notification(context, NotificationSeverity.INFO, null, params.toString());
@@ -223,18 +286,6 @@ public class Client
 				}
 				return true;
 				
-			case AUTHOK:
-				{
-					listeners.dispatchEvent(new EventSource<ClientListener>()
-						{
-							public void dispatchEvent(ClientListener l)
-							{
-								l.clientNeedNickname(Client.this, nickname_last);
-							}
-						});
-				}
-				return true;
-			
 			case ERROR:
 				{
 					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
@@ -289,6 +340,15 @@ public class Client
 		for (String line : lines)
 		{
 			processConsoleInput(context, line);
+		}
+	}
+	
+	public void authenticate(String context, String authentication)
+	{
+		if (ensureConnected(context, "AUTH"))
+		{
+			throw new RuntimeException("Not implemented");
+			//sendToServer(context, "AUTH", authdata);
 		}
 	}
 	
@@ -366,13 +426,18 @@ public class Client
 	
 	protected boolean ensureConnected(String context, ConsoleCommand cmd)
 	{
+		return ensureConnected(context, (cmd != null && cmd != ConsoleCommand.SAY) ? cmd.toString() : null);
+	}
+	
+	protected boolean ensureConnected(String context, String cmdString)
+	{
 		if (isConnected())
 		{
 			return true;
 		}
 		else
 		{
-			notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
+			notification(context, NotificationSeverity.ERROR, cmdString, "Not connected");
 			return false;
 		}
 	}
