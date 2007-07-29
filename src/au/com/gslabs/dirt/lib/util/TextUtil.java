@@ -15,14 +15,19 @@ public final class TextUtil
 	
 	public static ArrayList<String> split(String str, char delim)
 	{
-
+		return split(str, delim, -1);
+	}
+	
+	public static ArrayList<String> split(String str, char delim, int limit)
+	{
+		
 		ArrayList<String> tokens = new ArrayList<String>();
-
+		
 		StringBuilder token = new StringBuilder();
-
+		
 		for (int i = 0; i < str.length(); ++i)
 		{
-			if (str.charAt(i) == delim)
+			if (str.charAt(i) == delim && ((limit < 1) || (tokens.size()+1 < limit)))
 			{
 				tokens.add(token.toString());
 				token = new StringBuilder();
@@ -32,11 +37,48 @@ public final class TextUtil
 				token.append(str.charAt(i));
 			}
 		}
-
+		
 		tokens.add(token.toString());
-
+		
 		return tokens;
-
+		
+	}
+	
+	public static String[] splitQuotedHeadTail(String text)
+	{
+		if (text.length() > 0 && text.charAt(0) == '"')
+		{
+			int i = text.indexOf('"', 1);
+			while (i > -1 && i+1 < text.length())
+			{
+				if (text.charAt(i+1) != '"') break;
+				i = text.indexOf('"', i+2);
+			}
+			String[] tokens = new String[2];
+			if (i > -1 && i < text.length())
+			{
+				tokens[0] = text.substring(1, i);
+				if (i+1 < text.length() && text.charAt(i+1) == ' ')
+				{
+					tokens[1] = text.substring(i + 2);
+				}
+				else
+				{
+					tokens[1] = text.substring(i + 1);
+				}
+			}
+			else
+			{
+				tokens[0] = text.substring(1);
+				tokens[1] = "";
+			}
+			tokens[0] = tokens[0].replace("\"\"", "\"");
+			return tokens;
+		}
+		else
+		{
+			return (String[])split(text, ' ', 2).toArray(new String[0]);
+		}
 	}
 	
 	public static String replace(String text, String repl, String with)

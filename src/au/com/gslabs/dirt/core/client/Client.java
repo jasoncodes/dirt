@@ -209,6 +209,10 @@ public class Client
 		INFO,
 		PUBMSG,
 		PUBACTION,
+		PRIVMSG,
+		PRIVACTION,
+		PRIVMSGOK,
+		PRIVACTIONOK,
 		AUTHOK,
 		IPLIST,
 		IPSELF,
@@ -277,16 +281,44 @@ public class Client
 				
 			case PUBMSG:
 			case PUBACTION:
+			case PRIVMSG:
+			case PRIVACTION:
 				{
-					final ChatMessageType type = (cmd == ServerCommand.PUBACTION) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+					final ChatMessageType type =
+						(cmd == ServerCommand.PUBACTION || cmd == ServerCommand.PRIVACTION) ?
+							ChatMessageType.ACTION :
+							ChatMessageType.TEXT;
+					final ChatMessageVisibility visibility =
+						(cmd == ServerCommand.PRIVMSG || cmd == ServerCommand.PRIVACTION) ?
+							ChatMessageVisibility.PRIVATE :
+							ChatMessageVisibility.PUBLIC;
 					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
 							{
-								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, ChatMessageVisibility.PUBLIC);
+								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, visibility);
 							}
 						});
+				}
+				return true;
+				
+			case PRIVMSGOK:
+			case PRIVACTIONOK:
+				{
+					final ChatMessageType type =
+						(cmd == ServerCommand.PRIVACTIONOK) ?
+							ChatMessageType.ACTION :
+							ChatMessageType.TEXT;
+					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.OUTBOUND, type, ChatMessageVisibility.PRIVATE);
+							}
+						});
+					
 				}
 				return true;
 				
@@ -434,7 +466,9 @@ public class Client
 		HELP,
 		CONNECT,
 		RAW,
-		NICK
+		NICK,
+		MSG,
+		MSGME
 	}
 	
 	protected boolean ensureConnected(String context, ConsoleCommand cmd)
@@ -527,6 +561,32 @@ public class Client
 								l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
 							}
 						});
+				}
+				return true;
+				
+			case MSG:
+			case MSGME:
+				if (!isConnected())
+				{
+					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
+				}
+				else
+				{
+					String[] tokens = TextUtil.splitQuotedHeadTail(params);
+					if (tokens.length < 2 || tokens[0].length() < 1 || tokens[1].length() < 1)
+					{
+						notification(context, NotificationSeverity.ERROR, cmd.toString(), "Insufficient parameters");
+					}
+					else
+					{
+						final ChatMessageType type = (cmd == ConsoleCommand.MSGME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
+						String srvCmd = (cmd == ConsoleCommand.MSGME) ? "PRIVACTION" : "PRIVMSG";
+						ByteBuffer data = new ByteBuffer(params.length());
+						data.append(tokens[0]);
+						data.append((byte)0);
+						data.append(tokens[1]);
+						sendToServer(context, srvCmd, data);
+					}
 				}
 				return true;
 				

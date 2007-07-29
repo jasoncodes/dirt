@@ -30,6 +30,7 @@ public class MainFrame extends JFrame
 	
 	LogPane txtLog;
 	InputArea txtInput;
+	JPasswordField txtPassword;
 	
 	private MainFrame()
 	{
@@ -57,8 +58,6 @@ public class MainFrame extends JFrame
 		getContentPane().setLayout(new BorderLayout());
 		
 		txtInput = new InputArea();
-		getContentPane().add(txtInput, BorderLayout.SOUTH);
-		
 		txtInput.addInputListener(new InputArea.InputListener()
 			{
 				public void inputPerformed(InputArea.InputEvent e)
@@ -66,6 +65,20 @@ public class MainFrame extends JFrame
 					txtInput_Input(e.getLines());
 				}
 			});
+		
+		txtPassword = new JPasswordField();
+		txtPassword.setPreferredSize(txtInput.getPreferredSize());
+		txtPassword.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					String password = new String(txtPassword.getPassword());
+					txtPassword.setText("");
+					client.authenticate(null, password);
+				}
+			});
+		
+		getContentPane().add(txtInput, BorderLayout.SOUTH);
 		
 		txtLog = new LogPane();
 		getContentPane().add(txtLog, BorderLayout.CENTER);
@@ -85,6 +98,17 @@ public class MainFrame extends JFrame
 		setVisible(true);
 		txtInput.requestFocusInWindow();
 		
+	}
+	
+	protected void setPasswordMode(boolean passwordMode)
+	{
+		JComponent txtOld = passwordMode ? txtInput : txtPassword;
+		JComponent txtNew = passwordMode ? txtPassword : txtInput;
+		txtPassword.setText("");
+		getContentPane().remove(txtOld);
+		getContentPane().add(txtNew, BorderLayout.SOUTH);
+		getContentPane().validate();
+		txtNew.requestFocusInWindow();
 	}
 	
 	protected enum SupportedCommand
@@ -183,6 +207,18 @@ public class MainFrame extends JFrame
 		{
 			String prompt = "/nick " + defaultNick;
 			txtInput.setText(prompt, 6, prompt.length());
+		}
+		
+		public void clientNeedAuthentication(Client source, String prompt)
+		{
+			super.clientNeedAuthentication(source, prompt);
+			setPasswordMode(true);
+		}
+		
+		public void clientStateChanged(Client source)
+		{
+			super.clientStateChanged(source);
+			setPasswordMode(false);
 		}
 		
 	}

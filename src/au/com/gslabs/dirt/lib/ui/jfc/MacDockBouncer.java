@@ -200,7 +200,7 @@ class MacDockBouncer extends Thread
 				
 				try
 				{
-					sleep(500*4);
+					sleep(500);
 				}
 				catch (InterruptedException ex)
 				{
