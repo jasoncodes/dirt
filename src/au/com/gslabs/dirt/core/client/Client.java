@@ -149,7 +149,7 @@ public class Client
 			});
 	}
 	
-	protected void onConnectionError(java.io.IOException ex)
+	protected void onConnectionError(Exception ex)
 	{
 		System.err.println("Connection error:");
 		ex.printStackTrace();
@@ -248,6 +248,10 @@ public class Client
 				
 			case AUTHOK:
 				{
+					if (params.length() > 0)
+					{
+						notification(context, NotificationSeverity.INFO, null, params.toString());
+					}
 					raiseStateChanged();
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
@@ -347,8 +351,17 @@ public class Client
 	{
 		if (ensureConnected(context, "AUTH"))
 		{
-			throw new RuntimeException("Not implemented");
-			//sendToServer(context, "AUTH", authdata);
+			try
+			{
+				au.com.gslabs.dirt.lib.crypt.Crypt crypt =
+					au.com.gslabs.dirt.lib.crypt.CryptFactory.getInstance();
+				ByteBuffer digest = crypt.generateMacDigest("MD5MAC", authseed, new ByteBuffer(authentication));
+				sendToServer(context, "AUTH", digest);
+			}
+			catch (Exception ex)
+			{
+				onConnectionError(ex);
+			}
 		}
 	}
 	

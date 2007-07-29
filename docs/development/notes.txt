@@ -1,6 +1,10 @@
-MD5Mac authentication support
 AUTH support in JFC UI
+password masking for CLI UI
+typing in CLI when stuff outputs results in interleaved input/output
 nicklist
+red line + alert on non-focus
+	java.awt.KeyboardFocusManager.getActiveWindow()
+privmsg
 
 http://retrotranslator.sourceforge.net/
 

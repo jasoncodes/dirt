@@ -16,4 +16,7 @@ public interface Crypt
 	public ZlibDeflater createZlibDeflater(int level) throws CryptException;
 	public ZlibInflator createZlibInflator() throws CryptException;
 	
+	public ByteBuffer generateMacKey(String transformation) throws CryptException;
+	public ByteBuffer generateMacDigest(String transformation, ByteBuffer key, ByteBuffer data) throws CryptException;
+	
 }

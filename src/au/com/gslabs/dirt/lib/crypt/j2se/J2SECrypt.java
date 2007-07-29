@@ -13,6 +13,9 @@ import java.security.SecureRandom;
 import javax.crypto.spec.SecretKeySpec;
 import au.com.gslabs.dirt.lib.crypt.generic.AES;
 import au.com.gslabs.dirt.lib.crypt.generic.BlockCipher;
+import au.com.gslabs.dirt.lib.crypt.generic.MD5;
+import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
 
 public class J2SECrypt implements Crypt
 {
@@ -199,6 +202,69 @@ public class J2SECrypt implements Crypt
 	{
 		return new J2SEZlibInflator();
 	}
+	
+	protected static final String transform_MD5MAC = "MD5MAC";
+	protected static final String transform_MD5 = "MD5";
+	
+	public ByteBuffer generateMacKey(String transformation) throws CryptException
+	{
+		try
+		{
+			if (transformation.equals(transform_MD5MAC))
+			{
+				return generateRandomBytes(16);
+			}
+			else
+			{
+				String cipher = getCipherFromTransformation(transformation);
+				KeyGenerator keyGen = KeyGenerator.getInstance(cipher);
+				return new ByteBuffer(keyGen.generateKey().getEncoded());
+			}
+		}
+		catch (GeneralSecurityException ex)
+		{
+			throw new CryptException("Error generating MAC key", ex);
+		}
+	}
+	
+	public ByteBuffer generateMacDigest(String transformation, ByteBuffer key, ByteBuffer data) throws CryptException
+	{
+		try
+		{
+			if (transformation.equals(transform_MD5MAC))
+			{
+				MD5 md5 = new MD5(true);
+				md5.setKey(key.getBytes());
+				md5.engineReset();
+				md5.engineUpdate(data.getBytes(), 0, data.length());
+				byte[] digest = md5.engineDigest();
+				return new ByteBuffer(digest);
+			}
+			else if (transformation.equals(transform_MD5))
+			{
+				MD5 md5 = new MD5(false);
+				md5.setKey(null);
+				md5.engineReset();
+				md5.engineUpdate(data.getBytes(), 0, data.length());
+				byte[] digest = md5.engineDigest();
+				return new ByteBuffer(digest);
+			}
+			else
+			{
+				String cipher = getCipherFromTransformation(transformation);
+				SecretKeySpec spec = new SecretKeySpec(key.getBytes(), cipher);
+				Mac mac = Mac.getInstance(transformation);
+				mac.init(spec);
+				byte[] digest = mac.doFinal(data.getBytes());
+				return new ByteBuffer(digest);
+			}
+		}
+		catch (GeneralSecurityException ex)
+		{
+			throw new CryptException("Error generating MAC digest", ex);
+		}
+	}
+	
 	
 }
 
