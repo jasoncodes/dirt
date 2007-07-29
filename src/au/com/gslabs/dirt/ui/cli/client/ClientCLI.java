@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 import au.com.gslabs.dirt.lib.util.TextModifierParser;
 import au.com.gslabs.dirt.lib.thread.SameThreadInvoker;
+import java.util.concurrent.*;
 
 public class ClientCLI
 {
@@ -20,11 +21,93 @@ public class ClientCLI
 	protected SimpleCompletor completor;
 	protected PrintWriter out;
 	protected boolean bailingOut;
+	protected InterruptibleInputStream input;
+	protected boolean passwordMode;
 	
 	protected enum SupportedCommand
 	{
 		CLEAR,
 		EXIT
+	}
+	
+	protected class InterruptibleInputStream extends InputStream
+	{
+		
+		protected InputStream in;
+		protected ReadThread thread;
+		BlockingQueue<Integer> queue;
+		protected Exception ex;
+		protected int lastRead;
+		
+		public InterruptibleInputStream(InputStream in)
+		{
+			this.in = in;
+			this.queue = new LinkedBlockingQueue<Integer>(1);
+			this.ex = null;
+			thread = new ReadThread();
+			thread.start();
+			lastRead = -4;
+		}
+		
+		public int read() throws IOException
+		{
+			if (this.ex != null)
+			{
+				IOException ex2 = new IOException("Error reading from input stream");
+				ex2.initCause(this.ex);
+				throw ex2;
+			}
+			
+			try
+			{
+				lastRead = queue.take().intValue();
+			}
+			catch (InterruptedException ex)
+			{
+				lastRead = -3;
+			}
+			return (lastRead < 0) ? -1 : lastRead;
+		}
+		
+		protected class ReadThread extends Thread
+		{
+			ReadThread()
+			{
+				super("InterruptibleInputStream$ReadThread");
+				setDaemon(true);
+			}
+			public void run()
+			{
+				try
+				{
+					while (true)
+					{
+						queue.put(in.read());
+					}
+				}
+				catch (Exception ex)
+				{
+					InterruptibleInputStream.this.ex = ex;
+				}
+			}
+		}
+		
+		protected boolean wasInterrupt()
+		{
+			return lastRead == -2 || lastRead == -3;
+		}
+		
+		public void interrupt()
+		{
+			try
+			{
+				queue.put(-2);
+			}
+			catch (InterruptedException ex)
+			{
+			}
+		}
+		
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
@@ -75,20 +158,25 @@ public class ClientCLI
 		public void clientNeedAuthentication(Client source, String prompt)
 		{
 			super.clientNeedAuthentication(source, prompt);
-			setText("");
-			console.setEchoCharacter(new Character('*'));
+			setPasswordMode(true);
 		}
 		
 		public void clientStateChanged(Client source)
 		{
 			super.clientStateChanged(source);
-			if (console.getEchoCharacter() != null)
-			{
-				setText("");
-				console.setEchoCharacter(null);
-			}
+			setPasswordMode(false);
 		}
 		
+	}
+	
+	protected void setPasswordMode(boolean passwordMode)
+	{
+		if (this.passwordMode != passwordMode)
+		{
+			this.passwordMode = passwordMode;
+			setText("");
+			input.interrupt();
+		}
 	}
 	
 	protected void setText(String text)
@@ -113,8 +201,9 @@ public class ClientCLI
 		try
 		{
 			
-			Terminal.getTerminal().initializeTerminal();
-			console = new ConsoleReader();
+			input = new InterruptibleInputStream(new FileInputStream(FileDescriptor.in));
+			console = new ConsoleReader(input, new PrintWriter(System.out));
+			passwordMode = false;
 			
 			client = new Client();
 			client.addClientListener(new ClientAdapter(), new SameThreadInvoker());
@@ -128,18 +217,25 @@ public class ClientCLI
 			
 			bailingOut = false;
 			
-			String line;
-			while ((line = console.readLine("")) != null)
+			while (!bailingOut)
 			{
-				if (console.getEchoCharacter() != null)
+				Character mask = this.passwordMode ? new Character('*') : null;
+				String line = console.readLine(mask);
+				if (line == null)
 				{
-					setText("");
-					console.setEchoCharacter(null);
+					if (!input.wasInterrupt())
+					{
+						bailingOut = true;
+					}
+				}
+				else if (this.passwordMode)
+				{
+					setPasswordMode(false);
 					client.authenticate(null, line);
 				}
-				else
+				else if (line.length() > 0)
 				{
-					if (line.length() > 0 && !line.startsWith("/"))
+					if (!line.startsWith("/"))
 					{
 						line = "/SAY " + line;
 					}
@@ -191,10 +287,26 @@ public class ClientCLI
 	{
 		try
 		{
+			
+			if (Terminal.getTerminal().isANSISupported())
+			{
+				int bufferLength = console.getCursorBuffer().length();
+				if (bufferLength > 0)
+				{
+					char ESC = (char)27;
+					console.printString(ESC + "["+bufferLength+"D"); // move cursor left by bufferLength chars
+					console.printString(ESC + "[K"); //clear line, from cursor position to end
+					console.flushConsole();
+				}
+			}
+			
 			String text = TextModifierParser.parse(
 				message, TextModifierParser.OutputFormat.PLAIN);
 			console.printString(DefaultClientAdapter.getOutputPrefix() + text + "\n");
+			
+			console.drawLine();
 			console.flushConsole();
+			
 		}
 		catch (IOException ex)
 		{
