@@ -2,12 +2,10 @@
 #TARGET_ALIAS = mingw32
 CC = i586-mingw32msvc-gcc
 AS = i586-mingw32msvc-as
-DLLWRAP = i586-mingw32msvc-dllwrap
-DLLTOOL = i586-mingw32msvc-dlltool
-DLLWRAP_FLAGS = --add-stdcall-alias --driver-name=i586-mingw32msvc-c++
+STRIP = i586-mingw32msvc-strip
 
 INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -g
-DLLWRAP_LIB = -s $(JAVA_HOME)/lib/win32/jawt.lib
+JAWT_LIB = $(JAVA_HOME)/lib/win32/jawt.lib
 CFLAGS =  -g -O2 -c $(INCLUDE) $(LIB)
 
 RM = rm -f
@@ -25,7 +23,8 @@ clean: clean-custom
 	${RM} $(OBJ) $(BIN) au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 
 dirt_lib_ui_jfc.dll: dirt_lib_ui_jfc.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) -o dirt_lib_ui_jfc.dll -s dirt_lib_ui_jfc.o $(DLLWRAP_LIB)
+	$(CC) -Wl,--add-stdcall-alias --shared -mno-cygwin -o dirt_lib_ui_jfc.dll dirt_lib_ui_jfc.o -s $(JAWT_LIB) -lunicows -luser32 -lsecur32
+	$(STRIP) dirt_lib_ui_jfc.dll
 
 dirt_lib_ui_jfc.o: dirt_lib_ui_jfc.c au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 	$(CC) $(CFLAGS) dirt_lib_ui_jfc.c

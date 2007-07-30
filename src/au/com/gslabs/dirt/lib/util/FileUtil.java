@@ -200,19 +200,26 @@ public class FileUtil
 	{
 		try
 		{
-			if (FileUtil.isMac())
+			if (isMac())
 			{
-				FileUtil.loadLibrary("lib/mac/libDirtJNI.jnilib");
+				loadLibrary("lib/mac/libDirtJNI.jnilib");
 				au.com.gslabs.dirt.lib.util.jni.MacOS mac =
 					new au.com.gslabs.dirt.lib.util.jni.MacOS();
 				return mac.getMyFullName();
 			}
-			if (FileUtil.isLinux())
+			if (isLinux())
 			{
-				FileUtil.loadLibrary("lib/linux_x86/libdirt_lib_util.so");
+				loadLibrary("lib/linux_x86/libdirt_lib_util.so");
 				au.com.gslabs.dirt.lib.util.jni.Linux linux =
 					new au.com.gslabs.dirt.lib.util.jni.Linux();
 				return linux.getMyFullName();
+			}
+			if (isWin())
+			{
+				loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
+				au.com.gslabs.dirt.lib.ui.jfc.jni.Win32 win32 =
+					new au.com.gslabs.dirt.lib.ui.jfc.jni.Win32();
+				return win32.getMyFullName();
 			}
 		}
 		catch (Throwable ex)

@@ -1,6 +1,11 @@
+#define _WIN32_WINNT 0x5000
+#include <windows.h>
+#include <security.h>
+
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
+
 #include "au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h"
 
 static HWND GetFrameHWND(JNIEnv *env, jobject frame)
@@ -84,4 +89,19 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetIcon
 	(*env)->ReleaseStringUTFChars(env, filename, path);
 	SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)icoBig);
 	SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)icoSmall);
+}
+
+JNIEXPORT jstring JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_getMyFullName
+  (JNIEnv *env, jobject obj)
+{
+
+	short buff[4096];
+	DWORD len = sizeof(buff)/sizeof(buff[0]);
+	if (GetUserNameExW(NameDisplay, buff, &len))
+	{
+		return (*env)->NewString(env, buff, len);
+	}
+
+	return 0;
+	
 }
