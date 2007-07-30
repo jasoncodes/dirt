@@ -127,6 +127,7 @@
 				<include name="lib/linux_x86/jdic.jar" />
 				<include name="lib/linux_x86/libtray.so" />
 				<include name="lib/linux_x86/libdirt_lib_ui_jfc.so" />
+				<include name="lib/linux_x86/libdirt_lib_util.so" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
