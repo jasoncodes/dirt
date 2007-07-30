@@ -102,6 +102,8 @@ public class CryptSocket
 				socket = SocketFactory.getInstance().createSocket();
 				socket.connect(connectHost, connectPort);
 				
+				if (isInterrupted()) return;
+				
 				deflater = crypt.createZlibDeflater(9);
 				inflator = crypt.createZlibInflator();
 					
@@ -136,6 +138,12 @@ public class CryptSocket
 			catch (IOException ex)
 			{
 				onException(ex);
+			}
+			catch (RuntimeException ex)
+			{
+				IOException ex2 = new IOException(ex.toString());
+				ex2.initCause(ex);
+				onException(ex2);
 			}
 		}
 	}
