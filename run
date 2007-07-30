@@ -7,7 +7,11 @@ then
 
 else
 
-	OPTIONS="-Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+	OPTIONS=""
+	if [ "`uname -s`" == "Darwin" ]
+	then
+		OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+	fi
 	if [ "$1" == "--profile" ]
 	then
 		PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`

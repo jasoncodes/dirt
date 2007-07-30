@@ -207,6 +207,13 @@ public class FileUtil
 					new au.com.gslabs.dirt.lib.util.jni.MacOS();
 				return mac.getMyFullName();
 			}
+			if (FileUtil.isLinux())
+			{
+				FileUtil.loadLibrary("lib/linux_x86/libdirt_lib_util.so");
+				au.com.gslabs.dirt.lib.util.jni.Linux linux =
+					new au.com.gslabs.dirt.lib.util.jni.Linux();
+				return linux.getMyFullName();
+			}
 		}
 		catch (Throwable ex)
 		{
