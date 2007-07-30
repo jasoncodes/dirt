@@ -67,7 +67,6 @@ public class MainFrame extends JFrame
 			});
 		
 		txtPassword = new JPasswordField();
-		txtPassword.setPreferredSize(txtInput.getPreferredSize());
 		txtPassword.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -104,6 +103,7 @@ public class MainFrame extends JFrame
 	{
 		JComponent txtOld = passwordMode ? txtInput : txtPassword;
 		JComponent txtNew = passwordMode ? txtPassword : txtInput;
+		txtPassword.setPreferredSize(txtInput.getPreferredSize());
 		txtPassword.setText("");
 		getContentPane().remove(txtOld);
 		getContentPane().add(txtNew, BorderLayout.SOUTH);
