@@ -379,22 +379,28 @@ public class Client
 		}
 	}
 	
-	public void authenticate(String context, String authentication)
+	public void authenticate(String context, String authentication, boolean forAdmin)
 	{
-		if (ensureConnected(context, "AUTH"))
+		String cmd = forAdmin ? "OPER" : "AUTH";
+		if (ensureConnected(context, cmd))
 		{
 			try
 			{
 				au.com.gslabs.dirt.lib.crypt.Crypt crypt =
 					au.com.gslabs.dirt.lib.crypt.CryptFactory.getInstance();
 				ByteBuffer digest = crypt.generateMacDigest("MD5MAC", authseed, new ByteBuffer(authentication));
-				sendToServer(context, "AUTH", digest);
+				sendToServer(context, cmd, digest);
 			}
 			catch (Exception ex)
 			{
 				onConnectionError(ex);
 			}
 		}
+	}
+	
+	public boolean isConsoleInputHistorySafe(String line)
+	{
+		return !(TextUtil.splitQuotedHeadTail(line)[0].equalsIgnoreCase("/oper"));
 	}
 	
 	public void processConsoleInput(final String context, final String line)
@@ -468,7 +474,9 @@ public class Client
 		RAW,
 		NICK,
 		MSG,
-		MSGME
+		MSGME,
+		OPER,
+		QUIT
 	}
 	
 	protected boolean ensureConnected(String context, ConsoleCommand cmd)
@@ -530,6 +538,20 @@ public class Client
 				}
 				return true;
 			
+			case QUIT:
+				if (ensureConnected(context, cmd))
+				{
+					sendToServer(context, "QUIT", new ByteBuffer(params));
+				}
+				return true;
+			
+			case OPER:
+				if (ensureConnected(context, cmd))
+				{
+					authenticate(context, params, true);
+				}
+				return true;
+				
 			case CONNECT:
 				URL url = new URL(params, "dirt", 11626);
 				notification(context, NotificationSeverity.INFO, cmd.toString(), "Connecting to " + url);

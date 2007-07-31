@@ -195,6 +195,17 @@ public class ClientCLI
 		}
 	}
 	
+	public class MyHistory extends History
+	{
+		public void addToHistory(String buffer)
+		{
+			if (client.isConsoleInputHistorySafe(buffer))
+			{
+				super.addToHistory(buffer);
+			}
+		}
+	}
+	
 	public ClientCLI()
 	{
 		
@@ -203,6 +214,7 @@ public class ClientCLI
 			
 			input = new InterruptibleInputStream(new FileInputStream(FileDescriptor.in));
 			console = new ConsoleReader(input, new PrintWriter(System.out));
+			console.setHistory(new MyHistory());
 			passwordMode = false;
 			
 			client = new Client();
@@ -230,11 +242,13 @@ public class ClientCLI
 				}
 				else if (this.passwordMode)
 				{
+					wipeLastLine();
 					setPasswordMode(false);
-					client.authenticate(null, line);
+					client.authenticate(null, line, false);
 				}
 				else if (line.length() > 0)
 				{
+					wipeLastLine();
 					if (!line.startsWith("/"))
 					{
 						line = "/SAY " + line;
@@ -283,6 +297,24 @@ public class ClientCLI
 		}
 	}
 	
+	private static final char ESC = (char)27;
+
+	protected void wipeLastLine()
+	{
+		try
+		{
+			if (Terminal.getTerminal().isANSISupported())
+			{
+				console.printString(ESC + "[1A"); // move up one line
+				console.printString(ESC + "[K"); //clear line, from cursor position to end
+				console.flushConsole();
+			}
+		}
+		catch (IOException ex)
+		{
+		}
+	}
+	
 	protected void output(String message)
 	{
 		try
@@ -293,7 +325,6 @@ public class ClientCLI
 				int bufferLength = console.getCursorBuffer().length();
 				if (bufferLength > 0)
 				{
-					char ESC = (char)27;
 					console.printString(ESC + "["+bufferLength+"D"); // move cursor left by bufferLength chars
 					console.printString(ESC + "[K"); //clear line, from cursor position to end
 					console.flushConsole();

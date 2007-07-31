@@ -144,7 +144,7 @@ public class MainFrame extends JFrame
 		
 		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
-			if (UIUtil.getActiveWindow() != MainFrame.this)
+			if (isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
 			{
 				txtLog.setRedLine();
 				UIUtil.alert(MainFrame.this);
@@ -242,11 +242,15 @@ public class MainFrame extends JFrame
 	protected void txtPassword_Input(String password)
 	{
 		txtLog.clearRedLine();
-		client.authenticate(null, password);
+		client.authenticate(null, password, false);
 	}
 	
 	protected void cmdPopupQuit_Click()
 	{
+		if (client.isConnected())
+		{
+			client.processConsoleInput(null, "/QUIT Closing");
+		}
 		System.exit(0);
 	}
 	
@@ -336,10 +340,14 @@ public class MainFrame extends JFrame
 	
 	protected void onClose()
 	{
+		if (client.isConnected())
+		{
+			client.processConsoleInput(null, "/QUIT Closing");
+		}
 		setVisible(false);
+		dispose();
 		if (!FileUtil.isMac())
 		{
-			dispose();
 			System.exit(0);
 		}
 	}

@@ -40,7 +40,7 @@ class MacDockBouncer extends Thread
 					{
 						done();
 					}
-					public void windowClosed(WindowEvent e)
+					public void windowClosing(WindowEvent e)
 					{
 						done();
 					}

@@ -7,5 +7,6 @@ body
 /* Fake strong by increasing the font size */
 strong, b
 {
-	font-size: 14.5pt;
+	font-size: 15pt;
+	font-weight: 900;
 }
