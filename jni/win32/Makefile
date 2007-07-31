@@ -23,7 +23,7 @@ clean: clean-custom
 	${RM} $(OBJ) $(BIN) au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 
 dirt_lib_ui_jfc.dll: dirt_lib_ui_jfc.o
-	$(CC) -Wl,--add-stdcall-alias --shared -mno-cygwin -o dirt_lib_ui_jfc.dll dirt_lib_ui_jfc.o -s $(JAWT_LIB) -lunicows -luser32 -lsecur32
+	$(CC) -Wl,--add-stdcall-alias --shared -mno-cygwin -o dirt_lib_ui_jfc.dll dirt_lib_ui_jfc.o -s $(JAWT_LIB) -lunicows -luser32 -lsecur32 -lnetapi32
 	$(STRIP) dirt_lib_ui_jfc.dll
 
 dirt_lib_ui_jfc.o: dirt_lib_ui_jfc.c au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h

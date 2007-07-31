@@ -31,7 +31,7 @@ public class Client
 	public Client()
 	{
 		resetState();
-		nickname_last = System.getProperty("user.name");
+		nickname_last = getDefaultNickname();
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
 			{
@@ -74,6 +74,16 @@ public class Client
 		
 		return userDetails;
 		
+	}
+	
+	public static String getDefaultNickname()
+	{
+		String name = FileUtil.getMyFullName();
+		if (name == null || name.length() < 1)
+		{
+			name = System.getProperty("user.name");
+		}
+		return TextUtil.splitQuotedHeadTail(name)[0];
 	}
 	
 	protected String getUserAgent()
