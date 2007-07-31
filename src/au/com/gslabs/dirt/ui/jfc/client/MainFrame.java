@@ -95,11 +95,11 @@ public class MainFrame extends JFrame
 		
 		WindowAdapter wa = new WindowAdapter()
 			{
-				public void windowActivated(WindowEvent e)
+				public void windowDeactivated(WindowEvent e)
 				{
 					txtLog.clearRedLine();
 				}
-				public void windowGainedFocus(WindowEvent e)
+				public void windowLostFocus(WindowEvent e)
 				{
 					txtLog.clearRedLine();
 				}
