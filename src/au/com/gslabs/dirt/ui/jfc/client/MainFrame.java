@@ -73,7 +73,7 @@ public class MainFrame extends JFrame
 				{
 					String password = new String(txtPassword.getPassword());
 					txtPassword.setText("");
-					client.authenticate(null, password);
+					txtPassword_Input(password);
 				}
 			});
 		
@@ -93,6 +93,20 @@ public class MainFrame extends JFrame
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
 		
+		WindowAdapter wa = new WindowAdapter()
+			{
+				public void windowActivated(WindowEvent e)
+				{
+					txtLog.clearRedLine();
+				}
+				public void windowGainedFocus(WindowEvent e)
+				{
+					txtLog.clearRedLine();
+				}
+			};
+		addWindowListener(wa);
+		addWindowFocusListener(wa);
+		
 		setSize(850, 330);
 		setVisible(true);
 		txtInput.requestFocusInWindow();
@@ -108,17 +122,16 @@ public class MainFrame extends JFrame
 		getContentPane().remove(txtOld);
 		getContentPane().add(txtNew, BorderLayout.SOUTH);
 		getContentPane().validate();
-		txtNew.requestFocusInWindow();
+		if (UIUtil.getActiveWindow() == this)
+		{
+			txtNew.requestFocusInWindow();
+		}
 	}
 	
 	protected enum SupportedCommand
 	{
 		CLEAR,
-		ALERT,
-		MINTOTRAY,
-		XHTML,
-		TEST,
-		TEST2
+		MINTOTRAY
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
@@ -131,6 +144,11 @@ public class MainFrame extends JFrame
 		
 		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
+			if (UIUtil.getActiveWindow() != MainFrame.this)
+			{
+				txtLog.setRedLine();
+				UIUtil.alert(MainFrame.this);
+			}
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
 		}
 		
@@ -144,25 +162,11 @@ public class MainFrame extends JFrame
 					txtLog.clearText();
 					return true;
 				
-				case ALERT:
-					doAlert();
-					return true;
-				
 				case MINTOTRAY:
 					doMinToTray();
 					return true;
 				
-				case XHTML:
-					txtLog.appendXHTMLLine(params);
-					return true;
-				
-				case TEST2:
-					txtLog.appendTextLine("Line 1");
-					txtLog.appendTextLine("\tLine 2");
-					txtLog.appendTextLine("[hh:mm] <Test> Line 3");
-					txtLog.appendTextLine("[hh:mm] <Test> \tLine 4");
-					return true;
-			
+				/*
 				case TEST:
 					for (int i = 0; i < 10; i++)
 					{
@@ -195,6 +199,7 @@ public class MainFrame extends JFrame
 					txtLog.appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
 					txtLog.appendTextLine("Space Test: 1 2  3   4    . exclamation line up -> !");
 					return true;
+				*/
 					
 				default:
 					return false;
@@ -230,30 +235,19 @@ public class MainFrame extends JFrame
 	
 	protected void txtInput_Input(String[] lines)
 	{
+		txtLog.clearRedLine();
 		client.processConsoleInput(null, lines);
+	}
+	
+	protected void txtPassword_Input(String password)
+	{
+		txtLog.clearRedLine();
+		client.authenticate(null, password);
 	}
 	
 	protected void cmdPopupQuit_Click()
 	{
 		System.exit(0);
-	}
-	
-	protected void doAlert()
-	{
-		new Thread()
-			{
-				public void run()
-				{
-					try
-					{
-						Thread.currentThread().sleep(1000);
-					}
-					catch (Exception ex)
-					{
-					}
-					UIUtil.alert(MainFrame.this);
-				}
-			}.start();
 	}
 	
 	protected void doMinToTray()

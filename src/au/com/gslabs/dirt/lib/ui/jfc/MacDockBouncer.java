@@ -25,7 +25,7 @@ class MacDockBouncer extends Thread
 	{
 		final public Frame frame;
 		public boolean hasBeenFocused;
-		final protected WindowListener listener;
+		final protected WindowAdapter listener;
 		public FocusMonitor(Frame frame)
 		{
 			this.frame = frame;
@@ -36,16 +36,22 @@ class MacDockBouncer extends Thread
 					{
 						done();
 					}
+					public void windowGainedFocus(WindowEvent e)
+					{
+						done();
+					}
 					public void windowClosed(WindowEvent e)
 					{
 						done();
 					}
 				};
 			this.frame.addWindowListener(listener);
+			this.frame.addWindowFocusListener(listener);
 		}
-		protected void done()
+		public void done()
 		{
 			this.frame.removeWindowListener(listener);
+			this.frame.removeWindowFocusListener(listener);
 			this.hasBeenFocused = true;
 			MacDockBouncer.this.interrupt();
 		}
@@ -76,6 +82,14 @@ class MacDockBouncer extends Thread
 		final Field f = c.getField("UserAttentionRequestInformational");
 		this.request_params = new Object[] { f.getInt(null) };
 		this.cancel_attention = c.getMethod("cancelUserAttentionRequest", int_param);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread()
+			{
+				public void run()
+				{
+					mac.setDockIcon(icons[0]);
+				}
+			});
 		
 		start();
 		
@@ -125,13 +139,10 @@ class MacDockBouncer extends Thread
 		{
 			cancelAttention(requestID);
 			requestID = null;
-			bounceStopTick = 0;
 		}
-		if (currentIcon != 0)
-		{
-			currentIcon = 0;
-			mac.setDockIcon(icons[currentIcon]);
-		}
+		bounceStopTick = 0;
+		currentIcon = 0;
+		mac.setDockIcon(icons[0]);
 	}
 	
 	public void run()
@@ -145,12 +156,22 @@ class MacDockBouncer extends Thread
 			{
 				
 				// wait for a frame to request an alert if there's none active
-				if (monitors.size() < 1)
+				// the loop is to call reset() a few times after gaining focus to make sure the dock icon resets
+				final int tryCount = 4;
+				final int tryLength = 250;
+				for (int i = 0; i < tryCount && monitors.size() < 1; ++i)
 				{
 					reset();
 					try
 					{
-						wait();
+						if (i < tryCount-1)
+						{
+							wait(tryLength);
+						}
+						else
+						{
+							wait();
+						}
 					}
 					catch (InterruptedException ex)
 					{
@@ -161,8 +182,9 @@ class MacDockBouncer extends Thread
 				ArrayList<Frame> keysToRemove = new ArrayList<Frame>();
 				for (FocusMonitor monitor : monitors.values())
 				{
-					if (monitor.hasBeenFocused)
+					if (monitor.hasBeenFocused || UIUtil.getActiveWindow() == monitor.frame)
 					{
+						monitor.done();
 						keysToRemove.add(monitor.frame);
 					}
 				}

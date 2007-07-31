@@ -1,77 +1,3 @@
-getMyFullName for Win32 and Linux
-	
-	call getpwuid
-	get pw_gecos field, cut off after any comma
-		do we need a fallback to a "&" if not available?
-	replace & in field with pw_name
-	return
-	
-	CHAR szUserName[256];
-    if ( !GetUserName(szUserName, WXSIZEOF(szUserName)) )
-        return false;
-
-    // TODO how to get the domain name?
-    CHAR *szDomain = "";
-
-    // the code is based on the MSDN example (also see KB article Q119670)
-    WCHAR wszUserName[256];          // Unicode user name
-    WCHAR wszDomain[256];
-    LPBYTE ComputerName;
-
-    USER_INFO_2 *ui2;         // User structure
-
-    // Convert ANSI user name and domain to Unicode
-    MultiByteToWideChar( CP_ACP, 0, szUserName, strlen(szUserName)+1,
-            wszUserName, WXSIZEOF(wszUserName) );
-    MultiByteToWideChar( CP_ACP, 0, szDomain, strlen(szDomain)+1,
-            wszDomain, WXSIZEOF(wszDomain) );
-
-    // Get the computer name of a DC for the domain.
-    if ( NetGetDCName( NULL, wszDomain, &ComputerName ) != NERR_Success )
-    {
-        wxLogError(wxT("Can not find domain controller"));
-
-        goto error;
-    }
-
-    // Look up the user on the DC
-    NET_API_STATUS status = NetUserGetInfo( (LPWSTR)ComputerName,
-            (LPWSTR)&wszUserName,
-            2, // level - we want USER_INFO_2
-            (LPBYTE *) &ui2 );
-    switch ( status )
-    {
-        case NERR_Success:
-            // ok
-            break;
-
-        case NERR_InvalidComputer:
-            wxLogError(wxT("Invalid domain controller name."));
-
-            goto error;
-
-        case NERR_UserNotFound:
-            wxLogError(wxT("Invalid user name '%s'."), szUserName);
-
-            goto error;
-
-        default:
-            wxLogSysError(wxT("Can't get information about user"));
-
-            goto error;
-    }
-    
-    // Convert the Unicode full name to ANSI
-    WideCharToMultiByte( CP_ACP, 0, ui2->usri2_full_name, -1,
-            buf, maxSize, NULL, NULL );
-
-    return true;
-
-	
-	
-red line + alert on non-focus
-	java.awt.KeyboardFocusManager.getActiveWindow()
-
 nicklist
 
 away
@@ -82,7 +8,6 @@ resizing window thinner does not keep scroll bar at bottom if text rewraps
 
 if text is outputted when not scrolled to bottom we should have some visual indication
 	overlay a grey arrow pointing down on the bottom right of the view?
-
 
 
 http://en.wikipedia.org/wiki/STUN

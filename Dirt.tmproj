@@ -3,15 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>docs/development/notes.txt</string>
+	<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>children</key>
 			<array>
 				<dict>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>docs</string>
 					<key>regexFolderFilter</key>
@@ -36,8 +34,6 @@
 					<string>res</string>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>DirtJava</string>
 		</dict>
@@ -45,13 +41,13 @@
 			<key>filename</key>
 			<string>build.xml</string>
 			<key>lastUsed</key>
-			<date>2007-07-29T00:18:23Z</date>
+			<date>2007-07-30T23:03:42Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../Dirt/Client.cpp</string>
 			<key>lastUsed</key>
-			<date>2007-07-30T11:14:34Z</date>
+			<date>2007-07-30T22:37:37Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -69,14 +65,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>36</integer>
 				<key>line</key>
-				<integer>407</integer>
+				<integer>1221</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>407</integer>
+			<integer>1204</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>29</integer>
+				<key>line</key>
+				<integer>1221</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>42</integer>
+				<key>line</key>
+				<integer>1221</integer>
+			</dict>
 		</dict>
 		<key>docs/development/notes.txt</key>
 		<dict>
@@ -85,12 +97,12 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>85</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>61</integer>
+			<integer>0</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
 		<dict>
@@ -136,6 +148,124 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>22</integer>
+				<key>line</key>
+				<integer>185</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>161</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>11</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>36</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>49</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/util/FileUtil.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>16</integer>
+				<key>line</key>
+				<integer>214</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>189</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/util/jni/Linux.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/util/jni/MacOS.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>8</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+		</dict>
 		<key>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</key>
 		<dict>
 			<key>caret</key>
@@ -155,6 +285,11 @@
 	<array>
 		<string>../Dirt/Client.cpp</string>
 		<string>docs/development/notes.txt</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
+		<string>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</string>
+		<string>src/au/com/gslabs/dirt/lib/util/FileUtil.java</string>
+		<string>src/au/com/gslabs/dirt/lib/util/jni/MacOS.java</string>
+		<string>src/au/com/gslabs/dirt/lib/util/jni/Linux.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
 	</array>

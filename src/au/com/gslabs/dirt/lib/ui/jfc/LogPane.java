@@ -1,6 +1,7 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.io.IOException;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -10,8 +11,6 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.XHTMLEditorKit;
 import java.net.URL;
 import java.util.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 public class LogPane extends JScrollPane
 {
@@ -41,6 +40,7 @@ public class LogPane extends JScrollPane
 	protected XHTMLEditorKit kit;
 	protected ArrayList<LinkListener> listeners;
 	protected boolean lastIsAtEnd;
+	protected int redLine;
 	
 	public LogPane()
 	{
@@ -48,6 +48,7 @@ public class LogPane extends JScrollPane
 		super();
 		
 		lastIsAtEnd = true;
+		redLine = -1;
 		
 		editor = createEditor();
 		kit = (XHTMLEditorKit)editor.getEditorKit();
@@ -85,12 +86,63 @@ public class LogPane extends JScrollPane
 	
 	protected class Editor extends JEditorPane
 	{
+		
 		public Dimension getPreferredSize()
 		{
 			Dimension d = super.getPreferredSize();
 			d.width = 0;
 			d.height = Math.max(1, d.height);
 			return d;
+		}
+		
+		public void paint(Graphics g)
+		{
+			
+			super.paint(g);
+			if (this != editor) return;
+			
+			if (redLine >= 0)
+			{
+				int[] offsets = getLineViewOffsets();
+				if (redLine < offsets.length)
+				{
+					g.setColor(Color.RED);
+					g.drawLine(0, offsets[redLine], getWidth(), offsets[redLine]);
+				}
+			}
+			
+		}
+		
+	}
+	
+	public int[] getLineViewOffsets()
+	{
+		try
+		{
+			
+			ArrayList<Integer> offsets = new ArrayList<Integer>();
+			HTMLDocument doc = (HTMLDocument)editor.getDocument();
+			for (int offset = 0; offset < doc.getLength(); offset = doc.getParagraphElement(offset).getEndOffset() + 1)
+			{
+				Rectangle rect = editor.modelToView(offset);
+				if (rect.height > 0)
+				{
+					int y = rect.y - 1;
+					offsets.add(y);
+				}
+			}
+			
+			int[] retVal = new int[offsets.size()];
+			for (int i = 0; i < offsets.size(); ++i)
+			{
+				retVal[i] = offsets.get(i);
+			}
+			return retVal;
+			
+		}
+		catch (javax.swing.text.BadLocationException ex)
+		{
+			throw new RuntimeException(ex);
 		}
 	}
 	
@@ -167,7 +219,7 @@ public class LogPane extends JScrollPane
 					{
 						SwingUtilities.invokeLater(new DoScroll(-1));
 					}
-				}
+			}
 			});
 		
 		editor.addHyperlinkListener(new HyperlinkListener()
@@ -202,8 +254,27 @@ public class LogPane extends JScrollPane
 	
 	public void clearText()
 	{
+		redLine = -1;
 		editor.setText(wrapInXHTMLTags(""));
 		lastIsAtEnd = true;
+	}
+	
+	public void setRedLine()
+	{
+		if (redLine == -1)
+		{
+			redLine = getLineViewOffsets().length;
+			repaint();
+		}
+	}
+	
+	public void clearRedLine()
+	{
+		if (redLine != -1)
+		{
+			redLine = -1;
+			repaint();
+		}
 	}
 	
 	public JEditorPane getEditor()

@@ -17,6 +17,11 @@ public class UIUtil
 	{
 	}
 	
+	public static Window getActiveWindow()
+	{
+		return java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+	}
+	
 	public static void setWin32Icon(Frame frame, String path)
 	{
 		if (FileUtil.isWin())
