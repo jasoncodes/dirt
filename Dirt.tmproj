@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
+	<string>docs/development/notes.txt</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -41,55 +41,25 @@
 			<key>filename</key>
 			<string>build.xml</string>
 			<key>lastUsed</key>
-			<date>2007-07-30T23:03:42Z</date>
+			<date>2007-07-31T21:59:28Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../Dirt/Client.cpp</string>
 			<key>lastUsed</key>
-			<date>2007-07-30T22:37:37Z</date>
+			<date>2007-07-31T23:06:22Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../Dirt/ClientDefault.cpp</string>
 			<key>lastUsed</key>
-			<date>2007-07-29T12:22:00Z</date>
+			<date>2007-07-31T11:06:28Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>222</integer>
 	<key>metaData</key>
 	<dict>
-		<key>../Dirt/Client.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>1221</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>1204</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>29</integer>
-				<key>line</key>
-				<integer>1221</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>42</integer>
-				<key>line</key>
-				<integer>1221</integer>
-			</dict>
-		</dict>
 		<key>docs/development/notes.txt</key>
 		<dict>
 			<key>caret</key>
@@ -104,35 +74,75 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>res/styles/logpane/base.css</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>15</integer>
+				<key>line</key>
+				<integer>23</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>14</integer>
+		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>19</integer>
+				<integer>58</integer>
 				<key>line</key>
-				<integer>460</integer>
+				<integer>801</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>451</integer>
-			<key>selectFrom</key>
+			<integer>756</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/core/client/ClientListener.java</key>
+		<dict>
+			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>16</integer>
+				<integer>75</integer>
 				<key>line</key>
-				<integer>460</integer>
+				<integer>20</integer>
 			</dict>
-			<key>selectTo</key>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/core/client/Contact.java</key>
+		<dict>
+			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>30</integer>
+				<integer>40</integer>
 				<key>line</key>
-				<integer>460</integer>
+				<integer>82</integer>
 			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>58</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>69</integer>
+				<key>line</key>
+				<integer>309</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>295</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/crypt/CryptException.java</key>
 		<dict>
@@ -147,20 +157,6 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>22</integer>
-				<key>line</key>
-				<integer>185</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>161</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</key>
 		<dict>
@@ -191,6 +187,20 @@
 				<key>line</key>
 				<integer>12</integer>
 			</dict>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/util/Duration.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>24</integer>
+				<key>line</key>
+				<integer>129</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>9</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/util/FileUtil.java</key>
 		<dict>
@@ -271,31 +281,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>26</integer>
 				<key>line</key>
-				<integer>106</integer>
+				<integer>146</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>85</integer>
+			<integer>133</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>../Dirt/Client.cpp</string>
-		<string>docs/development/notes.txt</string>
-		<string>src/au/com/gslabs/dirt/lib/ui/jfc/LogPane.java</string>
-		<string>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</string>
-		<string>src/au/com/gslabs/dirt/lib/util/FileUtil.java</string>
-		<string>src/au/com/gslabs/dirt/lib/util/jni/MacOS.java</string>
-		<string>src/au/com/gslabs/dirt/lib/util/jni/Linux.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
+		<string>src/au/com/gslabs/dirt/core/client/Contact.java</string>
+		<string>src/au/com/gslabs/dirt/core/client/ClientListener.java</string>
+		<string>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</string>
+		<string>src/au/com/gslabs/dirt/lib/util/Duration.java</string>
+		<string>res/styles/logpane/base.css</string>
+		<string>docs/development/notes.txt</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{353, 200}, {896, 634}}</string>
+	<string>{{524, 232}, {896, 634}}</string>
 </dict>
 </plist>

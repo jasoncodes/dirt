@@ -40,21 +40,6 @@ public class MainFrame extends JFrame
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		
-		this.addWindowListener(new WindowAdapter()
-		{
-			
-			public void windowClosing(WindowEvent event)
-			{
-				onClose();
-			}
-			
-			public void windowActivated(WindowEvent e)
-			{
-				txtInput.requestFocusInWindow();
-			}
-			
-		});
-		
 		getContentPane().setLayout(new BorderLayout());
 		
 		txtInput = new InputArea();
@@ -95,6 +80,16 @@ public class MainFrame extends JFrame
 		
 		WindowAdapter wa = new WindowAdapter()
 			{
+				
+				public void windowActivated(WindowEvent e)
+				{
+					txtInput.requestFocusInWindow();
+				}
+				public void windowGainedFocus(WindowEvent e)
+				{
+					txtInput.requestFocusInWindow();
+				}
+				
 				public void windowDeactivated(WindowEvent e)
 				{
 					txtLog.clearRedLine();
@@ -103,7 +98,13 @@ public class MainFrame extends JFrame
 				{
 					txtLog.clearRedLine();
 				}
-			};
+				
+				public void windowClosing(WindowEvent event)
+				{
+					onClose();
+				}
+				
+		};
 		addWindowListener(wa);
 		addWindowFocusListener(wa);
 		

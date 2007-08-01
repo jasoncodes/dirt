@@ -205,7 +205,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 	public void clientUserListReceived(Client source, String[] nicklist)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("*** Now chatting with: ");
+		sb.append("*** Chatting with: ");
 		if (nicklist != null && nicklist.length > 0)
 		{
 			for (int i = 0; i < nicklist.length; ++i)
@@ -221,7 +221,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		{
 			sb.append("(Nobody)");
 		}
-		clientConsoleOutput(source, null, "status", sb.toString());
+		clientConsoleOutput(source, null, "status-userlist", sb.toString());
 	}
 	
 	public void clientUserJoin(Client source, String nick, String details)
@@ -245,7 +245,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 			}
 			sb.append(" has joined the chat");
 		}
-		clientConsoleOutput(source, null, "status", sb.toString());
+		clientConsoleOutput(source, null, "status-join", sb.toString());
 	}
 	
 	public void clientUserPart(Client source, String nick, String details, String message)
@@ -268,7 +268,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 			sb.append(TextModifier.ORIGINAL);
 			sb.append(")");
 		}
-		clientConsoleOutput(source, null, "status", sb.toString());
+		clientConsoleOutput(source, null, "status-part", sb.toString());
 	}
 	
 	public void clientUserNick(Client source, String old_nick, String new_nick)
@@ -281,7 +281,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		}
 		else if (new_nick.equals(source.getNickname()))
 		{
-			if (old_nick.equals(new_nick))
+			if (new_nick.equals(old_nick))
 			{
 				sb.append("Your nickname is ");
 			}
@@ -297,7 +297,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 			sb.append(" is now known as ");
 			sb.append(new_nick);
 		}
-		clientConsoleOutput(source, null, "status", sb.toString());
+		clientConsoleOutput(source, null, "status-nick", sb.toString());
 	}
 	
 	public void clientUserStatus(Client source, String nick, UserStatus status, String message, Date away_start, Duration away_duration, Duration previous_away_duration, String previous_away_message)
@@ -305,9 +305,9 @@ public abstract class DefaultClientAdapter implements ClientListener
 		StringBuilder sb = new StringBuilder();
 		sb.append("*** ");
 		sb.append(nick);
-		if (status != UserStatus.RETURNED)
+		if (status == UserStatus.AWAY)
 		{
-			if (away_duration != null)
+			if (away_duration != null && away_duration.getMilliseconds() > 500)
 			{
 				sb.append(" has been away for ");
 				sb.append(away_duration.toString());
@@ -335,7 +335,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 				sb.append(")");
 			}
 		}
-		else
+		else if (status == UserStatus.ONLINE)
 		{
 			sb.append(" has returned");
 			if (message != null && message.length() > 0)
@@ -352,7 +352,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 				sb.append(")");
 			}
 		}
-		clientConsoleOutput(source, null, "status", sb.toString());
+		else
+		{
+			sb.append(" is " + status);
+		}
+		clientConsoleOutput(source, null, "status-"+status.toString().toLowerCase(), sb.toString());
 	}
 	
 	protected final class WhoisOutputter
@@ -372,48 +376,39 @@ public abstract class DefaultClientAdapter implements ClientListener
 		}
 	}
 	
-	public void clientUserWhois(Client source, String context, Map<String,String> details)
+	public void clientUserWhois(Client source, String context, String nickname)
 	{
 		
-		Map<String,String> data = new HashMap<String,String>(details);
-		String nickname = data.get("NICK").toString();
+		Contact contact = source.getContact(nickname);
 		WhoisOutputter out = new WhoisOutputter(source, context, nickname);
 		
-		out.output("is " + data.get("DETAILS"));
-		out.output("is connecting from " + data.get("HOSTNAME"));
-		if (data.containsKey("ISADMIN"))
+		if (contact.detailString != null)
+		{
+			out.output("is " + contact.detailString);
+		}
+		if (contact.hostname != null)
+		{
+			out.output("is connecting from " + contact.hostname);
+		}
+		if (contact.isAdmin)
 		{
 			out.output("is a server administrator");
 		}
-		if (data.containsKey("AWAY"))
+		if (contact.status == UserStatus.AWAY)
 		{
-			out.output("is away: " + data.get("AWAY"));
+			out.output("is away: " + contact.awayMessage);
+			if (contact.getAwayDuration() != null)
+			{
+				out.output("has been away for " + contact.getAwayDuration());
+			}
 		}
-		if (data.containsKey("AWAYTIMEDIFFSTRING"))
-		{
-			out.output("has been away for " + data.get("AWAYTIMEDIFFSTRING"));
-		}
-		out.output("is using " + data.get("AGENT"));
-		out.output("has been idle for " + data.get("IDLESTRING") + " (" + data.get("LATENCYSTRING") + " lag)");
-		out.output("signed on at " + data.get("JOINTIMESTRING"));
+		out.output("is using " + contact.userAgent);
+		out.output(
+			"has been idle for " + new Duration(contact.idleMilliseconds) +
+			" (" + new Duration(contact.latencyMilliseconds).toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)");
+		out.output("signed on at " + TextUtil.formatDateTime(contact.joinTimeServer, true));
 		
-		data.remove("NICK");
-		data.remove("DETAILS");
-		data.remove("HOSTNAME");
-		data.remove("ISADMIN");
-		data.remove("AWAY");
-		data.remove("AWAYTIME");
-		data.remove("AWAYTIMEDIFF");
-		data.remove("AWAYTIMEDIFFSTRING");
-		data.remove("AGENT");
-		data.remove("IDLE");
-		data.remove("IDLESTRING");
-		data.remove("LATENCY");
-		data.remove("LATENCYSTRING");
-		data.remove("JOINTIME");
-		data.remove("JOINTIMESTRING");
-		
-		for (Map.Entry entry : data.entrySet())
+		for (Map.Entry entry : contact.other.entrySet())
 		{
 			out.output(entry.getKey() + " = " + entry.getValue());
 		}

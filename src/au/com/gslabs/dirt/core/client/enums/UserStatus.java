@@ -2,6 +2,7 @@ package au.com.gslabs.dirt.core.client.enums;
 
 public enum UserStatus
 {
-	RETURNED,
+	OFFLINE,
+	ONLINE,
 	AWAY
 }

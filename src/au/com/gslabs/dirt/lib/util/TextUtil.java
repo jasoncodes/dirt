@@ -258,10 +258,11 @@ public final class TextUtil
 	}
 	
 	protected static java.text.SimpleDateFormat sdfDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	protected static java.text.SimpleDateFormat sdfDateTimeTZ = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 	
-	public static String formatDateTime(java.util.Date d)
+	public static String formatDateTime(java.util.Date d, boolean withTimeZone)
 	{
-		return sdfDateTime.format(d.getTime());
+		return (withTimeZone?sdfDateTimeTZ:sdfDateTime).format(d.getTime());
 	}
 	
 }

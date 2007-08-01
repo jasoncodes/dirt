@@ -22,14 +22,17 @@ public class Client
 		listeners.remove(l);
 	}
 	
+	protected Map<String,Contact> contacts;
 	protected CryptSocket socket;
 	protected boolean connected;
 	protected String nickname_current;
 	protected String nickname_last;
 	protected ByteBuffer authseed;
-
+	protected String server_name;
+	
 	public Client()
 	{
+		contacts = new TreeMap<String,Contact>();
 		resetState();
 		nickname_last = getDefaultNickname();
 		socket = new CryptSocket();
@@ -86,6 +89,36 @@ public class Client
 		return TextUtil.splitQuotedHeadTail(name)[0];
 	}
 	
+	protected Contact getContact(String nickname, boolean createOrReset)
+	{
+		Contact contact = contacts.get(nickname);
+		if (createOrReset)
+		{
+			if (contact == null)
+			{
+				contact = new Contact();
+				contact.nickname = nickname;
+				contacts.put(nickname, contact);
+			}
+			else
+			{
+				contact.reset();
+				contact.nickname = nickname;
+			}
+		}
+		return contact;
+	}
+	
+	public Contact getContact(String nickname)
+	{
+		return getContact(nickname, false);
+	}
+	
+	public Map<String,Contact> getContacts()
+	{
+		return Collections.unmodifiableMap(contacts);
+	}
+	
 	protected String getUserAgent()
 	{
 		
@@ -103,7 +136,7 @@ public class Client
 			}, true);
 		
 		String version = au.com.gslabs.dirt.Dirt.VERSION;
-		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate());
+		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate(), false);
 		
 		if (extras.size() > 0)
 		{
@@ -146,6 +179,8 @@ public class Client
 		connected = false;
 		nickname_current = null;
 		authseed = null;
+		server_name = null;
+		contacts.clear();
 	}
 	
 	protected void raiseStateChanged()
@@ -183,7 +218,7 @@ public class Client
 	protected void processServerMessage(ByteBuffer data)
 	{
 		
-		ArrayList<ByteBuffer> tokens = data.tokenizeNull(3);
+		ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(data, 3);
 		if (tokens.size() != 3)
 		{
 			throw new IllegalArgumentException("Not enough tokens in server message");
@@ -229,7 +264,15 @@ public class Client
 		ERROR,
 		AUTHSEED,
 		AUTH,
-		AUTHBAD
+		AUTHBAD,
+		JOIN,
+		PART,
+		NICKLIST,
+		SERVERNAME,
+		AWAY,
+		BACK,
+		WHOIS,
+		NICK
 	}
 	
 	protected boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
@@ -259,7 +302,169 @@ public class Client
 						});
 				}
 				return true;
+			
+			case JOIN:
+				{
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					if (ensureMinTokenCount(context, cmd.toString(), tokens, 2))
+					{
+						final Contact contact = getContact(tokens.get(0).toString(), true);
+						contact.status = UserStatus.ONLINE;
+						contact.hostname = tokens.get(1).toString();
+						contact.joinTimeLocal = new Date();
+						listeners.dispatchEvent(new EventSource<ClientListener>()
+							{
+								public void dispatchEvent(ClientListener l)
+								{
+									l.clientUserJoin(Client.this, contact.nickname, contact.hostname);
+								}
+							});
+					}
+				}
+				return true;
 				
+			case PART:
+				{
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					if (ensureMinTokenCount(context, cmd.toString(), tokens, 3))
+					{
+						final Contact contact = getContact(tokens.get(0).toString());
+						contact.status = UserStatus.OFFLINE;
+						contact.hostname = tokens.get(1).toString();
+						contact.partMessage = tokens.get(2).toString();
+						contact.partTimeLocal = new Date();
+						listeners.dispatchEvent(new EventSource<ClientListener>()
+							{
+								public void dispatchEvent(ClientListener l)
+								{
+									l.clientUserPart(Client.this, contact.nickname, contact.hostname, contact.partMessage);
+								}
+							});
+					}
+				}
+				return true;
+				
+			case AWAY:
+			case BACK:
+				{
+					UserStatus status = (cmd == ServerCommand.AWAY) ? UserStatus.AWAY : UserStatus.ONLINE;
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					if (ensureMinTokenCount(context, cmd.toString(), tokens, 4))
+					{
+						
+						String nickname = tokens.get(0).toString();
+						String message = tokens.get(1).toString();
+						Date awayTimeServer = new Date(Long.parseLong(tokens.get(2).toString())*1000);
+						Date awayTimeLocal = new Date(System.currentTimeMillis()+Long.parseLong(tokens.get(3).toString())*1000);
+						
+						final Contact contact = getContact(nickname);
+						final Duration previous_duration;
+						final String previous_message;
+						if (contact.status == UserStatus.AWAY)
+						{
+							previous_duration = contact.getAwayDuration();
+							previous_message = contact.awayMessage;
+						}
+						else
+						{
+							previous_duration = null;
+							previous_message = null;
+						}
+						contact.status = status;
+						contact.awayMessage = message;
+						contact.awayTimeServer = awayTimeServer;
+						contact.awayTimeLocal = awayTimeLocal;
+						
+						listeners.dispatchEvent(new EventSource<ClientListener>()
+							{
+								public void dispatchEvent(ClientListener l)
+								{
+									l.clientUserStatus(Client.this, contact.nickname, contact.status, contact.awayMessage, contact.awayTimeServer, contact.getAwayDuration(), previous_duration, previous_message);
+								}
+							});
+						
+					}
+				}
+				return true;
+				
+			case SERVERNAME:
+				{
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					this.server_name = (tokens.size() > 0) ? tokens.get(0).toString() : null;
+					raiseStateChanged();
+				}
+				return true;
+				
+			case NICKLIST:
+				{
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					ArrayList<String> nicks = new ArrayList<String>(tokens.size());
+					for (ByteBuffer nickBytes : ByteConvert.tokenizeNull(params))
+					{
+						if (nickBytes.length() > 0)
+						{
+							String nick = nickBytes.toString();
+							Contact contact = getContact(nick, true);
+							contact.status = UserStatus.ONLINE;
+							nicks.add(nick);
+						}
+					}
+					final String[] nickArray = (String[])nicks.toArray(new String[0]);
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientUserListReceived(Client.this, nickArray);
+							}
+						});
+				}
+				return true;
+				
+			case NICK:
+				{
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params);
+					if (ensureMinTokenCount(context, cmd.toString(), tokens, 1))
+					{
+						if (tokens.size() < 2 || tokens.get(1).length() < 1)
+						{
+							this.nickname_current = tokens.get(0).toString();
+						}
+						else
+						{
+							final String nick_old = tokens.get(0).toString();
+							final String nick_new = tokens.get(1).toString();
+							Contact contact = getContact(nick_old);
+							contacts.remove(nick_old);
+							contact.nickname = nick_new;
+							contacts.put(nick_new, contact);
+							listeners.dispatchEvent(new EventSource<ClientListener>()
+								{
+									public void dispatchEvent(ClientListener l)
+									{
+										l.clientUserNick(Client.this, nick_old, nick_new);
+									}
+								});
+						}
+					}
+				}
+				return true;
+				
+			case WHOIS:
+				{
+					Map<String,String> data = ByteConvert.toMap(params);
+					final String nick = data.get("NICK");
+					Contact contact = getContact(nick);
+					contact.parseWhoisResponse(data);
+					listeners.dispatchEvent(new EventSource<ClientListener>()
+						{
+							public void dispatchEvent(ClientListener l)
+							{
+								l.clientUserWhois(Client.this, context, nick);
+							}
+						});
+				}
+				return true;
+			
 			case AUTHOK:
 				{
 					if (params.length() > 0)
@@ -302,7 +507,7 @@ public class Client
 						(cmd == ServerCommand.PRIVMSG || cmd == ServerCommand.PRIVACTION) ?
 							ChatMessageVisibility.PRIVATE :
 							ChatMessageVisibility.PUBLIC;
-					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
@@ -320,7 +525,7 @@ public class Client
 						(cmd == ServerCommand.PRIVACTIONOK) ?
 							ChatMessageType.ACTION :
 							ChatMessageType.TEXT;
-					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
@@ -334,7 +539,7 @@ public class Client
 				
 			case ERROR:
 				{
-					final ArrayList<ByteBuffer> tokens = params.tokenizeNull(2);
+					final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
 					notification(context, NotificationSeverity.ERROR, tokens.get(0).toString(), tokens.get(1).toString());
 					if (tokens.size() > 1 && tokens.get(0).toString().equalsIgnoreCase("NICK"))
 					{
@@ -474,21 +679,6 @@ public class Client
 		
 	}
 	
-	protected enum ConsoleCommand
-	{
-		SAY,
-		ME,
-		MY,
-		HELP,
-		CONNECT,
-		RAW,
-		NICK,
-		MSG,
-		MSGME,
-		OPER,
-		QUIT
-	}
-	
 	protected boolean ensureConnected(String context, ConsoleCommand cmd)
 	{
 		return ensureConnected(context, (cmd != null && cmd != ConsoleCommand.SAY) ? cmd.toString() : null);
@@ -505,6 +695,38 @@ public class Client
 			notification(context, NotificationSeverity.ERROR, cmdString, "Not connected");
 			return false;
 		}
+	}
+	
+	protected boolean ensureMinTokenCount(String context, String cmdString, ArrayList<ByteBuffer> tokens, int countMin)
+	{
+		if (tokens != null && tokens.size() >= countMin)
+		{
+			return true;
+		}
+		else
+		{
+			notification(context, NotificationSeverity.ERROR, null, "Invalid "+cmdString+" response from server");
+			return false;
+		}
+	}
+	
+	protected enum ConsoleCommand
+	{
+		SAY,
+		ME,
+		MY,
+		HELP,
+		CONNECT,
+		RAW,
+		NICK,
+		MSG,
+		MSGME,
+		OPER,
+		QUIT,
+		AWAY,
+		BACK,
+		WHO,
+		WHOIS
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -547,6 +769,39 @@ public class Client
 					}
 				}
 				return true;
+				
+			case AWAY:
+			case BACK:
+				if (ensureConnected(context, cmd))
+				{
+					ByteBuffer serverParams = new ByteBuffer(
+						(cmd == ConsoleCommand.AWAY) ?
+							params :
+							"");
+					String serverCmd = params.length() > 0 ? "AWAY" : "BACK";
+					sendToServer(context, serverCmd, serverParams);
+				}
+				return true;
+				
+			case WHO:
+				if (ensureConnected(context, cmd))
+				{
+					String list = "";
+					for (Contact contact : contacts.values())
+					{
+						if (list.length() > 0)
+						{
+							list += ", ";
+						}
+						list += contact.nickname;
+					}
+					if (list.length() < 1)
+					{
+						list = "(Nobody)";
+					}
+					notification(context, NotificationSeverity.INFO, null, "Chatting with: " + list);
+				}
+				return true;
 			
 			case QUIT:
 				if (ensureConnected(context, cmd))
@@ -554,7 +809,14 @@ public class Client
 					sendToServer(context, "QUIT", new ByteBuffer(params));
 				}
 				return true;
-			
+				
+			case WHOIS:
+				if (ensureConnected(context, cmd))
+				{
+					sendToServer(context, "WHOIS", new ByteBuffer(params));
+				}
+				return true;
+				
 			case OPER:
 				if (ensureConnected(context, cmd))
 				{
@@ -629,7 +891,7 @@ public class Client
 			case HELP:
 				{
 					
-					final SortedSet<String> cmds = new TreeSet<String>();
+					final SortedSet<String> cmds = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 					
 					for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
 					{

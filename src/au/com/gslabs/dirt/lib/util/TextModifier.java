@@ -35,4 +35,14 @@ public enum TextModifier
 		return this.keyChar;
 	}
 	
+	public String getName()
+	{
+		return super.toString();
+	}
+	
+	public String toString()
+	{
+		return ""+getChar();
+	}
+	
 }

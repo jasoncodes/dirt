@@ -19,11 +19,16 @@ p.ctcp
 	color: red;
 }
 p.info,
-p.whois
+p.whois,
+p.status-away,
+p.status-online
 {
 	color: #000080;
 }
-p.status
+p.status-userlist,
+p.status-join,
+p.status-part,
+p.status-nick
 {
 	color: #008000;
 }

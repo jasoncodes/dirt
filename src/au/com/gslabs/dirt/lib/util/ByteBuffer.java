@@ -338,44 +338,4 @@ public class ByteBuffer
 		return -1;
 	}
 	
-	public ArrayList<ByteBuffer> tokenizeNull()
-	{
-		return tokenizeNull(-1);
-	}
-	
-	public ArrayList<ByteBuffer> tokenizeNull(int maxTokens)
-	{
-		
-		ArrayList<ByteBuffer> tokens = new ArrayList<ByteBuffer>();
-		
-		int startPos = 0;
-		int tokensLeft = (maxTokens > 0) ? (maxTokens-1) : Integer.MAX_VALUE;
-		
-		while (tokensLeft-- > 0 && startPos < length())
-		{
-			int endPos = indexOf((byte)0x00, startPos);
-			if (endPos >= 0)
-			{
-				tokens.add(extract(startPos, endPos-startPos));
-				startPos = endPos + 1;
-			}
-			else
-			{
-				break;
-			}
-		}
-		
-		if (startPos < length())
-		{
-			tokens.add(extract(startPos));
-		}
-		else if (startPos == length())
-		{
-			tokens.add(new ByteBuffer());
-		}
-		
-		return tokens;
-		
-	}
-	
 }
