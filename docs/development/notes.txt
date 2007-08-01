@@ -7,7 +7,9 @@ ensure all focusing of input controls work with password field too (abstract it)
 nicklist
 	JSplitPane
 	pretty rendering
+		http://java.sun.com/developer/technicalArticles/GUI/jlist/
 	context menu
+	preserve selections when indexes change
 
 titlebar
 
