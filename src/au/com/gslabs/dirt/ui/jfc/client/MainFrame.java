@@ -31,6 +31,8 @@ public class MainFrame extends JFrame
 	LogPane txtLog;
 	InputArea txtInput;
 	JPasswordField txtPassword;
+	ContactListModel contacts;
+	JList lstContacts;
 	
 	private MainFrame()
 	{
@@ -62,7 +64,16 @@ public class MainFrame extends JFrame
 				}
 			});
 		
-		getContentPane().add(txtInput, BorderLayout.SOUTH);
+		contacts = new ContactListModel();
+		lstContacts = new JList(contacts);
+		lstContacts.setFocusable(false);
+		JScrollPane scrlContacts = new JScrollPane(lstContacts);
+		scrlContacts.setPreferredSize(new Dimension(160, 0));
+		if (FileUtil.isMac())
+		{
+			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		}
+		getContentPane().add(scrlContacts, BorderLayout.EAST);
 		
 		txtLog = new LogPane();
 		getContentPane().add(txtLog, BorderLayout.CENTER);
@@ -74,6 +85,8 @@ public class MainFrame extends JFrame
 					txtLog_LinkClick(e.getURL());
 				}
 			});
+		
+		getContentPane().add(txtInput, BorderLayout.SOUTH);
 		
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
@@ -141,6 +154,11 @@ public class MainFrame extends JFrame
 		public ClientAdapter()
 		{
 			super(SupportedCommand.class);
+		}
+		
+		public void clientContactUpdated(Client source, Contact contact)
+		{
+			contacts.updateContact(contact);
 		}
 		
 		protected void clientConsoleOutput(Client source, String context, String className, String message)

@@ -202,6 +202,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 		
 	}
 	
+	public void clientContactUpdated(Client source, Contact contact)
+	{
+		System.out.println(contact);
+	}
+	
 	public void clientUserListReceived(Client source, String[] nicklist)
 	{
 		StringBuilder sb = new StringBuilder();

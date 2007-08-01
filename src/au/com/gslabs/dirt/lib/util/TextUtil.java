@@ -3,6 +3,7 @@ package au.com.gslabs.dirt.lib.util;
 import java.util.Random;
 import java.util.ArrayList;
 import java.text.MessageFormat;
+import java.text.BreakIterator;
 
 public final class TextUtil
 {
@@ -263,6 +264,44 @@ public final class TextUtil
 	public static String formatDateTime(java.util.Date d, boolean withTimeZone)
 	{
 		return (withTimeZone?sdfDateTimeTZ:sdfDateTime).format(d.getTime());
+	}
+	
+	public static String toTitleCase(String in)
+	{
+		
+		StringBuffer out = new StringBuffer(in.length());
+		
+		BreakIterator iter = BreakIterator.getWordInstance();
+		iter.setText(in);
+		int start = iter.first();
+		int end;
+		int prevStart = 0;
+		
+		// Consider each word in turn
+		for (end = iter.next();
+		     end != BreakIterator.DONE;
+		     prevStart = start, start = end, end = iter.next())
+		{
+			
+			// Copy the separations between words
+			if (start > prevStart)
+			out.append(in.subSequence(prevStart, start));
+			
+			// Convert this word to title case
+			out.append(Character.toTitleCase(in.charAt(start)));
+			out.append(in.substring(start+1, end).toLowerCase());
+			
+		}
+		
+		// Copy any space at the end of the original string
+		if (end > -1 && end < in.length())
+		{
+			out.append(in.substring(end));
+		}
+		
+		// All done.
+		return out.toString();
+	
 	}
 	
 }

@@ -33,7 +33,6 @@ public class Client
 	public Client()
 	{
 		contacts = new TreeMap<String,Contact>();
-		resetState();
 		nickname_last = getDefaultNickname();
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
@@ -55,6 +54,7 @@ public class Client
 					processServerMessage(data);
 				}
 			}, new SameThreadInvoker());
+		resetState();
 	}
 	
 	protected String getUserDetails()
@@ -161,7 +161,7 @@ public class Client
 	protected void onConnected()
 	{
 		connected = true;
-		notification(null, NotificationSeverity.INFO, "CONNECT", "Connected to " + socket.getPeerName());
+		notification(null, NotificationSeverity.INFO, null, "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
 		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
 		raiseStateChanged();
@@ -170,17 +170,64 @@ public class Client
 	protected void onDisconnected()
 	{
 		resetState();
-		notification(null, NotificationSeverity.ERROR, "CONNECT", "Connection lost");
+		notification(null, NotificationSeverity.ERROR, null, "Connection lost");
 		raiseStateChanged();
+	}
+	
+	public void disconnect(String context)
+	{
+		if (ensureConnected(context, "DISCONNECT"))
+		{
+			resetState();
+			notification(null, NotificationSeverity.INFO, null, "Disconnected");
+			raiseStateChanged();
+		}
+	}
+	
+	public void connect(String context, URL url)
+	{
+		resetState();
+		notification(context, NotificationSeverity.INFO, null, "Connecting to " + url);
+		if (!url.getProtocol().equals("dirt"))
+		{
+			notification(context, NotificationSeverity.ERROR, "CONNECT", "Unknown protocol: " + url.getProtocol());
+		}
+		else
+		{
+			socket.connect(url.getHostname(), url.getPort());
+		}
 	}
 	
 	protected void resetState()
 	{
+		
 		connected = false;
 		nickname_current = null;
 		authseed = null;
 		server_name = null;
-		contacts.clear();
+		socket.close();
+		
+		final ArrayList<Contact> modifiedContacts = new ArrayList<Contact>(this.contacts.size());
+		for (Contact contact : Client.this.contacts.values())
+		{
+			if (contact.status != UserStatus.OFFLINE)
+			{
+				contact.status = UserStatus.OFFLINE;
+				modifiedContacts.add(contact);
+			}
+		}
+		
+		listeners.dispatchEvent(new EventSource<ClientListener>()
+			{
+				public void dispatchEvent(ClientListener l)
+				{
+					for (Contact contact : modifiedContacts)
+					{
+						l.clientContactUpdated(Client.this, contact);
+					}
+				}
+			});
+		
 	}
 	
 	protected void raiseStateChanged()
@@ -206,7 +253,7 @@ public class Client
 			msg += ", " + t.toString();
 			t = t.getCause();
 		}
-		notification(null, NotificationSeverity.ERROR, "CONNECT", msg);
+		notification(null, NotificationSeverity.ERROR, null, msg);
 		raiseStateChanged();
 	}
 	
@@ -316,6 +363,7 @@ public class Client
 							{
 								public void dispatchEvent(ClientListener l)
 								{
+									l.clientContactUpdated(Client.this, contact);
 									l.clientUserJoin(Client.this, contact.nickname, contact.hostname);
 								}
 							});
@@ -337,6 +385,7 @@ public class Client
 							{
 								public void dispatchEvent(ClientListener l)
 								{
+									l.clientContactUpdated(Client.this, contact);
 									l.clientUserPart(Client.this, contact.nickname, contact.hostname, contact.partMessage);
 								}
 							});
@@ -355,7 +404,7 @@ public class Client
 						String nickname = tokens.get(0).toString();
 						String message = tokens.get(1).toString();
 						Date awayTimeServer = new Date(Long.parseLong(tokens.get(2).toString())*1000);
-						Date awayTimeLocal = new Date(System.currentTimeMillis()+Long.parseLong(tokens.get(3).toString())*1000);
+						Date awayTimeLocal = new Date(System.currentTimeMillis()-Long.parseLong(tokens.get(3).toString())*1000);
 						
 						final Contact contact = getContact(nickname);
 						final Duration previous_duration;
@@ -379,6 +428,7 @@ public class Client
 							{
 								public void dispatchEvent(ClientListener l)
 								{
+									l.clientContactUpdated(Client.this, contact);
 									l.clientUserStatus(Client.this, contact.nickname, contact.status, contact.awayMessage, contact.awayTimeServer, contact.getAwayDuration(), previous_duration, previous_message);
 								}
 							});
@@ -414,6 +464,10 @@ public class Client
 						{
 							public void dispatchEvent(ClientListener l)
 							{
+								for (Contact contact : Client.this.contacts.values())
+								{
+									l.clientContactUpdated(Client.this, contact);
+								}
 								l.clientUserListReceived(Client.this, nickArray);
 							}
 						});
@@ -433,7 +487,7 @@ public class Client
 						{
 							final String nick_old = tokens.get(0).toString();
 							final String nick_new = tokens.get(1).toString();
-							Contact contact = getContact(nick_old);
+							final Contact contact = getContact(nick_old);
 							contacts.remove(nick_old);
 							contact.nickname = nick_new;
 							contacts.put(nick_new, contact);
@@ -441,6 +495,7 @@ public class Client
 								{
 									public void dispatchEvent(ClientListener l)
 									{
+										l.clientContactUpdated(Client.this, contact);
 										l.clientUserNick(Client.this, nick_old, nick_new);
 									}
 								});
@@ -453,12 +508,13 @@ public class Client
 				{
 					Map<String,String> data = ByteConvert.toMap(params);
 					final String nick = data.get("NICK");
-					Contact contact = getContact(nick);
+					final Contact contact = getContact(nick);
 					contact.parseWhoisResponse(data);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
 							{
+								l.clientContactUpdated(Client.this, contact);
 								l.clientUserWhois(Client.this, context, nick);
 							}
 						});
@@ -726,7 +782,8 @@ public class Client
 		AWAY,
 		BACK,
 		WHO,
-		WHOIS
+		WHOIS,
+		DISCONNECT
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -826,18 +883,13 @@ public class Client
 					authenticate(context, params, true);
 				}
 				return true;
-				
+			
+			case DISCONNECT:
+				disconnect(context);
+				return true;
+			
 			case CONNECT:
-				URL url = new URL(params, "dirt", 11626);
-				notification(context, NotificationSeverity.INFO, cmd.toString(), "Connecting to " + url);
-				if (!url.getProtocol().equals("dirt"))
-				{
-					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Unknown protocol: " + url.getProtocol());
-				}
-				else
-				{
-					socket.connect(url.getHostname(), url.getPort());
-				}
+				connect(context, new URL(params, "dirt", 11626));
 				return true;
 				
 			case SAY:

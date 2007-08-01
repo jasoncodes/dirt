@@ -1,9 +1,26 @@
-signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
-	definitely a server bug (should be outputting unix time)
+resizing is slow with lots of text
+
+clear selection and focus input after Cmd-C
+
+ensure all focusing of input controls work with password field too (abstract it)
+
+nicklist
+	JSplitPane
+	pretty rendering
+	context menu
+
+titlebar
+
+keep selection when doing addTextLine
+
+shouldn't alert on own messages
+
+acceleration when scrolling logpane
 
 ensure exceptions are handled in Client for console input and server response
 
-nicklist
+signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
+	definitely a server bug (should be outputting unix time)
 
 tab completion in both Swing and curses interfaces
 

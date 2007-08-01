@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import au.com.gslabs.dirt.lib.util.Duration;
+import au.com.gslabs.dirt.lib.util.TextUtil;
 import au.com.gslabs.dirt.core.client.enums.UserStatus;
 
 public class Contact
@@ -51,6 +52,39 @@ public class Contact
 	Contact()
 	{
 		reset();
+	}
+	
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(nickname);
+		if (status != UserStatus.ONLINE)
+		{
+			sb.append(" (");
+			sb.append(TextUtil.toTitleCase(status.toString()));
+			if (status == UserStatus.AWAY && awayMessage != null && awayMessage.length() > 0)
+			{
+				sb.append(": ");
+				sb.append(awayMessage);
+			}
+			sb.append(")");
+		}
+		return sb.toString();
+	}
+	
+	public String getNickname()
+	{
+		return nickname;
+	}
+	
+	public UserStatus getStatus()
+	{
+		return status;
+	}
+	
+	public String getAwayMessage()
+	{
+		return awayMessage;
 	}
 	
 	void parseWhoisResponse(Map<String,String> data)
