@@ -58,7 +58,6 @@ public class Contact
 		
 		// make sure we're working with our own copy of the data
 		data = new HashMap<String,String>(data);
-		System.out.println(data);
 		
 		if (!nickname.equals(data.get("NICK")))
 		{
