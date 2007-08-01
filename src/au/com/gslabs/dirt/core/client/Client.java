@@ -789,11 +789,14 @@ public class Client
 					String list = "";
 					for (Contact contact : contacts.values())
 					{
-						if (list.length() > 0)
+						if (!contact.nickname.equals(getNickname()) && contact.status != UserStatus.OFFLINE)
 						{
-							list += ", ";
+							if (list.length() > 0)
+							{
+								list += ", ";
+							}
+							list += contact.nickname;
 						}
-						list += contact.nickname;
 					}
 					if (list.length() < 1)
 					{
