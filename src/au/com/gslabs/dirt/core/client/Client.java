@@ -27,6 +27,7 @@ public class Client
 	protected boolean connected;
 	protected String nickname_current;
 	protected String nickname_last;
+	protected URL server_url_last;
 	protected ByteBuffer authseed;
 	protected String server_name;
 	protected String server_hostname;
@@ -289,9 +290,24 @@ public class Client
 		}
 		else
 		{
+			server_url_last = url;
+			if (url.getUsername() != null)
+			{
+				nickname_last = url.getUsername();
+			}
 			server_hostname = url.getHostname();
 			socket.connect(url.getHostname(), url.getPort());
 		}
+	}
+	
+	public void reconnect(String context)
+	{
+		if (server_url_last == null)
+		{
+			notification(context, NotificationSeverity.ERROR, "RECONNECT", "No previous connection");
+		}
+		resetState();
+		connect(context, server_url_last);
 	}
 	
 	protected void resetState()
@@ -911,7 +927,8 @@ public class Client
 		BACK,
 		WHO,
 		WHOIS,
-		DISCONNECT
+		DISCONNECT,
+		RECONNECT
 	}
 	
 	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
@@ -1014,6 +1031,10 @@ public class Client
 			
 			case DISCONNECT:
 				disconnect(context);
+				return true;
+			
+			case RECONNECT:
+				reconnect(context);
 				return true;
 			
 			case CONNECT:

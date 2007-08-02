@@ -1,14 +1,18 @@
 package au.com.gslabs.dirt.lib.net;
 
+/**
+ * An immutable URL class
+ */
 public class URL
 {
 	
-	protected String protocol;
-	protected String hostname;
-	protected int port;
-	protected String path;
+	final protected String protocol;
+	final protected String username;
+	final protected String hostname;
+	final protected int port;
+	final protected String path;
 	
-	protected int defaultPort;
+	final protected int defaultPort;
 	
 	public URL(String url, String defaultProtocol, int defaultPort)
 	{
@@ -35,6 +39,17 @@ public class URL
 		else
 		{
 			path = "/";
+		}
+		
+		i = url.indexOf("@");
+		if (i > -1)
+		{
+			username = url.substring(i);
+			url = url.substring(0, i);
+		}
+		else
+		{
+			username = null;
 		}
 		
 		if (url.length() > 0 && url.charAt(0) == '[')
@@ -65,6 +80,10 @@ public class URL
 		{
 			url += protocol + "://";
 		}
+		if (username != null)
+		{
+			url += username + "@";
+		}
 		url += hostname;
 		if (port != defaultPort)
 		{
@@ -77,6 +96,11 @@ public class URL
 	public String getProtocol()
 	{
 		return this.protocol;
+	}
+	
+	public String getUsername()
+	{
+		return this.username;
 	}
 	
 	public String getHostname()
