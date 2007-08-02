@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>docs/development/notes.txt</string>
+	<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -93,14 +93,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>104</integer>
+				<integer>17</integer>
 				<key>line</key>
-				<integer>254</integer>
+				<integer>319</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>234</integer>
+			<integer>2</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>319</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>319</integer>
+			</dict>
 		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/ClientListener.java</key>
 		<dict>
@@ -159,6 +175,36 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/lib/net/URL.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>5</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>2</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>5</integer>
+			</dict>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/ui/jfc/XHTMLEditorKit.java</key>
 		<dict>
@@ -310,6 +356,7 @@
 	<key>openDocuments</key>
 	<array>
 		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
+		<string>src/au/com/gslabs/dirt/lib/net/URL.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/Contact.java</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
 		<string>docs/development/notes.txt</string>

@@ -21,6 +21,7 @@ ensure exceptions are handled in Client for console input and server response
 
 signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
 	definitely a server bug (should be outputting unix time)
+	probably the ToGMT() call on Server.cpp:1212
 
 tab completion in both Swing and curses interfaces
 
