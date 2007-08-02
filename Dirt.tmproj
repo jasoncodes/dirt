@@ -88,33 +88,19 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/au/com/gslabs/dirt/Dirt.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>12</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>43</integer>
+				<integer>104</integer>
 				<key>line</key>
-				<integer>596</integer>
+				<integer>254</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>461</integer>
+			<integer>234</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/ClientListener.java</key>
 		<dict>
@@ -324,10 +310,7 @@
 	<key>openDocuments</key>
 	<array>
 		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
-		<string>src/au/com/gslabs/dirt/Dirt.java</string>
-		<string>src/au/com/gslabs/dirt/ui/cli/client/ClientCLI.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/Contact.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/ClientListener.java</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
 		<string>docs/development/notes.txt</string>
 	</array>
