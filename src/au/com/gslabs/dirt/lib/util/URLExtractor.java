@@ -39,13 +39,30 @@ public class URLExtractor
 	
 	public static void main(String[] args)
 	{
-		String html = "This is a&nbsp;test http://www.google.com.au/.\nTest string with an email address foo@example.tld and an URL <sourceforge.net>.";
+		
+		String html = "<blockquote cite=\"http://example.com/\">\nThis is a&nbsp;test http://www.google.com.au/.\nTest string with an email address foo@example.tld and an URL <sourceforge.net>.\n</blockquote>\n";
 		URLExtractor extractor = new URLExtractor(html);
+		
+		final char ESC = (char)27;
+		System.out.print(ESC+"[0m"+ESC+"[1m");
 		for (Token token : extractor.getTokens())
 		{
-			System.out.println("text: \"" + token.getText() + "\"");
-			System.out.println("url: \"" + token.getUrl() + "\"");
+			if (token.getUrl() != null)
+			{
+				System.out.print(ESC+"[34m"+ESC+"[4m");
+			}
+			System.out.print(token.getText());
+			if (token.getUrl() != null)
+			{
+				System.out.print(ESC+"[0m"+ESC+"[7m");
+				System.out.print("<");
+				System.out.print(token.getUrl());
+				System.out.print(">");
+				System.out.print(ESC+"[0m"+ESC+"[1m");
+			}
 		}
+		System.out.print(ESC+"[0m");
+		System.out.println();
 	}
 	
 	public static boolean looksLikeAnEmailAddress(String part)
@@ -120,7 +137,7 @@ public class URLExtractor
 		}
 	}
 	
-	static final Pattern partDelims = Pattern.compile("(\\p{Space}|\"|<|>|&nbsp;|&lt;|&gt;)+");
+	static final Pattern partDelims = Pattern.compile("(\\p{Space}|\"|<|>|&quot;|&lt;|&gt;)+");
 	static final Pattern suffixToIgnore = Pattern.compile("[.,?!]+$");
 	static final Pattern domainEnd = Pattern.compile("\\.(com|net|org|gov|mil|co\\.[a-z]+)(:[0-9]+)?(/|$)");
 	

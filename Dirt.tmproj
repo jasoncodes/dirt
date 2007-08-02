@@ -47,7 +47,7 @@
 			<key>filename</key>
 			<string>../Dirt/Client.cpp</string>
 			<key>lastUsed</key>
-			<date>2007-07-31T23:06:22Z</date>
+			<date>2007-08-02T09:01:28Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -65,9 +65,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>79</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>2</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -88,61 +88,77 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>src/au/com/gslabs/dirt/Dirt.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/Client.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>21</integer>
+				<integer>43</integer>
 				<key>line</key>
-				<integer>795</integer>
+				<integer>596</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>777</integer>
+			<integer>461</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/ClientListener.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>75</integer>
+				<integer>22</integer>
 				<key>line</key>
 				<integer>20</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>13</integer>
+				<key>line</key>
+				<integer>20</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>33</integer>
+				<key>line</key>
+				<integer>20</integer>
+			</dict>
 		</dict>
 		<key>src/au/com/gslabs/dirt/core/client/Contact.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>60</integer>
+				<integer>63</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>45</integer>
-		</dict>
-		<key>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>69</integer>
-				<key>line</key>
-				<integer>309</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>295</integer>
+			<integer>46</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/crypt/CryptException.java</key>
 		<dict>
@@ -187,20 +203,6 @@
 				<key>line</key>
 				<integer>12</integer>
 			</dict>
-		</dict>
-		<key>src/au/com/gslabs/dirt/lib/util/Duration.java</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>24</integer>
-				<key>line</key>
-				<integer>129</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>9</integer>
 		</dict>
 		<key>src/au/com/gslabs/dirt/lib/util/FileUtil.java</key>
 		<dict>
@@ -276,35 +278,62 @@
 				<integer>12</integer>
 			</dict>
 		</dict>
+		<key>src/au/com/gslabs/dirt/ui/UI.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>19</integer>
+				<key>line</key>
+				<integer>41</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>19</integer>
+		</dict>
+		<key>src/au/com/gslabs/dirt/ui/cli/client/ClientCLI.java</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>24</integer>
+				<key>line</key>
+				<integer>317</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>308</integer>
+		</dict>
 		<key>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>4</integer>
+				<integer>51</integer>
 				<key>line</key>
-				<integer>83</integer>
+				<integer>289</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>73</integer>
+			<integer>273</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>src/au/com/gslabs/dirt/core/client/Client.java</string>
+		<string>src/au/com/gslabs/dirt/Dirt.java</string>
+		<string>src/au/com/gslabs/dirt/ui/cli/client/ClientCLI.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/Contact.java</string>
 		<string>src/au/com/gslabs/dirt/core/client/ClientListener.java</string>
-		<string>src/au/com/gslabs/dirt/core/client/DefaultClientAdapter.java</string>
-		<string>src/au/com/gslabs/dirt/lib/util/Duration.java</string>
-		<string>res/styles/logpane/base.css</string>
-		<string>docs/development/notes.txt</string>
 		<string>src/au/com/gslabs/dirt/ui/jfc/client/MainFrame.java</string>
+		<string>docs/development/notes.txt</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{524, 232}, {896, 634}}</string>
+	<string>{{522, 232}, {896, 634}}</string>
 </dict>
 </plist>

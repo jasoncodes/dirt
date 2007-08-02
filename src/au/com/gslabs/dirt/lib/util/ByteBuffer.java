@@ -80,6 +80,44 @@ public class ByteBuffer
 		clear(16);
 	}
 	
+	public boolean equals(Object obj)
+	{
+		
+		if (this == obj)
+		{
+			return true;
+		}
+		
+		if (!(obj instanceof ByteBuffer))
+		{
+			return false;
+		}
+		
+		ByteBuffer other = (ByteBuffer)obj;
+		
+		if (this.data == other.data &&
+			this.offset == other.offset &&
+			this.length == other.length)
+		{
+			return true;
+		}
+		
+		if (this.length != other.length)
+		{
+			return false;
+		}
+		
+		for (int i = 0; i < this.length; ++i)
+		{
+			if (this.data[i+this.offset] != other.data[i+other.offset])
+			{
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	
 	public void clear(int initialCapacity)
 	{
 		this.data = new byte[initialCapacity];

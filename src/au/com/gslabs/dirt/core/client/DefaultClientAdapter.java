@@ -46,6 +46,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		{
 			case DEBUG:
 				buff.append("Debug");
+				buff.append(haveType ? " " : ": ");
 				break;
 			case ERROR:
 				buff.append("Error");
@@ -204,7 +205,6 @@ public abstract class DefaultClientAdapter implements ClientListener
 	
 	public void clientContactUpdated(Client source, Contact contact)
 	{
-		System.out.println(contact);
 	}
 	
 	public void clientUserListReceived(Client source, String[] nicklist)
@@ -411,7 +411,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		out.output(
 			"has been idle for " + new Duration(contact.idleMilliseconds) +
 			" (" + new Duration(contact.latencyMilliseconds).toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)");
-		out.output("signed on at " + TextUtil.formatDateTime(contact.joinTimeServer, true));
+		out.output("signed on at " + TextUtil.formatDateTime(contact.joinTimeServer, true, false));
 		
 		for (Map.Entry entry : contact.other.entrySet())
 		{

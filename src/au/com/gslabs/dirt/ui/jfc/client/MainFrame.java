@@ -161,6 +161,11 @@ public class MainFrame extends JFrame
 			contacts.updateContact(contact);
 		}
 		
+		public void clientUserListReceived(Client source, String[] nicklist)
+		{
+			// we have a nicklist, no need to let the default handler output text
+		}
+		
 		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
 			if (isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
@@ -241,8 +246,58 @@ public class MainFrame extends JFrame
 		
 		public void clientStateChanged(Client source)
 		{
+			
 			super.clientStateChanged(source);
 			setPasswordMode(false);
+			
+			String title = "";
+			
+			if (client.isConnected())
+			{
+				
+				String nick = client.getNickname();
+				if (nick != null && nick.length() > 0)
+				{
+					title += nick + " on ";
+				}
+				else
+				{
+					title += "";
+				}
+				
+				if (client.getServerName() != null)
+				{
+					title += client.getServerName();
+					if (!client.getServerHostname().equals(client.getServerName()) &&
+						!client.getServerHostname().equals("localhost"))
+					{
+						title += " (" + client.getServerHostname() + ")";
+					}
+				}
+				else
+				{
+					title += client.getServerHostname();
+				}
+				
+				Duration latency = client.getLatency();
+				if (latency != null)
+				{
+					title += " (" + latency.toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)";
+				}
+				
+				if (!FileUtil.isMac())
+				{
+					title += " - " + resbundle.getString("title");
+				}
+				
+			}
+			else
+			{
+				title = resbundle.getString("title");
+			}
+			
+			setTitle(title);
+			
 		}
 		
 	}

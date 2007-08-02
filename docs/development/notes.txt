@@ -11,8 +11,6 @@ nicklist
 	context menu
 	preserve selections when indexes change
 
-titlebar
-
 keep selection when doing addTextLine
 
 shouldn't alert on own messages
@@ -28,8 +26,12 @@ tab completion in both Swing and curses interfaces
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
 
+get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
+
 if text is outputted when not scrolled to bottom we should have some visual indication
 	overlay a grey arrow pointing down on the bottom right of the view?
+
+
 
 
 http://en.wikipedia.org/wiki/STUN

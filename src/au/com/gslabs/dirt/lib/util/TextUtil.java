@@ -4,6 +4,9 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.text.MessageFormat;
 import java.text.BreakIterator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public final class TextUtil
 {
@@ -258,12 +261,15 @@ public final class TextUtil
 		return sb.toString();
 	}
 	
-	protected static java.text.SimpleDateFormat sdfDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	protected static java.text.SimpleDateFormat sdfDateTimeTZ = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-	
-	public static String formatDateTime(java.util.Date d, boolean withTimeZone)
+	public static String formatDateTime(Date date, boolean includeTimeZone, boolean inUTC)
 	{
-		return (withTimeZone?sdfDateTimeTZ:sdfDateTime).format(d.getTime());
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss" + (includeTimeZone?" Z":""));
+		if (inUTC)
+		{
+			TimeZone tzUTC = TimeZone.getTimeZone("UTC");
+			f.setTimeZone(tzUTC);
+		}
+		return f.format(date);
 	}
 	
 	public static String toTitleCase(String in)

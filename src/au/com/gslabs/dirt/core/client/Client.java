@@ -29,11 +29,24 @@ public class Client
 	protected String nickname_last;
 	protected ByteBuffer authseed;
 	protected String server_name;
+	protected String server_hostname;
+	protected Timer tmrPing;
+	protected TimerTask tmrTaskPing;
+	protected TimerTask tmrTaskNoPong;
+	protected ByteBuffer ping_data;
+	protected long ping_sent;
+	protected long latency;
+		
+	private static final long initial_ping_delay = 5000;
+	private static final long ping_interval = 30000;
+	private static final long ping_timeout_delay = 45000;
 	
 	public Client()
 	{
+		
 		contacts = new TreeMap<String,Contact>();
 		nickname_last = getDefaultNickname();
+		
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
 			{
@@ -54,7 +67,9 @@ public class Client
 					processServerMessage(data);
 				}
 			}, new SameThreadInvoker());
+		
 		resetState();
+		
 	}
 	
 	protected String getUserDetails()
@@ -91,6 +106,10 @@ public class Client
 	
 	protected Contact getContact(String nickname, boolean createOrReset)
 	{
+		if (nickname == null || nickname.length() == 0)
+		{
+			return null;
+		}
 		Contact contact = contacts.get(nickname);
 		if (createOrReset)
 		{
@@ -136,7 +155,7 @@ public class Client
 			}, true);
 		
 		String version = au.com.gslabs.dirt.Dirt.VERSION;
-		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate(), false);
+		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate(), false, true);
 		
 		if (extras.size() > 0)
 		{
@@ -158,9 +177,71 @@ public class Client
 		
 	}
 	
+	protected class TimerTaskPing extends TimerTask
+	{
+		public void run()
+		{
+			try
+			{
+				if (isConnected())
+				{
+					au.com.gslabs.dirt.lib.crypt.Crypt crypt =
+						au.com.gslabs.dirt.lib.crypt.CryptFactory.getInstance();
+					ping_data = crypt.generateRandomBytes(8);
+					ping_sent = System.currentTimeMillis();
+					sendToServer(null, "PING", ping_data);
+					tmrTaskNoPong = new TimerTaskNoPong();
+					tmrPing.schedule(tmrTaskNoPong, ping_timeout_delay);
+				}
+			}
+			catch (Exception ex)
+			{
+				onConnectionError(ex);
+			}
+		}
+	}
+	
+	protected void onPong(ByteBuffer data)
+	{
+		if (data.equals(ping_data))
+		{
+			if (!tmrTaskNoPong.cancel())
+			{
+				onConnectionError(new Exception("Error stopping TimerTaskNoPong"));
+			}
+			tmrTaskPing = new TimerTaskPing();
+			tmrPing.schedule(tmrTaskPing, ping_interval);
+			latency = System.currentTimeMillis() - ping_sent;
+			raiseStateChanged();
+		}
+	}
+	
+	protected class TimerTaskNoPong extends TimerTask
+	{
+		public void run()
+		{
+			try
+			{
+				if (isConnected())
+				{
+					resetState();
+					notification(null, NotificationSeverity.ERROR, null, "Ping timeout");
+					raiseStateChanged();
+				}
+			}
+			catch (Exception ex)
+			{
+				onConnectionError(ex);
+			}
+		}
+	}
+	
 	protected void onConnected()
 	{
 		connected = true;
+		tmrPing = new Timer(true);
+		tmrTaskPing = new TimerTaskPing();
+		tmrPing.schedule(tmrTaskPing, initial_ping_delay);
 		notification(null, NotificationSeverity.INFO, null, "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
 		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
@@ -169,9 +250,23 @@ public class Client
 	
 	protected void onDisconnected()
 	{
+		
+		Contact contact = getContact(getNickname());
+		boolean clean = (getNickname() != null) && (contact != null) && (contact.status == UserStatus.OFFLINE);
+		
 		resetState();
-		notification(null, NotificationSeverity.ERROR, null, "Connection lost");
+		
+		if (clean)
+		{
+			notification(null, NotificationSeverity.INFO, null, "Disconnected");
+		}
+		else
+		{
+			notification(null, NotificationSeverity.ERROR, null, "Connection lost");
+		}
+		
 		raiseStateChanged();
+		
 	}
 	
 	public void disconnect(String context)
@@ -194,6 +289,7 @@ public class Client
 		}
 		else
 		{
+			server_hostname = url.getHostname();
 			socket.connect(url.getHostname(), url.getPort());
 		}
 	}
@@ -205,7 +301,15 @@ public class Client
 		nickname_current = null;
 		authseed = null;
 		server_name = null;
+		server_hostname = null;
+		latency = -1;
 		socket.close();
+		
+		if (tmrPing != null)
+		{
+			tmrPing.cancel();
+			tmrPing = null;
+		}
 		
 		final ArrayList<Contact> modifiedContacts = new ArrayList<Contact>(this.contacts.size());
 		for (Contact contact : Client.this.contacts.values())
@@ -262,6 +366,21 @@ public class Client
 		return connected;
 	}
 	
+	public String getServerName()
+	{
+		return server_name;
+	}
+	
+	public String getServerHostname()
+	{
+		return server_hostname;
+	}
+	
+	public Duration getLatency()
+	{
+		return (latency > -1) ? new Duration(latency) : null;
+	}
+	
 	protected void processServerMessage(ByteBuffer data)
 	{
 		
@@ -298,6 +417,7 @@ public class Client
 	protected enum ServerCommand
 	{
 		PING,
+		PONG,
 		INFO,
 		PUBMSG,
 		PUBACTION,
@@ -482,6 +602,7 @@ public class Client
 						if (tokens.size() < 2 || tokens.get(1).length() < 1)
 						{
 							this.nickname_current = tokens.get(0).toString();
+							raiseStateChanged();
 						}
 						else
 						{
@@ -491,6 +612,11 @@ public class Client
 							contacts.remove(nick_old);
 							contact.nickname = nick_new;
 							contacts.put(nick_new, contact);
+							if (nick_old.equals(nickname_current))
+							{
+								nickname_current = nick_new;
+								raiseStateChanged();
+							}
 							listeners.dispatchEvent(new EventSource<ClientListener>()
 								{
 									public void dispatchEvent(ClientListener l)
@@ -545,11 +671,13 @@ public class Client
 				return true;
 			
 			case PING:
-				{
-					sendToServer(context, "PONG", params);
-				}
+				sendToServer(context, "PONG", params);
 				return true;
-				
+			
+			case PONG:
+				onPong(params);
+				return true;
+			
 			case PUBMSG:
 			case PUBACTION:
 			case PRIVMSG:

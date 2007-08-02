@@ -315,7 +315,7 @@ public class ClientCLI
 		}
 	}
 	
-	protected void output(String message)
+	protected synchronized void output(String message)
 	{
 		try
 		{
