@@ -145,7 +145,8 @@ public class MainFrame extends JFrame
 	protected enum SupportedCommand
 	{
 		CLEAR,
-		MINTOTRAY
+		MINTOTRAY,
+		EXIT
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
@@ -188,6 +189,11 @@ public class MainFrame extends JFrame
 				
 				case MINTOTRAY:
 					doMinToTray();
+					return true;
+					
+				case EXIT:
+					source.processConsoleInput(context, "/QUIT " + params);
+					System.exit(0);
 					return true;
 				
 				/*

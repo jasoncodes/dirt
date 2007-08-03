@@ -1,4 +1,13 @@
+update Contact to have protected fields
+
+split ConsoleCommand and processConsoleInput into a different class
+that has no internal access to the Client object
+
 resizing is slow with lots of text
+
+double click to select word
+
+Cmd-F to search log text
 
 clear selection and focus input after Cmd-C
 
@@ -9,6 +18,7 @@ nicklist
 	pretty rendering
 		http://java.sun.com/developer/technicalArticles/GUI/jlist/
 	context menu
+	double click
 	preserve selections when indexes change
 
 keep selection when doing addTextLine
@@ -24,6 +34,10 @@ signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
 	probably the ToGMT() call on Server.cpp:1212
 
 tab completion in both Swing and curses interfaces
+
+sometimes focusing the window by clicking the logpane area causes focus to be lost from the input area
+a cursor flickers in the input area and then disappears
+focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
 

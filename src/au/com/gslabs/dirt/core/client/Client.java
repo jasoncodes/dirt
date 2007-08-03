@@ -237,16 +237,41 @@ public class Client
 		}
 	}
 	
+	protected Thread shutdownHook;
+	
+	protected class ShutdownHook extends Thread
+	{
+		public void run()
+		{
+			shutdownHook = null; // don't want to remove ourselves if we are actually shutting down
+			if (isConnected())
+			{
+				sendToServer(null, "QUIT", new ByteBuffer("Closing"));
+			}
+		}
+	}
+	
 	protected void onConnected()
 	{
+		
 		connected = true;
+		
 		tmrPing = new Timer(true);
 		tmrTaskPing = new TimerTaskPing();
 		tmrPing.schedule(tmrTaskPing, initial_ping_delay);
+		
+		if (shutdownHook == null)
+		{
+			shutdownHook = new ShutdownHook();
+		}
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+		
 		notification(null, NotificationSeverity.INFO, null, "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
 		sendToServer(null, "USERAGENT", new ByteBuffer(getUserAgent()));
+		
 		raiseStateChanged();
+		
 	}
 	
 	protected void onDisconnected()
@@ -327,6 +352,11 @@ public class Client
 			tmrPing = null;
 		}
 		
+		if (shutdownHook != null)
+		{
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		}
+		
 		final ArrayList<Contact> modifiedContacts = new ArrayList<Contact>(this.contacts.size());
 		for (Contact contact : Client.this.contacts.values())
 		{
@@ -363,8 +393,6 @@ public class Client
 	
 	protected void onConnectionError(Exception ex)
 	{
-		System.err.println("Connection error:");
-		ex.printStackTrace();
 		resetState();
 		String msg = "Connection error: " + ex.toString();
 		Throwable t = ex.getCause();
@@ -917,7 +945,6 @@ public class Client
 		MY,
 		HELP,
 		CONNECT,
-		RAW,
 		NICK,
 		MSG,
 		MSGME,
@@ -937,21 +964,6 @@ public class Client
 		switch (cmd)
 		{
 			
-			case RAW:
-				if (ensureConnected(context, cmd))
-				{
-					int i = params.indexOf(' ');
-					if (i > 0)
-					{
-						sendToServer(context, params.substring(0, i), new ByteBuffer(params.substring(i+1)));
-					}
-					else
-					{
-						sendToServer(context, params, null);
-					}
-				}
-				return true;
-				
 			case NICK:
 				if (ensureConnected(context, cmd))
 				{
