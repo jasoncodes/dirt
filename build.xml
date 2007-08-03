@@ -191,6 +191,7 @@
 				<include name="run" />
 			</fileset>
 		</chmod>
+		<copy file="${base}/Dirt.tmproj.template" tofile="${base}/Dirt.tmproj" overwrite="false" />
 	</target>
 	
 	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,webstart" />
