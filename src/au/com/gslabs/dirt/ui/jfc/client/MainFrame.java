@@ -91,6 +91,8 @@ public class MainFrame extends JFrame
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
 		
+		//txtInput.setCompletor(new ContactNickCompletor(client));
+		
 		WindowAdapter wa = new WindowAdapter()
 			{
 				

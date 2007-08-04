@@ -143,6 +143,7 @@ public class ClientCLI
 			this.completor = completor;
 		}
 		
+		@SuppressWarnings("unchecked") // jline.Completor interface isn't generic
 		public int complete(String buffer, int cursor, List candidates)
 		{
 			return this.completor.complete(buffer, cursor, candidates);

@@ -3,7 +3,7 @@ package au.com.gslabs.dirt.ui.common.client;
 import au.com.gslabs.dirt.core.client.*;
 import java.util.*;
 
-public class ContactNickCompletor
+public class ContactNickCompletor implements au.com.gslabs.dirt.lib.ui.common.Completor
 {
 	
 	protected Client client;
@@ -37,9 +37,7 @@ public class ContactNickCompletor
 		}
 		toFind = toFind.toLowerCase();
 		
-		String[] nicknames = new String[] { "Jason", "Jack", "Foo", "Bar", "Blacksage" }; //client.getContacts().keys();
-		
-		for (String nickname : nicknames)
+		for (String nickname : client.getContacts().keySet())
 		{
 			if (nickname.toLowerCase().startsWith(toFind))
 			{
