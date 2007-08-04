@@ -9,6 +9,7 @@ import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
+import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
 
 // this needs MRJAdapter support
 
@@ -47,10 +48,32 @@ public class MainFrame extends JFrame
 		txtInput = new InputArea();
 		txtInput.addInputListener(new InputArea.InputListener()
 			{
-				public void inputPerformed(InputArea.InputEvent e)
+				
+				public void inputPerformed(InputArea source, String[] lines)
 				{
-					txtInput_Input(e.getLines());
+					txtInput_Input(lines);
 				}
+				
+				public void inputCompletionCandidates(InputArea source, String[] candidates)
+				{
+					StringBuilder sb = new StringBuilder();
+					sb.append("  ");
+					for (String candidate : candidates)
+					{
+						sb.append("  ");
+						if (candidate.indexOf(' ') > -1)
+						{
+							sb.append('"');
+						}
+						sb.append(candidate);
+						if (candidate.indexOf(' ') > -1)
+						{
+							sb.append('"');
+						}
+					}
+					txtLog.appendTextLine(sb.toString());
+				}
+				
 			});
 		
 		txtPassword = new JPasswordField();
@@ -91,7 +114,7 @@ public class MainFrame extends JFrame
 		client = new Client();
 		client.addClientListener(new ClientAdapter(), new JFCInvoker());
 		
-		//txtInput.setCompletor(new ContactNickCompletor(client));
+		txtInput.setCompletor(new ContactNickCompletor(client));
 		
 		WindowAdapter wa = new WindowAdapter()
 			{

@@ -37,7 +37,7 @@ public class ContactNickCompletor implements au.com.gslabs.dirt.lib.ui.common.Co
 		}
 		toFind = toFind.toLowerCase();
 		
-		for (String nickname : client.getContacts().keySet())
+		for (String nickname : new String[] { "Jason", "Jack", "Foo", "Bar", "Blacksage" })//client.getContacts().keySet())
 		{
 			if (nickname.toLowerCase().startsWith(toFind))
 			{
