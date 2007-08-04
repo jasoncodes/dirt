@@ -1,17 +1,12 @@
-update Contact to have protected fields
-
-split ConsoleCommand and processConsoleInput into a different class
-that has no internal access to the Client object
-
 resizing is slow with lots of text
 
 double click to select word
 
 Cmd-F to search log text
 
-clear selection and focus input after Cmd-C
-
 ensure all focusing of input controls work with password field too (abstract it)
+
+get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
 
 nicklist
 	JSplitPane
@@ -23,27 +18,26 @@ nicklist
 
 keep selection when doing addTextLine
 
-shouldn't alert on own messages and away statuses
-
 acceleration when scrolling logpane
 
-ensure exceptions are handled in Client for console input and server response
+if text is outputted when not scrolled to bottom we should have some visual indication
+	overlay a grey arrow pointing down on the bottom right of the view?
 
 signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
 	definitely a server bug (should be outputting unix time)
 	probably the ToGMT() call on Server.cpp:1212
+
+move ConsoleCommand and processConsoleInput into DefaultClientAdapter
+
+ensure exceptions are handled in Client for console input and server response
+
+clear selection and focus input after Cmd-C in logpane
 
 sometimes focusing the window by clicking the logpane area causes focus to be lost from the input area
 a cursor flickers in the input area and then disappears
 focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
-
-get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
-
-if text is outputted when not scrolled to bottom we should have some visual indication
-	overlay a grey arrow pointing down on the bottom right of the view?
-
 
 
 

@@ -39,7 +39,7 @@ public class ClientCLI
 		}
 		
 		@Override
-		protected void clientConsoleOutput(Client source, String context, String className, String message)
+		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
 		{
 			output(message);
 		}

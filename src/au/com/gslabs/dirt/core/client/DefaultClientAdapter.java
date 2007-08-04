@@ -18,7 +18,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		return sdf.format(c.getTime());
 	}
 	
-	protected abstract void clientConsoleOutput(Client source, String context, String className, String message);
+	protected abstract void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message);
 	
 	public String[] getClientSupportedCommands(Client source)
 	{
@@ -60,7 +60,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		}
 		buff.append(message);
 		
-		clientConsoleOutput(source, context, severity.toString().toLowerCase(), buff.toString());
+		clientConsoleOutput(source, context, severity.toString().toLowerCase(), false, buff.toString());
 	}
 	
 	public void clientNeedNickname(Client source, String defaultNick)
@@ -80,7 +80,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 	public void clientChatMessage(Client source, String context, String nick, String text, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility)
 	{
 		
-		String className;
+		final String className;
 		switch (type)
 		{
 			case ACTION:
@@ -91,10 +91,14 @@ public abstract class DefaultClientAdapter implements ClientListener
 				break;
 		}
 		
-		String sep = (
+		final String sep = (
 				text.startsWith("'s ") ||
 				text.startsWith("'d ")
 			) ? "" : " ";
+		
+		final boolean suppressAlert =
+			(direction == MessageDirection.OUTBOUND) ||
+			(nick.equals(source.getNickname()));
 		
 		switch (direction)
 		{
@@ -105,21 +109,21 @@ public abstract class DefaultClientAdapter implements ClientListener
 					case PRIVATE:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, "* *" + nick + "*" + sep + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "* *" + nick + "*" + sep + text);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, "*" + nick + "* " + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "*" + nick + "* " + text);
 						}
 						break;
 					case PUBLIC:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, "* " + nick + sep + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "* " + nick + sep + text);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, "<" + nick + "> " + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "<" + nick + "> " + text);
 						}
 						break;
 					default:
@@ -133,11 +137,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 					case PRIVATE:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, "-> *" + nick + "* * " + source.getNickname() + sep + text);
+							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* * " + source.getNickname() + sep + text);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, "-> *" + nick + "* " + text);
+							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* " + text);
 						}
 						break;
 					case PUBLIC:
@@ -199,7 +203,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 			buff.append(data.toString());
 		}
 		
-		clientConsoleOutput(source, context, "ctcp", buff.toString());
+		final boolean suppressAlert =
+			(direction == MessageDirection.OUTBOUND) ||
+			(nick.equals(source.getNickname()));
+		
+		clientConsoleOutput(source, context, "ctcp", suppressAlert, buff.toString());
 		
 	}
 	
@@ -226,7 +234,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		{
 			sb.append("(Nobody)");
 		}
-		clientConsoleOutput(source, null, "status-userlist", sb.toString());
+		clientConsoleOutput(source, null, "status-userlist", false, sb.toString());
 	}
 	
 	public void clientUserJoin(Client source, String nick, String details)
@@ -250,7 +258,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 			}
 			sb.append(" has joined the chat");
 		}
-		clientConsoleOutput(source, null, "status-join", sb.toString());
+		clientConsoleOutput(source, null, "status-join", false, sb.toString());
 	}
 	
 	public void clientUserPart(Client source, String nick, String details, String message)
@@ -273,16 +281,20 @@ public abstract class DefaultClientAdapter implements ClientListener
 			sb.append(TextModifier.ORIGINAL);
 			sb.append(")");
 		}
-		clientConsoleOutput(source, null, "status-part", sb.toString());
+		clientConsoleOutput(source, null, "status-part", false, sb.toString());
 	}
 	
 	public void clientUserNick(Client source, String old_nick, String new_nick)
 	{
-		StringBuilder sb = new StringBuilder();
+		
+		final StringBuilder sb = new StringBuilder();
+		final boolean suppressAlert;
+		
 		sb.append("*** ");
 		if (source.getNickname() == null && new_nick == null)
 		{
 			sb.append("You have no nickname");
+			suppressAlert = false;
 		}
 		else if (new_nick.equals(source.getNickname()))
 		{
@@ -295,19 +307,26 @@ public abstract class DefaultClientAdapter implements ClientListener
 				sb.append("You are now known as ");
 			}
 			sb.append(new_nick);
+			suppressAlert = true;
 		}
 		else
 		{
 			sb.append(old_nick);
 			sb.append(" is now known as ");
 			sb.append(new_nick);
+			suppressAlert = false;
 		}
-		clientConsoleOutput(source, null, "status-nick", sb.toString());
+		
+		clientConsoleOutput(source, null, "status-nick", suppressAlert, sb.toString());
+		
 	}
 	
 	public void clientUserStatus(Client source, String nick, UserStatus status, String message, Date away_start, Duration away_duration, Duration previous_away_duration, String previous_away_message)
 	{
-		StringBuilder sb = new StringBuilder();
+		
+		final StringBuilder sb = new StringBuilder();
+		boolean suppressAlert = nick.equals(source.getNickname());
+		
 		sb.append("*** ");
 		sb.append(nick);
 		if (status == UserStatus.AWAY)
@@ -361,7 +380,9 @@ public abstract class DefaultClientAdapter implements ClientListener
 		{
 			sb.append(" is " + status);
 		}
-		clientConsoleOutput(source, null, "status-"+status.toString().toLowerCase(), sb.toString());
+		
+		clientConsoleOutput(source, null, "status-"+status.toString().toLowerCase(), suppressAlert, sb.toString());
+		
 	}
 	
 	protected final class WhoisOutputter
@@ -377,7 +398,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		}
 		public void output(String text)
 		{
-			clientConsoleOutput(source, context, "whois", nickname + " " + text);
+			clientConsoleOutput(source, context, "whois", false, nickname + " " + text);
 		}
 	}
 	

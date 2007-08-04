@@ -200,9 +200,9 @@ public class MainFrame extends JFrame
 		}
 		
 		@Override
-		protected void clientConsoleOutput(Client source, String context, String className, String message)
+		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
 		{
-			if (isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
+			if (!suppressAlert && isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
 			{
 				txtLog.setRedLine();
 				UIUtil.alert(MainFrame.this);
