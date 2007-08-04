@@ -7,7 +7,7 @@ import au.com.gslabs.dirt.lib.util.Duration;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import au.com.gslabs.dirt.core.client.enums.UserStatus;
 
-public class Contact
+public class Contact implements Comparable<Contact>
 {
 	
 	UserStatus status;
@@ -52,6 +52,43 @@ public class Contact
 	Contact()
 	{
 		reset();
+	}
+	
+	public int compareTo(Contact other)
+	{
+		
+		if (this == other)
+		{
+			return 0;
+		}
+		
+		int thisStatusOrder = (this.status != UserStatus.OFFLINE) ? 1 : 0;
+		int otherStatusOrder = (other.status != UserStatus.OFFLINE) ? 1 : 0;
+		
+		if (thisStatusOrder != otherStatusOrder)
+		{
+			return thisStatusOrder < otherStatusOrder ? -1 : 1;
+		}
+		
+		return this.nickname.compareToIgnoreCase(other.nickname);
+		
+	}
+	
+	public boolean equals(Object other)
+	{
+		
+		if (this == other)
+		{
+			return true;
+		}
+		
+		if (!(other instanceof Contact))
+		{
+			return false;
+		}
+		
+		return this.compareTo((Contact)other) == 0;
+		
 	}
 	
 	public String toString()

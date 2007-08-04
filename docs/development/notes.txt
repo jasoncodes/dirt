@@ -23,7 +23,7 @@ nicklist
 
 keep selection when doing addTextLine
 
-shouldn't alert on own messages
+shouldn't alert on own messages and away statuses
 
 acceleration when scrolling logpane
 

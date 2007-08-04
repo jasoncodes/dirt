@@ -94,24 +94,29 @@ public class MainFrame extends JFrame
 		WindowAdapter wa = new WindowAdapter()
 			{
 				
+				@Override
 				public void windowActivated(WindowEvent e)
 				{
 					txtInput.requestFocusInWindow();
 				}
+				@Override
 				public void windowGainedFocus(WindowEvent e)
 				{
 					txtInput.requestFocusInWindow();
 				}
 				
+				@Override
 				public void windowDeactivated(WindowEvent e)
 				{
 					txtLog.clearRedLine();
 				}
+				@Override
 				public void windowLostFocus(WindowEvent e)
 				{
 					txtLog.clearRedLine();
 				}
 				
+				@Override
 				public void windowClosing(WindowEvent event)
 				{
 					onClose();
@@ -157,16 +162,19 @@ public class MainFrame extends JFrame
 			super(SupportedCommand.class);
 		}
 		
+		@Override
 		public void clientContactUpdated(Client source, Contact contact)
 		{
 			contacts.updateContact(contact);
 		}
 		
+		@Override
 		public void clientUserListReceived(Client source, String[] nicklist)
 		{
 			// we have a nicklist, no need to let the default handler output text
 		}
 		
+		@Override
 		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
 			if (isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
@@ -177,6 +185,7 @@ public class MainFrame extends JFrame
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
 		}
 		
+		@Override
 		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
 		{
 			
@@ -238,18 +247,21 @@ public class MainFrame extends JFrame
 			
 		}
 		
+		@Override
 		public void clientNeedNickname(Client source, String defaultNick)
 		{
 			String prompt = "/nick " + defaultNick;
 			txtInput.setText(prompt, 6, prompt.length());
 		}
 		
+		@Override
 		public void clientNeedAuthentication(Client source, String prompt)
 		{
 			super.clientNeedAuthentication(source, prompt);
 			setPasswordMode(true);
 		}
 		
+		@Override
 		public void clientStateChanged(Client source)
 		{
 			

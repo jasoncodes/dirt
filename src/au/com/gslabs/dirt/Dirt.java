@@ -10,8 +10,16 @@ public class Dirt
 	
 	public static void main(String[] args)
 	{
-		FileUtil.ShutdownCleanupCheck(args);
-		UI.startClient(args);
+		try
+		{
+			FileUtil.ShutdownCleanupCheck(args);
+			UI.startClient(args);
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 }

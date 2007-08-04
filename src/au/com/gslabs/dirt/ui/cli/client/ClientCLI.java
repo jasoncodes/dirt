@@ -6,7 +6,8 @@ import java.io.*;
 import java.util.*;
 import au.com.gslabs.dirt.lib.util.TextModifierParser;
 import au.com.gslabs.dirt.lib.thread.SameThreadInvoker;
-import java.util.concurrent.*;
+import au.com.gslabs.dirt.lib.thread.InterruptibleInputStream;
+import au.com.gslabs.dirt.ui.common.client.*;
 
 public class ClientCLI
 {
@@ -18,7 +19,6 @@ public class ClientCLI
 	
 	protected Client client;
 	protected ConsoleReader console;
-	protected SimpleCompletor completor;
 	protected PrintWriter out;
 	protected boolean bailingOut;
 	protected InterruptibleInputStream input;
@@ -30,86 +30,6 @@ public class ClientCLI
 		EXIT
 	}
 	
-	protected class InterruptibleInputStream extends InputStream
-	{
-		
-		protected InputStream in;
-		protected ReadThread thread;
-		BlockingQueue<Integer> queue;
-		protected Exception ex;
-		protected int lastRead;
-		
-		public InterruptibleInputStream(InputStream in)
-		{
-			this.in = in;
-			this.queue = new LinkedBlockingQueue<Integer>(1);
-			this.ex = null;
-			thread = new ReadThread();
-			thread.start();
-			lastRead = -4;
-		}
-		
-		public int read() throws IOException
-		{
-			if (this.ex != null)
-			{
-				IOException ex2 = new IOException("Error reading from input stream");
-				ex2.initCause(this.ex);
-				throw ex2;
-			}
-			
-			try
-			{
-				lastRead = queue.take().intValue();
-			}
-			catch (InterruptedException ex)
-			{
-				lastRead = -3;
-			}
-			return (lastRead < 0) ? -1 : lastRead;
-		}
-		
-		protected class ReadThread extends Thread
-		{
-			ReadThread()
-			{
-				super("InterruptibleInputStream$ReadThread");
-				setDaemon(true);
-			}
-			public void run()
-			{
-				try
-				{
-					while (true)
-					{
-						queue.put(in.read());
-					}
-				}
-				catch (Exception ex)
-				{
-					InterruptibleInputStream.this.ex = ex;
-				}
-			}
-		}
-		
-		protected boolean wasInterrupt()
-		{
-			return lastRead == -2 || lastRead == -3;
-		}
-		
-		public void interrupt()
-		{
-			try
-			{
-				queue.put(-2);
-			}
-			catch (InterruptedException ex)
-			{
-			}
-		}
-		
-	}
-	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
 	{
 		
@@ -118,11 +38,13 @@ public class ClientCLI
 			super(SupportedCommand.class);
 		}
 		
+		@Override
 		protected void clientConsoleOutput(Client source, String context, String className, String message)
 		{
 			output(message);
 		}
 		
+		@Override
 		public boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
 		{
 			
@@ -144,23 +66,27 @@ public class ClientCLI
 			
 		}
 		
+		@Override
 		public String getClientExtraVersionInfo(Client source)
 		{
 			return "Console";
 		}
 		
+		@Override
 		public void clientNeedNickname(Client source, String defaultNick)
 		{
 			String prompt = "/nick " + defaultNick;
 			setText(prompt);
 		}
 		
+		@Override
 		public void clientNeedAuthentication(Client source, String prompt)
 		{
 			super.clientNeedAuthentication(source, prompt);
 			setPasswordMode(true);
 		}
 		
+		@Override
 		public void clientStateChanged(Client source)
 		{
 			super.clientStateChanged(source);
@@ -197,6 +123,7 @@ public class ClientCLI
 	
 	public class MyHistory extends History
 	{
+		@Override
 		public void addToHistory(String buffer)
 		{
 			if (client.isConsoleInputHistorySafe(buffer))
@@ -204,6 +131,23 @@ public class ClientCLI
 				super.addToHistory(buffer);
 			}
 		}
+	}
+	
+	public class MyCompletor implements jline.Completor
+	{
+		
+		protected ContactNickCompletor completor;
+		
+		public MyCompletor(ContactNickCompletor completor)
+		{
+			this.completor = completor;
+		}
+		
+		public int complete(String buffer, int cursor, List candidates)
+		{
+			return this.completor.complete(buffer, cursor, candidates);
+		}
+		
 	}
 	
 	public ClientCLI()
@@ -219,13 +163,9 @@ public class ClientCLI
 			
 			client = new Client();
 			client.addClientListener(new ClientAdapter(), new SameThreadInvoker());
+			console.addCompletor(new MyCompletor(new ContactNickCompletor(client)));
 			
 			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);
-			
-			//completor = new SimpleCompletor(new String[0]);
-			//console.addCompletor(completor);
-			//completor.addCandidateString("Foo");
-			//completor.addCandidateString("Bar");
 			
 			bailingOut = false;
 			
