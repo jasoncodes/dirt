@@ -11,27 +11,15 @@ import java.util.EventObject;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import au.com.gslabs.dirt.lib.util.TextModifier;
 import au.com.gslabs.dirt.lib.util.FileUtil;
+import au.com.gslabs.dirt.lib.ui.common.Completor;
 
 public class InputArea extends JScrollPane
 {
 	
-	public class InputEvent extends EventObject
-	{
-		protected String[] lines;
-		public InputEvent(InputArea source, String[] lines)
-		{
-			super(source);
-			this.lines = lines;
-		}
-		public String[] getLines()
-		{
-			return lines;
-		}
-	}
-	
 	public interface InputListener extends EventListener
 	{
-		public void inputPerformed(InputEvent e);
+		public void inputPerformed(InputArea source, String[] lines);
+		public void inputCompletionCandidates(InputArea source, String[] candidates);
 	}
 	
 	JTextArea txt;
@@ -42,6 +30,7 @@ public class InputArea extends JScrollPane
 	protected int history_pos;
 	protected String edit_text;
 	protected int edit_row;
+	protected Completor completor;
 	
 	public InputArea()
 	{
@@ -150,6 +139,18 @@ public class InputArea extends JScrollPane
 						onHistoryDown();
 						e.consume();
 					}
+					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+					{
+						if (txt.getText().length() == 0)
+						{
+							e.consume();
+						}
+					}
+					if (e.getKeyCode() == KeyEvent.VK_TAB)
+					{
+						doTabCompletion();
+						e.consume();
+					}
 				}
 			});
 	}
@@ -164,6 +165,82 @@ public class InputArea extends JScrollPane
 		{
 			return false;
 		}
+	}
+	
+	protected void doTabCompletion()
+	{
+		
+		if (txt.getSelectionStart() != txt.getSelectionEnd())
+		{
+			alert();
+			return;
+		}
+		
+		final ArrayList<String> candidates = new ArrayList<String>();
+		final int idxStart;
+		final int idxEnd = txt.getSelectionStart();
+		
+		if (completor != null)
+		{
+			idxStart = completor.complete(txt.getText(), idxEnd, candidates);
+		}
+		else
+		{
+			idxStart = -1;
+		}
+		
+		if (candidates.size() < 1 || idxStart < 0)
+		{
+			alert();
+			return;
+		}
+		
+		int commonCandidateChars = 0;
+		boolean commonDone = false;
+		while (!commonDone)
+		{
+			int c = -1;
+			for (String candidate : candidates)
+			{
+				if (candidate.length() <= commonCandidateChars)
+				{
+					commonDone = true;
+					break;
+				}
+				if (c < 0)
+				{
+					c = candidate.charAt(commonCandidateChars);
+				}
+				else if (c != candidate.charAt(commonCandidateChars))
+				{
+					commonDone = true;
+					break;
+				}
+			}
+			if (!commonDone)
+			{
+				commonCandidateChars++;
+			}
+		}
+		
+		final String src = txt.getText();
+		final String dst =
+			src.substring(0, idxStart) +
+			candidates.get(0).substring(0, commonCandidateChars) +
+			src.substring(idxEnd);
+		final int idxInsertionPoint = idxStart + commonCandidateChars;
+		txt.setText(dst);
+		txt.setSelectionStart(idxInsertionPoint);
+		txt.setSelectionEnd(idxInsertionPoint);
+		
+		if (candidates.size() > 1)
+		{
+			for (int i = listeners.size()-1; i >= 0; --i)
+			{
+				listeners.get(i).inputCompletionCandidates(this, candidates.toArray(new String[0]));
+			}
+		}
+		
 	}
 	
 	protected void onHistoryUp()
@@ -258,9 +335,14 @@ public class InputArea extends JScrollPane
 		setInsertionPointEnd();
 	}
 	
+	public void setCompletor(Completor completor)
+	{
+		this.completor = completor;
+	}
+	
 	protected void alert()
 	{
-		// do nothing
+		Toolkit.getDefaultToolkit().beep();
 	}
 	
 	protected void processModifierKey(TextModifier mod)
@@ -377,10 +459,9 @@ public class InputArea extends JScrollPane
 			}
 		}
 		
-		InputEvent e = new InputEvent(this, lines);
 		for (int i = listeners.size()-1; i >= 0; --i)
 		{
-			listeners.get(i).inputPerformed(e);
+			listeners.get(i).inputPerformed(this, lines);
 		}
 		
 	}
