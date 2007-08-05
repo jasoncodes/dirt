@@ -418,7 +418,7 @@ public class LogPane extends JScrollPane
 		}
 		
 		System.err.println("LogPane append failed: " + message);
-		System.err.println("Content that caused exception: " + content);
+		System.err.println("Content that caused exception:\n" + new ByteBuffer(content).toHexString(true));
 		if (handleAppendErrorDepth > 0)
 		{
 			throw new RuntimeException(ex);

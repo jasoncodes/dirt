@@ -1,11 +1,19 @@
-acceleration when scrolling logpane
+/oper shows in logs for JFC UI
+
+MRJAdapter for JFC client UI
+
+save/restore frame rect
+	use java.util.prefs.Preferences
+	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
+
+aliases and bindings
 
 if text is outputted when not scrolled to bottom we should have some visual indication
 	overlay a grey arrow pointing down on the bottom right of the view?
 		http://www.javalobby.org/java/forums/t19779.html#91840587
+		http://java.sun.com/j2se/1.4.2/docs/api/java/awt/Polygon.html
 
-save/restore frame rect
-	use java.util.prefs.Preferences
+acceleration when scrolling logpane
 
 keep selection when doing addTextLine
 

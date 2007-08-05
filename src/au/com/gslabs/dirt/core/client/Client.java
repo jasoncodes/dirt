@@ -847,13 +847,14 @@ public class Client
 	{
 		if (ensureConnected(context, null))
 		{
-			String srvCmd = (type == ChatMessageType.ACTION) ? "PUBACTION" : "PUBMSG";
 			if (nickname == null)
 			{
+				String srvCmd = (type == ChatMessageType.ACTION) ? "PUBACTION" : "PUBMSG";
 				sendToServer(context, srvCmd, message);
 			}
 			else
 			{
+				String srvCmd = (type == ChatMessageType.ACTION) ? "PRIVACTION" : "PRIVMSG";
 				ByteBuffer data = new ByteBuffer(nickname.length()+1+message.length());
 				data.append(nickname);
 				data.append((byte)0);
