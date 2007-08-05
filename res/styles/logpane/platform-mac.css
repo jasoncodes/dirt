@@ -4,9 +4,9 @@ body
 	font-size: 13pt;
 }
 /* No font-weight or font-style support with Monaco */
-/* Fake strong by increasing the font size */
 strong, b
 {
-	font-size: 14.5pt;
-	font-weight: 900;
+	font-size: 14pt;
+	font-weight: normal;
+	font-style: italic;
 }
