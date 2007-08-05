@@ -735,12 +735,20 @@ public class Client
 						(cmd == ServerCommand.PRIVMSG || cmd == ServerCommand.PRIVACTION) ?
 							ChatMessageVisibility.PRIVATE :
 							ChatMessageVisibility.PUBLIC;
-					final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
+					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
+					final String nick = tokens.get(0).toString();
+					final ByteBuffer message = tokens.get(1);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
 							{
-								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.INBOUND, type, visibility);
+								if (visibility == ChatMessageVisibility.PUBLIC &&
+								    nick.equals(getNickname()))
+								{
+									// server does not double echo our own public messages
+									l.clientChatMessage(Client.this, context, nick, message, MessageDirection.OUTBOUND, type, visibility);
+								}
+								l.clientChatMessage(Client.this, context, nick, message, MessageDirection.INBOUND, type, visibility);
 							}
 						});
 				}
@@ -758,7 +766,7 @@ public class Client
 						{
 							public void dispatchEvent(ClientListener l)
 							{
-								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.OUTBOUND, type, ChatMessageVisibility.PRIVATE);
+								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1), MessageDirection.OUTBOUND, type, ChatMessageVisibility.PRIVATE);
 							}
 						});
 					
@@ -814,14 +822,6 @@ public class Client
 		socket.send(data);
 	}
 	
-	public void processConsoleInput(String context, String[] lines)
-	{
-		for (String line : lines)
-		{
-			processConsoleInput(context, line);
-		}
-	}
-	
 	public void authenticate(String context, String authentication, boolean forAdmin)
 	{
 		String cmd = forAdmin ? "OPER" : "AUTH";
@@ -841,78 +841,58 @@ public class Client
 		}
 	}
 	
-	public boolean isConsoleInputHistorySafe(String line)
+	/**
+	 * @param nickname Nick to send message to. null for a public message
+	 */
+	public void sendChatMessage(final String context, final String nickname, final ChatMessageType type, final ByteBuffer message)
 	{
-		return !(TextUtil.splitQuotedHeadTail(line)[0].equalsIgnoreCase("/oper"));
-	}
-	
-	public void processConsoleInput(final String context, final String line)
-	{
-		
-		if (!line.startsWith("/"))
+		if (ensureConnected(context, null))
 		{
-			throw new IllegalArgumentException("Expected input to start with slash");
-		}
-		final String org_cmd, params;
-		final int idx = line.indexOf(" ");
-		if (idx < 0)
-		{
-			org_cmd = line.substring(1);
-			params = "";
-		}
-		else
-		{
-			org_cmd = line.substring(1, idx);
-			params = line.substring(idx+1);
-		}
-		final String cmd = org_cmd.toUpperCase().trim();
-		
-		class ConsoleInputPreprocessor implements EventSource<ClientListener>
-		{
-			public boolean done = false;
-			public void dispatchEvent(ClientListener l)
+			String srvCmd = (type == ChatMessageType.ACTION) ? "PUBACTION" : "PUBMSG";
+			if (nickname == null)
 			{
-				done |= l.clientPreprocessConsoleInput(Client.this, context, cmd, params);
+				sendToServer(context, srvCmd, message);
+			}
+			else
+			{
+				ByteBuffer data = new ByteBuffer(nickname.length()+1+message.length());
+				data.append(nickname);
+				data.append((byte)0);
+				data.append(message);
+				sendToServer(context, srvCmd, data);
 			}
 		}
-		ConsoleInputPreprocessor cip = new ConsoleInputPreprocessor();
-		listeners.dispatchEvent(cip, true);
-		if (cip.done)
-		{
-			return;
-		}
-		
-		if (cmd.length() > 3 && cmd.substring(0, 3).equals("ME'"))
-		{
-			processConsoleInput(context, "/me " + org_cmd.substring(2) + " " + params);
-			return;
-		}
-		
-		final ConsoleCommand cmdEnum;
-		
-		try
-		{
-			cmdEnum = ConsoleCommand.valueOf(cmd);
-		}
-		catch (Exception ex)
-		{
-			notification(context, NotificationSeverity.ERROR, cmd, "Unknown command");
-			return;
-		}
-		
-		if (!processConsoleCommand(context, cmdEnum, params))
-		{
-			notification(context, NotificationSeverity.ERROR, cmd, "Not implemented");
-		}
-		
 	}
 	
-	protected boolean ensureConnected(String context, ConsoleCommand cmd)
+	/**
+	 * @param message Away message. null to cancel away
+	 */
+	public void setAway(String context, String message)
 	{
-		return ensureConnected(context, (cmd != null && cmd != ConsoleCommand.SAY) ? cmd.toString() : null);
+		if (ensureConnected(context, "AWAY"))
+		{
+			String serverCmd = (message != null && message.length() > 0) ? "AWAY" : "BACK";
+			sendToServer(context, serverCmd, new ByteBuffer(message));
+		}
 	}
 	
-	protected boolean ensureConnected(String context, String cmdString)
+	public void whoIs(String context, String nickname)
+	{
+		if (ensureConnected(context, "WHOIS"))
+		{
+			sendToServer(context, "WHOIS", new ByteBuffer(nickname));
+		}
+	}
+	
+	public void quit(String context, String message)
+	{
+		if (ensureConnected(context, "QUIT"))
+		{
+			sendToServer(context, "QUIT", new ByteBuffer(message));
+		}
+	}
+	
+	public boolean ensureConnected(String context, String cmdString)
 	{
 		if (isConnected())
 		{
@@ -936,212 +916,6 @@ public class Client
 			notification(context, NotificationSeverity.ERROR, null, "Invalid "+cmdString+" response from server");
 			return false;
 		}
-	}
-	
-	protected enum ConsoleCommand
-	{
-		SAY,
-		ME,
-		MY,
-		HELP,
-		CONNECT,
-		NICK,
-		MSG,
-		MSGME,
-		OPER,
-		QUIT,
-		AWAY,
-		BACK,
-		WHO,
-		WHOIS,
-		DISCONNECT,
-		RECONNECT
-	}
-	
-	protected boolean processConsoleCommand(final String context, final ConsoleCommand cmd, final String params)
-	{
-		
-		switch (cmd)
-		{
-			
-			case NICK:
-				if (ensureConnected(context, cmd))
-				{
-					if (params.length() > 0)
-					{
-						setNickname(context, params);
-					}
-					else
-					{
-						listeners.dispatchEvent(new EventSource<ClientListener>()
-							{
-								public void dispatchEvent(ClientListener l)
-								{
-									l.clientUserNick(Client.this, getNickname(), getNickname());
-								}
-							});
-					}
-				}
-				return true;
-				
-			case AWAY:
-			case BACK:
-				if (ensureConnected(context, cmd))
-				{
-					ByteBuffer serverParams = new ByteBuffer(
-						(cmd == ConsoleCommand.AWAY) ?
-							params :
-							"");
-					String serverCmd = params.length() > 0 ? "AWAY" : "BACK";
-					sendToServer(context, serverCmd, serverParams);
-				}
-				return true;
-				
-			case WHO:
-				if (ensureConnected(context, cmd))
-				{
-					String list = "";
-					for (Contact contact : contacts.values())
-					{
-						if (!contact.nickname.equals(getNickname()) && contact.status != UserStatus.OFFLINE)
-						{
-							if (list.length() > 0)
-							{
-								list += ", ";
-							}
-							list += contact.nickname;
-						}
-					}
-					if (list.length() < 1)
-					{
-						list = "(Nobody)";
-					}
-					notification(context, NotificationSeverity.INFO, null, "Chatting with: " + list);
-				}
-				return true;
-			
-			case QUIT:
-				if (ensureConnected(context, cmd))
-				{
-					sendToServer(context, "QUIT", new ByteBuffer(params));
-				}
-				return true;
-				
-			case WHOIS:
-				if (ensureConnected(context, cmd))
-				{
-					sendToServer(context, "WHOIS", new ByteBuffer(params));
-				}
-				return true;
-				
-			case OPER:
-				if (ensureConnected(context, cmd))
-				{
-					authenticate(context, params, true);
-				}
-				return true;
-			
-			case DISCONNECT:
-				disconnect(context);
-				return true;
-			
-			case RECONNECT:
-				reconnect(context);
-				return true;
-			
-			case CONNECT:
-				connect(context, new URL(params, "dirt", 11626));
-				return true;
-				
-			case SAY:
-			case ME:
-				if (!isConnected())
-				{
-					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
-				}
-				else
-				{
-					final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-					String srvCmd = (cmd == ConsoleCommand.ME) ? "PUBACTION" : "PUBMSG";
-					sendToServer(context, srvCmd, new ByteBuffer(params));
-					listeners.dispatchEvent(new EventSource<ClientListener>()
-						{
-							public void dispatchEvent(ClientListener l)
-							{
-								l.clientChatMessage(Client.this, context, getNickname(), params, MessageDirection.OUTBOUND, type, ChatMessageVisibility.PUBLIC);
-							}
-						});
-				}
-				return true;
-				
-			case MSG:
-			case MSGME:
-				if (!isConnected())
-				{
-					notification(context, NotificationSeverity.ERROR, cmd.toString(), "Not connected");
-				}
-				else
-				{
-					String[] tokens = TextUtil.splitQuotedHeadTail(params);
-					if (tokens.length < 2 || tokens[0].length() < 1 || tokens[1].length() < 1)
-					{
-						notification(context, NotificationSeverity.ERROR, cmd.toString(), "Insufficient parameters");
-					}
-					else
-					{
-						final ChatMessageType type = (cmd == ConsoleCommand.MSGME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-						String srvCmd = (cmd == ConsoleCommand.MSGME) ? "PRIVACTION" : "PRIVMSG";
-						ByteBuffer data = new ByteBuffer(params.length());
-						data.append(tokens[0]);
-						data.append((byte)0);
-						data.append(tokens[1]);
-						sendToServer(context, srvCmd, data);
-					}
-				}
-				return true;
-				
-			case MY:
-				processConsoleInput(context, "/me 's " + params);
-				return true;
-				
-			case HELP:
-				{
-					
-					final SortedSet<String> cmds = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-					
-					for (ConsoleCommand entry : ConsoleCommand.class.getEnumConstants())
-					{
-						cmds.add(entry.toString());
-					}
-					
-					listeners.dispatchEvent(new EventSource<ClientListener>()
-						{
-							public void dispatchEvent(ClientListener l)
-							{
-								for (String entry : l.getClientSupportedCommands(Client.this))
-								{
-									cmds.add(entry);
-								}
-							}
-						}, true);
-					
-					StringBuilder buff = new StringBuilder();
-					buff.append("Supported commands:");
-					for (String entry : cmds)
-					{
-						buff.append(" ");
-						buff.append(entry);
-					}
-					notification(context, NotificationSeverity.INFO, cmd.toString(), buff.toString());
-					
-				}
-				return true;
-			
-			default:
-				return false;
-				
-		}
-		
 	}
 	
 	protected void notification(final String context, final NotificationSeverity severity, final String type, final String message)

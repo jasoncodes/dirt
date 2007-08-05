@@ -18,6 +18,7 @@ public class ClientCLI
 	}
 	
 	protected Client client;
+	protected ClientAdapter clientAdapter;
 	protected ConsoleReader console;
 	protected PrintWriter out;
 	protected boolean bailingOut;
@@ -45,7 +46,7 @@ public class ClientCLI
 		}
 		
 		@Override
-		public boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
+		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
 		{
 			
 			switch (cmd)
@@ -126,7 +127,7 @@ public class ClientCLI
 		@Override
 		public void addToHistory(String buffer)
 		{
-			if (client.isConsoleInputHistorySafe(buffer))
+			if (clientAdapter.isConsoleInputHistorySafe(buffer))
 			{
 				super.addToHistory(buffer);
 			}
@@ -163,7 +164,8 @@ public class ClientCLI
 			passwordMode = false;
 			
 			client = new Client();
-			client.addClientListener(new ClientAdapter(), new SameThreadInvoker());
+			clientAdapter = new ClientAdapter();
+			client.addClientListener(clientAdapter, new SameThreadInvoker());
 			console.addCompletor(new MyCompletor(new ContactNickCompletor(client)));
 			
 			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);
@@ -194,13 +196,8 @@ public class ClientCLI
 					{
 						line = "/SAY " + line;
 					}
-					client.processConsoleInput(null, line);
+					clientAdapter.processConsoleInput(client, null, line);
 				}
-			}
-			
-			if (!bailingOut)
-			{
-				client.processConsoleInput(null, "/EXIT");
 			}
 			
 		}

@@ -24,8 +24,6 @@ double click to select word
 
 Cmd-F to search log text
 
-move ConsoleCommand and processConsoleInput into DefaultClientAdapter
-
 ensure exceptions are handled in Client for console input and server response
 
 clear selection and focus input after Cmd-C in logpane
@@ -39,6 +37,7 @@ resizing window thinner does not keep scroll bar at bottom if text rewraps
 is it possible to use a drawer on the Mac to display the nicklist?
 	http://developer.apple.com/samplecode/JSheets/index.html gives hope
 
+show a confirmation pane when closing a MainFrame with an option to set the quit message
 
 http://en.wikipedia.org/wiki/STUN
 

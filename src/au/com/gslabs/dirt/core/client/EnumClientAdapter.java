@@ -12,7 +12,8 @@ public abstract class EnumClientAdapter<SupportedCommand extends Enum<SupportedC
 		this.enumType = enumType;
 	}
 	
-	public final String[] getClientSupportedCommands(Client source)
+	@Override
+	protected final String[] getClientSupportedCommands(Client source)
 	{
 		SupportedCommand[] cmds = enumType.getEnumConstants();
 		ArrayList<String> names = new ArrayList<String>(cmds.length);
@@ -25,7 +26,8 @@ public abstract class EnumClientAdapter<SupportedCommand extends Enum<SupportedC
 	
 	protected abstract boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params);
 
-	public final boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params)
+	@Override
+	protected final boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params)
 	{
 		
 		SupportedCommand cmdEnum;

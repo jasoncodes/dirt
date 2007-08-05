@@ -22,6 +22,7 @@ public class MainFrame extends JFrame
 	static final JMenuBar mainMenuBar = new JMenuBar();	
 	protected JMenu fileMenu, editMenu; 
 	protected Client client;
+	protected DefaultClientAdapter clientAdapter;
 	
 	public static void init()
 	{
@@ -112,7 +113,8 @@ public class MainFrame extends JFrame
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
 		
 		client = new Client();
-		client.addClientListener(new ClientAdapter(), new JFCInvoker());
+		clientAdapter = new ClientAdapter();
+		client.addClientListener(clientAdapter, new JFCInvoker());
 		
 		txtInput.setCompletor(new ContactNickCompletor(client));
 		
@@ -226,7 +228,7 @@ public class MainFrame extends JFrame
 					return true;
 					
 				case EXIT:
-					source.processConsoleInput(context, "/QUIT " + params);
+					processConsoleInput(source, context, "/QUIT " + params);
 					System.exit(0);
 					return true;
 				
@@ -318,7 +320,7 @@ public class MainFrame extends JFrame
 	protected void txtInput_Input(String[] lines)
 	{
 		txtLog.clearRedLine();
-		client.processConsoleInput(null, lines);
+		clientAdapter.processConsoleInput(client, null, lines);
 	}
 	
 	protected void txtPassword_Input(String password)
@@ -331,7 +333,7 @@ public class MainFrame extends JFrame
 	{
 		if (client.isConnected())
 		{
-			client.processConsoleInput(null, "/QUIT Closing");
+			client.quit(null, "Closing");
 		}
 		System.exit(0);
 	}
@@ -424,7 +426,7 @@ public class MainFrame extends JFrame
 	{
 		if (client.isConnected())
 		{
-			client.processConsoleInput(null, "/QUIT Closing");
+			clientAdapter.processConsoleInput(client, null, "/QUIT Closing");
 		}
 		setVisible(false);
 		dispose();

@@ -64,7 +64,7 @@ public class ByteBuffer
 	{
 		try
 		{
-			this.data = text.getBytes("UTF-8");
+			this.data = (text != null) ? text.getBytes("UTF-8") : new byte[0];
 			this.offset = 0;
 			this.length = data.length;
 			this.shared = false;
