@@ -4,9 +4,6 @@ if text is outputted when not scrolled to bottom we should have some visual indi
 	overlay a grey arrow pointing down on the bottom right of the view?
 		http://www.javalobby.org/java/forums/t19779.html#91840587
 
-sane initial frame position
-	GraphicsEnvironment.getMaximumWindowBounds()
-
 save/restore frame rect
 	use java.util.prefs.Preferences
 

@@ -129,6 +129,15 @@ public class UIUtil
 		rect.x = rectMax.x + (rectMax.width-width)*7/8;
 		rect.y = rectMax.y + (rectMax.height-height)*9/10;
 		
+		// if the gap on the bottom is bigger than the gap on the right
+		int gapBottom = (rectMax.y+rectMax.height)-(rect.y+rect.height);
+		int gapRight = (rectMax.x+rectMax.width)-(rect.x+rect.width);
+		if (gapBottom > gapRight)
+		{
+			// make the bottom gap match the right gap
+			rect.y = rectMax.y+rectMax.height-rect.height - gapRight;
+		}
+		
 		return rect;
 	}
 	
