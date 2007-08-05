@@ -119,10 +119,16 @@ public class UIUtil
 	 */
 	public static Rectangle getDefaultWindowBounds(int width, int height)
 	{
+		
 		Rectangle rectMax = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		
+		width = Math.min(width, rectMax.width);
+		height = Math.min(height, rectMax.height);
+		
 		Rectangle rect = new Rectangle(width, height);
 		rect.x = rectMax.x + (rectMax.width-width)*7/8;
 		rect.y = rectMax.y + (rectMax.height-height)*9/10;
+		
 		return rect;
 	}
 	
