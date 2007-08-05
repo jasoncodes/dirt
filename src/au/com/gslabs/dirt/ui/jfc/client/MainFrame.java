@@ -177,7 +177,6 @@ public class MainFrame extends JFrame
 	protected enum SupportedCommand
 	{
 		CLEAR,
-		MINTOTRAY,
 		EXIT
 	}
 	
@@ -223,10 +222,6 @@ public class MainFrame extends JFrame
 					txtLog.clearText();
 					return true;
 				
-				case MINTOTRAY:
-					doMinToTray();
-					return true;
-					
 				case EXIT:
 					processConsoleInput(source, context, "/QUIT " + params);
 					System.exit(0);
@@ -338,6 +333,10 @@ public class MainFrame extends JFrame
 		System.exit(0);
 	}
 	
+	// this code needs to be possibly split off into it's own class in dirt.lib.ui.jfc
+	// and updated to initially hide the MainFrame, restore it on clicking, provide
+	// status updates in the tooltip, flash when something happens, etc
+	/*
 	protected void doMinToTray()
 	{
 	
@@ -421,6 +420,7 @@ public class MainFrame extends JFrame
 			UIUtil.stealFocus(this);
 		}
 	}
+	*/
 	
 	protected void onClose()
 	{
