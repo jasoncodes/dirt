@@ -114,6 +114,18 @@ public class UIUtil
 		}
 	}
 	
+	/**
+	 * Returns window bounds suitable for the specified width and height
+	 */
+	public static Rectangle getDefaultWindowBounds(int width, int height)
+	{
+		Rectangle rectMax = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Rectangle rect = new Rectangle(width, height);
+		rect.x = rectMax.x + (rectMax.width-width)*7/8;
+		rect.y = rectMax.y + (rectMax.height-height)*9/10;
+		return rect;
+	}
+	
 	protected static MacDockBouncer dockBouncer = null;
 		
 	public static void alert(Frame frame)

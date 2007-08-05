@@ -60,6 +60,7 @@
 			deprecation="on">
 			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
+		<copy todir="${build}/onejar" file="${lib}/one-jar/doc/one-jar-license.txt" />
 	</target>
 	
 	<target name="jar-main" depends="compile-main">
@@ -114,7 +115,7 @@
 	<target name="jar" depends="jar-main,compile-onejar">
 		<mkdir dir="${dist}" />
 		<jar jarfile="${dist}/Dirt.jar">
-			<fileset dir="${build}/onejar" excludes="doc/**" />
+			<fileset dir="${build}/onejar" />
 			<fileset dir="${build}">
 				<include name="main/main.jar" />
 			</fileset>
