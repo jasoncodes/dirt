@@ -2,9 +2,12 @@ package au.com.gslabs.dirt.ui.common.client;
 
 import au.com.gslabs.dirt.core.client.*;
 import java.util.*;
+import au.com.gslabs.dirt.lib.util.Duration;
 
 public class ContactNickCompletor implements au.com.gslabs.dirt.lib.ui.common.Completor
 {
+	
+	private static final long OFFLINE_GRACE_MILLISECONDS = 1000 * 60 * 5; // 5 minutes
 	
 	protected Client client;
 	
@@ -37,11 +40,15 @@ public class ContactNickCompletor implements au.com.gslabs.dirt.lib.ui.common.Co
 		}
 		toFind = toFind.toLowerCase();
 		
-		for (String nickname : client.getContacts().keySet())
+		for (Contact contact : client.getContacts().values())
 		{
-			if (nickname.toLowerCase().startsWith(toFind))
+			Duration offlineDuration = contact.getOfflineDuration();
+			if (offlineDuration == null || offlineDuration.getMilliseconds() <= OFFLINE_GRACE_MILLISECONDS)
 			{
-				candidates.add(nickname);
+				if (contact.getNickname().toLowerCase().startsWith(toFind))
+				{
+					candidates.add(contact.getNickname());
+				}
 			}
 		}
 		

@@ -109,21 +109,6 @@ public class Contact implements Comparable<Contact>
 		return sb.toString();
 	}
 	
-	public String getNickname()
-	{
-		return nickname;
-	}
-	
-	public UserStatus getStatus()
-	{
-		return status;
-	}
-	
-	public String getAwayMessage()
-	{
-		return awayMessage;
-	}
-	
 	void parseWhoisResponse(Map<String,String> data)
 	{
 		
@@ -175,11 +160,43 @@ public class Contact implements Comparable<Contact>
 		
 	}
 	
+	public String getNickname()
+	{
+		return nickname;
+	}
+	
+	public UserStatus getStatus()
+	{
+		return status;
+	}
+	
+	public String getAwayMessage()
+	{
+		return awayMessage;
+	}
+	
 	public Duration getAwayDuration()
 	{
 		return (awayTimeLocal != null) ?
 			new Duration(awayTimeLocal, new Date()) :
 			null;
+	}
+	
+	public Date getPartTimeLocal()
+	{
+		return partTimeLocal;
+	}
+	
+	public Duration getOfflineDuration()
+	{
+		if (status == UserStatus.OFFLINE && partTimeLocal != null)
+		{
+			return new Duration(partTimeLocal, new Date());
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 }

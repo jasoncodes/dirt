@@ -24,10 +24,6 @@ double click to select word
 
 Cmd-F to search log text
 
-signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
-	definitely a server bug (should be outputting unix time)
-	probably the ToGMT() call on Server.cpp:1212
-
 move ConsoleCommand and processConsoleInput into DefaultClientAdapter
 
 ensure exceptions are handled in Client for console input and server response
@@ -40,12 +36,14 @@ focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
 
+is it possible to use a drawer on the Mac to display the nicklist?
+	http://developer.apple.com/samplecode/JSheets/index.html gives hope
 
 
 http://en.wikipedia.org/wiki/STUN
 
 Mac OS X integration
-	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html
+	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html#//apple_ref/doc/uid/TP40001909-212120
 	http://homepage.mac.com/sroy/mrjadapter/
 
 inputarea needs colour popup on Cmd-K
