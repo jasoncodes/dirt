@@ -35,6 +35,7 @@ public class MainFrame extends JFrame
 	JPasswordField txtPassword;
 	ContactListModel contacts;
 	JList lstContacts;
+	JComponent activeInputControl;
 	
 	private MainFrame()
 	{
@@ -111,6 +112,7 @@ public class MainFrame extends JFrame
 			});
 		
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
+		activeInputControl = txtInput;
 		
 		client = new Client();
 		clientAdapter = new ClientAdapter();
@@ -124,12 +126,12 @@ public class MainFrame extends JFrame
 				@Override
 				public void windowActivated(WindowEvent e)
 				{
-					txtInput.requestFocusInWindow();
+					activeInputControl.requestFocusInWindow();
 				}
 				@Override
 				public void windowGainedFocus(WindowEvent e)
 				{
-					txtInput.requestFocusInWindow();
+					activeInputControl.requestFocusInWindow();
 				}
 				
 				@Override
@@ -155,7 +157,7 @@ public class MainFrame extends JFrame
 		
 		setSize(850, 330);
 		setVisible(true);
-		txtInput.requestFocusInWindow();
+		activeInputControl.requestFocusInWindow();
 		
 	}
 	
@@ -167,6 +169,7 @@ public class MainFrame extends JFrame
 		txtPassword.setText("");
 		getContentPane().remove(txtOld);
 		getContentPane().add(txtNew, BorderLayout.SOUTH);
+		activeInputControl = txtNew;
 		getContentPane().validate();
 		if (UIUtil.getActiveWindow() == this)
 		{
@@ -237,6 +240,7 @@ public class MainFrame extends JFrame
 		@Override
 		public void clientNeedNickname(Client source, String defaultNick)
 		{
+			setPasswordMode(false);
 			String prompt = "/nick " + defaultNick;
 			txtInput.setText(prompt, 6, prompt.length());
 		}

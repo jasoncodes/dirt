@@ -6,8 +6,6 @@ if text is outputted when not scrolled to bottom we should have some visual indi
 	overlay a grey arrow pointing down on the bottom right of the view?
 		http://www.javalobby.org/java/forums/t19779.html#91840587
 
-ensure all focusing of input controls work with password field too (abstract it)
-
 keep selection when doing addTextLine
 
 nicklist
