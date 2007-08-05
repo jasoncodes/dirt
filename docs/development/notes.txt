@@ -1,12 +1,14 @@
-resizing is slow with lots of text
+get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
 
-double click to select word
+acceleration when scrolling logpane
 
-Cmd-F to search log text
+if text is outputted when not scrolled to bottom we should have some visual indication
+	overlay a grey arrow pointing down on the bottom right of the view?
+		http://www.javalobby.org/java/forums/t19779.html#91840587
 
 ensure all focusing of input controls work with password field too (abstract it)
 
-get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
+keep selection when doing addTextLine
 
 nicklist
 	JSplitPane
@@ -16,12 +18,11 @@ nicklist
 	double click
 	preserve selections when indexes change
 
-keep selection when doing addTextLine
+resizing is slow with lots of text
 
-acceleration when scrolling logpane
+double click to select word
 
-if text is outputted when not scrolled to bottom we should have some visual indication
-	overlay a grey arrow pointing down on the bottom right of the view?
+Cmd-F to search log text
 
 signed on at display is 10 hours slow on outpost, 10 hours fast on jasonbookpro
 	definitely a server bug (should be outputting unix time)
