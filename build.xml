@@ -9,14 +9,6 @@
 	<property name="res" location="res" />
 	<property name="lib" location="lib" />
 	<property name="apple" location="/System/Library/Java/" />
-
-	<loadproperties srcFile="${res}/strings.properties">
-		<filterchain>
-			<linecontains>
-				<contains value="version=" />
-			</linecontains>
-		</filterchain>
-	</loadproperties>
 	
 	<taskdef
 		name="jarbundler"
@@ -71,6 +63,7 @@
 	</target>
 	
 	<target name="jar-main" depends="compile-main">
+		
 		<mkdir dir="${build}" />
 		<delete dir="${build}/main-scratch" />
 		<mkdir dir="${build}/main-scratch" />
@@ -95,15 +88,27 @@
 		<copy todir="${build}/main-scratch/res/xml/xhtml/dtd">
 			<FileSet dir="${res}/xml/xhtml/dtd/" />
 		</copy>
+		
+		<copy file="${res}/strings.properties" todir="${build}/main-scratch/res" />
+		<java
+			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
+			classpath="${build}/main-scratch"
+			failonerror="true"
+			>
+			<arg value="--append-source-date-to-version" />
+			<arg value="${src}" />
+			<arg value="${build}/main-scratch/res/strings.properties" />
+		</java>
+		
 		<mkdir dir="${build}/main" />
 		<jar jarfile="${build}/main/main.jar">
 			<fileset dir="${build}/main-scratch" />
-			<fileset file="${res}/strings.properties" />
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="au.com.gslabs.dirt.Dirt" />
 			</manifest>
 		</jar>
+		
 	</target>
 	
 	<target name="jar" depends="jar-main,compile-onejar">
@@ -115,7 +120,6 @@
 			</fileset>
 			<fileset dir="${lib}/..">
 				<include name="lib/preferences.properties" />
-				<include name="lib/retroweaver/release/retroweaver-rt-1.2.jar" />
 				<include name="lib/common/jline-0.9.91.jar" />
 				<include name="lib/common/jzlib-1.0.7.jar" />
 				<include name="lib/mac/jdic_misc.jar" />
@@ -152,6 +156,13 @@
 	</target>
 
 	<target name="mac-bundle" depends="jar" if="isMac">
+		<loadproperties srcFile="${build}/main-scratch/res/strings.properties">
+			<filterchain>
+				<linecontains>
+					<contains value="version=" />
+				</linecontains>
+			</filterchain>
+		</loadproperties>
 		<delete dir="${dist}/Dirt.app" />
 		<jarbundler
 			dir="${dist}"

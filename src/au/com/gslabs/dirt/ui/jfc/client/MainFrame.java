@@ -1,6 +1,5 @@
 package au.com.gslabs.dirt.ui.jfc.client;
 
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.awt.*;
 import java.awt.event.*;
@@ -41,7 +40,7 @@ public class MainFrame extends JFrame
 	{
 		
 		super("");
-		resbundle = ResourceBundle.getBundle("strings", Locale.getDefault());
+		resbundle = ResourceBundle.getBundle("res/strings");
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		

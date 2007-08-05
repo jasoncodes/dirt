@@ -1,5 +1,3 @@
-get max modified date from all .java files in src/ and use that in version string instead of jar date (UTC)
-
 acceleration when scrolling logpane
 
 if text is outputted when not scrolled to bottom we should have some visual indication

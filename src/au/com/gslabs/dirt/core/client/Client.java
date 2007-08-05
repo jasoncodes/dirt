@@ -155,8 +155,7 @@ public class Client
 				}
 			}, true);
 		
-		String version = au.com.gslabs.dirt.Dirt.VERSION;
-		version += " " + TextUtil.formatDateTime(FileUtil.getJarBuildDate(), false, true);
+		String version = ResourceBundle.getBundle("res/strings").getString("version");
 		
 		if (extras.size() > 0)
 		{

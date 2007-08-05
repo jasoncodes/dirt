@@ -168,7 +168,7 @@ public class ClientCLI
 			client.addClientListener(clientAdapter, new SameThreadInvoker());
 			console.addCompletor(new MyCompletor(new ContactNickCompletor(client)));
 			
-			output("*** Dirt Secure Chat Client " + au.com.gslabs.dirt.Dirt.VERSION);
+			output("*** " + ResourceBundle.getBundle("res/strings").getString("title"));
 			
 			bailingOut = false;
 			
