@@ -75,6 +75,11 @@ public class MainFrame extends JFrame
 					txtLog.appendTextLine(sb.toString());
 				}
 				
+				public boolean inputCanAddToHistory(InputArea source, String line)
+				{
+					return clientAdapter.isConsoleInputHistorySafe(line);
+				}
+				
 			});
 		
 		txtPassword = new JPasswordField();

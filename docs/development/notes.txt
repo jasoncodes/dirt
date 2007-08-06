@@ -1,10 +1,10 @@
-/oper shows in logs for JFC UI
-
-MRJAdapter for JFC client UI
-
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
+
+MRJAdapter for JFC client UI
+
+query windows
 
 aliases and bindings
 
@@ -52,13 +52,16 @@ Mac OS X integration
 	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html#//apple_ref/doc/uid/TP40001909-212120
 	http://homepage.mac.com/sroy/mrjadapter/
 
+Spellcheck on at least Mac
+	Google JavaSpellingFramework.sit
+
 inputarea needs colour popup on Cmd-K
 
 keyboard support for scrolling logpane (pgup/down in inputarea)
 
-bold doesn't work with Monaco. Maybe we could use http://dejavu.sourceforge.net/ or similar instead?
-
-monospace font preference not working on Windows
-
 indented wrapping of long lines
 	http://groups.google.com.au/group/comp.lang.java.gui/browse_thread/thread/db1d177fe760cb77
+
+detection of sleep on at least mac and win32
+
+auto-reconnect on resume from sleep && network available

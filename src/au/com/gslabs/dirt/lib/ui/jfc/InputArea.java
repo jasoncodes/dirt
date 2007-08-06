@@ -20,6 +20,7 @@ public class InputArea extends JScrollPane
 	{
 		public void inputPerformed(InputArea source, String[] lines);
 		public void inputCompletionCandidates(InputArea source, String[] candidates);
+		public boolean inputCanAddToHistory(InputArea source, String line);
 	}
 	
 	JTextArea txt;
@@ -445,7 +446,10 @@ public class InputArea extends JScrollPane
 		
 		for (int i = 0; i < lines.length; ++i)
 		{
-			addToHistory(lines[i]);
+			if (canAddToHistory(lines[i]))
+			{
+				addToHistory(lines[i]);
+			}
 		}
 		
 		if (commandPrefix != null && defaultCommand != null)
@@ -464,6 +468,16 @@ public class InputArea extends JScrollPane
 			listeners.get(i).inputPerformed(this, lines);
 		}
 		
+	}
+	
+	protected boolean canAddToHistory(String line)
+	{
+		boolean safe = true;
+		for (int i = listeners.size()-1; i >= 0; --i)
+		{
+			safe &= listeners.get(i).inputCanAddToHistory(this, line);
+		}
+		return safe;
 	}
 	
 	public String getDefaultCommand()
