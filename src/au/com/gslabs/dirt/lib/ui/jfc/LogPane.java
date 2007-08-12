@@ -41,6 +41,7 @@ public class LogPane extends JScrollPane
 	protected ArrayList<LinkListener> listeners;
 	protected boolean lastIsAtEnd;
 	protected int redLine;
+	protected Overlay overlay;
 	
 	public LogPane()
 	{
@@ -49,6 +50,7 @@ public class LogPane extends JScrollPane
 		
 		lastIsAtEnd = true;
 		redLine = -1;
+		overlay = new Overlay();
 		
 		editor = createEditor();
 		kit = (XHTMLEditorKit)editor.getEditorKit();
@@ -74,8 +76,215 @@ public class LogPane extends JScrollPane
 		
 	}
 	
+	protected enum OverlayArrowPulseState
+	{
+		DRIVE,
+		HOLD,
+		DECAY
+	}
+	
+	protected class Overlay
+	{
+		
+		protected int refcount = 0;
+		protected boolean arrow_visible = false;
+		protected float arrow_pulse_pos = 0f;
+		protected OverlayArrowPulseState arrow_pulse_state;
+		protected javax.swing.Timer arrow_timer = new javax.swing.Timer(0, new ArrowTimerListener());
+		
+		static final int arrow_delay_drive = 50;
+		static final int arrow_delay_hold = 500;
+		static final int arrow_delay_decay = 50;
+		
+		static final float arrow_cR1 = 0.6f;
+		static final float arrow_cG1 = 0.6f;
+		static final float arrow_cB1 = 0.6f;
+		static final float arrow_a1 = 0.3f;
+		
+		static final float arrow_cR2 = 0.9f;
+		static final float arrow_cG2 = 0.9f;
+		static final float arrow_cB2 = 0.2f;
+		static final float arrow_a2 = 0.8f;
+		
+		static final float arrow_drive_increment = 0.075f;
+		static final float arrow_drive_multiplier = 1.200f;
+		
+		static final float arrow_decay_increment = -0.020f;
+		static final float arrow_decay_multiplier = 0.980f;
+		
+		protected class ArrowTimerListener implements ActionListener
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				switch (arrow_pulse_state)
+				{
+					
+					case DRIVE:
+						if (arrow_pulse_pos < 1f)
+						{
+							arrow_pulse_pos += arrow_drive_increment;
+							arrow_pulse_pos *= arrow_drive_multiplier;
+						}
+						if (arrow_pulse_pos >= 1f)
+						{
+							arrow_pulse_pos = 1f;
+							arrow_pulse_state = OverlayArrowPulseState.HOLD;
+							arrow_timer.setDelay(arrow_delay_hold);
+						}
+						break;
+						
+					case HOLD:
+						arrow_pulse_state = OverlayArrowPulseState.DECAY;
+						arrow_timer.setDelay(arrow_delay_decay);
+						break;
+						
+					case DECAY:
+						if (arrow_pulse_pos > 0f)
+						{
+							arrow_pulse_pos += arrow_decay_increment;
+							arrow_pulse_pos *= arrow_decay_multiplier;
+						}
+						if (arrow_pulse_pos <= 0f)
+						{
+							arrow_pulse_pos = 0f;
+							arrow_timer.stop();
+						}
+						break;
+						
+				}
+				repaintArrowRegion();
+			}
+		}
+		
+		public void setArrowVisible(boolean newValue)
+		{
+			if (newValue != arrow_visible)
+			{
+				arrow_visible = newValue;
+				updateRefCount(newValue);
+				repaintArrowRegion();
+			}
+		}
+		
+		public void pulseArrow()
+		{
+			if (arrow_visible)
+			{
+				arrow_pulse_state = OverlayArrowPulseState.DRIVE;
+				arrow_timer.setDelay(arrow_delay_drive);
+				arrow_timer.start();
+			}
+		}
+		
+		protected void updateRefCount(boolean newValue)
+		{
+			refcount += newValue ? 1 : -1;
+			if (refcount == 0)
+			{
+				getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
+			}
+			else if (refcount == 1)
+			{
+				getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+			}
+		}
+		
+		public void paint(Graphics g)
+		{
+			if (arrow_visible)
+			{
+				drawArrow(g);
+			}
+		}
+		
+		protected Polygon getPositionedArrow(boolean includeScrollOffset)
+		{
+			Rectangle rectView = getViewport().getViewRect();
+			Polygon p = createArrow();
+			p.translate(rectView.width-12, rectView.height-12);
+			if (includeScrollOffset)
+			{
+				p.translate(rectView.x, rectView.y);
+			}
+			return p;
+		}
+		
+		protected final float blend(float v1, float v2, float pos)
+		{
+			return (v2-v1)*pos + v1;
+		}
+		
+		protected void drawArrow(Graphics g)
+		{
+			
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			Polygon p = getPositionedArrow(true);
+			
+			final float cR = blend(arrow_cR1, arrow_cR2, arrow_pulse_pos);
+			final float cG = blend(arrow_cG1, arrow_cG2, arrow_pulse_pos);
+			final float cB = blend(arrow_cB1, arrow_cB2, arrow_pulse_pos);
+			final float a = blend(arrow_a1, arrow_a2, arrow_pulse_pos);
+			
+			g.setColor(new Color(cR, cG, cB, a));
+			g.fillPolygon(p);
+			g.setColor(new Color(cR*0.75f, cG*0.75f, cB*0.75f, a));
+			g.drawPolygon(p);
+			
+		}
+		
+		protected void repaintArrowRegion()
+		{
+			Rectangle rect = getPositionedArrow(false).getBounds();
+			rect.grow(8,8);
+			LogPane.this.repaint(rect);
+		}
+		
+		public void repaint()
+		{
+			if (arrow_visible)
+			{
+				repaintArrowRegion();
+			}
+		}
+		
+		protected Polygon createArrow()
+		{
+			
+			/*
+			   54321012345
+			7     *****   
+			6     *   *   
+			5     *   *   
+			4     *   *   
+			3  ****   ****
+			2   *       * 
+			1     *   *   
+			0       *    X <-- origin (0,0)
+			*/
+			final int[] xpoints = new int[] { +0, -5, -2, -2, +2, +2, +5, 0 };
+			final int[] ypoints = new int[] { +0, -3, -3, -7, -7, -3, -3, 0 };
+			final int scaleX = 2;
+			final int scaleY = 3;
+			
+			for (int i = 0; i < xpoints.length; ++i)
+			{
+				xpoints[i] *= scaleX;
+				ypoints[i] *= scaleY;
+			}
+			
+			Polygon p = new Polygon(xpoints, ypoints, 7);
+			p.translate(scaleX*-5, 0);
+			return p;
+			
+		}
+		
+	}
+	
 	public void addTestData()
 	{
+		
 		for (int i = 0; i < 10; i++)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -106,6 +315,7 @@ public class LogPane extends JScrollPane
 		appendTextLine(ctrl_c + "2,15blue-grey " + ctrl_r + "reverse" + ctrl_r + " blue-grey " + ctrl_c + "4red-grey " + ctrl_r + "rev" + ctrl_c + ctrl_c + "2erse" + ctrl_r + " blue-white " + ctrl_c + "black-white " + ctrl_r + "reverse");
 		appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
 		appendTextLine("Space Test: 1 2  3   4    . exclamation line up -> !");
+		appendTextLine("\n\t\u00038,0 \u2584\u2588\u2588\u2588\u2588\u2588\u2584\n\t\u00038,0\u2588\u2588\u00031,1  \u00038,0\u2588\u00031,1  \u00038,0\u2588\u2588\n\t\u00038,0\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n\t\u00038,0\u2588\u00038,4\u2580\u00038,0\u2588\u2588\u2588\u2588\u2588\u00038,4\u2580\u00038,0\u2588\n\t\u00038,0 \u2580\u00038,4\u2584\u2584\u2584\u2584\u2584\u00038,0\u2580");
 	}
 	
 	protected JEditorPane createEditor()
@@ -121,6 +331,7 @@ public class LogPane extends JScrollPane
 	protected class Editor extends JEditorPane
 	{
 		
+		@Override
 		public Dimension getPreferredSize()
 		{
 			Dimension d = super.getPreferredSize();
@@ -129,6 +340,7 @@ public class LogPane extends JScrollPane
 			return d;
 		}
 		
+		@Override
 		public void paint(Graphics g)
 		{
 			
@@ -144,6 +356,8 @@ public class LogPane extends JScrollPane
 					g.drawLine(0, offsets[redLine], getWidth(), offsets[redLine]);
 				}
 			}
+			
+			overlay.paint(g);
 			
 		}
 		
@@ -240,6 +454,10 @@ public class LogPane extends JScrollPane
 							public void run()
 							{
 								lastIsAtEnd = isAtEnd();
+								if (lastIsAtEnd)
+								{
+									overlay.setArrowVisible(false);
+								}
 							}
 						});
 				}
@@ -253,6 +471,7 @@ public class LogPane extends JScrollPane
 					{
 						SwingUtilities.invokeLater(new DoScroll(-1));
 					}
+					overlay.repaint();
 			}
 			});
 		
@@ -461,6 +680,12 @@ public class LogPane extends JScrollPane
 		xhtml = wrapInXHTMLTags(xhtml);
 		
 		int scrollPos = this.isAtEnd() ? -1 : getVerticalScrollBar().getValue();
+		
+		if (!this.isAtEnd())
+		{
+			overlay.setArrowVisible(true);
+			overlay.pulseArrow();
+		}
 		
 		try
 		{
