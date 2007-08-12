@@ -44,7 +44,10 @@ show a confirmation pane when closing a MainFrame with an option to set the quit
 
 test face in LogPane test has rendering issues. Seems to mainly be a TextModifierParser issue.
 
-status messages: iTunes on Mac, Winamp on Windows
+key/value pair status message protocol enhancement. possible uses include:
+	current track (iTunes on Mac, Winamp on Windows)
+	is typing
+	GPS coordinates
 
 http://en.wikipedia.org/wiki/STUN
 
