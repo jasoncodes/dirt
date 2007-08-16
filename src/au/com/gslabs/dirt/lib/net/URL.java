@@ -2,6 +2,8 @@ package au.com.gslabs.dirt.lib.net;
 
 /**
  * An immutable URL class
+ *
+ * If updating this class make sure you don't break immutability
  */
 public class URL
 {
@@ -13,6 +15,28 @@ public class URL
 	final protected String path;
 	
 	final protected int defaultPort;
+	
+	public URL(URL url, String newUsername, String newPassword, String newPath)
+	{
+		
+		this.protocol = url.protocol;
+		this.username = (newUsername != null) ? newUsername : url.username;
+		this.hostname = url.hostname;
+		this.port = url.port;
+		this.path = (newPath != null) ? newPath : url.path;
+		this.defaultPort = url.defaultPort;
+		
+		if (newPassword != null)
+		{
+			throw new IllegalArgumentException("Password not supported");
+		}
+		
+	}
+	
+	public URL copyWithNewUsername(String username)
+	{
+		return new URL(this, username, null, null);
+	}
 	
 	public URL(String url, String defaultProtocol, int defaultPort)
 	{

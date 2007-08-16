@@ -27,6 +27,7 @@ public class Client
 	protected boolean connected;
 	protected String nickname_current;
 	protected String nickname_last;
+	protected boolean nickname_last_good;
 	protected URL server_url_last;
 	protected ByteBuffer authseed;
 	protected String server_name;
@@ -47,6 +48,7 @@ public class Client
 		
 		contacts = new TreeMap<String,Contact>();
 		nickname_last = getDefaultNickname();
+		nickname_last_good = false;
 		
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
@@ -102,7 +104,11 @@ public class Client
 		{
 			name = System.getProperty("user.name");
 		}
-		return TextUtil.splitQuotedHeadTail(name)[0];
+		if (name != null)
+		{
+			name = TextUtil.splitQuotedHeadTail(name)[0];
+		}
+		return name;
 	}
 	
 	protected Contact getContact(String nickname, boolean createOrReset)
@@ -277,7 +283,10 @@ public class Client
 	{
 		
 		Contact contact = getContact(getNickname());
-		boolean clean = (getNickname() != null) && (contact != null) && (contact.status == UserStatus.OFFLINE);
+		boolean clean =
+			(getNickname() != null) && (contact != null) &&
+			(contact.status == UserStatus.OFFLINE) &&
+			(contact.getPartMessage() != null) && (contact.getPartMessage().startsWith("Quit"));
 		
 		resetState();
 		
@@ -306,6 +315,17 @@ public class Client
 	
 	public void connect(String context, URL url)
 	{
+		if (url == null)
+		{
+			if (server_url_last == null)
+			{
+				notification(context, NotificationSeverity.ERROR, "RECONNECT", "No previous connection");
+			}
+			else
+			{
+				url = server_url_last;
+			}
+		}
 		resetState();
 		notification(context, NotificationSeverity.INFO, null, "Connecting to " + url);
 		if (!url.getProtocol().equals("dirt"))
@@ -326,12 +346,7 @@ public class Client
 	
 	public void reconnect(String context)
 	{
-		if (server_url_last == null)
-		{
-			notification(context, NotificationSeverity.ERROR, "RECONNECT", "No previous connection");
-		}
-		resetState();
-		connect(context, server_url_last);
+		connect(context, null);
 	}
 	
 	protected void resetState()
@@ -455,6 +470,14 @@ public class Client
 			dumpMessageData(context, cmdString, params);
 		}
 		
+	}
+	
+	protected void onNewNickname(String nick_new)
+	{
+		this.nickname_current = nick_new;
+		this.nickname_last = nick_new;
+		this.nickname_last_good = true;
+		raiseStateChanged();
 	}
 	
 	protected enum ServerCommand
@@ -644,8 +667,7 @@ public class Client
 					{
 						if (tokens.size() < 2 || tokens.get(1).length() < 1)
 						{
-							this.nickname_current = tokens.get(0).toString();
-							raiseStateChanged();
+							onNewNickname(tokens.get(0).toString());
 						}
 						else
 						{
@@ -657,8 +679,7 @@ public class Client
 							contacts.put(nick_new, contact);
 							if (nick_old.equals(nickname_current))
 							{
-								nickname_current = nick_new;
-								raiseStateChanged();
+								onNewNickname(nick_new);
 							}
 							listeners.dispatchEvent(new EventSource<ClientListener>()
 								{
@@ -701,7 +722,7 @@ public class Client
 						{
 							public void dispatchEvent(ClientListener l)
 							{
-								l.clientNeedNickname(Client.this, nickname_last);
+								l.clientNeedNickname(Client.this, nickname_last, nickname_last_good);
 							}
 						});
 				}
@@ -778,11 +799,12 @@ public class Client
 					notification(context, NotificationSeverity.ERROR, tokens.get(0).toString(), tokens.get(1).toString());
 					if (tokens.size() > 1 && tokens.get(0).toString().equalsIgnoreCase("NICK"))
 					{
+						nickname_last_good = false;
 						listeners.dispatchEvent(new EventSource<ClientListener>()
 							{
 								public void dispatchEvent(ClientListener l)
 								{
-									l.clientNeedNickname(Client.this, nickname_last);
+									l.clientNeedNickname(Client.this, nickname_last, nickname_last_good);
 								}
 							});
 					}

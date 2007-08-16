@@ -1,3 +1,5 @@
+AMERICA filter renders wrong colours
+
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html

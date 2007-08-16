@@ -61,7 +61,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 		clientConsoleOutput(source, context, severity.toString().toLowerCase(), false, buff.toString());
 	}
 	
-	public void clientNeedNickname(Client source, String defaultNick)
+	public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay)
 	{
 		clientNotification(source, null, NotificationSeverity.WARNING, "NICK", "Nickname required");
 	}

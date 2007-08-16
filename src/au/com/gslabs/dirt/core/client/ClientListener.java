@@ -24,7 +24,7 @@ public interface ClientListener extends java.util.EventListener
 	public void clientUserStatus(Client source, String nick, UserStatus status, String message, Date away_start, Duration away_duration, Duration previous_away_duration, String previous_away_message);
 	public void clientUserWhois(Client source, String context, String nickname);
 	
-	public void clientNeedNickname(Client source, String defaultNick);
+	public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay);
 	public void clientNeedAuthentication(Client source, String prompt);
 	
 }

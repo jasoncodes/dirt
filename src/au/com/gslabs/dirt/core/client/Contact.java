@@ -199,4 +199,9 @@ public class Contact implements Comparable<Contact>
 		}
 	}
 	
+	public String getPartMessage()
+	{
+		return this.partMessage;
+	}
+	
 }

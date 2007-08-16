@@ -242,8 +242,13 @@ public class MainFrame extends JFrame
 		}
 		
 		@Override
-		public void clientNeedNickname(Client source, String defaultNick)
+		public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay)
 		{
+			if (defaultNickOkay)
+			{
+				source.setNickname(null, defaultNick);
+				return;
+			}
 			setPasswordMode(false);
 			String prompt = "/nick " + defaultNick;
 			txtInput.setText(prompt, 6, prompt.length());

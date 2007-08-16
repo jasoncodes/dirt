@@ -74,8 +74,13 @@ public class ClientCLI
 		}
 		
 		@Override
-		public void clientNeedNickname(Client source, String defaultNick)
+		public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay)
 		{
+			if (defaultNickOkay)
+			{
+				source.setNickname(null, defaultNick);
+				return;
+			}
 			String prompt = "/nick " + defaultNick;
 			setText(prompt);
 		}
