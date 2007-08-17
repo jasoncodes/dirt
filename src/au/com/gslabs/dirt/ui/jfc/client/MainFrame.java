@@ -184,11 +184,39 @@ public class MainFrame extends JFrame
 	protected enum SupportedCommand
 	{
 		CLEAR,
-		EXIT
+		EXIT,
+		TEST
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
 	{
+		
+		@Override
+		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
+		{
+			
+			switch (cmd)
+			{
+				
+				case TEST:
+					txtLog.addTestData();
+					return true;
+				
+				case CLEAR:
+					txtLog.clearText();
+					return true;
+				
+				case EXIT:
+					processConsoleInput(source, context, "/QUIT " + params);
+					System.exit(0);
+					return true;
+				
+				default:
+					return false;
+				
+			}
+			
+		}
 		
 		public ClientAdapter()
 		{
@@ -216,29 +244,6 @@ public class MainFrame extends JFrame
 				UIUtil.alert(MainFrame.this);
 			}
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
-		}
-		
-		@Override
-		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
-		{
-			
-			switch (cmd)
-			{
-				
-				case CLEAR:
-					txtLog.clearText();
-					return true;
-				
-				case EXIT:
-					processConsoleInput(source, context, "/QUIT " + params);
-					System.exit(0);
-					return true;
-				
-				default:
-					return false;
-				
-			}
-			
 		}
 		
 		@Override

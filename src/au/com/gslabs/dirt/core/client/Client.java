@@ -757,7 +757,7 @@ public class Client
 							ChatMessageVisibility.PUBLIC;
 					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
 					final String nick = tokens.get(0).toString();
-					final ByteBuffer message = tokens.get(1);
+					final String message = tokens.get(1).toString();
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
@@ -786,7 +786,7 @@ public class Client
 						{
 							public void dispatchEvent(ClientListener l)
 							{
-								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1), MessageDirection.OUTBOUND, type, ChatMessageVisibility.PRIVATE);
+								l.clientChatMessage(Client.this, context, tokens.get(0).toString(), tokens.get(1).toString(), MessageDirection.OUTBOUND, type, ChatMessageVisibility.PRIVATE);
 							}
 						});
 					

@@ -42,12 +42,12 @@ is it possible to use a drawer on the Mac to display the nicklist?
 
 show a confirmation pane when closing a MainFrame with an option to set the quit message
 
-test face in LogPane test has rendering issues. Might not be an easy fix. (font width?)
-
 key/value pair status message protocol enhancement. possible uses include:
 	current track (iTunes on Mac, Winamp on Windows)
 	is typing
 	GPS coordinates
+
+LogPane test face has rendering issues. Probably need some nice way to handle line and box drawing characters but I can't think of any nice way to do it right now.
 
 http://en.wikipedia.org/wiki/STUN
 

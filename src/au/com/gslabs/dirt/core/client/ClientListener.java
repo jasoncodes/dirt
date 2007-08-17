@@ -13,7 +13,7 @@ public interface ClientListener extends java.util.EventListener
 	
 	public void clientNotification(Client source, String context, NotificationSeverity severity, String type, String message);
 	public void clientStateChanged(Client source);
-	public void clientChatMessage(Client source, String context, String nick, ByteBuffer message, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility);
+	public void clientChatMessage(Client source, String context, String nick, String message, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility);
 	public void clientCTCP(Client source, String context, String nick, String type, ByteBuffer data, MessageDirection direction, CTCPStage stage);
 	
 	public void clientContactUpdated(Client source, Contact contact);

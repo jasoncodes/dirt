@@ -75,7 +75,7 @@ public abstract class DefaultClientAdapter implements ClientListener
 	{
 	}
 	
-	public void clientChatMessage(Client source, String context, String nick, ByteBuffer message, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility)
+	public void clientChatMessage(Client source, String context, String nick, String message, MessageDirection direction, ChatMessageType type, ChatMessageVisibility visibility)
 	{
 		
 		final String className;
@@ -89,11 +89,9 @@ public abstract class DefaultClientAdapter implements ClientListener
 				break;
 		}
 		
-		final String text = message.toString();
-		
 		final String sep = (
-				text.startsWith("'s ") ||
-				text.startsWith("'d ")
+				message.startsWith("'s ") ||
+				message.startsWith("'d ")
 			) ? "" : " ";
 		
 		final boolean suppressAlert =
@@ -109,21 +107,21 @@ public abstract class DefaultClientAdapter implements ClientListener
 					case PRIVATE:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, suppressAlert, "* *" + nick + "*" + sep + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "* *" + nick + "*" + sep + message);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, suppressAlert, "*" + nick + "* " + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "*" + nick + "* " + message);
 						}
 						break;
 					case PUBLIC:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, suppressAlert, "* " + nick + sep + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "* " + nick + sep + message);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, suppressAlert, "<" + nick + "> " + text);
+							clientConsoleOutput(source, context, className, suppressAlert, "<" + nick + "> " + message);
 						}
 						break;
 					default:
@@ -137,11 +135,11 @@ public abstract class DefaultClientAdapter implements ClientListener
 					case PRIVATE:
 						if (type == ChatMessageType.ACTION)
 						{
-							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* * " + source.getNickname() + sep + text);
+							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* * " + source.getNickname() + sep + message);
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* " + text);
+							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* " + message);
 						}
 						break;
 					case PUBLIC:
@@ -534,7 +532,8 @@ public abstract class DefaultClientAdapter implements ClientListener
 		WHO,
 		WHOIS,
 		DISCONNECT,
-		RECONNECT
+		RECONNECT,
+		ECHO
 	}
 	
 	protected boolean processConsoleCommand(Client client, final String context, final ConsoleCommand cmd, final String params)
@@ -668,6 +667,10 @@ public abstract class DefaultClientAdapter implements ClientListener
 					clientNotification(client, context, NotificationSeverity.INFO, cmd.toString(), buff.toString());
 					
 				}
+				return true;
+				
+			case ECHO:
+				clientNotification(client, context, NotificationSeverity.INFO, null, params);
 				return true;
 			
 			default:
