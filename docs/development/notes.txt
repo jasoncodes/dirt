@@ -1,5 +1,3 @@
-AMERICA filter renders wrong colours
-
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
@@ -44,7 +42,7 @@ is it possible to use a drawer on the Mac to display the nicklist?
 
 show a confirmation pane when closing a MainFrame with an option to set the quit message
 
-test face in LogPane test has rendering issues. Seems to mainly be a TextModifierParser issue.
+test face in LogPane test has rendering issues. Might not be an easy fix. (font width?)
 
 key/value pair status message protocol enhancement. possible uses include:
 	current track (iTunes on Mac, Winamp on Windows)

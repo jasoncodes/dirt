@@ -419,6 +419,7 @@ public class TextModifierParser
 					{
 						colour_pos = 1;
 						had_comma = true;
+						colour_number[1] = 0;
 					}
 				}
 				else
