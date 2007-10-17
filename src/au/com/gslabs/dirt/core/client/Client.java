@@ -377,6 +377,8 @@ public class Client
 			if (contact.status != UserStatus.OFFLINE)
 			{
 				contact.status = UserStatus.OFFLINE;
+				contact.partMessage = null;
+				contact.partTimeLocal = new Date();
 				modifiedContacts.add(contact);
 			}
 		}
