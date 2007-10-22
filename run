@@ -7,11 +7,20 @@ then
 
 else
 
-	OPTIONS=""
+	BIN="java"
+	OPTIONS="-jar dist/Dirt.jar"
+	
 	if [ "`uname -s`" == "Darwin" ]
 	then
-		OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+		if [ "$1" == "--profile" ]
+		then
+			OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+		else
+			BIN="dist/Dirt.app/Contents/MacOS/Dirt"
+			OPTIONS=""
+		fi
 	fi
+
 	if [ "$1" == "--profile" ]
 	then
 		PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
@@ -24,6 +33,6 @@ else
 		OPTIONS="$OPTIONS -agentlib:yjpagent"
 	fi
 
-	java $OPTIONS -jar dist/Dirt.jar "$@"
+	$BIN $OPTIONS "$@"
 
 fi
