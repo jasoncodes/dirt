@@ -91,7 +91,8 @@ public abstract class DefaultClientAdapter implements ClientListener
 		
 		final String sep = (
 				message.startsWith("'s ") ||
-				message.startsWith("'d ")
+				message.startsWith("'d ") ||
+				message.startsWith("'ll ")
 			) ? "" : " ";
 		
 		final boolean suppressAlert =

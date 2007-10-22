@@ -1,12 +1,41 @@
+all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
+
+/connect Jason[ConsoleTest]@spawncamp.net
+[14:56] *** Connecting to dirt://@spawncamp.net@Jason[ConsoleTest]/
+
+Liquid and LiQuid0 gives tab completion problems
+
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
+	
+/reconnect on new client
+[13:00] *** Error RECONNECT: No previous connection
+[13:00] *** Connecting to null
+
+/reconnect after resume before DHCP completes hangs for a really long time (forever?)
+
+don't yellow arrow if not red lining
+
+away modes
+	/dnd Working
+	/brb 30 Dinner
 
 MRJAdapter for JFC client UI
+
+pressing up and down while entering text should restore buffer
+
+Cmd-Z doesn't do anything in InputArea
+
+modifier sequences should count as a delimiter when doing tab completion
+	should share the existing tokenizer code
+		pull the tokenizer out of TextModifierParser?
 
 query windows
 
 aliases and bindings
+
+timers
 
 acceleration when scrolling logpane
 
@@ -24,6 +53,8 @@ nicklist
 resizing is slow with lots of text
 
 double click to select word
+
+char events on logpane when no modifiers should blur and resend the char event to inputarea
 
 Cmd-F to search log text
 
@@ -44,12 +75,17 @@ show a confirmation pane when closing a MainFrame with an option to set the quit
 
 key/value pair status message protocol enhancement. possible uses include:
 	current track (iTunes on Mac, Winamp on Windows)
+		osascript -e "tell app \"iTunes\" to artist of current track as string & \"\n\" & name of current track as string"
+		com.apple.iTunes.playerInfo notification
+			http://schinckel.net/2005/06/05/notification-from-applescript-studio/
+			can we use NSDistributedNotificationCenter addObserver from Java?
 	is typing
 	GPS coordinates
 
 LogPane test face has rendering issues. Probably need some nice way to handle line and box drawing characters but I can't think of any nice way to do it right now.
 
 http://en.wikipedia.org/wiki/STUN
+http://code.google.com/apis/talk/libjingle/important_concepts.html#portssocketsconnections
 
 Mac OS X integration
 	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html#//apple_ref/doc/uid/TP40001909-212120
@@ -70,3 +106,23 @@ indented wrapping of long lines
 detection of sleep on at least mac and win32
 
 auto-reconnect on resume from sleep && network available
+
+/run ssh outpost
+	Mac: Open new Terminal window and execute command
+	Linux: Can we detect Gnome/KDE and launch their preferred else xterm?
+	Win32: Prefer PuttyCYG then Cygwin using csrss (then possibly cmd.exe)
+
+show IP in /whois
+
+next major protocol change will include:
+	magic number and protocol version number (major, minor)
+	support for different crypto algorithms
+	capabilities listing
+	virtual hosting
+	compatible with HTTP on the same port.. somehow :)
+		can we support a proxy CGI?
+		should the request start out looking like HTTP?
+	compatible with old clients connecting to the same port
+		since it will be HTTP compat, server will wait for
+		00 a4 00 00 00 00 30 81 or new protocol HELO msg
+		before sending anything
