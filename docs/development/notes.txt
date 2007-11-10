@@ -1,19 +1,17 @@
-all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
+clicking dock icon doesn't switch to space where window is.
+	probably a lack of MRJAdapter causing this
 
-/connect Jason[ConsoleTest]@spawncamp.net
-[14:56] *** Connecting to dirt://@spawncamp.net@Jason[ConsoleTest]/
+shift-backspace doesn't do anything on Leopard
+
+all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
 
 Liquid and LiQuid0 gives tab completion problems
 
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
-	
-/reconnect on new client
-[13:00] *** Error RECONNECT: No previous connection
-[13:00] *** Connecting to null
 
-/reconnect after resume before DHCP completes hangs for a really long time (forever?)
+/connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
 
 don't yellow arrow if not red lining
 
@@ -67,6 +65,8 @@ a cursor flickers in the input area and then disappears
 focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
+
+DND and away could deny/allow bounces/Growl via regex or javascript function
 
 is it possible to use a drawer on the Mac to display the nicklist?
 	http://developer.apple.com/samplecode/JSheets/index.html gives hope
@@ -126,3 +126,5 @@ next major protocol change will include:
 		since it will be HTTP compat, server will wait for
 		00 a4 00 00 00 00 30 81 or new protocol HELO msg
 		before sending anything
+
+Bonjour discovery: http://www.macdevcenter.com/pub/a/mac/2004/08/31/osx_java.html

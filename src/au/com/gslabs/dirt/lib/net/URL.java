@@ -68,17 +68,19 @@ public class URL
 		i = url.indexOf("@");
 		if (i > -1)
 		{
-			username = url.substring(i);
-			url = url.substring(0, i);
+			username = url.substring(0, i);
+			url = url.substring(i+1);
 		}
 		else
 		{
 			username = null;
 		}
 		
-		if (url.length() > 0 && url.charAt(0) == '[')
+		if (url.length() > 0 && url.charAt(0) == '[' && url.indexOf(']') > 0)
 		{
-			i = url.indexOf(':', url.indexOf(']'));
+			int j = url.indexOf(']');
+			url = url.substring(1, j) + url.substring(j+1);
+			i = url.indexOf(':', j-1);
 		}
 		else
 		{
@@ -86,8 +88,25 @@ public class URL
 		}
 		if (i > -1)
 		{
-			hostname = url.substring(0, i);
-			port = Integer.valueOf(url.substring(i+1));
+			int parsedPort;
+			try
+			{
+				parsedPort = Integer.valueOf(url.substring(i+1));
+			}
+			catch (NumberFormatException ex)
+			{
+				parsedPort = -1;
+			}
+			if (parsedPort > 0)
+			{
+				hostname = url.substring(0, i);
+				port = parsedPort;
+			}
+			else
+			{
+				hostname = url;
+				port = defaultPort;
+			}
 		}
 		else
 		{
@@ -108,7 +127,15 @@ public class URL
 		{
 			url += username + "@";
 		}
+		if (hostname.indexOf(':') > -1)
+		{
+			url += '[';
+		}
 		url += hostname;
+		if (hostname.indexOf(':') > -1)
+		{
+			url += ']';
+		}
 		if (port != defaultPort)
 		{
 			url += ":" + port;

@@ -320,6 +320,7 @@ public class Client
 			if (server_url_last == null)
 			{
 				notification(context, NotificationSeverity.ERROR, "RECONNECT", "No previous connection");
+				return;
 			}
 			else
 			{

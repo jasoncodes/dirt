@@ -25,8 +25,14 @@ public class MainFrame extends JFrame
 	
 	public static void init()
 	{
-		UIUtil.initSwing();
-		new MainFrame();
+		SwingUtilities.invoke(new Runnable()
+			{
+				public void run()
+				{
+					UIUtil.initSwing();
+					new MainFrame();
+				}
+			});
 	}
 	
 	LogPane txtLog;
