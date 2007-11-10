@@ -1,5 +1,3 @@
-shift-backspace doesn't do anything on Leopard
-
 clicking dock icon doesn't switch to space where window is.
 	probably a lack of MRJAdapter causing this
 
@@ -11,10 +9,6 @@ save/restore frame rect
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
 
 /connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
-
-away modes
-	/dnd Working
-	/brb 30 Dinner
 
 MRJAdapter for JFC client UI
 
@@ -106,6 +100,10 @@ auto-reconnect on resume from sleep && network available
 	Win32: Prefer PuttyCYG then Cygwin using csrss (then possibly cmd.exe)
 
 show IP in /whois
+
+away mode support
+	/dnd Working
+	/brb 30 Dinner
 
 next major protocol change will include:
 	magic number and protocol version number (major, minor)
