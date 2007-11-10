@@ -208,9 +208,13 @@ public class InputArea extends JScrollPane
 					}
 					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 					{
-						if (txt.getText().length() == 0)
+						e.consume();
+						// is there anything to backspace?
+						if (txt.getSelectionEnd() > 0)
 						{
-							e.consume();
+							// trigger the backspace action
+							// this feels so hacky, is there a better way?
+							txt.getActions()[1].actionPerformed(new ActionEvent(e.getSource(), 0, null));
 						}
 					}
 					if (e.getKeyCode() == KeyEvent.VK_TAB)
