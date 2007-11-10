@@ -1,6 +1,8 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.undo.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import javax.swing.border.*;
@@ -23,11 +25,12 @@ public class InputArea extends JScrollPane
 		public boolean inputCanAddToHistory(InputArea source, String line);
 	}
 	
-	JTextArea txt;
+	protected final JTextArea txt;
+	protected final UndoManager undo;
+	protected final ArrayList<InputListener> listeners;
+	protected final ArrayList<String> history;
 	protected String defaultCommand;
 	protected String commandPrefix;
-	protected ArrayList<InputListener> listeners;
-	protected ArrayList<String> history;
 	protected int history_pos;
 	protected String edit_text;
 	protected int edit_row;
@@ -35,9 +38,11 @@ public class InputArea extends JScrollPane
 	
 	public InputArea()
 	{
+		
 		super(
 			JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
 		txt = new JTextArea(1, 0);
 		txt.setRows(1);
 		setViewportView(txt);
@@ -52,11 +57,72 @@ public class InputArea extends JScrollPane
 		listeners = new ArrayList<InputListener>();
 		addEventListeners();
 		
+		undo = new UndoManager();
+		initUndo();
+		
 		if (FileUtil.isMac())
 		{
 			Border border = BorderFactory.createEmptyBorder(0, 0, 0, 14);
 			setBorder(new CompoundBorder(getBorder(), border));
 		}
+		
+	}
+	
+	protected void initUndo()
+	{
+		
+		final Document doc = txt.getDocument();
+		doc.addUndoableEditListener(new UndoableEditListener()
+			{
+				public void undoableEditHappened(UndoableEditEvent evt)
+				{
+					undo.addEdit(evt.getEdit());
+				}
+			});
+			
+		txt.getInputMap().put(
+			KeyStroke.getKeyStroke(
+				KeyEvent.VK_Z,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+			"Undo");
+		txt.getInputMap().put(
+			KeyStroke.getKeyStroke(
+				KeyEvent.VK_Z,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | InputEvent.SHIFT_MASK),
+			"Redo");
+			
+		txt.getActionMap().put("Undo", new AbstractAction("Undo")
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					try
+					{
+						if (undo.canUndo())
+						{
+							undo.undo();
+						}
+					}
+					catch (CannotUndoException e)
+					{
+					}
+				}
+			});
+		txt.getActionMap().put("Redo", new AbstractAction("Redo")
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					try
+					{
+						if (undo.canRedo())
+						{
+							undo.redo();
+						}
+					}
+					catch (CannotRedoException e)
+					{
+					}
+				}
+			});
 		
 	}
 	

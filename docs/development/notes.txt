@@ -1,7 +1,5 @@
 shift-backspace doesn't do anything on Leopard
 
-Cmd-Z doesn't do anything in InputArea
-
 clicking dock icon doesn't switch to space where window is.
 	probably a lack of MRJAdapter causing this
 
