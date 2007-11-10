@@ -23,7 +23,7 @@ public class MainFrame extends JFrame
 	protected Client client;
 	protected DefaultClientAdapter clientAdapter;
 	
-	public static void init()
+	public static void init() throws InterruptedException
 	{
 		SwingUtilities.invokeAndWait(new Runnable()
 			{
