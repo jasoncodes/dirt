@@ -7,7 +7,7 @@ public class UI
 	{
 	}
 
-	public static void startClient(String[] args)
+	public static void startClient(String[] args) throws Throwable
 	{
 		
 		boolean cli = false;
