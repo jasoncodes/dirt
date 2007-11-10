@@ -5,8 +5,6 @@ shift-backspace doesn't do anything on Leopard
 
 all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
 
-Liquid and LiQuid0 gives tab completion problems
-
 save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
