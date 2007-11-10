@@ -9,6 +9,7 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
 import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
+import au.com.gslabs.dirt.core.client.enums.*;
 
 // this needs MRJAdapter support
 
@@ -22,6 +23,7 @@ public class MainFrame extends JFrame
 	protected JMenu fileMenu, editMenu; 
 	protected Client client;
 	protected DefaultClientAdapter clientAdapter;
+	protected boolean isAwayDND;
 	
 	public static void init() throws Throwable
 	{
@@ -124,6 +126,8 @@ public class MainFrame extends JFrame
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
 		activeInputControl = txtInput;
 		
+		isAwayDND = false;
+		
 		client = new Client();
 		clientAdapter = new ClientAdapter();
 		client.addClientListener(clientAdapter, new JFCInvoker());
@@ -191,7 +195,9 @@ public class MainFrame extends JFrame
 	{
 		CLEAR,
 		EXIT,
-		TEST
+		TEST,
+		DND,
+		AWAY
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
@@ -215,6 +221,16 @@ public class MainFrame extends JFrame
 				case EXIT:
 					processConsoleInput(source, context, "/QUIT " + params);
 					System.exit(0);
+					return true;
+				
+				case DND:
+					client.setAway(context, params);
+					isAwayDND = true;
+					return true;
+					
+				case AWAY:
+					client.setAway(context, params);
+					isAwayDND = false;
 					return true;
 				
 				default:
@@ -249,7 +265,10 @@ public class MainFrame extends JFrame
 				if (UIUtil.getActiveWindow() != MainFrame.this)
 				{
 					txtLog.setRedLine();
-					UIUtil.alert(MainFrame.this);
+					if (!isDND())
+					{
+						UIUtil.alert(MainFrame.this);
+					}
 				}
 				if (!txtLog.isAtEnd())
 				{
@@ -326,6 +345,11 @@ public class MainFrame extends JFrame
 					title += " - " + resbundle.getString("title");
 				}
 				
+				if (isDND())
+				{
+					title += " | DND";
+				}
+				
 			}
 			else
 			{
@@ -336,6 +360,12 @@ public class MainFrame extends JFrame
 			
 		}
 		
+	}
+	
+	public boolean isDND()
+	{
+		Contact contact = client.getContact(client.getNickname());
+		return isAwayDND && contact != null && contact.getStatus() == UserStatus.AWAY;
 	}
 	
 	protected void txtLog_LinkClick(java.net.URL url)
