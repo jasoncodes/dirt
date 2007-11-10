@@ -10,29 +10,41 @@ else
 	BIN="java"
 	OPTIONS="-jar dist/Dirt.jar"
 	
-	if [ "`uname -s`" == "Darwin" ]
+	if [ "$1" == "--debug" ]
 	then
+	
+		shift
+		BIN="jdb"
+		OPTIONS="-classpath lib/common/jline-0.9.91.jar:build/main-scratch au.com.gslabs.dirt.Dirt"
+		
+	else
+	
+		if [ "`uname -s`" == "Darwin" ]
+		then
+			if [ "$1" == "--profile" ]
+			then
+				OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+			else
+				BIN="dist/Dirt.app/Contents/MacOS/Dirt"
+				OPTIONS=""
+			fi
+		fi
+
 		if [ "$1" == "--profile" ]
 		then
-			OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
-		else
-			BIN="dist/Dirt.app/Contents/MacOS/Dirt"
-			OPTIONS=""
+			shift
+			PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
+			if [ ! -d "$PROFILER_LIB_DIR" ]
+			then
+				echo YourKit Java Profiler not found. >&2
+				exit 1;
+			fi
+			export DYLD_LIBRARY_PATH="$PROFILER_LIB_DIR"
+			OPTIONS="$OPTIONS -agentlib:yjpagent"
 		fi
+	
 	fi
-
-	if [ "$1" == "--profile" ]
-	then
-		PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
-		if [ ! -d "$PROFILER_LIB_DIR" ]
-		then
-			echo YourKit Java Profiler not found. >&2
-			exit 1;
-		fi
-		export DYLD_LIBRARY_PATH="$PROFILER_LIB_DIR"
-		OPTIONS="$OPTIONS -agentlib:yjpagent"
-	fi
-
+	
 	$BIN $OPTIONS "$@"
-
+	
 fi
