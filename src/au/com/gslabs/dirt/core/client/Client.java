@@ -619,6 +619,10 @@ public class Client
 								{
 									l.clientContactUpdated(Client.this, contact);
 									l.clientUserStatus(Client.this, contact.nickname, contact.status, contact.awayMessage, contact.awayTimeServer, contact.getAwayDuration(), previous_duration, previous_message);
+									if (contact.nickname.equals(getNickname()))
+									{
+										l.clientStateChanged(Client.this);
+									}
 								}
 							});
 						
