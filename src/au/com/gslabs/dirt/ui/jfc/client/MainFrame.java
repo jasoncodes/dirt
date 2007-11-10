@@ -25,7 +25,7 @@ public class MainFrame extends JFrame
 	
 	public static void init()
 	{
-		SwingUtilities.invoke(new Runnable()
+		SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
