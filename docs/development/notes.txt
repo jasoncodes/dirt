@@ -1,8 +1,11 @@
+shift-backspace doesn't do anything on Leopard
+
+Cmd-Z doesn't do anything in InputArea
+
 clicking dock icon doesn't switch to space where window is.
 	probably a lack of MRJAdapter causing this
 
-shift-backspace doesn't do anything on Leopard
-
+char events on logpane when no modifiers should blur and resend the char event to inputarea
 all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
 
 save/restore frame rect
@@ -11,8 +14,6 @@ save/restore frame rect
 
 /connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
 
-don't yellow arrow if not red lining
-
 away modes
 	/dnd Working
 	/brb 30 Dinner
@@ -20,8 +21,6 @@ away modes
 MRJAdapter for JFC client UI
 
 pressing up and down while entering text should restore buffer
-
-Cmd-Z doesn't do anything in InputArea
 
 modifier sequences should count as a delimiter when doing tab completion
 	should share the existing tokenizer code
@@ -49,8 +48,6 @@ nicklist
 resizing is slow with lots of text
 
 double click to select word
-
-char events on logpane when no modifiers should blur and resend the char event to inputarea
 
 Cmd-F to search log text
 

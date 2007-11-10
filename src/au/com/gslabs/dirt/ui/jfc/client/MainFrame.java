@@ -244,10 +244,17 @@ public class MainFrame extends JFrame
 		@Override
 		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
 		{
-			if (!suppressAlert && isDisplayable() && UIUtil.getActiveWindow() != MainFrame.this)
+			if (!suppressAlert && isDisplayable())
 			{
-				txtLog.setRedLine();
-				UIUtil.alert(MainFrame.this);
+				if (UIUtil.getActiveWindow() != MainFrame.this)
+				{
+					txtLog.setRedLine();
+					UIUtil.alert(MainFrame.this);
+				}
+				if (!txtLog.isAtEnd())
+				{
+					txtLog.showAndPulseArrow();
+				}
 			}
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
 		}

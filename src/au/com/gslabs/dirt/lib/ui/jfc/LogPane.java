@@ -674,18 +674,18 @@ public class LogPane extends JScrollPane
 		}
 	}
 	
+	public void showAndPulseArrow()
+	{
+		overlay.setArrowVisible(true);
+		overlay.pulseArrow();
+	}
+	
 	private void doAppendXHTMLFragment(String xhtml)
 	{
 		
 		xhtml = wrapInXHTMLTags(xhtml);
 		
 		int scrollPos = this.isAtEnd() ? -1 : getVerticalScrollBar().getValue();
-		
-		if (!this.isAtEnd())
-		{
-			overlay.setArrowVisible(true);
-			overlay.pulseArrow();
-		}
 		
 		try
 		{
