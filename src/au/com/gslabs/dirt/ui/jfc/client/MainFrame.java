@@ -224,7 +224,7 @@ public class MainFrame extends JFrame
 					return true;
 				
 				case DND:
-					client.setAway(context, params);
+					client.setAway(context, params.length()>0 ? ("DND \u22EE " + params) : params);
 					isAwayDND = true;
 					return true;
 					
