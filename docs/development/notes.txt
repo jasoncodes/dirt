@@ -94,6 +94,8 @@ detection of sleep on at least mac and win32
 
 auto-reconnect on resume from sleep && network available
 
+tab indentation in LogPane could be better
+
 /run ssh outpost
 	Mac: Open new Terminal window and execute command
 	Linux: Can we detect Gnome/KDE and launch their preferred else xterm?

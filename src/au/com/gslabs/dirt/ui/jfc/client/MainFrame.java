@@ -23,7 +23,7 @@ public class MainFrame extends JFrame
 	protected JMenu fileMenu, editMenu; 
 	protected Client client;
 	protected DefaultClientAdapter clientAdapter;
-	protected boolean isAwayDND;
+	protected boolean isDND;
 	
 	public static void init() throws Throwable
 	{
@@ -126,7 +126,7 @@ public class MainFrame extends JFrame
 		getContentPane().add(txtInput, BorderLayout.SOUTH);
 		activeInputControl = txtInput;
 		
-		isAwayDND = false;
+		isDND = false;
 		
 		client = new Client();
 		clientAdapter = new ClientAdapter();
@@ -197,7 +197,7 @@ public class MainFrame extends JFrame
 		EXIT,
 		TEST,
 		DND,
-		AWAY
+		BACK
 	}
 	
 	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
@@ -224,14 +224,18 @@ public class MainFrame extends JFrame
 					return true;
 				
 				case DND:
-					client.setAway(context, params.length()>0 ? ("DND \u22EE " + params) : params);
-					isAwayDND = true;
+					isDND = !isDND || params.length() > 0;
+					if (params.length() > 0)
+					{
+						source.setAway(context, params);
+					}
+					updateWindowTitle();
 					return true;
 					
-				case AWAY:
-					client.setAway(context, params);
-					isAwayDND = false;
-					return true;
+				case BACK:
+					isDND = false;
+					updateWindowTitle();
+					return false;
 				
 				default:
 					return false;
@@ -265,7 +269,7 @@ public class MainFrame extends JFrame
 				if (UIUtil.getActiveWindow() != MainFrame.this)
 				{
 					txtLog.setRedLine();
-					if (!isDND())
+					if (!isDND)
 					{
 						UIUtil.alert(MainFrame.this);
 					}
@@ -301,10 +305,15 @@ public class MainFrame extends JFrame
 		@Override
 		public void clientStateChanged(Client source)
 		{
-			
 			super.clientStateChanged(source);
 			setPasswordMode(false);
-			
+			updateWindowTitle();
+		}
+		
+	}
+	
+	protected void updateWindowTitle()
+	{
 			String title = "";
 			
 			if (client.isConnected())
@@ -345,7 +354,7 @@ public class MainFrame extends JFrame
 					title += " - " + resbundle.getString("title");
 				}
 				
-				if (isDND())
+				if (isDND)
 				{
 					title += " | DND";
 				}
@@ -357,15 +366,6 @@ public class MainFrame extends JFrame
 			}
 			
 			setTitle(title);
-			
-		}
-		
-	}
-	
-	public boolean isDND()
-	{
-		Contact contact = client.getContact(client.getNickname());
-		return isAwayDND && contact != null && contact.getStatus() == UserStatus.AWAY;
 	}
 	
 	protected void txtLog_LinkClick(java.net.URL url)
