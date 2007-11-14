@@ -120,4 +120,6 @@ next major protocol change will include:
 		00 a4 00 00 00 00 30 81 or new protocol HELO msg
 		before sending anything
 
+MOTD from server using INFO packets
+
 Bonjour discovery: http://www.macdevcenter.com/pub/a/mac/2004/08/31/osx_java.html
