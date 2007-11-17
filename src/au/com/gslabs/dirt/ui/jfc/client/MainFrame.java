@@ -28,25 +28,14 @@ public class MainFrame extends JFrame
 	JList lstContacts;
 	JComponent activeInputControl;
 	
-	public static void init() throws Throwable
-	{
-		SwingUtilities.invokeAndWait(new Runnable()
-			{
-				public void run()
-				{
-					UIUtil.initSwing();
-					new MainFrame();
-				}
-			});
-	}
-	
-	private MainFrame()
+	MainFrame()
 	{
 		
 		super("");
 		resbundle = ResourceBundle.getBundle("res/strings");
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
+		setJMenuBar(new MainMenuBar());
 		
 		getContentPane().setLayout(new BorderLayout());
 		
@@ -166,7 +155,6 @@ public class MainFrame extends JFrame
 		addWindowFocusListener(wa);
 		
 		setBounds(UIUtil.getDefaultWindowBounds(850, 330));
-		setVisible(true);
 		activeInputControl.requestFocusInWindow();
 		
 	}

@@ -157,7 +157,7 @@ public class ClientCLI
 		
 	}
 	
-	public ClientCLI()
+	private ClientCLI()
 	{
 		
 		try
