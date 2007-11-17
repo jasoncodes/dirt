@@ -16,14 +16,17 @@ import au.com.gslabs.dirt.core.client.enums.*;
 public class MainFrame extends JFrame
 {
 
-	protected ResourceBundle resbundle;
-	protected Action newAction, openAction, closeAction, saveAction, saveAsAction,
-		undoAction, cutAction, copyAction, pasteAction, clearAction, selectAllAction;
-	static final JMenuBar mainMenuBar = new JMenuBar();	
-	protected JMenu fileMenu, editMenu; 
 	protected Client client;
 	protected DefaultClientAdapter clientAdapter;
+	ContactListModel contacts;
 	protected boolean isDND;
+	
+	protected ResourceBundle resbundle;
+	LogPane txtLog;
+	InputArea txtInput;
+	JPasswordField txtPassword;
+	JList lstContacts;
+	JComponent activeInputControl;
 	
 	public static void init() throws Throwable
 	{
@@ -36,13 +39,6 @@ public class MainFrame extends JFrame
 				}
 			});
 	}
-	
-	LogPane txtLog;
-	InputArea txtInput;
-	JPasswordField txtPassword;
-	ContactListModel contacts;
-	JList lstContacts;
-	JComponent activeInputControl;
 	
 	private MainFrame()
 	{
@@ -314,58 +310,60 @@ public class MainFrame extends JFrame
 	
 	protected void updateWindowTitle()
 	{
-			String title = "";
+		
+		String title = "";
+		
+		if (client.isConnected())
+		{
 			
-			if (client.isConnected())
+			String nick = client.getNickname();
+			if (nick != null && nick.length() > 0)
 			{
-				
-				String nick = client.getNickname();
-				if (nick != null && nick.length() > 0)
-				{
-					title += nick + " on ";
-				}
-				else
-				{
-					title += "";
-				}
-				
-				if (client.getServerName() != null)
-				{
-					title += client.getServerName();
-					if (!client.getServerHostname().equals(client.getServerName()) &&
-						!client.getServerHostname().equals("localhost"))
-					{
-						title += " (" + client.getServerHostname() + ")";
-					}
-				}
-				else
-				{
-					title += client.getServerHostname();
-				}
-				
-				Duration latency = client.getLatency();
-				if (latency != null)
-				{
-					title += " (" + latency.toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)";
-				}
-				
-				if (!FileUtil.isMac())
-				{
-					title += " - " + resbundle.getString("title");
-				}
-				
-				if (isDND)
-				{
-					title += " | DND";
-				}
-				
+				title += nick + " on ";
 			}
 			else
 			{
-				title = resbundle.getString("title");
+				title += "";
 			}
 			
-			setTitle(title);
+			if (client.getServerName() != null)
+			{
+				title += client.getServerName();
+				if (!client.getServerHostname().equals(client.getServerName()) &&
+					!client.getServerHostname().equals("localhost"))
+				{
+					title += " (" + client.getServerHostname() + ")";
+				}
+			}
+			else
+			{
+				title += client.getServerHostname();
+			}
+			
+			Duration latency = client.getLatency();
+			if (latency != null)
+			{
+				title += " (" + latency.toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)";
+			}
+			
+			if (!FileUtil.isMac())
+			{
+				title += " - " + resbundle.getString("title");
+			}
+			
+			if (isDND)
+			{
+				title += " | DND";
+			}
+			
+		}
+		else
+		{
+			title = resbundle.getString("title");
+		}
+		
+		setTitle(title);
+		
 	}
 	
 	protected void txtLog_LinkClick(java.net.URL url)
