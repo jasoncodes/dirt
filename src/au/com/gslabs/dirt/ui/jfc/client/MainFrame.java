@@ -147,7 +147,13 @@ public class MainFrame extends JFrame
 				@Override
 				public void windowClosing(WindowEvent event)
 				{
-					onClose();
+					onClosing();
+				}
+				
+				@Override
+				public void windowClosed(WindowEvent event)
+				{
+					onClosed();
 				}
 				
 		};
@@ -469,7 +475,7 @@ public class MainFrame extends JFrame
 	}
 	*/
 	
-	protected void onClose()
+	protected void onClosing()
 	{
 		if (client.isConnected())
 		{
@@ -477,7 +483,11 @@ public class MainFrame extends JFrame
 		}
 		setVisible(false);
 		dispose();
-		if (!FileUtil.isMac())
+	}
+	
+	protected void onClosed()
+	{
+		if (UIUtil.getActiveWindow() == null)
 		{
 			System.exit(0);
 		}
