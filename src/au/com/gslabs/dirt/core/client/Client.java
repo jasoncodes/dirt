@@ -446,7 +446,7 @@ public class Client
 	
 	public String getServerName()
 	{
-		return server_name;
+		return !TextUtil.isEmpty(server_name) ? server_name : server_hostname;
 	}
 	
 	public String getServerHostname()

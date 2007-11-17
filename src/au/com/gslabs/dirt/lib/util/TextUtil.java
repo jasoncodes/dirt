@@ -17,6 +17,11 @@ public final class TextUtil
 	
 	protected static Random random = null;
 	
+	public static boolean isEmpty(String str)
+	{
+		return str == null || str.length() <= 0;
+	}
+	
 	public static ArrayList<String> split(String str, char delim)
 	{
 		return split(str, delim, -1);
