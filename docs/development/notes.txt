@@ -5,24 +5,26 @@ save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
 
-/connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
+query windows
 
 pressing up and down while entering text should restore buffer
+
+aliases and bindings
+
+keep selection when doing addTextLine
+	save start/end position, clear selection, add line, restore start/end position
+
+acceleration when scrolling logpane
+
+trigger windowClosing events on Cmd-Q
+
+/connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
 
 modifier sequences should count as a delimiter when doing tab completion
 	should share the existing tokenizer code
 		pull the tokenizer out of TextModifierParser?
 
-query windows
-
-aliases and bindings
-
 timers
-
-acceleration when scrolling logpane
-
-keep selection when doing addTextLine
-	save start/end position, clear selection, add line, restore start/end position
 
 nicklist
 	JSplitPane
