@@ -1,47 +1,27 @@
 package au.com.gslabs.dirt.ui.jfc.client;
 
+import java.awt.Dimension;
 import javax.swing.*;
+import javax.swing.event.*;
 import net.roydesign.ui.*;
+import net.roydesign.mac.MRJAdapter;
+import java.util.ResourceBundle;
+import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
 
 public class AboutFrame extends StandardMacAboutFrame
 {
 	
+	final static ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+
 	public AboutFrame()
 	{
-		
-		super("Test", "1.0");
+		super(
+			resbundle.getString("title"),
+			resbundle.getString("version") + " " + resbundle.getString("sourceDate"));
 		setJMenuBar(new MainMenuBar());
-		setApplicationIcon(UIManager.getIcon("OptionPane.informationIcon"));
-		/*
-		
-			f.setBuildVersion("234");
-			f.setCopyright("Copyright 2004-2007, Steve Roy, Software Design");
-			f.setCredits("<html><body>MRJ Adapter<br>" +
-				"<a href=\"http://homepage.mac.com/sroy/mrjadapter/\">homepage.mac.com/sroy/mrjadapter</a><br>" +
-				"<br>" +
-				"<b>Design &amp; Engineering</b><br>" +
-				"Steve Roy<br>" +
-				"<a href=\"mailto:sroy@mac.com\">sroy@mac.com</a>" +
-				"</body></html>", "text/html");
-			f.setHyperlinkListener(new HyperlinkListener()
-				{
-					public void hyperlinkUpdate(HyperlinkEvent e)
-					{
-						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-						{
-							try
-							{
-								MRJAdapter.openURL(e.getURL().toString());
-							}
-							catch (Exception ex)
-							{
-								ex.printStackTrace();
-							}
-						}
-					}
-				});
-				
-				*/
+		setApplicationIcon(UIUtil.loadImageIcon(64));
+		setBuildVersion(null);
+		setCopyright(resbundle.getString("copyright"));
 	}
 	
 }

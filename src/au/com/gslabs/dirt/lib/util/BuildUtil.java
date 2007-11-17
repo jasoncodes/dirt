@@ -18,7 +18,7 @@ public class BuildUtil
 			
 			Properties strings = new Properties();
 			strings.load(new FileInputStream(args[2]));
-			strings.setProperty("version", strings.getProperty("version") + " " + sourceDateString);
+			strings.setProperty("sourceDate", sourceDateString);
 			strings.store(new FileOutputStream(args[2]), null);
 		}
 		else

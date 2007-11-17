@@ -52,6 +52,13 @@ public class UIUtil
 		setWin32Icon(frame, "res/icons/dirt.ico");
 	}
 	
+	public static ImageIcon loadImageIcon(int size)
+	{
+		ImageIcon icon = new ImageIcon(FileUtil.getResource("res/icons/dirt.png"));
+		Image image = icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
+		return new ImageIcon(image);
+	}
+	
 	public static ImageIcon loadImageIcon(boolean small)
 	{
 		String path;

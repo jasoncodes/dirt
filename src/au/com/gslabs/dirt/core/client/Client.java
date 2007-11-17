@@ -161,7 +161,8 @@ public class Client
 				}
 			}, true);
 		
-		String version = ResourceBundle.getBundle("res/strings").getString("version");
+		final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+		String version = resbundle.getString("version") + " " + resbundle.getString("sourceDate");
 		
 		if (extras.size() > 0)
 		{

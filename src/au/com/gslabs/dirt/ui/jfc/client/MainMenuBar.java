@@ -1,5 +1,6 @@
 package au.com.gslabs.dirt.ui.jfc.client;
 
+import au.com.gslabs.dirt.lib.util.FileUtil;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -7,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import net.roydesign.app.*;
 import net.roydesign.ui.*;
+import java.lang.ref.WeakReference;
 
 public class MainMenuBar extends JScreenMenuBar
 {
@@ -21,41 +23,41 @@ public class MainMenuBar extends JScreenMenuBar
 		this.app = Application.getInstance();
 		
 		final JScreenMenu mnuFile = new JScreenMenu("File");
-		add(mnuFile);
+		final JScreenMenu mnuEdit = new JScreenMenu("Edit");
+		final JScreenMenu mnuHelp = new JScreenMenu("Help");
 
-		final JScreenMenuItem mnuFileNew = new JScreenMenuItem("New Window");
-		mnuFileNew.addActionListener(new ActionListener()
+		final JScreenMenuItem mnuNew = new JScreenMenuItem("New Window");
+		mnuNew.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
 					new MainFrame().setVisible(true);
 				}
 			});
-		mnuFileNew.setAccelerator(KeyStroke.getKeyStroke(
+		mnuNew.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_N,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 			));
-		mnuFile.add(mnuFileNew);
+		mnuFile.add(mnuNew);
 		
-		final JScreenMenuItem mnuFileClose = new JScreenMenuItem("Close Window");
-		mnuFileClose.setAccelerator(KeyStroke.getKeyStroke(
+		final JScreenMenuItem mnuClose = new JScreenMenuItem("Close Window");
+		mnuClose.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_W,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 			));
-		mnuFileClose.addActionListener(new ActionListener()
+		mnuClose.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					Window w = UIUtil.getActiveWindow();
-					if (canCloseWindow(w))
+					if (canCloseActiveWindow())
 					{
 						Toolkit tk = Toolkit.getDefaultToolkit();
 						EventQueue q = tk.getSystemEventQueue();
-						q.postEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
+						q.postEvent(new WindowEvent(UIUtil.getActiveWindow(), WindowEvent.WINDOW_CLOSING));
 					}
 				}
 			});
-		mnuFile.add(mnuFileClose);
+		mnuFile.add(mnuClose);
 		
 		mnuFile.addMenuListener(new MenuListener()
 			{
@@ -67,26 +69,35 @@ public class MainMenuBar extends JScreenMenuBar
 				}
 				public void menuSelected(MenuEvent e)
 				{
-					Window w = UIUtil.getActiveWindow();
-					mnuFileClose.setEnabled(canCloseWindow(UIUtil.getActiveWindow()));
+					mnuClose.setEnabled(canCloseActiveWindow());
 				}
 			});
 		
-		final QuitJMenuItem mnuFileQuit = app.getQuitJMenuItem();
-		mnuFileQuit.addActionListener(new ActionListener()
+		final QuitJMenuItem mnuQuit = app.getQuitJMenuItem();
+		mnuQuit.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
 					System.exit(0);
 				}
 			});
-		if (!mnuFileQuit.isAutomaticallyPresent())
+		if (!mnuQuit.isAutomaticallyPresent())
 		{
-			mnuFile.add(mnuFileQuit);
+			mnuFile.add(mnuQuit);
 		}
 		
-		final JScreenMenu mnuHelp = new JScreenMenu("Help");
-		add(mnuHelp);
+		final PreferencesJMenuItem mnuPreferences = app.getPreferencesJMenuItem();
+		mnuPreferences.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					new PreferencesFrame().setVisible(true);
+				}
+			});
+		if (!mnuPreferences.isAutomaticallyPresent())
+		{
+			mnuEdit.add(mnuPreferences);
+		}
 		
 		final AboutJMenuItem about = app.getAboutJMenuItem();
 		about.addActionListener(new ActionListener()
@@ -101,10 +112,31 @@ public class MainMenuBar extends JScreenMenuBar
 			mnuHelp.add(about);
 		}
 		
+		add(mnuFile);
+		if (mnuEdit.getItemCount() > 0)
+		{
+			add(mnuEdit);
+		}
+		add(mnuHelp);
+		
 	}
 	
-	protected boolean canCloseWindow(Window w)
+	static WeakReference<Window> lastFocusedMenuWindow = null;
+	
+	protected boolean canCloseActiveWindow()
 	{
+		
+		Window w = UIUtil.getActiveWindow();
+		
+		if (w != null)
+		{
+			lastFocusedMenuWindow = new WeakReference<Window>(w);
+		}
+		else
+		{
+			w = lastFocusedMenuWindow.get();
+		}
+		
 		if (w == null)
 		{
 			return false;
@@ -118,6 +150,7 @@ public class MainMenuBar extends JScreenMenuBar
 			}
 		}
 		return true;
+		
 	}
 	
 }
