@@ -304,10 +304,26 @@ public class Client
 		
 	}
 	
-	public void disconnect(String context)
+	public void disconect(String context)
+	{
+		disconnect(context, 0);
+	}
+	
+	public void disconnect(String context, long pendingSendFlushWaitMilliseconds)
 	{
 		if (ensureConnected(context, "DISCONNECT"))
 		{
+			try
+			{
+				long stopTime = System.currentTimeMillis() + pendingSendFlushWaitMilliseconds;
+				while (socket != null && socket.isPendingSend() && System.currentTimeMillis() < stopTime)
+				{
+					Thread.sleep(250);
+				}
+			}
+			catch (InterruptedException ex)
+			{
+			}
 			resetState();
 			notification(null, NotificationSeverity.INFO, null, "Disconnected");
 			raiseStateChanged();
