@@ -53,8 +53,6 @@ DND and away could deny/allow bounces/Growl via regex or javascript function
 is it possible to use a drawer on the Mac to display the nicklist?
 	http://developer.apple.com/samplecode/JSheets/index.html gives hope
 
-show a confirmation pane when closing a MainFrame with an option to set the quit message
-
 key/value pair status message protocol enhancement. possible uses include:
 	current track (iTunes on Mac, Winamp on Windows)
 		osascript -e "tell app \"iTunes\" to artist of current track as string & \"\n\" & name of current track as string"

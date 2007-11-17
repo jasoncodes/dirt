@@ -294,6 +294,16 @@ public class CryptSocket
 		
 	}
 	
+	public boolean isPendingSend()
+	{
+		synchronized (this)
+		{
+			return
+				(bufferSendUser != null && bufferSendUser.size() > 0) ||
+				(bufferSendRaw != null && bufferSendRaw.length() > 0);
+		}
+	}
+	
 	public void send(ByteBuffer userData)
 	{
 		synchronized (this)

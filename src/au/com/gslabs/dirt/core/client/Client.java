@@ -304,7 +304,7 @@ public class Client
 		
 	}
 	
-	public void disconect(String context)
+	public void disconnect(String context)
 	{
 		disconnect(context, 0);
 	}

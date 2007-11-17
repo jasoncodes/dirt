@@ -32,6 +32,7 @@ public class MainFrame extends JFrame
 	{
 		
 		super("");
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		resbundle = ResourceBundle.getBundle("res/strings");
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
@@ -298,6 +299,11 @@ public class MainFrame extends JFrame
 			super.clientStateChanged(source);
 			setPasswordMode(false);
 			updateWindowTitle();
+			getRootPane().putClientProperty(
+				"windowModified",
+				(client.isConnected() && client.getNickname() != null) ?
+					Boolean.TRUE :
+					Boolean.FALSE);
 		}
 		
 	}
@@ -477,16 +483,47 @@ public class MainFrame extends JFrame
 	
 	protected void onClosing()
 	{
-		if (client.isConnected())
+		
+		if (client.isConnected() && client.getNickname() != null)
 		{
-			clientAdapter.processConsoleInput(client, null, "/QUIT Closing");
+			
+			final JTextField txtQuitMessage = new JTextField();
+			txtQuitMessage.setText("Closing");
+			final String title = "Confirm Disconnect";
+			final Object[] message = {
+					"Closing this window will disconnect from " + client.getServerName() + ".",
+					new JLabel(),
+					"Quit Message:",
+					txtQuitMessage
+				};
+			final String[] options = { "Disconnect", "Cancel" };
+			
+			int result = JOptionPane.showOptionDialog(
+				this, message, title,
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+				options, options[0]);
+			
+			// if anything but Disconnect (the first option) is chosen
+			// (i.e. cancel button or confirm window closed),
+			// the user wants to cancel the operation
+			if (result != 0)
+			{
+				return; 
+			}
+			
+			client.quit(null, txtQuitMessage.getText());
+			
 		}
+		
 		setVisible(false);
+		client.disconnect(null, 2000);
 		dispose();
+		
 	}
 	
 	protected void onClosed()
 	{
+		// if there's no more windows open then we should exit the process
 		if (UIUtil.getActiveWindow() == null)
 		{
 			System.exit(0);
