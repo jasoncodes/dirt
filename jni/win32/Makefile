@@ -32,5 +32,9 @@ dirt_lib_ui_jfc.o: dirt_lib_ui_jfc.c au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h: ../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.class
 	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.ui.jfc.jni.Win32
 
+../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.class: ../../src/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.java
+	@echo You need to rebuild the Java source
+	@false
+
 all-after:
 	cp dirt_lib_ui_jfc.dll ../../lib/win32

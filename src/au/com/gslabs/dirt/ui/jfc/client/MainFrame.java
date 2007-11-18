@@ -203,6 +203,19 @@ public class MainFrame extends JFrame
 				
 				case TEST:
 					txtLog.addTestData();
+					new Thread(new Runnable() {
+						public void run()
+						{
+							try
+							{
+								Thread.sleep(2000);
+							}
+							catch (InterruptedException ex)
+							{
+							}
+							UIUtil.alert(MainFrame.this);
+						}
+					}).start();
 					return true;
 				
 				case CLEAR:

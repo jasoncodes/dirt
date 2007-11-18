@@ -1,6 +1,6 @@
 package au.com.gslabs.dirt.lib.ui.jfc.jni;
 
-import java.awt.Frame;
+import java.awt.Window;
 
 public class Win32
 {
@@ -19,7 +19,7 @@ public class Win32
 		ForceForegroundWindow(window);
 	}
 
-	public void setIcon(window Window frame, final String filename)
+	public void setIcon(final Window window, final String filename)
 	{
 		SetIcon(window, filename);
 	}
