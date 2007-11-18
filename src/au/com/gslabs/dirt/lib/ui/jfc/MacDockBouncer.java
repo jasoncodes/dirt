@@ -1,5 +1,6 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
@@ -7,6 +8,7 @@ import au.com.gslabs.dirt.lib.ui.jfc.jni.MacOS;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import net.roydesign.app.Application;
 
 class MacDockBouncer extends Thread
 {
@@ -53,11 +55,13 @@ class MacDockBouncer extends Thread
 			this.frame.removeWindowListener(listener);
 			this.frame.removeWindowFocusListener(listener);
 			this.hasBeenFocused = true;
+			lastFocusedAlertFrame = new WeakReference<Frame>(this.frame);
 			MacDockBouncer.this.interrupt();
 		}
 	}
 	
 	protected Map<Frame,FocusMonitor> monitors;
+	protected WeakReference<Frame> lastFocusedAlertFrame;
 	
 	public MacDockBouncer() throws Exception
 	{
@@ -88,6 +92,23 @@ class MacDockBouncer extends Thread
 				public void run()
 				{
 					mac.setDockIcon(icons[0]);
+				}
+			});
+			
+		Application.getInstance().addReopenApplicationListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					if (lastFocusedAlertFrame == null || UIUtil.getActiveWindow() != lastFocusedAlertFrame.get())
+					{
+						final Frame[] alertingFrames = getAlertingFrames();
+						if (alertingFrames.length > 0)
+						{
+							UIUtil.stealFocus(alertingFrames[0]);
+						}
+					}
+					lastFocusedAlertFrame = null;
+					
 				}
 			});
 		
@@ -127,6 +148,11 @@ class MacDockBouncer extends Thread
 			monitors.put(frame, new FocusMonitor(frame));
 			notify();
 		}
+	}
+	
+	public Frame[] getAlertingFrames()
+	{
+		return monitors.keySet().toArray(new Frame[0]);
 	}
 	
 	protected Integer requestID = null;
