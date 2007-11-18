@@ -37,6 +37,7 @@ public class MainFrame extends JFrame
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		setJMenuBar(new MainMenuBar());
+		UIUtil.addExitOnCloseHandler(this);
 		
 		getContentPane().setLayout(new BorderLayout());
 		
@@ -151,13 +152,7 @@ public class MainFrame extends JFrame
 					onClosing();
 				}
 				
-				@Override
-				public void windowClosed(WindowEvent event)
-				{
-					onClosed();
-				}
-				
-		};
+			};
 		addWindowListener(wa);
 		addWindowFocusListener(wa);
 		
@@ -532,15 +527,6 @@ public class MainFrame extends JFrame
 		client.disconnect(null, 2000);
 		dispose();
 		
-	}
-	
-	protected void onClosed()
-	{
-		// if there's no more windows open then we should exit the process
-		if (UIUtil.getActiveWindow() == null)
-		{
-			System.exit(0);
-		}
 	}
 
 }

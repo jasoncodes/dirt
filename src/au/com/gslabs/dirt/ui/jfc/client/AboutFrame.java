@@ -15,13 +15,20 @@ public class AboutFrame extends StandardMacAboutFrame
 
 	public AboutFrame()
 	{
+		
 		super(
 			resbundle.getString("title"),
 			resbundle.getString("version") + " " + resbundle.getString("sourceDate"));
-		setJMenuBar(new MainMenuBar());
 		setApplicationIcon(UIUtil.loadImageIcon(64));
 		setBuildVersion(null);
 		setCopyright(resbundle.getString("copyright"));
+		
+		if (MRJAdapter.isSwingUsingScreenMenuBar())
+		{
+			setJMenuBar(new MainMenuBar());
+		}
+		UIUtil.addExitOnCloseHandler(this);
+		
 	}
 	
 }

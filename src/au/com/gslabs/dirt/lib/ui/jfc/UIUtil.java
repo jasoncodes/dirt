@@ -3,6 +3,8 @@ package au.com.gslabs.dirt.lib.ui.jfc;
 import java.io.File;
 import au.com.gslabs.dirt.lib.ui.jfc.jni.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
@@ -206,7 +208,7 @@ public class UIUtil
 		}
 	}
 	
-	public static void stealFocus(Frame frame)
+	public static void stealFocus(Window window)
 	{
 		if (FileUtil.isWin())
 		{
@@ -214,7 +216,7 @@ public class UIUtil
 			{
 				FileUtil.loadLibrary(JNILib_Win32);
 				Win32 win32 = new Win32();
-				win32.stealFocus(frame);
+				win32.stealFocus(window);
 			}
 			catch (Exception ex)
 			{
@@ -223,9 +225,25 @@ public class UIUtil
 		}
 		else
 		{
-			frame.toFront();
-			frame.requestFocus();
+			window.toFront();
+			window.requestFocus();
 		}
+	}
+	
+	public static void addExitOnCloseHandler(Window window)
+	{
+		window.addWindowListener(new WindowAdapter()
+			{
+				@Override
+				public void windowClosed(WindowEvent event)
+				{
+					// if there's no more windows open then we should exit the process
+					if (UIUtil.getActiveWindow() == null)
+					{
+						System.exit(0);
+					}
+				}
+			});
 	}
 	
 	public static void initSwing()
