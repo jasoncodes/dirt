@@ -523,8 +523,12 @@ public class MainFrame extends JFrame
 			
 		}
 		
+		txtLog.clearText();
 		setVisible(false);
-		client.disconnect(null, 2000);
+		if (client.isConnected())
+		{
+			client.disconnect(null, 2000);
+		}
 		dispose();
 		
 	}

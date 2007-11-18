@@ -27,6 +27,7 @@ public class AboutFrame extends StandardMacAboutFrame
 		{
 			setJMenuBar(new MainMenuBar());
 		}
+		UIUtil.setIcon(this);
 		UIUtil.addExitOnCloseHandler(this);
 		
 	}

@@ -24,6 +24,7 @@ public class MainMenuBar extends JScreenMenuBar
 		
 		final JScreenMenu mnuFile = new JScreenMenu("File");
 		final JScreenMenu mnuEdit = new JScreenMenu("Edit");
+		final JScreenMenu mnuWindow = new JScreenMenu("Window");
 		final JScreenMenu mnuHelp = new JScreenMenu("Help");
 
 		final JScreenMenuItem mnuNew = new JScreenMenuItem("New Window");
@@ -99,17 +100,55 @@ public class MainMenuBar extends JScreenMenuBar
 			mnuEdit.add(mnuPreferences);
 		}
 		
-		final AboutJMenuItem about = app.getAboutJMenuItem();
-		about.addActionListener(new ActionListener()
+		final JScreenMenuItem mnuMinimize = new JScreenMenuItem("Minimize");
+		mnuMinimize.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_M,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+			));
+		mnuMinimize.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					if (canMinimizeActiveWindow())
+					{
+						Window w = UIUtil.getActiveWindow();
+						if (w instanceof Frame)
+						{
+							((Frame)w).setState(Frame.ICONIFIED);
+						}
+					}
+				}
+			});
+		if (FileUtil.isMac())
+		{
+			mnuWindow.add(mnuMinimize);
+		}
+		
+		mnuWindow.addMenuListener(new MenuListener()
+			{
+				public void menuCanceled(MenuEvent e)
+				{
+				}
+				public void menuDeselected(MenuEvent e)
+				{
+				}
+				public void menuSelected(MenuEvent e)
+				{
+					mnuMinimize.setEnabled(canMinimizeActiveWindow());
+				}
+			});
+		
+		final AboutJMenuItem mnuAbout = app.getAboutJMenuItem();
+		mnuAbout.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
 					new AboutFrame().setVisible(true);
 				}
 			});
-		if (!about.isAutomaticallyPresent())
+		if (!mnuAbout.isAutomaticallyPresent())
 		{
-			mnuHelp.add(about);
+			mnuHelp.add(mnuAbout);
 		}
 		
 		add(mnuFile);
@@ -117,40 +156,26 @@ public class MainMenuBar extends JScreenMenuBar
 		{
 			add(mnuEdit);
 		}
+		if (mnuWindow.getItemCount() > 0)
+		{
+			add(mnuWindow);
+		}
 		add(mnuHelp);
 		
 	}
 	
-	static WeakReference<Window> lastFocusedMenuWindow = null;
-	
 	protected boolean canCloseActiveWindow()
 	{
-		
-		Window w = UIUtil.getActiveWindow();
-		
-		if (w != null)
+		return app.getFramelessJMenuBar() != this;
+	}
+	
+	protected boolean canMinimizeActiveWindow()
+	{
+		if (app.getFramelessJMenuBar() != this)
 		{
-			lastFocusedMenuWindow = new WeakReference<Window>(w);
+			return (UIUtil.getActiveWindow() instanceof Frame);
 		}
-		else
-		{
-			w = lastFocusedMenuWindow.get();
-		}
-		
-		if (w == null)
-		{
-			return false;
-		}
-		if (w instanceof JFrame)
-		{
-			JFrame f = (JFrame)w;
-			if (app.getFramelessJMenuBar() == f.getJMenuBar())
-			{
-				return false;
-			}
-		}
-		return true;
-		
+		return false;
 	}
 	
 }

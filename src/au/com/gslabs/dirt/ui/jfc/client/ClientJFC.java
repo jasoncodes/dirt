@@ -7,6 +7,7 @@ import au.com.gslabs.dirt.lib.util.FileUtil;
 import javax.swing.SwingUtilities;
 import net.roydesign.app.Application;
 import java.awt.Window;
+import java.awt.Frame;
 import javax.swing.JFrame;
 
 public class ClientJFC extends Application
@@ -34,24 +35,67 @@ public class ClientJFC extends Application
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					new MainFrame().setVisible(true);
+					SwingUtilities.invokeLater(new ReopenApplicationHelper());
 				}
 			});
 		addReopenApplicationListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					Window w = UIUtil.getActiveWindow();
-					if (w == null || (w instanceof JFrame) && getFramelessJMenuBar() == ((JFrame)w).getJMenuBar())
-					{
-						new MainFrame().setVisible(true);
-					}
+					SwingUtilities.invokeLater(new ReopenApplicationHelper());
 				}
 			});
 		
 		if (!FileUtil.isMac())
 		{
 			new MainFrame().setVisible(true);
+		}
+		
+	}
+	
+	public class ReopenApplicationHelper implements Runnable
+	{
+		
+		public boolean isValidCandidate(Window w)
+		{
+			if (w == null || !w.isDisplayable())
+			{
+				return false;
+			}
+			if ((w instanceof JFrame) && getFramelessJMenuBar() == ((JFrame)w).getJMenuBar())
+			{
+				return false;
+			}
+			return true;
+		}
+		
+		public void run()
+		{
+			
+			if (!isValidCandidate(UIUtil.getActiveWindow()))
+			{
+				
+				Frame selected = null;
+				for (Frame f : Frame.getFrames())
+				{
+					if (isValidCandidate(f))
+					{
+						selected = f;
+						break;
+					}
+				}
+				
+				if (selected == null)
+				{
+					selected = new MainFrame();
+				}
+				
+				selected.setVisible(true);
+				selected.setState(Frame.NORMAL);
+				UIUtil.stealFocus(selected);
+				
+			}
+			
 		}
 		
 	}
