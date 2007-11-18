@@ -78,7 +78,15 @@ public class Client
 	protected String getUserDetails()
 	{
 		
-		String username = System.getProperty("user.name");
+		String username;
+		try
+		{
+			username = System.getProperty("user.name");
+		}
+		catch (SecurityException ex)
+		{
+			username = null;
+		}
 		String hostname = au.com.gslabs.dirt.lib.net.socket.SocketFactory.getInstance().getHostName();
 		String userDetails = username + "@" + hostname;
 		
@@ -114,6 +122,10 @@ public class Client
 		if (name != null)
 		{
 			name = TextUtil.splitQuotedHeadTail(name)[0];
+		}
+		else
+		{
+			name = "";
 		}
 		return name;
 	}
@@ -277,7 +289,13 @@ public class Client
 		{
 			shutdownHook = new ShutdownHook();
 		}
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+		try
+		{
+			Runtime.getRuntime().addShutdownHook(shutdownHook);
+		}
+		catch (SecurityException ex)
+		{
+		}
 		
 		notification(null, NotificationSeverity.INFO, null, "Connected to " + socket.getPeerName());
 		sendToServer(null, "USERDETAILS", new ByteBuffer(getUserDetails()));
@@ -393,7 +411,13 @@ public class Client
 		
 		if (shutdownHook != null)
 		{
-			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			try
+			{
+				Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			}
+			catch (SecurityException ex)
+			{
+			}
 		}
 		
 		final ArrayList<Contact> modifiedContacts = new ArrayList<Contact>(this.contacts.size());

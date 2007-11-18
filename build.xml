@@ -208,7 +208,7 @@
 		<copy file="${base}/Dirt.tmproj.template" tofile="${base}/Dirt.tmproj" overwrite="false" />
 	</target>
 	
-	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,webstart" />
+	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,webstart,applet" />
 
 	<target name="all" depends="clean,dist" />
 	
@@ -227,6 +227,13 @@
 		<jar jarfile="${dist}/webstart/mac/apple.jar">
 			<fileset dir="${apple}" excludes="Extensions/**" />
 		</jar>
+	</target>
+	
+	<target name="applet" depends="jar-main">
+		<mkdir dir="${dist}/applet" />
+		<copy file="${build}/main/main.jar" tofile="${dist}/applet/dirt.jar" />
+		<copy file="${res}/applet.html" tofile="${dist}/applet/dirt.html" />
+		<copy file="${lib}/common/jzlib-1.0.7.jar" todir="${dist}/applet/" />
 	</target>
 	
 </project>
