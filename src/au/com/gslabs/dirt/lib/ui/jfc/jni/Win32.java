@@ -9,24 +9,24 @@ public class Win32
 	{
 	}
 
-	public void alert(final Frame frame)
+	public void alert(final Window window)
 	{
-		FlashWindow(frame);
+		FlashWindow(window);
 	}
 	
-	public void stealFocus(final Frame frame)
+	public void stealFocus(final Window window)
 	{
-		ForceForegroundWindow(frame);
+		ForceForegroundWindow(window);
 	}
 
-	public void setIcon(final Frame frame, final String filename)
+	public void setIcon(window Window frame, final String filename)
 	{
-		SetIcon(frame, filename);
+		SetIcon(window, filename);
 	}
 
-	protected native void FlashWindow(Frame frame);
-	protected native void ForceForegroundWindow(Frame frame);
-	protected native void SetIcon(Frame frame, String filename);
+	protected native void FlashWindow(Window window);
+	protected native void ForceForegroundWindow(Window window);
+	protected native void SetIcon(Window window, String filename);
 	public native String getMyFullName();
 
 }
