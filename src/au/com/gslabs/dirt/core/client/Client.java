@@ -102,7 +102,14 @@ public class Client
 		String name = FileUtil.getMyFullName();
 		if (name == null || name.length() < 1)
 		{
-			name = System.getProperty("user.name");
+			try
+			{
+				name = System.getProperty("user.name");
+			}
+			catch (SecurityException ex)
+			{
+				name = null; // we're probably in an applet
+			}
 		}
 		if (name != null)
 		{

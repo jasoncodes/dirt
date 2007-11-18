@@ -16,7 +16,13 @@ class J2SESocket implements au.com.gslabs.dirt.lib.net.socket.Socket
 	{
 		
 		// prefer AAAA records when available
-		System.setProperty("java.net.preferIPv6Addresses", "true");
+		try
+		{
+			System.setProperty("java.net.preferIPv6Addresses", "true");
+		}
+		catch (SecurityException ex)
+		{
+		}
 		
 		// get a list of all the addresses for the hostname supplied
 		final InetAddress[] addresses;
