@@ -22,6 +22,15 @@ public class UIUtil
 		return java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
 	}
 	
+	public static Window getTopLevelWindow(Component c)
+	{
+		while (c.getParent() != null)
+		{
+			c = c.getParent();
+		}
+		return (Window)c;
+	}
+	
 	public static void setWin32Icon(Frame frame, String path)
 	{
 		if (FileUtil.isWin())
@@ -211,6 +220,11 @@ public class UIUtil
 			{
 				ex.printStackTrace();
 			}
+		}
+		else
+		{
+			frame.toFront();
+			frame.requestFocus();
 		}
 	}
 	
