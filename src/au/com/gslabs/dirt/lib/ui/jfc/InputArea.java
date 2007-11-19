@@ -178,6 +178,7 @@ public class InputArea extends JScrollPane
 			});
 		txt.addKeyListener(new KeyAdapter()
 			{
+				@Override
 				public void keyPressed(KeyEvent e)
 				{
 					if (e.getKeyChar() == 13 || e.getKeyChar() == 10)
