@@ -21,6 +21,14 @@ public class BuildUtil
 			strings.setProperty("sourceDate", sourceDateString);
 			strings.store(new FileOutputStream(args[2]), null);
 		}
+		else if (args.length == 1 && args[0].equals("--print-arch"))
+		{
+			System.out.println(System.getProperty("os.arch"));
+		}
+		else if (args.length == 1 && args[0].equals("--print-javahome"))
+		{
+			System.out.println(System.getProperty("java.home"));
+		}
 		else
 		{
 			System.err.println("Invalid args");
