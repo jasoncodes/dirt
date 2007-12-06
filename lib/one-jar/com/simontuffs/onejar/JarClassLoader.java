@@ -311,10 +311,17 @@ public class JarClassLoader extends ClassLoader {
 						{
 							os = "win";
 						}
-						String[] valid_os_list = prefs.getString(jar).split("[, ]");
+						final String arch = System.getProperty("os.arch").toLowerCase();
+						final String[] valid_os_list = prefs.getString(jar).split("[, ]");
 						boolean allowed = false;
 						for (int i = 0; i < valid_os_list.length; ++i)
 						{
+							if (valid_os_list[i].equals(os+"_"+arch))
+							{
+								VERBOSE(jar + " allowed on " + os+"_"+arch);
+								allowed = true;
+								break;
+							}
 							if (valid_os_list[i].equals(os))
 							{
 								VERBOSE(jar + " allowed on " + os);
@@ -324,7 +331,7 @@ public class JarClassLoader extends ClassLoader {
 						}
 						if (!allowed)
 						{
-							VERBOSE(jar + " NOT allowed on " + os);
+							VERBOSE(jar + " NOT allowed on " + os + " or " + os+"_"+arch);
 							continue;
 						}
 					}
