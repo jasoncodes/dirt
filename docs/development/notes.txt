@@ -1,5 +1,5 @@
 char events on logpane when no modifiers should blur and resend the char event to inputarea
-all non-shortcut keystrokes to LogPane should focus InputArea and forward the keystroke
+all non-shortcut keystrokes (except cmd-v) to LogPane should focus InputArea and forward the keystroke
 
 save/restore frame rect
 	persistence needs to support query windows
@@ -11,6 +11,11 @@ Cmd-N should cascade new windows and use current window size
 Cmd-` shouldn't include the hidden menu frame
 	add a "Cycle Through Windows" Cmd-` option to the Window menu
 	write own cycling code using Frame.getFrames() that skips the menu frame
+	
+Window Menu
+	Bring all to front (test on all platforms, okay to be Mac only if too hard)
+	Window List. Ideally with diamond for minimized windows
+	sweethome3d.sf.net has code that does both these
 
 query windows
 
@@ -130,3 +135,12 @@ next major protocol change will include:
 MOTD from server using INFO packets
 
 Bonjour discovery: http://www.macdevcenter.com/pub/a/mac/2004/08/31/osx_java.html
+
+10.5 control styles: http://developer.apple.com/technotes/tn2007/tn2196.html
+	can documentFile be used to create an Adium style alert icon in the titlebar?
+		maybe if it's inside a bundle it wont be draggable and cmd-clickable?
+
+MIDP
+	http://mpowerplayer.com/
+	http://vertical-progress.net/article/compiling-j2me-midp20-applications-on-mac-osx
+	http://www.justobjects.org/blog/?p=10

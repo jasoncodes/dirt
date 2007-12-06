@@ -27,18 +27,27 @@ endif
 USR_INCLUDE_DIR = /usr/include
 USR_LIB_DIR = /usr/lib
 
-INCLUDES = -I$(JAVA_HOME)/include \
-           -I$(JAVA_HOME)/include/$(PLATFORM)
+BUILD_UTIL = java -cp ../../build/main-classes au.com.gslabs.dirt.lib.util.BuildUtil
+
+JAVA_HOME := $(shell $(BUILD_UTIL) --print-javahome)
+ARCH := $(shell $(BUILD_UTIL) --print-arch)
+
+INCLUDES := -I$(JAVA_HOME)/../include \
+            -I$(JAVA_HOME)/../include/$(PLATFORM)
 
 libs: libdirt_lib_ui_jfc.so libdirt_lib_util.so
 
-libdirt_lib_ui_jfc.so: dirt_lib_ui_jfc_jni.c au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/jre/lib/i386 -ljawt -lXt -lX11 dirt_lib_ui_jfc_jni.c -o $@
-	cp libdirt_lib_ui_jfc.so ../../lib/linux_x86/
+/usr/include/X11/Intrinsic.h:
+	@echo Install the libxt-dev package
+	@false
+
+libdirt_lib_ui_jfc.so: dirt_lib_ui_jfc_jni.c au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h /usr/include/X11/Intrinsic.h
+	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/lib/$(ARCH) -ljawt -lXt -lX11 dirt_lib_ui_jfc_jni.c -o $@
+	cp libdirt_lib_ui_jfc.so ../../lib/linux_$(ARCH)/
 
 libdirt_lib_util.so: dirt_lib_util_jni.c au_com_gslabs_dirt_lib_util_jni_Linux.h
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(JAVA_HOME)/jre/lib/i386 dirt_lib_util_jni.c -o $@
-	cp libdirt_lib_util.so ../../lib/linux_x86/
+	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(JAVA_HOME)/lib/$(ARCH) dirt_lib_util_jni.c -o $@
+	cp libdirt_lib_util.so ../../lib/linux_$(ARCH)/
 
 all: clean libs
 
@@ -50,3 +59,10 @@ au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h: ../../build/main-classes/au/com/gslab
 
 au_com_gslabs_dirt_lib_util_jni_Linux.h: ../../build/main-classes/au/com/gslabs/dirt/lib/util/jni/Linux.class
 	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.util.jni.Linux
+
+../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Linux.class: ../../src/au/com/gslabs/dirt/lib/ui/jfc/jni/Linux.java
+	cd ../.. && ant
+
+../../build/main-classes/au/com/gslabs/dirt/lib/util/jni/Linux.class: ../../src/au/com/gslabs/dirt/lib/util/jni/Linux.java
+	cd ../.. && ant
+		

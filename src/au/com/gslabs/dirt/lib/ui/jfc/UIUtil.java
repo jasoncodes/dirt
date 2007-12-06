@@ -12,9 +12,6 @@ import au.com.gslabs.dirt.lib.util.FileUtil;
 public class UIUtil
 {
 	
-	private static final String JNILib_Win32 = "lib/win32/dirt_lib_ui_jfc.dll";
-	private static final String JNILib_LinuxX86 = "lib/linux_x86/libdirt_lib_ui_jfc.so";
-	
 	private UIUtil()
 	{
 	}
@@ -39,7 +36,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary(JNILib_Win32);
+				loadLibrary();
 				File temp = FileUtil.getNewTempFile();
 				java.io.InputStream in = FileUtil.getResourceAsStream(path);
 				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
@@ -159,8 +156,20 @@ public class UIUtil
 		return rect;
 	}
 	
+	protected static void loadLibrary() throws java.io.IOException, IllegalAccessException, NoSuchFieldException
+	{
+		if (FileUtil.isWin())
+		{
+			FileUtil.loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
+		}
+		if (FileUtil.isLinux())
+		{
+			FileUtil.loadLibrary("lib/linux_"+System.getProperty("os.arch")+"/libdirt_lib_ui_jfc.so");
+		}
+	}
+	
 	protected static MacDockBouncer dockBouncer = null;
-		
+	
 	public static void alert(Frame frame)
 	{
 		try
@@ -169,7 +178,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					FileUtil.loadLibrary(JNILib_Win32);
+					loadLibrary();
 					Win32 win32 = new Win32();
 					win32.alert(frame);
 				}
@@ -178,7 +187,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					FileUtil.loadLibrary(JNILib_LinuxX86);
+					loadLibrary();
 					Linux linux = new Linux();
 					linux.alert(frame);
 				}
@@ -214,7 +223,7 @@ public class UIUtil
 		{
 			try
 			{
-				FileUtil.loadLibrary(JNILib_Win32);
+				loadLibrary();
 				Win32 win32 = new Win32();
 				win32.stealFocus(window);
 			}

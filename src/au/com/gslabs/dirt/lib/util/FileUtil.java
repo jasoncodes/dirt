@@ -209,7 +209,7 @@ public class FileUtil
 			}
 			if (isLinux())
 			{
-				loadLibrary("lib/linux_x86/libdirt_lib_util.so");
+				loadLibrary("lib/linux_"+System.getProperty("os.arch")+"/libdirt_lib_util.so");
 				au.com.gslabs.dirt.lib.util.jni.Linux linux =
 					new au.com.gslabs.dirt.lib.util.jni.Linux();
 				return linux.getMyFullName();

@@ -131,10 +131,12 @@
 				<include name="lib/stub/jdic.jar" />
 				<include name="lib/win32/jdic.jar" />
 				<include name="lib/win32/tray.dll" />
-				<include name="lib/linux_x86/jdic.jar" />
-				<include name="lib/linux_x86/libtray.so" />
-				<include name="lib/linux_x86/libdirt_lib_ui_jfc.so" />
-				<include name="lib/linux_x86/libdirt_lib_util.so" />
+				<include name="lib/linux_i386/jdic.jar" />
+				<include name="lib/linux_i386/libtray.so" />
+				<include name="lib/linux_i386/libdirt_lib_ui_jfc.so" />
+				<include name="lib/linux_i386/libdirt_lib_util.so" />
+				<include name="lib/linux_amd64/libdirt_lib_ui_jfc.so" />
+				<include name="lib/linux_amd64/libdirt_lib_util.so" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
