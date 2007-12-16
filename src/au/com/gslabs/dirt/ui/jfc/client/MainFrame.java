@@ -166,15 +166,18 @@ public class MainFrame extends JFrame
 	{
 		JComponent txtOld = passwordMode ? txtInput : txtPassword;
 		JComponent txtNew = passwordMode ? txtPassword : txtInput;
-		txtPassword.setPreferredSize(txtInput.getPreferredSize());
-		txtPassword.setText("");
-		getContentPane().remove(txtOld);
-		getContentPane().add(txtNew, BorderLayout.SOUTH);
-		activeInputControl = txtNew;
-		getContentPane().validate();
-		if (UIUtil.getActiveWindow() == this)
+		if (activeInputControl != txtNew)
 		{
-			txtNew.requestFocusInWindow();
+			activeInputControl = txtNew;
+			txtPassword.setPreferredSize(txtInput.getPreferredSize());
+			txtPassword.setText("");
+			getContentPane().remove(txtOld);
+			getContentPane().add(txtNew, BorderLayout.SOUTH);
+			getContentPane().validate();
+			if (UIUtil.getActiveWindow() == this)
+			{
+				txtNew.requestFocusInWindow();
+			}
 		}
 	}
 	
@@ -279,6 +282,7 @@ public class MainFrame extends JFrame
 					txtLog.showAndPulseArrow();
 				}
 			}
+			setPasswordMode(false);
 			txtLog.appendTextLine(getOutputPrefix() + message, className);
 		}
 		
@@ -306,7 +310,10 @@ public class MainFrame extends JFrame
 		public void clientStateChanged(Client source)
 		{
 			super.clientStateChanged(source);
-			setPasswordMode(false);
+			if (!source.isConnected())
+			{
+				setPasswordMode(false);
+			}
 			updateWindowTitle();
 			getRootPane().putClientProperty(
 				"windowModified",
