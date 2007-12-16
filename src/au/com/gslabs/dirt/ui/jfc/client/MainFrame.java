@@ -157,7 +157,7 @@ public class MainFrame extends JFrame
 		addWindowFocusListener(wa);
 		
 		updateWindowTitle();
-		setBounds(UIUtil.getDefaultWindowBounds(850, 330));
+		UIUtil.setDefaultWindowBounds(this, 850, 330, MainFrame.class);
 		activeInputControl.requestFocusInWindow();
 		
 	}

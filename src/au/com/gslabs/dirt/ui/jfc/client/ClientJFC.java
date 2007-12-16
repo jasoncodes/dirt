@@ -56,29 +56,16 @@ public class ClientJFC extends Application
 	public class ReopenApplicationHelper implements Runnable
 	{
 		
-		public boolean isValidCandidate(Window w)
-		{
-			if (w == null || !w.isDisplayable())
-			{
-				return false;
-			}
-			if ((w instanceof JFrame) && getFramelessJMenuBar() == ((JFrame)w).getJMenuBar())
-			{
-				return false;
-			}
-			return true;
-		}
-		
 		public void run()
 		{
 			
-			if (!isValidCandidate(UIUtil.getActiveWindow()))
+			if (!UIUtil.isValidWindow(UIUtil.getActiveWindow()))
 			{
 				
 				Frame selected = null;
 				for (Frame f : Frame.getFrames())
 				{
-					if (isValidCandidate(f))
+					if (UIUtil.isValidWindow(f))
 					{
 						selected = f;
 						break;

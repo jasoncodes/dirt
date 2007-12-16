@@ -1,16 +1,17 @@
-char events on logpane when no modifiers should blur and resend the char event to inputarea
-all non-shortcut keystrokes (except cmd-v) to LogPane should focus InputArea and forward the keystroke
+Cmd-` shouldn't include the hidden menu frame
+	add a "Cycle Through Windows" Cmd-` option to the Window menu
+	write own cycling code using Frame.getFrames() that skips the menu frame
+		except getFrames returns in creation order, do we need a WindowListener
+		on every frame to detect last focus and maintain our own focus order?
+	
+Cmd-N should cascade new windows and use current window size
+	will need to use same code as Cmd-` to work out last focused frame
+	implement in setDefaultWindowBounds
 
 save/restore frame rect
 	persistence needs to support query windows
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
-	
-Cmd-N should cascade new windows and use current window size
-
-Cmd-` shouldn't include the hidden menu frame
-	add a "Cycle Through Windows" Cmd-` option to the Window menu
-	write own cycling code using Frame.getFrames() that skips the menu frame
 	
 Window Menu
 	Bring all to front (test on all platforms, okay to be Mac only if too hard)

@@ -465,6 +465,7 @@ public class LogPane extends JScrollPane
 		
 		this.addComponentListener(new ComponentAdapter()
 			{
+				@Override
 				public void componentResized(ComponentEvent e)
 				{
 					if (lastIsAtEnd)
@@ -488,14 +489,45 @@ public class LogPane extends JScrollPane
 		
 		editor.addMouseListener(new MouseAdapter()
 			{
+				@Override
 				public void mouseClicked(MouseEvent e)
 				{
 					editor.transferFocus();
 				}
 			});
 		
+		editor.addKeyListener(new KeyAdapter()
+			{
+				@Override
+				public void keyTyped(KeyEvent e)
+				{
+					redispatchToNextFocus(e);
+					e.consume();
+				}
+				@Override
+				public void keyPressed(KeyEvent e)
+				{
+					if (e.getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())
+					{
+						if (e.getKeyCode() == KeyEvent.VK_V)
+						{
+							redispatchToNextFocus(e);
+							e.consume();
+						}
+					}
+				}
+			});
+		
 	}
 	
+	protected void redispatchToNextFocus(AWTEvent e)
+	{
+		final Container focusRoot = getFocusCycleRootAncestor();
+		final Component nextFocus = focusRoot.getFocusTraversalPolicy().getComponentAfter(focusRoot, (Component)e.getSource());
+		nextFocus.requestFocus();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(nextFocus, e);
+	}
+
 	protected void raiseLinkEvent(URL url)
 	{
 		LinkEvent e = new LinkEvent(this, url);

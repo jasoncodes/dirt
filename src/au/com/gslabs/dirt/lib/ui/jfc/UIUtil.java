@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
+import net.roydesign.app.Application;
 
 public class UIUtil
 {
@@ -154,6 +155,34 @@ public class UIUtil
 		}
 		
 		return rect;
+		
+	}
+	
+	public static void setDefaultWindowBounds(JFrame frame, int width, int height, Class cascadeClass)
+	{
+		
+		Rectangle bounds = getDefaultWindowBounds(width, height);
+		
+		/*
+		// Finishing this requires code that can detect frame focus order
+		if (cascadeClass != null)
+		{
+			Frame selected = null;
+			for (Frame f : Frame.getFrames())
+			{
+				if (f != frame && UIUtil.isValidWindow(f) && cascadeClass.isInstance(f))
+				{
+					System.out.println(f);
+					//selected = f;
+					//break;
+				}
+			}
+			System.out.println(selected);
+		}
+		*/
+		
+		frame.setBounds(bounds);
+		
 	}
 	
 	protected static void loadLibrary() throws java.io.IOException, IllegalAccessException, NoSuchFieldException
@@ -237,6 +266,23 @@ public class UIUtil
 			window.toFront();
 			window.requestFocus();
 		}
+	}
+	
+	public static boolean isValidWindow(Window w)
+	{
+		if (w == null || !w.isDisplayable())
+		{
+			return false;
+		}
+		if (w instanceof JFrame)
+		{
+			JMenuBar menuBar = ((JFrame)w).getJMenuBar();
+			if (menuBar != null && menuBar == Application.getInstance().getFramelessJMenuBar())
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public static void addExitOnCloseHandler(Window window)
