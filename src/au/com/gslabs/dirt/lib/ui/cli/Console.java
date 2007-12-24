@@ -27,6 +27,7 @@ public class Console
 			input = new InterruptibleInputStream(new FileInputStream(FileDescriptor.in));
 			console = new jline.ConsoleReader(input, new PrintWriter(System.out));
 			console.setHistory(new MyHistory());
+			console.addCompletor(new MyCompletor());
 		}
 		catch (IOException ex)
 		{

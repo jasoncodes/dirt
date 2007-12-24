@@ -20,6 +20,7 @@ public class ClientCLI
 	
 	protected enum SupportedCommand
 	{
+		ABOUT,
 		CLEAR,
 		EXIT
 	}
@@ -44,6 +45,16 @@ public class ClientCLI
 			
 			switch (cmd)
 			{
+				
+				case ABOUT:
+					final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+					String msg = 
+						"*** " +
+						resbundle.getString("title") + " " +
+						resbundle.getString("version") + " " +
+						resbundle.getString("sourceDate");
+					output(msg);
+					return true;
 				
 				case CLEAR:
 					console.clearScreen();

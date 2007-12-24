@@ -1,12 +1,27 @@
+pressing up and down while entering text should restore buffer
+
 Cmd-` shouldn't include the hidden menu frame
 	add a "Cycle Through Windows" Cmd-` option to the Window menu
 	write own cycling code using Frame.getFrames() that skips the menu frame
 		except getFrames returns in creation order, do we need a WindowListener
 		on every frame to detect last focus and maintain our own focus order?
-	
+	Write lib.ui.jfc.FrameManager to manage this
+		to be called by JFrame constructors
+		move UIUtil.addExitOnCloseHandler into new class
+
 Cmd-N should cascade new windows and use current window size
-	will need to use same code as Cmd-` to work out last focused frame
 	implement in setDefaultWindowBounds
+	use FrameManager to work out last focused frame of desired type
+
+focusing window clicks seem to click-through when they shouldn't (on the Mac)
+
+Cmd-F to search log text
+
+query windows
+
+trigger windowClosing events on Cmd-Q
+
+aliases and bindings
 
 save/restore frame rect
 	persistence needs to support query windows
@@ -18,26 +33,7 @@ Window Menu
 	Window List. Ideally with diamond for minimized windows
 	sweethome3d.sf.net has code that does both these
 
-query windows
-
-pressing up and down while entering text should restore buffer
-
-aliases and bindings
-
-keep selection when doing addTextLine
-	save start/end position, clear selection, add line, restore start/end position
-
-acceleration when scrolling logpane
-
-trigger windowClosing events on Cmd-Q
-
-/connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
-
-modifier sequences should count as a delimiter when doing tab completion
-	should share the existing tokenizer code
-		pull the tokenizer out of TextModifierParser?
-
-timers
+log reader/writer API
 
 nicklist
 	JSplitPane
@@ -47,19 +43,24 @@ nicklist
 	double click
 	preserve selections when indexes change
 
+keep selection when doing addTextLine
+	save start/end position, clear selection, add line, restore start/end position
+
+acceleration when scrolling logpane
+
+/connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
+
+modifier sequences should count as a delimiter when doing tab completion
+	should share the existing tokenizer code
+		pull the tokenizer out of TextModifierParser?
+
+timers
+
 resizing is slow with lots of text
 
 double click to select word
 
-Cmd-F to search log text
-
 ensure exceptions are handled in Client for console input and server response
-
-clear selection and focus input after Cmd-C in logpane
-
-sometimes focusing the window by clicking the logpane area causes focus to be lost from the input area
-a cursor flickers in the input area and then disappears
-focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
 resizing window thinner does not keep scroll bar at bottom if text rewraps
 
@@ -111,7 +112,7 @@ tab indentation in LogPane could be better
 
 /run ssh outpost
 	Mac: Open new Terminal window and execute command
-	Linux: Can we detect Gnome/KDE and launch their preferred else xterm?
+	Linux: search path for x-terminal-emulator then lxterm then xterm
 	Win32: Prefer PuttyCYG then Cygwin using csrss (then possibly cmd.exe)
 
 show IP in /whois
@@ -141,7 +142,45 @@ Bonjour discovery: http://www.macdevcenter.com/pub/a/mac/2004/08/31/osx_java.htm
 	can documentFile be used to create an Adium style alert icon in the titlebar?
 		maybe if it's inside a bundle it wont be draggable and cmd-clickable?
 
-MIDP
-	http://mpowerplayer.com/
-	http://vertical-progress.net/article/compiling-j2me-midp20-applications-on-mac-osx
-	http://www.justobjects.org/blog/?p=10
+CLDC/MIDP (J2ME)
+	Random Thoughts
+		Copy MPP sample into a working dir
+		Get it running on an emulator and actual device
+		
+		Get generics working in test code
+		Get HTML renderer working in test code
+			Needs append support
+			Needs to be able to reasonably parse TextModifierParser output
+		Add some test socket code
+		Add some test crypto code
+		Exclude J2SE specific code
+			Can we easily do this without a second source tree?
+			Probably have exclusions of j2se/jfc/cli dirs for CLDC
+			Exclude cldc dirs in j2se build
+		Factory classes will need new getInstance/newInstance methods
+			pull getInstance code into platform (j2se/cldc) specific helper class
+				empty stub which throws an exception
+				platform version which is copied to correct name post javac
+		Customise sample build.xml and integrate into main build.xml
+			Use fileset/pattern set to isolate CLDC code from main build
+		eSWT support
+	Resources
+		Free SDK for Mac OS X
+			http://mpowerplayer.com/
+		Java 1.5 Generics Support
+			http://www.j2mepolish.org/
+			http://forum.java.sun.com/thread.jspa?threadID=529472&messageID=2549965
+			http://sourceforge.net/forum/forum.php?thread_id=1673912&forum_id=358878
+		Blogs on compiling under Mac OS X
+			http://vertical-progress.net/article/compiling-j2me-midp20-applications-on-mac-osx
+			http://www.justobjects.org/blog/?p=10
+		HTML renderers
+			J2ME Polish
+				http://www.j2mepolish.org/javadoc/j2me/
+			PicoBrowser
+				http://www.beartronics.com/bearlib.sourceforge.net/
+				http://www.beartronics.com/bearlib.sourceforge.net/www/pico.html
+			JCellBrowser
+				http://lightspeedleader.com/open_source/jcellbrowser.php
+				http://twit88.com/home/opensource/jcellbrowser
+
