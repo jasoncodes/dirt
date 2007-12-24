@@ -163,7 +163,6 @@ CLDC/MIDP (J2ME)
 				platform version which is copied to correct name post javac
 		Customise sample build.xml and integrate into main build.xml
 			Use fileset/pattern set to isolate CLDC code from main build
-		eSWT support
 	Resources
 		Free SDK for Mac OS X
 			http://mpowerplayer.com/
