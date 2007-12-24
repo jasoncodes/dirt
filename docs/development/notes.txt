@@ -1,5 +1,3 @@
-pressing up and down while entering text should restore buffer
-
 Cmd-` shouldn't include the hidden menu frame
 	add a "Cycle Through Windows" Cmd-` option to the Window menu
 	write own cycling code using Frame.getFrames() that skips the menu frame

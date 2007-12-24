@@ -33,7 +33,6 @@ public class InputArea extends JScrollPane
 	protected String commandPrefix;
 	protected int history_pos;
 	protected String edit_text;
-	protected int edit_row;
 	protected Completor completor;
 	
 	public InputArea()
@@ -52,7 +51,6 @@ public class InputArea extends JScrollPane
 		history = new ArrayList<String>();
 		history_pos = 0;
 		edit_text = "";
-		edit_row = -1;
 		
 		listeners = new ArrayList<InputListener>();
 		addEventListeners();
@@ -141,7 +139,6 @@ public class InputArea extends JScrollPane
 		}
 		history_pos = history.size();
 		edit_text = "";
-		edit_row = -1;
 	}
 	
 	protected void removeLastHistoryEntry()
@@ -227,18 +224,6 @@ public class InputArea extends JScrollPane
 			});
 	}
 	
-	protected boolean hasChangedHistoryItem()
-	{
-		if (history_pos >= 0 && history_pos < history.size())
-		{
-			return !history.get(history_pos).equals(txt.getText());
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
 	protected void doTabCompletion()
 	{
 		
@@ -319,65 +304,43 @@ public class InputArea extends JScrollPane
 	{
 		if (history_pos > 0)
 		{
-			if (hasChangedHistoryItem())
+			if (history_pos == history.size())
 			{
 				edit_text = txt.getText();
-				edit_row = history_pos;
-				if (edit_text.length() == 0)
-				{
-					history_pos = edit_row = history.size();
-				}
 			}
 			history_pos--;
 			displayHistoryItem();
 		}
 		else
 		{
-			if (hasChangedHistoryItem())
-			{
-				if (txt.getText().length() == 0)
-				{
-					history_pos = edit_row = history.size();
-					return;
-				}
-			}
 			alert();
 		}
 	}
 	
 	protected void onHistoryDown()
 	{
-		if ((history_pos+1) < history.size())
+		if ((history_pos+1) <= history.size())
 		{
-			if (hasChangedHistoryItem())
-			{
-				edit_text = txt.getText();
-				edit_row = history_pos;
-				if (edit_text.length() == 0)
-				{
-					history_pos = edit_row = history.size();
-					return;
-				}
-			}
 			history_pos++;
 			displayHistoryItem();
 		}
 		else
 		{
-			if (history_pos+1 == edit_row)
-			{
-				if (history_pos == history.size())
-				{
-					txt.setText("");
-				}
-				else
-				{
-					txt.setText(edit_text);
-				}
-				setInsertionPointEnd();
-				history_pos = history.size();
-			}
+			alert();
 		}
+	}
+	
+	protected void displayHistoryItem()
+	{
+		if (history_pos == history.size())
+		{
+			txt.setText(edit_text);
+		}
+		else
+		{
+			txt.setText(history.get(history_pos));
+		}
+		setInsertionPointEnd();
 	}
 	
 	protected void setInsertionPointEnd()
@@ -392,19 +355,6 @@ public class InputArea extends JScrollPane
 		txt.setText(text);
 		txt.setSelectionStart(selStart);
 		txt.setSelectionEnd(selEnd);
-	}
-	
-	protected void displayHistoryItem()
-	{
-		if (edit_row == history_pos)
-		{
-			txt.setText(edit_text);
-		}
-		else
-		{
-			txt.setText(history.get(history_pos));
-		}
-		setInsertionPointEnd();
 	}
 	
 	public void setCompletor(Completor completor)
