@@ -355,6 +355,7 @@ public class InputArea extends JScrollPane
 		txt.setText(text);
 		txt.setSelectionStart(selStart);
 		txt.setSelectionEnd(selEnd);
+		history_pos = history.size();
 	}
 	
 	public void setCompletor(Completor completor)
