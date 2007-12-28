@@ -87,6 +87,7 @@ public class MainFrame extends JFrame
 					txtPassword_Input(password);
 				}
 			});
+		txtPassword.setBorder(txtInput.getBorder());
 		
 		contacts = new ContactListModel();
 		lstContacts = new JList(contacts);
@@ -171,6 +172,8 @@ public class MainFrame extends JFrame
 			activeInputControl = txtNew;
 			txtPassword.setPreferredSize(txtInput.getPreferredSize());
 			txtPassword.setText("");
+			txtOld.setVisible(false);
+			txtNew.setVisible(true);
 			getContentPane().remove(txtOld);
 			getContentPane().add(txtNew, BorderLayout.SOUTH);
 			getContentPane().validate();
@@ -315,13 +318,14 @@ public class MainFrame extends JFrame
 				setPasswordMode(false);
 			}
 			updateWindowTitle();
-			getRootPane().putClientProperty(
-				"windowModified",
-				(client.isConnected() && client.getNickname() != null) ?
-					Boolean.TRUE :
-					Boolean.FALSE);
+			getRootPane().putClientProperty("windowModified", Boolean.valueOf(isDirty()));
 		}
 		
+	}
+	
+	public boolean isDirty()
+	{
+		return client.isConnected() && client.getNickname() != null;
 	}
 	
 	protected void updateWindowTitle()
@@ -500,7 +504,7 @@ public class MainFrame extends JFrame
 	protected void onClosing()
 	{
 		
-		if (client.isConnected() && client.getNickname() != null)
+		if (isDirty())
 		{
 			
 			final JTextField txtQuitMessage = new JTextField();

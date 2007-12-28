@@ -137,8 +137,8 @@ MOTD from server using INFO packets
 Bonjour discovery: http://www.macdevcenter.com/pub/a/mac/2004/08/31/osx_java.html
 
 10.5 control styles: http://developer.apple.com/technotes/tn2007/tn2196.html
-	can documentFile be used to create an Adium style alert icon in the titlebar?
-		maybe if it's inside a bundle it wont be draggable and cmd-clickable?
+	documentFile client property makes a draggable and cmd-clickable file proxy icon
+	how do we make a non-clickable one like Adium?
 
 CLDC/MIDP (J2ME)
 	Random Thoughts
