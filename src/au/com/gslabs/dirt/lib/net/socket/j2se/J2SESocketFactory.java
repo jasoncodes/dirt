@@ -10,6 +10,11 @@ public class J2SESocketFactory extends SocketFactory
 		return new J2SESocket();
 	}
 	
+	public ServerSocket createServerSocket()
+	{
+		return new J2SEServerSocket();
+	}
+	
 	public String getHostName()
 	{
 		try

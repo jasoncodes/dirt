@@ -9,6 +9,7 @@ import net.roydesign.app.Application;
 import java.awt.Window;
 import java.awt.Frame;
 import javax.swing.JFrame;
+import java.util.ResourceBundle;
 
 public class ClientJFC extends Application
 {
@@ -19,7 +20,7 @@ public class ClientJFC extends Application
 			{
 				public void run()
 				{
-					UIUtil.initSwing();
+					UIUtil.initSwing(getAppName());
 					new ClientJFC();
 				}
 			});
@@ -28,7 +29,7 @@ public class ClientJFC extends Application
 	private ClientJFC()
 	{
 		
-		setName("Dirt");
+		setName(getAppName());
 		setFramelessJMenuBar(new MainMenuBar());
 		
 		addOpenApplicationListener(new ActionListener()
@@ -51,6 +52,11 @@ public class ClientJFC extends Application
 			new MainFrame().setVisible(true);
 		}
 		
+	}
+	
+	public static final String getAppName()
+	{
+		return ResourceBundle.getBundle("res/strings").getString("name");
 	}
 	
 	public class ReopenApplicationHelper implements Runnable

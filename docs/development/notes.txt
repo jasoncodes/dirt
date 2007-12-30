@@ -13,6 +13,10 @@ Cmd-N should cascade new windows and use current window size
 
 focusing window clicks seem to click-through when they shouldn't (on the Mac)
 
+Spellcheck on at least Mac
+	Google JavaSpellingFramework.sit and NSSpellChecker
+	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html
+
 Cmd-F to search log text
 
 query windows
@@ -89,9 +93,6 @@ http://code.google.com/apis/talk/libjingle/important_concepts.html#portssocketsc
 Mac OS X integration
 	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html#//apple_ref/doc/uid/TP40001909-212120
 	http://homepage.mac.com/sroy/mrjadapter/
-
-Spellcheck on at least Mac
-	Google JavaSpellingFramework.sit
 
 inputarea needs colour popup on Cmd-K
 

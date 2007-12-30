@@ -29,6 +29,7 @@ public class CryptSocket
 	}
 	
 	protected Socket socket;
+	protected boolean socketOwned;
 	protected InputThread threadInput;
 	protected OutputThread threadOutput;
 	protected boolean active;
@@ -47,6 +48,7 @@ public class CryptSocket
 	protected void clearState()
 	{
 		socket = null;
+		socketOwned = false;
 		threadInput = null;
 		threadOutput = null;
 		active = false;
@@ -99,8 +101,12 @@ public class CryptSocket
 			try
 			{
 				
-				socket = SocketFactory.getInstance().createSocket();
-				socket.connect(connectHost, connectPort);
+				if (connectHost != null)
+				{
+					socket = SocketFactory.getInstance().createSocket();
+					socketOwned = true;
+					socket.connect(connectHost, connectPort);
+				}
 				
 				if (isInterrupted()) return;
 				
@@ -391,12 +397,30 @@ public class CryptSocket
 		{
 			active = true;
 			socket = null;
+			socketOwned = false;
 			crypt = CryptFactory.getInstance();
 			threadInput = new InputThread();
 			threadInput.connectHost = host;
 			threadInput.connectPort = port;
 			threadInput.setDaemon(true);
 			threadInput.start();
+		}
+	}
+	
+	public void attach(Socket socket, boolean takeOwnership)
+	{
+		close();
+		synchronized (this)
+		{
+			this.active = true;
+			this.socket = socket;
+			this.socketOwned = takeOwnership;
+			this.crypt = CryptFactory.getInstance();
+			this.threadInput = new InputThread();
+			this.threadInput.connectHost = null;
+			this.threadInput.connectPort = -1;
+			this.threadInput.setDaemon(true);
+			this.threadInput.start();
 		}
 	}
 	
@@ -445,12 +469,16 @@ public class CryptSocket
 			{
 				try
 				{
-					socket.close();
+					if (socketOwned)
+					{
+						socket.close();
+					}
 				}
 				catch (IOException ex)
 				{
 				}
 				socket = null;
+				socketOwned = false;
 			}
 		}
 		

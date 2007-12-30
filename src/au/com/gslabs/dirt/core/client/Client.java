@@ -38,7 +38,7 @@ public class Client
 	protected ByteBuffer ping_data;
 	protected long ping_sent;
 	protected long latency;
-		
+	
 	private static final long initial_ping_delay = 5000;
 	private static final long ping_interval = 30000;
 	private static final long ping_timeout_delay = 45000;

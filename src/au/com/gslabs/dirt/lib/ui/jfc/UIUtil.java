@@ -301,24 +301,39 @@ public class UIUtil
 			});
 	}
 	
-	public static void initSwing()
+	public static void initSwing(String appName)
 	{
-
+		
+		// set L&F to platform default
 		try
 		{
-			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Exception ex)
 		{
 		}
 		
+		// enable dynamic layouts if not enabled by default
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		if ( Boolean.TRUE.equals( toolkit.getDesktopProperty( "awt.dynamicLayoutSupported" ) ) )
+		if (Boolean.TRUE.equals(toolkit.getDesktopProperty("awt.dynamicLayoutSupported")))
 		{
-			toolkit.setDynamicLayout( true );
+			toolkit.setDynamicLayout(true);
 		}
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		
+		// Set a sane WM_CLASS on X11
+		// <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6528430>
+		try
+		{
+			java.lang.reflect.Field awtAppClassNameField =
+				toolkit.getClass().getDeclaredField("awtAppClassName");
+			awtAppClassNameField.setAccessible(true);
+			awtAppClassNameField.set(toolkit, appName);
+		}
+		catch (Exception ex)
+		{
+		}
 		
 	}
 	
