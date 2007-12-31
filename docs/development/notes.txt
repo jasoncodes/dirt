@@ -28,6 +28,7 @@ Cmd-F to search log text
 Copying blocks of text without "[hh:mm] <Nick> "
 
 trigger windowClosing events via mnuQuit
+	/exit should do the same (after sending a /quit "$@")
 
 aliases and bindings
 

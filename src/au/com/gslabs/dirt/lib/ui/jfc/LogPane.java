@@ -316,6 +316,7 @@ public class LogPane extends JScrollPane
 		appendTextLine("Should have two spaces between letters: " + ctrl_c + "1t " + ctrl_c + "1 " + ctrl_c + "1e " + ctrl_c + " " + ctrl_c + "1s  t !");
 		appendTextLine("Space Test: 1 2  3   4    . exclamation line up -> !");
 		appendTextLine("\n\t\u00038,0 \u2584\u2588\u2588\u2588\u2588\u2588\u2584\n\t\u00038,0\u2588\u2588\u00031,1  \u00038,0\u2588\u00031,1  \u00038,0\u2588\u2588\n\t\u00038,0\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n\t\u00038,0\u2588\u00038,4\u2580\u00038,0\u2588\u2588\u2588\u2588\u2588\u00038,4\u2580\u00038,0\u2588\n\t\u00038,0 \u2580\u00038,4\u2584\u2584\u2584\u2584\u2584\u00038,0\u2580");
+		appendTextLine("Hello World  \u039A\u03B1\u03BB\u03B7\u03BC\u03AD\u03C1\u03B1 \u03BA\u03CC\u03C3\u03BC\u03B5  \u3053\u3093\u306B\u3061\u306F \u4E16\u754C");
 	}
 	
 	protected JEditorPane createEditor()
