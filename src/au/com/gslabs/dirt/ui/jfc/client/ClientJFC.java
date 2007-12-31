@@ -68,15 +68,7 @@ public class ClientJFC extends Application
 			if (!UIUtil.isValidWindow(UIUtil.getActiveWindow()))
 			{
 				
-				Frame selected = null;
-				for (Frame f : Frame.getFrames())
-				{
-					if (UIUtil.isValidWindow(f))
-					{
-						selected = f;
-						break;
-					}
-				}
+				Window selected = UIUtil.getFirstValidFrame();
 				
 				if (selected == null)
 				{
@@ -84,7 +76,10 @@ public class ClientJFC extends Application
 				}
 				
 				selected.setVisible(true);
-				selected.setState(Frame.NORMAL);
+				if (selected instanceof Frame)
+				{
+					((Frame)selected).setState(Frame.NORMAL);
+				}
 				UIUtil.stealFocus(selected);
 				
 			}

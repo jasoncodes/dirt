@@ -158,6 +158,33 @@ public class UIUtil
 		
 	}
 	
+	public static Window getFirstValidFrame()
+	{
+		
+		Window selected;
+		
+		final Window activeWindow = UIUtil.getActiveWindow();
+		if (UIUtil.isValidWindow(activeWindow))
+		{
+			selected = activeWindow;
+		}
+		else
+		{
+			selected = null;
+			for (Frame f : Frame.getFrames())
+			{
+				if (UIUtil.isValidWindow(f))
+				{
+					selected = f;
+					break;
+				}
+			}
+		}
+		
+		return selected;
+		
+	}
+	
 	public static void setDefaultWindowBounds(JFrame frame, int width, int height, Class cascadeClass)
 	{
 		
@@ -293,7 +320,7 @@ public class UIUtil
 				public void windowClosed(WindowEvent event)
 				{
 					// if there's no more windows open then we should exit the process
-					if (UIUtil.getActiveWindow() == null)
+					if (!FileUtil.isMac() && getFirstValidFrame() == null)
 					{
 						System.exit(0);
 					}

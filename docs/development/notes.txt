@@ -1,3 +1,8 @@
+query windows
+	split MainFrame into MainPanel/MainFrame
+	MainPanel has an API to MainFrame/MainApplet which controls new frames, titlebar updates, alerts, etc
+	MainApplet uses MainPanel
+
 Cmd-` shouldn't include the hidden menu frame
 	add a "Cycle Through Windows" Cmd-` option to the Window menu
 	write own cycling code using Frame.getFrames() that skips the menu frame
@@ -16,10 +21,9 @@ focusing window clicks seem to click-through when they shouldn't (on the Mac)
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
 	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html
+	http://software.jessies.org/salma-hayek/'s PTextArea uses ispell (and NSSpellChecker via ispell wrapper)
 
 Cmd-F to search log text
-
-query windows
 
 trigger windowClosing events on Cmd-Q
 
@@ -35,7 +39,10 @@ Window Menu
 	Window List. Ideally with diamond for minimized windows
 	sweethome3d.sf.net has code that does both these
 
+file transfers
+
 log reader/writer API
+	SQL db stores raw message data with search keywords after processing (i.e. regexes)
 
 nicklist
 	JSplitPane
@@ -49,6 +56,15 @@ keep selection when doing addTextLine
 	save start/end position, clear selection, add line, restore start/end position
 
 acceleration when scrolling logpane
+
+pretty <blockquote />
+	support for multiline message rendering
+	ability to drag or paste text from browser and have it render as <blockquote/> with cite and title
+		at worst use a dialog to paste meta data into
+	pretty renderer for <blockquote/>
+	how will DirtML messages work?
+		need some OOB method of flagging these messages
+			maybe a preamble of some sort. null delims isn't possible for flags
 
 /connect seems to take too long to timeout, especially if DNS succeeds but host is unavailable.
 
