@@ -91,7 +91,7 @@ public class Client
 		String userDetails = username + "@" + hostname;
 		
 		String fullName = FileUtil.getMyFullName();
-		if (fullName != null && !fullName.equalsIgnoreCase(username))
+		if (fullName != null && !fullName.equalsIgnoreCase(username) && fullName.length() > 0)
 		{
 			userDetails += " \"" + fullName + "\"";
 		}
