@@ -27,7 +27,8 @@ public class MainFrame extends JFrame
 	JPasswordField txtPassword;
 	JList lstContacts;
 	JComponent activeInputControl;
-	
+	JSplitPane splitContacts;
+
 	MainFrame()
 	{
 		
@@ -89,20 +90,10 @@ public class MainFrame extends JFrame
 			});
 		txtPassword.setBorder(txtInput.getBorder());
 		
-		contacts = new ContactListModel();
-		lstContacts = new JList(contacts);
-		lstContacts.setFocusable(false);
-		JScrollPane scrlContacts = new JScrollPane(lstContacts);
-		scrlContacts.setPreferredSize(new Dimension(160, 0));
-		if (FileUtil.isMac())
-		{
-			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		}
-		getContentPane().add(scrlContacts, BorderLayout.EAST);
+		getContentPane().add(txtInput, BorderLayout.SOUTH);
+		activeInputControl = txtInput;
 		
 		txtLog = new LogPane();
-		getContentPane().add(txtLog, BorderLayout.CENTER);
-		
 		txtLog.addLinkListener(new LogPane.LinkListener()
 			{
 				public void linkClicked(LogPane.LinkEvent e)
@@ -111,8 +102,21 @@ public class MainFrame extends JFrame
 				}
 			});
 		
-		getContentPane().add(txtInput, BorderLayout.SOUTH);
-		activeInputControl = txtInput;
+		contacts = new ContactListModel();
+		lstContacts = new JList(contacts);
+		lstContacts.setFocusable(false);
+		JScrollPane scrlContacts = new JScrollPane(lstContacts);
+		scrlContacts.setPreferredSize(new Dimension(160, 0)); // default width
+		if (FileUtil.isMac())
+		{
+			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		}
+		
+		splitContacts = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, txtLog, scrlContacts);
+		splitContacts.setResizeWeight(1); // keep the contact pane fixed width
+		splitContacts.setContinuousLayout(true);
+		splitContacts.setBorder(BorderFactory.createEmptyBorder());
+		getContentPane().add(splitContacts, BorderLayout.CENTER);
 		
 		isDND = false;
 		

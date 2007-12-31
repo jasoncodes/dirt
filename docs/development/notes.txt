@@ -25,6 +25,8 @@ Spellcheck on at least Mac
 
 Cmd-F to search log text
 
+Copying blocks of text without "[hh:mm] <Nick> "
+
 trigger windowClosing events on Cmd-Q
 
 aliases and bindings
