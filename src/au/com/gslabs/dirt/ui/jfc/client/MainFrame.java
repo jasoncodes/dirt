@@ -117,6 +117,10 @@ public class MainFrame extends JFrame
 		splitContacts.setResizeWeight(1); // keep the contact pane fixed width
 		splitContacts.setContinuousLayout(true);
 		getContentPane().add(splitContacts, BorderLayout.CENTER);
+		if (FileUtil.isMac())
+		{
+			splitContacts.setDividerSize(3);
+		}
 		
 		Color borderColor = new EtchedBorder().getShadowColor(splitContacts);
 		Border borderLineBottom = BorderFactory.createMatteBorder(0,0,1,0, borderColor);
