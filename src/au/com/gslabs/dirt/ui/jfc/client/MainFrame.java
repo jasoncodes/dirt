@@ -4,6 +4,7 @@ import java.util.ResourceBundle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
@@ -115,8 +116,19 @@ public class MainFrame extends JFrame
 		splitContacts = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, txtLog, scrlContacts);
 		splitContacts.setResizeWeight(1); // keep the contact pane fixed width
 		splitContacts.setContinuousLayout(true);
-		splitContacts.setBorder(BorderFactory.createEmptyBorder());
 		getContentPane().add(splitContacts, BorderLayout.CENTER);
+		
+		Color borderColor = new EtchedBorder().getShadowColor(splitContacts);
+		Border borderLineBottom = BorderFactory.createMatteBorder(0,0,1,0, borderColor);
+		Border borderLineLeft = BorderFactory.createMatteBorder(0,1,0,0, borderColor);
+		Border borderLineRight = BorderFactory.createMatteBorder(0,0,0,1, borderColor);
+		Border borderTextArea = BorderFactory.createEmptyBorder(1, 1, 1, FileUtil.isMac()?14:1);
+		Border borderEmpty = BorderFactory.createEmptyBorder();
+		splitContacts.setBorder(borderLineBottom);
+		txtLog.setBorder(borderLineRight);
+		scrlContacts.setBorder(borderLineLeft);
+		txtInput.setBorder(borderTextArea);
+		txtPassword.setBorder(borderTextArea);
 		
 		isDND = false;
 		
