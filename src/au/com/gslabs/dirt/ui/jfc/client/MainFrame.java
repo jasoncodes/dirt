@@ -126,7 +126,7 @@ public class MainFrame extends JFrame
 		Border borderEmpty = BorderFactory.createEmptyBorder();
 		splitContacts.setBorder(borderLineBottom);
 		txtLog.setBorder(borderLineRight);
-		scrlContacts.setBorder(borderLineLeft);
+		scrlContacts.setBorder(FileUtil.isMac()?borderLineLeft:borderEmpty);
 		txtInput.setBorder(borderTextArea);
 		txtPassword.setBorder(borderTextArea);
 		

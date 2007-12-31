@@ -35,6 +35,7 @@ save/restore frame rect
 	persistence needs to support query windows
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
+	store nicklist width as well as window dimensions
 	
 Window Menu
 	Bring all to front (test on all platforms, okay to be Mac only if too hard)
@@ -47,7 +48,6 @@ log reader/writer API
 	SQL db stores raw message data with search keywords after processing (i.e. regexes)
 
 nicklist
-	JSplitPane
 	pretty rendering
 		http://java.sun.com/developer/technicalArticles/GUI/jlist/
 	context menu
