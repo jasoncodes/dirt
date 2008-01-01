@@ -17,7 +17,6 @@ public class PreferencesFrame extends JFrame
 			setJMenuBar(new MainMenuBar());
 		}
 		UIUtil.setIcon(this);
-		UIUtil.addExitOnCloseHandler(this);
 		
 		setSize(200,150);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

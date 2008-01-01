@@ -3,20 +3,7 @@ query windows
 	MainPanel has an API to MainFrame/MainApplet which controls new frames, titlebar updates, alerts, etc
 	MainApplet uses MainPanel
 
-Cmd-` shouldn't include the hidden menu frame
-	add a "Cycle Through Windows" Cmd-` option to the Window menu
-	write own cycling code using Frame.getFrames() that skips the menu frame
-		except getFrames returns in creation order, do we need a WindowListener
-		on every frame to detect last focus and maintain our own focus order?
-	Write lib.ui.jfc.FrameManager to manage this
-		to be called by JFrame constructors
-		move UIUtil.addExitOnCloseHandler into new class
-
-Cmd-N should cascade new windows and use current window size
-	implement in setDefaultWindowBounds
-	use FrameManager to work out last focused frame of desired type
-
-focusing window clicks seem to click-through when they shouldn't (on the Mac)
+focusing window clicks on Mac click-through and activate hyperlinks when they shouldn't
 
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
@@ -26,6 +13,9 @@ Spellcheck on at least Mac
 Cmd-F to search log text
 
 Copying blocks of text without "[hh:mm] <Nick> "
+	Cmd-Shift-C?
+	Context menu
+	Selection to should be automatically expanded to whole lines (and restored after copy)
 
 trigger windowClosing events via mnuQuit
 	/exit should do the same (after sending a /quit "$@")

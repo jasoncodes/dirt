@@ -39,7 +39,6 @@ public class MainFrame extends JFrame
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		setJMenuBar(new MainMenuBar());
-		UIUtil.addExitOnCloseHandler(this);
 		
 		getContentPane().setLayout(new BorderLayout());
 		
@@ -425,11 +424,7 @@ public class MainFrame extends JFrame
 	
 	protected void cmdPopupQuit_Click()
 	{
-		if (client.isConnected())
-		{
-			client.quit(null, "Closing");
-		}
-		System.exit(0);
+		clientAdapter.processConsoleInput(client, null, "/exit");
 	}
 	
 	// this code needs to be possibly split off into it's own class in dirt.lib.ui.jfc

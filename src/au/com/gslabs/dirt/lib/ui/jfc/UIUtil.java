@@ -13,6 +13,9 @@ import net.roydesign.app.Application;
 public class UIUtil
 {
 	
+	protected static MacDockBouncer dockBouncer = null;
+	protected static WindowManager windowManager = null;
+	
 	private UIUtil()
 	{
 	}
@@ -158,26 +161,23 @@ public class UIUtil
 		
 	}
 	
-	public static Window getFirstValidFrame()
+	public static Frame getFirstValidFrame()
 	{
 		
-		Window selected;
+		Frame selected;
 		
 		final Window activeWindow = UIUtil.getActiveWindow();
-		if (UIUtil.isValidWindow(activeWindow))
+		if (UIUtil.isValidWindow(activeWindow) && activeWindow instanceof Frame)
 		{
-			selected = activeWindow;
+			selected = (Frame)activeWindow;
 		}
 		else
 		{
 			selected = null;
-			for (Frame f : Frame.getFrames())
+			for (Frame f : getWindowManager().getOrderedValidFrames(true))
 			{
-				if (UIUtil.isValidWindow(f))
-				{
-					selected = f;
-					break;
-				}
+				selected = f;
+				break;
 			}
 		}
 		
@@ -185,28 +185,30 @@ public class UIUtil
 		
 	}
 	
-	public static void setDefaultWindowBounds(JFrame frame, int width, int height, Class cascadeClass)
+	public static WindowManager getWindowManager()
+	{
+		return windowManager;
+	}
+	
+	public static void setDefaultWindowBounds(final JFrame frame, final int width, final int height, final Class cascadeClass)
 	{
 		
 		Rectangle bounds = getDefaultWindowBounds(width, height);
 		
-		/*
-		// Finishing this requires code that can detect frame focus order
 		if (cascadeClass != null)
 		{
-			Frame selected = null;
-			for (Frame f : Frame.getFrames())
+			for (final Frame f : getWindowManager().getOrderedValidFrames(true))
 			{
-				if (f != frame && UIUtil.isValidWindow(f) && cascadeClass.isInstance(f))
+				if (f != frame && cascadeClass.isInstance(f))
 				{
-					System.out.println(f);
-					//selected = f;
-					//break;
+					// found a window to cascade from
+					final Rectangle srcBounds = f.getBounds();
+					bounds.x = srcBounds.x + 20;
+					bounds.y = srcBounds.y + 20;
+					break;
 				}
 			}
-			System.out.println(selected);
 		}
-		*/
 		
 		frame.setBounds(bounds);
 		
@@ -223,8 +225,6 @@ public class UIUtil
 			FileUtil.loadLibrary("lib/linux_"+System.getProperty("os.arch")+"/libdirt_lib_ui_jfc.so");
 		}
 	}
-	
-	protected static MacDockBouncer dockBouncer = null;
 	
 	public static void alert(Frame frame)
 	{
@@ -312,22 +312,6 @@ public class UIUtil
 		return true;
 	}
 	
-	public static void addExitOnCloseHandler(Window window)
-	{
-		window.addWindowListener(new WindowAdapter()
-			{
-				@Override
-				public void windowClosed(WindowEvent event)
-				{
-					// if there's no more windows open then we should exit the process
-					if (!FileUtil.isMac() && getFirstValidFrame() == null)
-					{
-						System.exit(0);
-					}
-				}
-			});
-	}
-	
 	public static void initSwing(String appName)
 	{
 		
@@ -336,8 +320,9 @@ public class UIUtil
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
-		catch (Exception ex)
+		catch (Throwable t)
 		{
+			// don't really care if this fails
 		}
 		
 		// enable dynamic layouts if not enabled by default
@@ -358,9 +343,13 @@ public class UIUtil
 			awtAppClassNameField.setAccessible(true);
 			awtAppClassNameField.set(toolkit, appName);
 		}
-		catch (Exception ex)
+		catch (Throwable t)
 		{
+			// don't really care if this fails
 		}
+		
+		// initialise our window manager
+		windowManager = new WindowManager(toolkit);
 		
 	}
 	
