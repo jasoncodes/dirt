@@ -13,9 +13,7 @@ import java.lang.ref.WeakReference;
 public class MainMenuBar extends JScreenMenuBar
 {
 	
-	protected Application app;
-	
-	protected PreferencesJMenuItem preferences;
+	protected final Application app;
 	
 	public MainMenuBar()
 	{

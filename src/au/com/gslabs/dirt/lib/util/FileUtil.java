@@ -207,26 +207,34 @@ public class FileUtil
 					new au.com.gslabs.dirt.lib.util.jni.MacOS();
 				return mac.getMyFullName();
 			}
-			if (isLinux())
+			else if (isLinux())
 			{
 				loadLibrary("lib/linux_"+System.getProperty("os.arch")+"/libdirt_lib_util.so");
 				au.com.gslabs.dirt.lib.util.jni.Linux linux =
 					new au.com.gslabs.dirt.lib.util.jni.Linux();
 				return linux.getMyFullName();
 			}
-			if (isWin())
+			else if (isWin())
 			{
 				loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
 				au.com.gslabs.dirt.lib.ui.jfc.jni.Win32 win32 =
 					new au.com.gslabs.dirt.lib.ui.jfc.jni.Win32();
 				return win32.getMyFullName();
 			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (SecurityException ex)
+		{
+			return null;
 		}
 		catch (Throwable ex)
 		{
 			ex.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 	
 	protected static void initTempDir() throws IOException

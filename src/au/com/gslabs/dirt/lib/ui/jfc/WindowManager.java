@@ -29,29 +29,46 @@ public class WindowManager
 	{
 		
 		// add our AWT window change event hook
-		toolkit.addAWTEventListener(new AWTEventListener()
-			{
-				public void eventDispatched(AWTEvent e)
-				{
-					switch (e.getID())
-					{
-						case WindowEvent.WINDOW_CLOSED:
-							onWindowClosed();
-							break;
-						case WindowEvent.WINDOW_GAINED_FOCUS:
-							onWindowFocused((Window)e.getSource());
-							break;
-					}
-				}
-			}, AWTEvent.WINDOW_EVENT_MASK);
+		try
+		{
+			toolkit.addAWTEventListener(new MyAWTEventListener(), AWTEvent.WINDOW_EVENT_MASK);
+		}
+		catch (SecurityException ex)
+		{
+			System.err.println("Security settings prevent WindowManager AWT hooks");
+		}
 		
 		// initialise state with a best guess
+		addMissingFrames();
+		
+	}
+	
+	protected void addMissingFrames()
+	{
 		for (Frame f : Frame.getFrames())
 		{
-			updateWindowLastFocused(f);
+			if (frameDatas.get(f) == null)
+			{
+				updateWindowLastFocused(f);
+			}
 		}
 		updateWindowLastFocused(UIUtil.getActiveWindow());
-		
+	}
+	
+	protected class MyAWTEventListener implements AWTEventListener
+	{
+		public void eventDispatched(AWTEvent e)
+		{
+			switch (e.getID())
+			{
+				case WindowEvent.WINDOW_CLOSED:
+					onWindowClosed();
+					break;
+				case WindowEvent.WINDOW_GAINED_FOCUS:
+					onWindowFocused((Window)e.getSource());
+					break;
+			}
+		}
 	}
 	
 	protected FrameData getFrameData(final Frame f)
@@ -91,6 +108,7 @@ public class WindowManager
 	
 	public Frame[] getOrderedValidFrames(final boolean mostRecentFirst)
 	{
+		addMissingFrames();
 		final long sortOrder = mostRecentFirst ? -1 : 1;
 		final SortedMap<Long,Frame> list = new TreeMap<Long,Frame>();
 		for (final FrameData data : frameDatas.values())

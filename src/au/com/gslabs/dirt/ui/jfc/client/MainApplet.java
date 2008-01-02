@@ -18,7 +18,7 @@ public class MainApplet extends JApplet
 	protected DefaultClientAdapter clientAdapter;
 	ContactListModel contacts;
 	
-	protected ResourceBundle resbundle;
+	protected final ResourceBundle resbundle;
 	JLabel lblTitle;
 	LogPane txtLog;
 	InputArea txtInput;
@@ -29,12 +29,14 @@ public class MainApplet extends JApplet
 	public MainApplet()
 	{
 		
-		getContentPane().setLayout(new BorderLayout());
-		
 		resbundle = ResourceBundle.getBundle("res/strings");
+		UIUtil.initSwing(resbundle.getString("name"));
+		
 		lblTitle = new JLabel();
 		lblTitle.setText(resbundle.getString("title"));
 		getContentPane().add(lblTitle, BorderLayout.NORTH);
+		
+		getContentPane().setLayout(new BorderLayout());
 		
 		txtInput = new InputArea();
 		txtInput.addInputListener(new InputArea.InputListener()
