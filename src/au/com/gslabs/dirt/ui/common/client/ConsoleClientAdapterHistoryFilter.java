@@ -1,14 +1,14 @@
 package au.com.gslabs.dirt.ui.common.client;
 
 import au.com.gslabs.dirt.lib.ui.common.HistoryFilter;
-import au.com.gslabs.dirt.core.client.*;
+import au.com.gslabs.dirt.core.client.console.*;
 
-public class ClientAdapterHistoryFilter implements HistoryFilter
+public class ConsoleClientAdapterHistoryFilter implements HistoryFilter
 {
 	
-	public DefaultClientAdapter clientAdapter;
+	public ConsoleClientAdapter clientAdapter;
 	
-	public ClientAdapterHistoryFilter(DefaultClientAdapter clientAdapter)
+	public ConsoleClientAdapterHistoryFilter(ConsoleClientAdapter clientAdapter)
 	{
 		this.clientAdapter = clientAdapter;
 	}

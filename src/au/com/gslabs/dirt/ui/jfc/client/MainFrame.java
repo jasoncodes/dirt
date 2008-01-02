@@ -9,6 +9,7 @@ import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
+import au.com.gslabs.dirt.core.client.console.*;
 import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
 import au.com.gslabs.dirt.core.client.enums.*;
 
@@ -18,7 +19,7 @@ public class MainFrame extends JFrame
 {
 
 	protected Client client;
-	protected DefaultClientAdapter clientAdapter;
+	protected ConsoleClientAdapter clientAdapter;
 	ContactListModel contacts;
 	protected boolean isDND;
 	
@@ -212,11 +213,16 @@ public class MainFrame extends JFrame
 		BACK
 	}
 	
-	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
+	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
+		public CommandAdapter()
+		{
+			super(SupportedCommand.class);
+		}
+		
 		@Override
-		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
+		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
 		{
 			
 			switch (cmd)
@@ -244,7 +250,7 @@ public class MainFrame extends JFrame
 					return true;
 				
 				case EXIT:
-					processConsoleInput(source, context, "/QUIT " + params);
+					adapter.processConsoleInput(source, context, "/QUIT " + params);
 					System.exit(0);
 					return true;
 				
@@ -269,9 +275,14 @@ public class MainFrame extends JFrame
 			
 		}
 		
+	}
+	
+	protected class ClientAdapter extends ConsoleClientAdapter
+	{
+		
 		public ClientAdapter()
 		{
-			super(SupportedCommand.class);
+			addConsoleCommandListener(new CommandAdapter());
 		}
 		
 		@Override

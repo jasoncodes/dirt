@@ -3,6 +3,7 @@ package au.com.gslabs.dirt.core.client;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 import au.com.gslabs.dirt.lib.util.Duration;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import au.com.gslabs.dirt.core.client.enums.UserStatus;
@@ -204,4 +205,45 @@ public class Contact implements Comparable<Contact>
 		return this.partMessage;
 	}
 	
+	public String getDetailString()
+	{
+		return this.detailString;
+	}
+	
+	public String getHostname()
+	{
+		return this.hostname;
+	}
+	
+	public boolean isAdmin()
+	{
+		return this.isAdmin;
+	}
+	
+	public String getUserAgent()
+	{
+		return this.userAgent;
+	}
+	
+	public Duration getIdle()
+	{
+		return new Duration(this.idleMilliseconds);
+	}
+	
+	public Duration getLatency()
+	{
+		return new Duration(this.latencyMilliseconds);
+	}
+	
+	public Date getJoinTimeServer()
+	{
+		return joinTimeServer;
+	}
+	
+	public Map<String,String> getOther()
+	{
+		return Collections.unmodifiableMap(other);
+	}
+	
 }
+

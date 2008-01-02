@@ -1,14 +1,16 @@
-package au.com.gslabs.dirt.core.client;
+package au.com.gslabs.dirt.core.client.console;
 
 import java.util.*;
 import au.com.gslabs.dirt.lib.util.*;
-import au.com.gslabs.dirt.core.client.enums.*;
 import au.com.gslabs.dirt.lib.net.URL;
+import au.com.gslabs.dirt.core.client.*;
+import au.com.gslabs.dirt.core.client.enums.*;
 
-public abstract class DefaultClientAdapter implements ClientListener
+public abstract class ConsoleClientAdapter implements ClientListener
 {
 	
 	protected static java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+	protected ArrayList<ConsoleCommandListener> listeners = new ArrayList<ConsoleCommandListener>();
 	
 	public static String getOutputPrefix()
 	{
@@ -18,14 +20,40 @@ public abstract class DefaultClientAdapter implements ClientListener
 	
 	protected abstract void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message);
 	
-	protected boolean clientPreprocessConsoleInput(Client source, String context, String cmd, String params)
+	public void addConsoleCommandListener(ConsoleCommandListener listener)
 	{
+		listeners.add(listener);
+	}
+	
+	public void removeConsoleCommandListener(ConsoleCommandListener listener)
+	{
+		int idx = listeners.indexOf(listener);
+		listeners.remove(idx);
+	}
+
+	protected boolean clientPreprocessConsoleInput(final Client source, final String context, final String cmd, final String params)
+	{
+		for (int i = listeners.size() - 1; i >= 0; --i)
+		{
+			if (listeners.get(i).processConsoleInput(this, source, context, cmd, params))
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 	
-	protected String[] getClientSupportedCommands(Client source)
+	protected String[] getClientSupportedCommands(final Client source)
 	{
-		return new String[0];
+		final ArrayList<String> cmds = new ArrayList<String>();
+		for (int i = listeners.size() - 1; i >= 0; --i)
+		{
+			for (final String cmd : listeners.get(i).getSupportedCommands(this, source))
+			{
+				cmds.add(cmd);
+			}
+		}
+		return cmds.toArray(new String[0]);
 	}
 	
 	public String getClientExtraVersionInfo(Client source)
@@ -407,33 +435,33 @@ public abstract class DefaultClientAdapter implements ClientListener
 		Contact contact = source.getContact(nickname);
 		WhoisOutputter out = new WhoisOutputter(source, context, nickname);
 		
-		if (contact.detailString != null)
+		if (contact.getDetailString() != null)
 		{
-			out.output("is " + contact.detailString);
+			out.output("is " + contact.getDetailString());
 		}
-		if (contact.hostname != null)
+		if (contact.getHostname() != null)
 		{
-			out.output("is connecting from " + contact.hostname);
+			out.output("is connecting from " + contact.getHostname());
 		}
-		if (contact.isAdmin)
+		if (contact.isAdmin())
 		{
 			out.output("is a server administrator");
 		}
-		if (contact.status == UserStatus.AWAY)
+		if (contact.getStatus() == UserStatus.AWAY)
 		{
-			out.output("is away: " + contact.awayMessage);
+			out.output("is away: " + contact.getAwayMessage());
 			if (contact.getAwayDuration() != null)
 			{
 				out.output("has been away for " + contact.getAwayDuration());
 			}
 		}
-		out.output("is using " + contact.userAgent);
+		out.output("is using " + contact.getUserAgent());
 		out.output(
-			"has been idle for " + new Duration(contact.idleMilliseconds) +
-			" (" + new Duration(contact.latencyMilliseconds).toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)");
-		out.output("signed on at " + TextUtil.formatDateTime(contact.joinTimeServer, true, false));
+			"has been idle for " + contact.getIdle() +
+			" (" + contact.getLatency().toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)");
+		out.output("signed on at " + TextUtil.formatDateTime(contact.getJoinTimeServer(), true, false));
 		
-		for (Map.Entry entry : contact.other.entrySet())
+		for (Map.Entry entry : contact.getOther().entrySet())
 		{
 			out.output(entry.getKey() + " = " + entry.getValue());
 		}
@@ -570,15 +598,15 @@ public abstract class DefaultClientAdapter implements ClientListener
 				if (ensureConnected(client, context, cmd))
 				{
 					String list = "";
-					for (Contact contact : client.getContacts().values())
+					for (final Contact contact : client.getContacts().values())
 					{
-						if (!contact.nickname.equals(client.getNickname()) && contact.status != UserStatus.OFFLINE)
+						if (!contact.getNickname().equals(client.getNickname()) && contact.getStatus() != UserStatus.OFFLINE)
 						{
 							if (list.length() > 0)
 							{
 								list += ", ";
 							}
-							list += contact.nickname;
+							list += contact.getNickname();
 						}
 					}
 					if (list.length() < 1)

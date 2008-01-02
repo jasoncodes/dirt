@@ -1,6 +1,7 @@
 package au.com.gslabs.dirt.ui.cli.client;
 
 import au.com.gslabs.dirt.core.client.*;
+import au.com.gslabs.dirt.core.client.console.*;
 import au.com.gslabs.dirt.lib.thread.SameThreadInvoker;
 import au.com.gslabs.dirt.lib.ui.cli.Console;
 import au.com.gslabs.dirt.ui.common.client.*;
@@ -16,7 +17,7 @@ public class ClientCLI
 	
 	protected Console console;
 	protected Client client;
-	protected ClientAdapter clientAdapter;
+	protected ConsoleClientAdapter clientAdapter;
 	
 	protected enum SupportedCommand
 	{
@@ -25,22 +26,16 @@ public class ClientCLI
 		EXIT
 	}
 	
-	protected class ClientAdapter extends EnumClientAdapter<SupportedCommand>
+	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
-		public ClientAdapter()
+		public CommandAdapter()
 		{
 			super(SupportedCommand.class);
 		}
 		
 		@Override
-		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
-		{
-			output(message);
-		}
-		
-		@Override
-		protected boolean clientPreprocessConsoleInput(Client source, String context, SupportedCommand cmd, String params)
+		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
 		{
 			
 			switch (cmd)
@@ -69,6 +64,22 @@ public class ClientCLI
 				
 			}
 			
+		}
+		
+	}
+	
+	protected class ClientAdapter extends ConsoleClientAdapter
+	{
+		
+		public ClientAdapter()
+		{
+			addConsoleCommandListener(new CommandAdapter());
+		}
+		
+		@Override
+		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
+		{
+			output(message);
 		}
 		
 		@Override
@@ -111,7 +122,7 @@ public class ClientCLI
 	public void output(String line)
 	{
 		console.setPasswordMode(false);
-		console.println(DefaultClientAdapter.getOutputPrefix() + line);
+		console.println(ConsoleClientAdapter.getOutputPrefix() + line);
 	}
 	
 	private ClientCLI()
@@ -124,7 +135,7 @@ public class ClientCLI
 		client.addClientListener(clientAdapter, new SameThreadInvoker());
 		
 		console.setCompletor(new ContactNickCompletor(client));
-		console.setHistoryFilter(new ClientAdapterHistoryFilter(clientAdapter));
+		console.setHistoryFilter(new ConsoleClientAdapterHistoryFilter(clientAdapter));
 		
 		output("*** " + ResourceBundle.getBundle("res/strings").getString("title"));
 		
