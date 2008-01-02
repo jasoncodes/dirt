@@ -86,7 +86,7 @@ public final class TextUtil
 		}
 		else
 		{
-			return (String[])split(text, ' ', 2).toArray(new String[0]);
+			return split(text, ' ', 2).toArray(new String[0]);
 		}
 	}
 	

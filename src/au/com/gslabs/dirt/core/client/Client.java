@@ -727,7 +727,7 @@ public class Client
 							nicks.add(nick);
 						}
 					}
-					final String[] nickArray = (String[])nicks.toArray(new String[0]);
+					final String[] nickArray = nicks.toArray(new String[0]);
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
