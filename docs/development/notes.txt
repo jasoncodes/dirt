@@ -3,8 +3,6 @@ query windows
 	MainPanel has an API to MainFrame/MainApplet which controls new frames, titlebar updates, alerts, etc
 	MainApplet uses MainPanel
 
-focusing window clicks on Mac click-through and activate hyperlinks when they shouldn't
-
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
 	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html

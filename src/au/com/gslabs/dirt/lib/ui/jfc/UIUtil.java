@@ -31,7 +31,7 @@ public class UIUtil
 		{
 			c = c.getParent();
 		}
-		return (Window)c;
+		return (c instanceof Window) ? (Window)c : null;
 	}
 	
 	public static void setWin32Icon(Frame frame, String path)

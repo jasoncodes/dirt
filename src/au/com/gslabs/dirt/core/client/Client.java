@@ -203,6 +203,25 @@ public class Client
 		
 	}
 	
+	protected static void cancelTimerTask(TimerTask task)
+	{
+		if (task != null)
+		{
+			try
+			{
+				if (!task.cancel())
+				{
+					throw new Exception("cancelTask() failed");
+				}
+			}
+			catch (Exception ex)
+			{
+				System.err.println("Timer task cancel failed:");
+				ex.printStackTrace();
+			}
+		}
+	}
+	
 	protected class TimerTaskPing extends TimerTask
 	{
 		public void run()
@@ -231,10 +250,8 @@ public class Client
 	{
 		if (data.equals(ping_data))
 		{
-			if (!tmrTaskNoPong.cancel())
-			{
-				onConnectionError(new Exception("Error stopping TimerTaskNoPong"));
-			}
+			cancelTimerTask(tmrTaskNoPong);
+			tmrTaskNoPong = null;
 			tmrTaskPing = new TimerTaskPing();
 			tmrPing.schedule(tmrTaskPing, ping_interval);
 			latency = System.currentTimeMillis() - ping_sent;
@@ -403,11 +420,18 @@ public class Client
 		latency = -1;
 		socket.close();
 		
-		if (tmrPing != null)
+		cancelTimerTask(tmrTaskPing);
+		cancelTimerTask(tmrTaskNoPong);
+		try
 		{
 			tmrPing.cancel();
-			tmrPing = null;
 		}
+		catch (Exception ex)
+		{
+			System.err.println("Timer cancel failed:");
+			ex.printStackTrace();
+		}
+		tmrPing = null;
 		
 		if (shutdownHook != null)
 		{

@@ -42,6 +42,7 @@ public class LogPane extends JScrollPane
 	protected boolean lastIsAtEnd;
 	protected int redLine;
 	protected Overlay overlay;
+	protected boolean linkActivatedWhileFocused = false;
 	
 	public LogPane()
 	{
@@ -474,7 +475,29 @@ public class LogPane extends JScrollPane
 						SwingUtilities.invokeLater(new DoScroll(-1));
 					}
 					overlay.repaint();
-			}
+				}
+			});
+		
+		new TopLevelWindowEventProxy(this).addWindowListener(new WindowAdapter()
+			{
+				@Override
+				public void windowActivated(WindowEvent e)
+				{
+					javax.swing.Timer t = new javax.swing.Timer(250, new ActionListener()
+						{
+							public void actionPerformed(ActionEvent e)
+							{
+								linkActivatedWhileFocused = true;
+							}
+						});
+					t.setRepeats(false);
+					t.start();
+				}
+				@Override
+				public void windowDeactivated(WindowEvent e)
+				{
+					linkActivatedWhileFocused = false;
+				}
 			});
 		
 		editor.addHyperlinkListener(new HyperlinkListener()
@@ -483,17 +506,32 @@ public class LogPane extends JScrollPane
 				{
 					if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
 					{
-						raiseLinkEvent(evt.getURL());
+						if (linkActivatedWhileFocused)
+						{
+							raiseLinkEvent(evt.getURL());
+						}
+						linkActivatedWhileFocused = true;
 					}
 				}
 			});
-		
+			
 		editor.addMouseListener(new MouseAdapter()
 			{
 				@Override
 				public void mouseClicked(MouseEvent e)
 				{
 					editor.transferFocus();
+				}
+			});
+			
+		editor.addMouseMotionListener(new MouseMotionListener()
+			{
+				public void mouseDragged(MouseEvent e)
+				{
+				}
+				public void mouseMoved(MouseEvent e)
+				{
+					linkActivatedWhileFocused = true;
 				}
 			});
 		
@@ -508,6 +546,7 @@ public class LogPane extends JScrollPane
 				@Override
 				public void keyPressed(KeyEvent e)
 				{
+					linkActivatedWhileFocused = true;
 					if (e.getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())
 					{
 						if (e.getKeyCode() == KeyEvent.VK_V)
