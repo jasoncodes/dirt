@@ -424,7 +424,10 @@ public class Client
 		cancelTimerTask(tmrTaskNoPong);
 		try
 		{
-			tmrPing.cancel();
+			if (tmrPing != null)
+			{
+				tmrPing.cancel();
+			}
 		}
 		catch (Exception ex)
 		{

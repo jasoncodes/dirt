@@ -22,7 +22,7 @@ else
 		--applet)
 			shift
 			BIN="appletviewer"
-			OPTIONS="dist/dirt_applet.html"
+			OPTIONS="dist/applet/dirt.html"
 			;;
 		
 		*)
