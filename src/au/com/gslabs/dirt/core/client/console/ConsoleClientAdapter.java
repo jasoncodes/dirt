@@ -9,8 +9,8 @@ import au.com.gslabs.dirt.core.client.enums.*;
 public abstract class ConsoleClientAdapter implements ClientListener
 {
 	
-	protected static java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
-	protected ArrayList<ConsoleCommandListener> listeners = new ArrayList<ConsoleCommandListener>();
+	private static java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("[HH:mm] ");
+	private ArrayList<ConsoleCommandListener> listeners = new ArrayList<ConsoleCommandListener>();
 	
 	public static String getOutputPrefix()
 	{

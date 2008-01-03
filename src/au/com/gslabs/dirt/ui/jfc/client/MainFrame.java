@@ -1,170 +1,44 @@
 package au.com.gslabs.dirt.ui.jfc.client;
 
 import java.util.ResourceBundle;
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import org.jdesktop.jdic.tray.*;
-import au.com.gslabs.dirt.lib.util.*;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
 import au.com.gslabs.dirt.core.client.console.*;
-import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
-import au.com.gslabs.dirt.core.client.enums.*;
-
-// this needs MRJAdapter support
 
 public class MainFrame extends JFrame
 {
-
-	protected Client client;
-	protected ConsoleClientAdapter clientAdapter;
-	ContactListModel contacts;
+	
+	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+	protected MainPanel panel;
 	protected boolean isDND;
 	
-	protected ResourceBundle resbundle;
-	LogPane txtLog;
-	InputArea txtInput;
-	JPasswordField txtPassword;
-	JList lstContacts;
-	JComponent activeInputControl;
-	JSplitPane splitContacts;
-
 	MainFrame()
 	{
 		
 		super("");
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		resbundle = ResourceBundle.getBundle("res/strings");
 		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		setJMenuBar(new MainMenuBar());
 		
-		getContentPane().setLayout(new BorderLayout());
-		
-		txtInput = new InputArea();
-		txtInput.addInputListener(new InputArea.InputListener()
-			{
-				
-				public void inputPerformed(InputArea source, String[] lines)
-				{
-					txtInput_Input(lines);
-				}
-				
-				public void inputCompletionCandidates(InputArea source, String[] candidates)
-				{
-					StringBuilder sb = new StringBuilder();
-					sb.append("  ");
-					for (String candidate : candidates)
-					{
-						sb.append("  ");
-						if (candidate.indexOf(' ') > -1)
-						{
-							sb.append('"');
-						}
-						sb.append(candidate);
-						if (candidate.indexOf(' ') > -1)
-						{
-							sb.append('"');
-						}
-					}
-					txtLog.appendTextLine(sb.toString());
-				}
-				
-				public boolean inputCanAddToHistory(InputArea source, String line)
-				{
-					return clientAdapter.isConsoleInputHistorySafe(line);
-				}
-				
-			});
-		
-		txtPassword = new JPasswordField();
-		txtPassword.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					String password = new String(txtPassword.getPassword());
-					txtPassword.setText("");
-					txtPassword_Input(password);
-				}
-			});
-		txtPassword.setBorder(txtInput.getBorder());
-		
-		getContentPane().add(txtInput, BorderLayout.SOUTH);
-		activeInputControl = txtInput;
-		
-		txtLog = new LogPane();
-		txtLog.addLinkListener(new LogPane.LinkListener()
-			{
-				public void linkClicked(LogPane.LinkEvent e)
-				{
-					txtLog_LinkClick(e.getURL());
-				}
-			});
-		
-		contacts = new ContactListModel();
-		lstContacts = new JList(contacts);
-		lstContacts.setFocusable(false);
-		JScrollPane scrlContacts = new JScrollPane(lstContacts);
-		scrlContacts.setPreferredSize(new Dimension(160, 0)); // default width
-		if (FileUtil.isMac())
-		{
-			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		}
-		
-		splitContacts = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, txtLog, scrlContacts);
-		splitContacts.setResizeWeight(1); // keep the contact pane fixed width
-		splitContacts.setContinuousLayout(true);
-		getContentPane().add(splitContacts, BorderLayout.CENTER);
-		if (FileUtil.isMac())
-		{
-			splitContacts.setDividerSize(3);
-		}
-		
-		Color borderColor = new EtchedBorder().getShadowColor(splitContacts);
-		Border borderLineBottom = BorderFactory.createMatteBorder(0,0,1,0, borderColor);
-		Border borderLineLeft = BorderFactory.createMatteBorder(0,1,0,0, borderColor);
-		Border borderLineRight = BorderFactory.createMatteBorder(0,0,0,1, borderColor);
-		Border borderTextArea = BorderFactory.createEmptyBorder(1, 1, 1, FileUtil.isMac()?14:1);
-		Border borderEmpty = BorderFactory.createEmptyBorder();
-		splitContacts.setBorder(borderLineBottom);
-		txtLog.setBorder(borderLineRight);
-		scrlContacts.setBorder(FileUtil.isMac()?borderLineLeft:borderEmpty);
-		txtInput.setBorder(borderTextArea);
-		txtPassword.setBorder(borderTextArea);
-		
 		isDND = false;
 		
-		client = new Client();
-		clientAdapter = new ClientAdapter();
-		client.addClientListener(clientAdapter, new JFCInvoker());
+		panel = new MainPanel();
+		panel.getConsoleClientAdapter().addConsoleCommandListener(new CommandAdapter());
+		panel.addMainPanelListener(new MainPanelHandler());
+		getContentPane().add(panel);
 		
-		txtInput.setCompletor(new ContactNickCompletor(client));
-		
-		WindowAdapter wa = new WindowAdapter()
+		addWindowListener(new WindowAdapter()
 			{
 				
 				@Override
 				public void windowActivated(WindowEvent e)
 				{
-					activeInputControl.requestFocusInWindow();
-				}
-				@Override
-				public void windowGainedFocus(WindowEvent e)
-				{
-					activeInputControl.requestFocusInWindow();
-				}
-				
-				@Override
-				public void windowDeactivated(WindowEvent e)
-				{
-					txtLog.clearRedLine();
-				}
-				@Override
-				public void windowLostFocus(WindowEvent e)
-				{
-					txtLog.clearRedLine();
+					panel.requestFocusInWindow();
 				}
 				
 				@Override
@@ -173,42 +47,16 @@ public class MainFrame extends JFrame
 					onClosing();
 				}
 				
-			};
-		addWindowListener(wa);
-		addWindowFocusListener(wa);
+			});
 		
 		updateWindowTitle();
 		UIUtil.setDefaultWindowBounds(this, 850, 330, MainFrame.class);
-		activeInputControl.requestFocusInWindow();
 		
-	}
-	
-	protected void setPasswordMode(boolean passwordMode)
-	{
-		JComponent txtOld = passwordMode ? txtInput : txtPassword;
-		JComponent txtNew = passwordMode ? txtPassword : txtInput;
-		if (activeInputControl != txtNew)
-		{
-			activeInputControl = txtNew;
-			txtPassword.setPreferredSize(txtInput.getPreferredSize());
-			txtPassword.setText("");
-			txtOld.setVisible(false);
-			txtNew.setVisible(true);
-			getContentPane().remove(txtOld);
-			getContentPane().add(txtNew, BorderLayout.SOUTH);
-			getContentPane().validate();
-			if (UIUtil.getActiveWindow() == this)
-			{
-				txtNew.requestFocusInWindow();
-			}
-		}
 	}
 	
 	protected enum SupportedCommand
 	{
-		CLEAR,
 		EXIT,
-		TEST,
 		DND,
 		BACK
 	}
@@ -221,33 +69,11 @@ public class MainFrame extends JFrame
 			super(SupportedCommand.class);
 		}
 		
-		@Override
 		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
 		{
 			
 			switch (cmd)
 			{
-				
-				case TEST:
-					txtLog.addTestData();
-					new Thread(new Runnable() {
-						public void run()
-						{
-							try
-							{
-								Thread.sleep(2000);
-							}
-							catch (InterruptedException ex)
-							{
-							}
-							UIUtil.alert(MainFrame.this);
-						}
-					}).start();
-					return true;
-				
-				case CLEAR:
-					txtLog.clearText();
-					return true;
 				
 				case EXIT:
 					adapter.processConsoleInput(source, context, "/QUIT " + params);
@@ -277,165 +103,90 @@ public class MainFrame extends JFrame
 		
 	}
 	
-	protected class ClientAdapter extends ConsoleClientAdapter
+	protected class MainPanelHandler implements MainPanelListener
 	{
 		
-		public ClientAdapter()
+		public void clientStateChanged(MainPanel panel)
 		{
-			addConsoleCommandListener(new CommandAdapter());
-		}
-		
-		@Override
-		public void clientContactUpdated(Client source, Contact contact)
-		{
-			contacts.updateContact(contact);
-		}
-		
-		@Override
-		public void clientUserListReceived(Client source, String[] nicklist)
-		{
-			// we have a nicklist, no need to let the default handler output text
-		}
-		
-		@Override
-		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
-		{
-			if (!suppressAlert && isDisplayable())
-			{
-				if (UIUtil.getActiveWindow() != MainFrame.this)
-				{
-					txtLog.setRedLine();
-					if (!isDND)
-					{
-						UIUtil.alert(MainFrame.this);
-					}
-				}
-				if (!txtLog.isAtEnd())
-				{
-					txtLog.showAndPulseArrow();
-				}
-			}
-			setPasswordMode(false);
-			txtLog.appendTextLine(getOutputPrefix() + message, className);
-		}
-		
-		@Override
-		public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay)
-		{
-			if (defaultNickOkay)
-			{
-				source.setNickname(null, defaultNick);
-				return;
-			}
-			setPasswordMode(false);
-			String prompt = "/nick " + defaultNick;
-			txtInput.setText(prompt, 6, prompt.length());
-		}
-		
-		@Override
-		public void clientNeedAuthentication(Client source, String prompt)
-		{
-			super.clientNeedAuthentication(source, prompt);
-			setPasswordMode(true);
-		}
-		
-		@Override
-		public void clientStateChanged(Client source)
-		{
-			super.clientStateChanged(source);
-			if (!source.isConnected())
-			{
-				setPasswordMode(false);
-			}
 			updateWindowTitle();
-			getRootPane().putClientProperty("windowModified", Boolean.valueOf(isDirty()));
+			getRootPane().putClientProperty("windowModified", Boolean.valueOf(panel.isDirty()));
 		}
 		
-	}
-	
-	public boolean isDirty()
-	{
-		return client.isConnected() && client.getNickname() != null;
+		public void panelRequestsAttention(MainPanel panel)
+		{
+			if (!isDND)
+			{
+				UIUtil.alert(MainFrame.this);
+			}
+		}
+		
 	}
 	
 	protected void updateWindowTitle()
 	{
 		
-		String title = "";
+		String title = panel.getTitle();
 		
-		if (client.isConnected())
+		if (title.length() == 0 || !FileUtil.isMac())
 		{
-			
-			String nick = client.getNickname();
-			if (nick != null && nick.length() > 0)
+			if (title.length() > 0)
 			{
-				title += nick + " on ";
+				title += " - ";
 			}
-			else
-			{
-				title += "";
-			}
-			
-			if (client.getServerName() != null)
-			{
-				title += client.getServerName();
-				if (!client.getServerHostname().equals(client.getServerName()) &&
-					!client.getServerHostname().equals("localhost"))
-				{
-					title += " (" + client.getServerHostname() + ")";
-				}
-			}
-			else
-			{
-				title += client.getServerHostname();
-			}
-			
-			Duration latency = client.getLatency();
-			if (latency != null)
-			{
-				title += " (" + latency.toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)";
-			}
-			
-			if (!FileUtil.isMac())
-			{
-				title += " - " + resbundle.getString("title");
-			}
-			
-			if (isDND)
-			{
-				title += " | DND";
-			}
-			
+			title += resbundle.getString("title");
 		}
-		else
+		
+		if (panel.getClient().isConnected() && isDND)
 		{
-			title = resbundle.getString("title");
+			title += " | DND";
 		}
 		
 		setTitle(title);
 		
 	}
 	
-	protected void txtLog_LinkClick(java.net.URL url)
-	{
-		UIUtil.openURL(url.toString());
-	}
-	
-	protected void txtInput_Input(String[] lines)
-	{
-		txtLog.clearRedLine();
-		clientAdapter.processConsoleInput(client, null, lines);
-	}
-	
-	protected void txtPassword_Input(String password)
-	{
-		txtLog.clearRedLine();
-		client.authenticate(null, password, false);
-	}
-	
 	protected void cmdPopupQuit_Click()
 	{
-		clientAdapter.processConsoleInput(client, null, "/exit");
+		panel.getConsoleClientAdapter().processConsoleInput(panel.getClient(), null, "/exit");
+	}
+	
+	protected void onClosing()
+	{
+		
+		if (panel.isDirty())
+		{
+			
+			final JTextField txtQuitMessage = new JTextField();
+			txtQuitMessage.setText("Closing");
+			final String title = "Confirm Disconnect";
+			final Object[] message = {
+					"Closing this window will disconnect from " + panel.getClient().getServerName() + ".",
+					new JLabel(),
+					"Quit Message:",
+					txtQuitMessage
+				};
+			final String[] options = { "Disconnect", "Cancel" };
+			
+			int result = JOptionPane.showOptionDialog(
+				this, message, title,
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+				options, options[0]);
+			
+			// if anything but Disconnect (the first option) is chosen
+			// (i.e. cancel button or confirm window closed),
+			// the user wants to cancel the operation
+			if (result != 0)
+			{
+				return; 
+			}
+			
+			panel.getClient().quit(null, txtQuitMessage.getText());
+			
+		}
+		
+		panel.cleanup();
+		dispose();
+		
 	}
 	
 	// this code needs to be possibly split off into it's own class in dirt.lib.ui.jfc
@@ -527,48 +278,4 @@ public class MainFrame extends JFrame
 	}
 	*/
 	
-	protected void onClosing()
-	{
-		
-		if (isDirty())
-		{
-			
-			final JTextField txtQuitMessage = new JTextField();
-			txtQuitMessage.setText("Closing");
-			final String title = "Confirm Disconnect";
-			final Object[] message = {
-					"Closing this window will disconnect from " + client.getServerName() + ".",
-					new JLabel(),
-					"Quit Message:",
-					txtQuitMessage
-				};
-			final String[] options = { "Disconnect", "Cancel" };
-			
-			int result = JOptionPane.showOptionDialog(
-				this, message, title,
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
-				options, options[0]);
-			
-			// if anything but Disconnect (the first option) is chosen
-			// (i.e. cancel button or confirm window closed),
-			// the user wants to cancel the operation
-			if (result != 0)
-			{
-				return; 
-			}
-			
-			client.quit(null, txtQuitMessage.getText());
-			
-		}
-		
-		txtLog.clearText();
-		setVisible(false);
-		if (client.isConnected())
-		{
-			client.disconnect(null, 2000);
-		}
-		dispose();
-		
-	}
-
 }
