@@ -13,7 +13,7 @@ public class MainFrame extends JFrame
 {
 	
 	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
-	protected MainPanel panel;
+	protected final MainPanel panel;
 	protected boolean isDND;
 	
 	MainFrame()

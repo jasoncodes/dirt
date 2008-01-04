@@ -273,18 +273,23 @@ public class MainPanel extends JPanel
 			splitContacts.setDividerSize(3);
 		}
 		
-		Color borderColor = new EtchedBorder().getShadowColor(splitContacts);
-		Border borderLineBottom = BorderFactory.createMatteBorder(0,0,1,0, borderColor);
-		Border borderLineLeft = BorderFactory.createMatteBorder(0,1,0,0, borderColor);
-		Border borderLineRight = BorderFactory.createMatteBorder(0,0,0,1, borderColor);
-		Border borderTextArea = BorderFactory.createEmptyBorder(1, 1, 1, FileUtil.isMac()?14:1);
-		Border borderEmpty = BorderFactory.createEmptyBorder();
+		final Color borderColor = getBorderColor();
+		final Border borderLineBottom = BorderFactory.createMatteBorder(0,0,1,0, borderColor);
+		final Border borderLineLeft = BorderFactory.createMatteBorder(0,1,0,0, borderColor);
+		final Border borderLineRight = BorderFactory.createMatteBorder(0,0,0,1, borderColor);
+		final Border borderTextArea = BorderFactory.createEmptyBorder(1, 1, 1, FileUtil.isMac()?14:1);
+		final Border borderEmpty = BorderFactory.createEmptyBorder();
 		splitContacts.setBorder(borderLineBottom);
 		txtLog.setBorder(borderLineRight);
 		scrlContacts.setBorder(FileUtil.isMac()?borderLineLeft:borderEmpty);
 		txtInput.setBorder(borderTextArea);
 		txtPassword.setBorder(borderTextArea);
 		
+	}
+	
+	public Color getBorderColor()
+	{
+		return new EtchedBorder().getShadowColor(splitContacts);
 	}
 	
 	public void addMainPanelListener(MainPanelListener l)

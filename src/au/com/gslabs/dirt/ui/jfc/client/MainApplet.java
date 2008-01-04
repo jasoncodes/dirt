@@ -4,230 +4,66 @@ import java.util.ResourceBundle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import org.jdesktop.jdic.tray.*;
-import au.com.gslabs.dirt.lib.util.*;
-import au.com.gslabs.dirt.lib.ui.jfc.*;
-import au.com.gslabs.dirt.core.client.*;
-import au.com.gslabs.dirt.core.client.console.*;
-import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
-import au.com.gslabs.dirt.core.client.enums.*;
+import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
+//import au.com.gslabs.dirt.core.client.*;
+//import au.com.gslabs.dirt.core.client.console.*;
 
 public class MainApplet extends JApplet
 {
 	
-	protected Client client;
-	protected ConsoleClientAdapter clientAdapter;
-	ContactListModel contacts;
-	
-	protected final ResourceBundle resbundle;
-	JLabel lblTitle;
-	LogPane txtLog;
-	InputArea txtInput;
-	JPasswordField txtPassword;
-	JList lstContacts;
-	JComponent activeInputControl;
+	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+	protected final MainPanel panel;
+	protected final JLabel lblTitle;
 	
 	public MainApplet()
 	{
 		
-		resbundle = ResourceBundle.getBundle("res/strings");
 		UIUtil.initSwing(resbundle.getString("name"));
+		
+		panel = new MainPanel();
+		panel.addMainPanelListener(new MainPanelHandler());
 		
 		lblTitle = new JLabel();
 		lblTitle.setText(resbundle.getString("title"));
-		getContentPane().add(lblTitle, BorderLayout.NORTH);
+		lblTitle.setBorder(BorderFactory.createMatteBorder(0,0,1,0, panel.getBorderColor()));
 		
-		getContentPane().setLayout(new BorderLayout());
+		JPanel container = new JPanel();
+		container.setLayout(new BorderLayout());
+		container.setBorder(BorderFactory.createLineBorder(panel.getBorderColor()));
+		container.add(panel, BorderLayout.CENTER);
+		container.add(lblTitle, BorderLayout.NORTH);
+		getContentPane().add(container);
 		
-		txtInput = new InputArea();
-		txtInput.addInputListener(new InputArea.InputListener()
+		addFocusListener(new FocusListener()
 			{
 				
-				public void inputPerformed(InputArea source, String[] lines)
+				public void focusGained(FocusEvent e)
 				{
-					txtInput_Input(lines);
+					panel.requestFocusInWindow();
 				}
 				
-				public void inputCompletionCandidates(InputArea source, String[] candidates)
+				public void focusLost(FocusEvent e)
 				{
-					StringBuilder sb = new StringBuilder();
-					sb.append("  ");
-					for (String candidate : candidates)
-					{
-						sb.append("  ");
-						if (candidate.indexOf(' ') > -1)
-						{
-							sb.append('"');
-						}
-						sb.append(candidate);
-						if (candidate.indexOf(' ') > -1)
-						{
-							sb.append('"');
-						}
-					}
-					txtLog.appendTextLine(sb.toString());
-				}
-				
-				public boolean inputCanAddToHistory(InputArea source, String line)
-				{
-					return clientAdapter.isConsoleInputHistorySafe(line);
 				}
 				
 			});
-		
-		txtPassword = new JPasswordField();
-		txtPassword.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					String password = new String(txtPassword.getPassword());
-					txtPassword.setText("");
-					txtPassword_Input(password);
-				}
-			});
-		
-		contacts = new ContactListModel();
-		lstContacts = new JList(contacts);
-		lstContacts.setFocusable(false);
-		JScrollPane scrlContacts = new JScrollPane(lstContacts);
-		scrlContacts.setPreferredSize(new Dimension(160, 0));
-		if (FileUtil.isMac())
-		{
-			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		}
-		getContentPane().add(scrlContacts, BorderLayout.EAST);
-		
-		txtLog = new LogPane();
-		getContentPane().add(txtLog, BorderLayout.CENTER);
-		
-		txtLog.addLinkListener(new LogPane.LinkListener()
-			{
-				public void linkClicked(LogPane.LinkEvent e)
-				{
-					txtLog_LinkClick(e.getURL());
-				}
-			});
-		
-		getContentPane().add(txtInput, BorderLayout.SOUTH);
-		activeInputControl = txtInput;
-		
-		client = new Client();
-		clientAdapter = new ClientAdapter();
-		client.addClientListener(clientAdapter, new JFCInvoker());
 		
 		updateWindowTitle();
-		txtInput.setCompletor(new ContactNickCompletor(client));
-		activeInputControl.requestFocusInWindow();
 		
 	}
 	
-	protected void setPasswordMode(boolean passwordMode)
-	{
-		JComponent txtOld = passwordMode ? txtInput : txtPassword;
-		JComponent txtNew = passwordMode ? txtPassword : txtInput;
-		txtPassword.setPreferredSize(txtInput.getPreferredSize());
-		txtPassword.setText("");
-		getContentPane().remove(txtOld);
-		getContentPane().add(txtNew, BorderLayout.SOUTH);
-		activeInputControl = txtNew;
-		getContentPane().validate();
-		txtNew.requestFocusInWindow();
-	}
-	
-	protected enum SupportedCommand
-	{
-		CLEAR
-	}
-	
-	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
+	protected class MainPanelHandler implements MainPanelListener
 	{
 		
-		public CommandAdapter()
+		public void clientStateChanged(MainPanel panel)
 		{
-			super(SupportedCommand.class);
-		}
-		
-		@Override
-		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
-		{
-			
-			switch (cmd)
-			{
-				
-				case CLEAR:
-					txtLog.clearText();
-					return true;
-				
-				default:
-					return false;
-				
-			}
-			
-		}
-		
-	}
-	
-	protected class ClientAdapter extends ConsoleClientAdapter
-	{
-		
-		public ClientAdapter()
-		{
-			addConsoleCommandListener(new CommandAdapter());
-		}
-		
-		@Override
-		public void clientContactUpdated(Client source, Contact contact)
-		{
-			contacts.updateContact(contact);
-		}
-		
-		@Override
-		public void clientUserListReceived(Client source, String[] nicklist)
-		{
-			// we have a nicklist, no need to let the default handler output text
-		}
-		
-		@Override
-		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
-		{
-			if (!suppressAlert)
-			{
-				txtLog.setRedLine();
-			}
-			txtLog.appendTextLine(getOutputPrefix() + message, className);
-		}
-		
-		@Override
-		public void clientNeedNickname(Client source, String defaultNick, boolean defaultNickOkay)
-		{
-			if (defaultNickOkay)
-			{
-				source.setNickname(null, defaultNick);
-				return;
-			}
-			setPasswordMode(false);
-			String prompt = "/nick " + defaultNick;
-			txtInput.setText(prompt, 6, prompt.length());
-		}
-		
-		@Override
-		public void clientNeedAuthentication(Client source, String prompt)
-		{
-			super.clientNeedAuthentication(source, prompt);
-			setPasswordMode(true);
-		}
-		
-		@Override
-		public void clientStateChanged(Client source)
-		{
-			super.clientStateChanged(source);
-			setPasswordMode(false);
 			updateWindowTitle();
-			getRootPane().putClientProperty(
-				"windowModified",
-				(client.isConnected() && client.getNickname() != null) ?
-					Boolean.TRUE :
-					Boolean.FALSE);
+			getRootPane().putClientProperty("windowModified", Boolean.valueOf(panel.isDirty()));
+		}
+		
+		public void panelRequestsAttention(MainPanel panel)
+		{
+			Toolkit.getDefaultToolkit().beep();
 		}
 		
 	}
@@ -235,48 +71,9 @@ public class MainApplet extends JApplet
 	protected void updateWindowTitle()
 	{
 		
-		String title = "";
+		String title = panel.getTitle();
 		
-		if (client.isConnected())
-		{
-			
-			String nick = client.getNickname();
-			if (nick != null && nick.length() > 0)
-			{
-				title += nick + " on ";
-			}
-			else
-			{
-				title += "";
-			}
-			
-			if (client.getServerName() != null)
-			{
-				title += client.getServerName();
-				if (!client.getServerHostname().equals(client.getServerName()) &&
-					!client.getServerHostname().equals("localhost"))
-				{
-					title += " (" + client.getServerHostname() + ")";
-				}
-			}
-			else
-			{
-				title += client.getServerHostname();
-			}
-			
-			Duration latency = client.getLatency();
-			if (latency != null)
-			{
-				title += " (" + latency.toString(Duration.Precision.MILLISECONDS, Duration.OutputFormat.MEDIUM) + " lag)";
-			}
-			
-			if (!FileUtil.isMac())
-			{
-				title += " - " + resbundle.getString("title");
-			}
-			
-		}
-		else
+		if (title.length() == 0)
 		{
 			title =
 				resbundle.getString("title") + " " +
@@ -288,29 +85,9 @@ public class MainApplet extends JApplet
 		
 	}
 	
-	protected void txtLog_LinkClick(java.net.URL url)
-	{
-		getAppletContext().showDocument(url, "_blank");
-	}
-	
-	protected void txtInput_Input(String[] lines)
-	{
-		txtLog.clearRedLine();
-		clientAdapter.processConsoleInput(client, null, lines);
-	}
-	
-	protected void txtPassword_Input(String password)
-	{
-		txtLog.clearRedLine();
-		client.authenticate(null, password, false);
-	}
-	
 	public void destroy()
 	{
-		if (client.isConnected())
-		{
-			client.disconnect(null, 2000);
-		}
+		panel.cleanup();
 	}
 	
 }

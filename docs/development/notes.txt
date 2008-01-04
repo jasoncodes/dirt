@@ -1,7 +1,4 @@
 query windows
-	split MainFrame into MainPanel/MainFrame
-	MainPanel has an API to MainFrame/MainApplet which controls new frames, titlebar updates, alerts, etc
-	MainApplet uses MainPanel
 	
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
