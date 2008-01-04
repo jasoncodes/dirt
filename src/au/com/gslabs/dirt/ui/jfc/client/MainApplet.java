@@ -5,8 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
-//import au.com.gslabs.dirt.core.client.*;
-//import au.com.gslabs.dirt.core.client.console.*;
 
 public class MainApplet extends JApplet
 {
@@ -82,17 +80,47 @@ public class MainApplet extends JApplet
 		
 		if (title.length() == 0)
 		{
-			title =
-				resbundle.getString("title") + " " +
-				resbundle.getString("version") + " " +
-				resbundle.getString("sourceDate");
+			title = getAppletInfo();
 		}
 		
 		lblTitle.setText(title);
 		
 	}
 	
-	public void destroy()
+	@Override
+	public String getAppletInfo()
+	{
+		return
+			resbundle.getString("title") + " " +
+			resbundle.getString("version") + " " +
+			resbundle.getString("sourceDate");
+	}
+	
+	@Override
+	public String[][] getParameterInfo()
+	{
+		return new String[][]
+			{
+				{ "url", "String", "URL the client should connect to (AUTO to detect)" }
+			};
+	}
+	
+	@Override
+	public void start()
+	{
+		String url = getParameter("url");
+		if (url.equals("AUTO"))
+		{
+			url = getDocumentBase().getHost();
+		}
+		if (url != null && url.length() > 0)
+		{
+			panel.getClient().connect(null, url);
+		}
+	}
+	
+	@Override
+	public void stop()
 	{
 		panel.cleanup();
 	}

@@ -372,6 +372,11 @@ public class Client
 		}
 	}
 	
+	public void connect(String context, String url)
+	{
+		connect(context, new URL(url, "dirt", 11626));
+	}
+	
 	public void connect(String context, URL url)
 	{
 		if (url == null)
@@ -406,7 +411,7 @@ public class Client
 	
 	public void reconnect(String context)
 	{
-		connect(context, null);
+		connect(context, (URL)null);
 	}
 	
 	protected void resetState()

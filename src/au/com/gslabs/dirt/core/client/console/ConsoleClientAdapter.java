@@ -638,7 +638,7 @@ public abstract class ConsoleClientAdapter implements ClientListener
 				return true;
 			
 			case CONNECT:
-				client.connect(context, new URL(params, "dirt", 11626));
+				client.connect(context, params);
 				return true;
 				
 			case SAY:
