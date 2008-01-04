@@ -12,6 +12,8 @@ Copying blocks of text without "[hh:mm] <Nick> "
 	Context menu
 	Selection to should be automatically expanded to whole lines (and restored after copy)
 
+file transfers
+
 trigger windowClosing events via mnuQuit
 	/exit should do the same (after sending a /quit "$@")
 
@@ -27,8 +29,6 @@ Window Menu
 	Bring all to front (test on all platforms, okay to be Mac only if too hard)
 	Window List. Ideally with diamond for minimized windows
 	sweethome3d.sf.net has code that does both these
-
-file transfers
 
 log reader/writer API
 	SQL db stores raw message data with search keywords after processing (i.e. regexes)
