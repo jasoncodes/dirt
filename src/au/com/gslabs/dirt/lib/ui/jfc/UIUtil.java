@@ -319,6 +319,7 @@ public class UIUtil
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		}
 		catch (Throwable t)
 		{
@@ -331,8 +332,6 @@ public class UIUtil
 		{
 			toolkit.setDynamicLayout(true);
 		}
-		
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
 		// Set a sane WM_CLASS on X11
 		// <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6528430>
