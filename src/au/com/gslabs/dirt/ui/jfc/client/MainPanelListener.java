@@ -4,4 +4,5 @@ public interface MainPanelListener
 {
 	public void clientStateChanged(MainPanel panel);
 	public void panelRequestsAttention(MainPanel panel);
+	public boolean linkClicked(MainPanel panel, java.net.URL url);
 }

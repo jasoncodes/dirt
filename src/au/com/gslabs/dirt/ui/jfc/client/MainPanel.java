@@ -30,6 +30,7 @@ public class MainPanel extends JPanel
 	
 	protected final ArrayList<MainPanelListener> listeners = new ArrayList<MainPanelListener>();
 	protected boolean isFocused = false;
+	protected String clientExtraVersionInfo = null;
 	
 	public MainPanel()
 	{
@@ -92,9 +93,12 @@ public class MainPanel extends JPanel
 							catch (InterruptedException ex)
 							{
 							}
-							for (MainPanelListener l : listeners)
+							if (!isFocused)
 							{
-								l.panelRequestsAttention(MainPanel.this);
+								for (MainPanelListener l : listeners)
+								{
+									l.panelRequestsAttention(MainPanel.this);
+								}
 							}
 						}
 					}).start();
@@ -131,6 +135,12 @@ public class MainPanel extends JPanel
 		public void clientUserListReceived(Client source, String[] nicklist)
 		{
 			// we have a nicklist, no need to let the default handler output text
+		}
+		
+		@Override
+		public String getClientExtraVersionInfo(Client source)
+		{
+			return clientExtraVersionInfo;
 		}
 		
 		@Override
@@ -287,6 +297,11 @@ public class MainPanel extends JPanel
 		
 	}
 	
+	public void setClientExtraVersionInfo(String value)
+	{
+		this.clientExtraVersionInfo = value;
+	}
+	
 	public Color getBorderColor()
 	{
 		return new EtchedBorder().getShadowColor(splitContacts);
@@ -303,8 +318,15 @@ public class MainPanel extends JPanel
 		listeners.remove(idx);
 	}
 	
-	protected void txtLog_LinkClick(java.net.URL url)
+	protected void txtLog_LinkClick(final java.net.URL url)
 	{
+		for (MainPanelListener l : listeners)
+		{
+			if (l.linkClicked(MainPanel.this, url))
+			{
+				return;
+			}
+		}
 		UIUtil.openURL(url.toString());
 	}
 	

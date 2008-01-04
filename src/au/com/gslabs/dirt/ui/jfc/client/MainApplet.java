@@ -21,6 +21,7 @@ public class MainApplet extends JApplet
 		UIUtil.initSwing(resbundle.getString("name"));
 		
 		panel = new MainPanel();
+		panel.setClientExtraVersionInfo("Applet");
 		panel.addMainPanelListener(new MainPanelHandler());
 		
 		lblTitle = new JLabel();
@@ -63,7 +64,13 @@ public class MainApplet extends JApplet
 		
 		public void panelRequestsAttention(MainPanel panel)
 		{
-			Toolkit.getDefaultToolkit().beep();
+			// we could Toolkit.getDefaultToolkit().beep(); but that'll probably annoy users
+		}
+		
+		public boolean linkClicked(MainPanel panel, java.net.URL url)
+		{
+			getAppletContext().showDocument(url, "_blank");
+			return true;
 		}
 		
 	}

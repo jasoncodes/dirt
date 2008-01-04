@@ -120,6 +120,11 @@ public class MainFrame extends JFrame
 			}
 		}
 		
+		public boolean linkClicked(MainPanel panel, java.net.URL url)
+		{
+			return false;
+		}
+		
 	}
 	
 	protected void updateWindowTitle()
