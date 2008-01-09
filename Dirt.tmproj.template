@@ -22,6 +22,8 @@
 					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 					<key>sourceDirectory</key>
 					<string>src/au/com/gslabs/dirt</string>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>name</key>
@@ -30,6 +32,14 @@
 					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 					<key>sourceDirectory</key>
 					<string>res</string>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>jni</string>
+					<key>regexFolderFilter</key>
+					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+					<key>sourceDirectory</key>
+					<string>jni</string>
 				</dict>
 			</array>
 			<key>expanded</key>
