@@ -55,7 +55,7 @@ typedef union
 } PIXEL;
 
 // Args include the array of pixel RGBA values, and the actual image width and height.
-extern void setDockTile( int * imagePixels, int width, 
+extern void setDockTile( jint * imagePixels, int width, 
 						 int height ) {
 	// How many bytes in each pixel? Java uses 4-byte ints.
 	int kNumComponents = 4;

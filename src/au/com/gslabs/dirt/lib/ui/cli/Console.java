@@ -69,7 +69,7 @@ public class Console
 		{
 			if (completor != null)
 			{
-				return completor.complete(buffer, cursor, (List)candidates);
+				return completor.complete(buffer, cursor, (List<String>)candidates);
 			}
 			return -1; // default to no tab completion
 		}

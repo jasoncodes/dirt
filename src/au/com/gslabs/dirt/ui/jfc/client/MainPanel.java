@@ -13,7 +13,7 @@ import au.com.gslabs.dirt.core.client.console.*;
 import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
 import au.com.gslabs.dirt.core.client.enums.*;
 
-public class MainPanel extends JPanel
+public class MainPanel extends BaseClientPanel implements ChatPanel
 {
 	
 	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
@@ -21,6 +21,7 @@ public class MainPanel extends JPanel
 	protected final ConsoleClientAdapter clientAdapter;
 	protected final ContactListModel contacts;
 	
+	protected boolean cleanupDone = false;
 	protected LogPane txtLog;
 	protected InputArea txtInput;
 	protected JPasswordField txtPassword;
@@ -28,12 +29,15 @@ public class MainPanel extends JPanel
 	protected JComponent activeInputControl;
 	protected JSplitPane splitContacts;
 	
-	protected final ArrayList<MainPanelListener> listeners = new ArrayList<MainPanelListener>();
-	protected boolean isFocused = false;
 	protected String clientExtraVersionInfo = null;
+	private final ArrayList<MainPanelListener> mainListeners = new ArrayList<MainPanelListener>();
+	private final WeakHashMap<String,ClientPanel> panels = new WeakHashMap<String,ClientPanel>();
 	
 	public MainPanel()
 	{
+		
+		super(null);
+		panels.put(getContext(), this);
 		
 		setLayout(new BorderLayout());
 		
@@ -48,12 +52,10 @@ public class MainPanel extends JPanel
 			{
 				public void focusLost(FocusEvent e)
 				{
-					isFocused = false;
 					txtLog.clearRedLine();
 				}
 				public void focusGained(FocusEvent e)
 				{
-					isFocused = true;
 					activeInputControl.requestFocusInWindow();
 				}
 			});
@@ -62,6 +64,7 @@ public class MainPanel extends JPanel
 	
 	protected enum SupportedCommand
 	{
+		QUERY,
 		CLEAR,
 		TEST
 	}
@@ -81,31 +84,26 @@ public class MainPanel extends JPanel
 			switch (cmd)
 			{
 				
+				case QUERY:
+					String[] tokens = TextUtil.splitQuotedHeadTail(params);
+					if (tokens.length < 1 || tokens[0].length() < 1)
+					{
+						getConsoleClientAdapter().clientNotification(
+							client, context, NotificationSeverity.ERROR,
+							cmd.toString(), "Insufficient parameters");
+					}
+					else
+					{
+						openQueryPanel(context, tokens[0], tokens.length>1 ? tokens[1] : null);
+					}
+					return true;
+				
 				case TEST:
-					txtLog.addTestData();
-					new Thread(new Runnable() {
-						public void run()
-						{
-							try
-							{
-								Thread.sleep(2000);
-							}
-							catch (InterruptedException ex)
-							{
-							}
-							if (!isFocused)
-							{
-								for (MainPanelListener l : listeners)
-								{
-									l.panelRequestsAttention(MainPanel.this);
-								}
-							}
-						}
-					}).start();
+					getChatPanel(context).outputTestData();
 					return true;
 				
 				case CLEAR:
-					txtLog.clearText();
+					getChatPanel(context).clearText();
 					return true;
 				
 				default:
@@ -123,6 +121,29 @@ public class MainPanel extends JPanel
 		public ClientAdapter()
 		{
 			addConsoleCommandListener(new CommandAdapter());
+		}
+		
+		@Override
+		protected String getContextForNickname(String nickname, boolean okayToCreate)
+		{
+			final Contact contact = getClient().getContact(nickname);
+			final ClientPanel panel = getQueryPanel(contact, okayToCreate);
+			return (panel != null) ? panel.getContext() : null;
+		}
+		
+		@Override
+		protected String getNicknameForContext(String context)
+		{
+			final ClientPanel panel = panels.get(context);
+			if (panel instanceof QueryPanel)
+			{
+				final Contact contact = ((QueryPanel)panel).getContact();
+				return contact.getNickname();
+			}
+			else
+			{
+				return null;
+			}
 		}
 		
 		@Override
@@ -146,23 +167,8 @@ public class MainPanel extends JPanel
 		@Override
 		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
 		{
-			if (!suppressAlert && isDisplayable())
-			{
-				if (!isFocused)
-				{
-					txtLog.setRedLine();
-					for (MainPanelListener l : listeners)
-					{
-						l.panelRequestsAttention(MainPanel.this);
-					}
-				}
-				if (!txtLog.isAtEnd())
-				{
-					txtLog.showAndPulseArrow();
-				}
-			}
-			setPasswordMode(false);
-			txtLog.appendTextLine(getOutputPrefix() + message, className);
+			final ChatPanel panel = getChatPanel(context);
+			panel.clientConsoleOutput(source, context, className, suppressAlert, message);
 		}
 		
 		@Override
@@ -193,12 +199,181 @@ public class MainPanel extends JPanel
 			{
 				setPasswordMode(false);
 			}
-			for (MainPanelListener l : listeners)
+			notifyTitleChanged();
+		}
+		
+	}
+	
+	public void openQueryPanel(final String context, final String nickname, final String message)
+	{
+		
+		// get the existing panel or create an new panel if required
+		final Contact contact = getClient().getContact(nickname);
+		
+		if (contact == null)
+		{
+			getConsoleClientAdapter().clientNotification(
+				client, context, NotificationSeverity.ERROR,
+				SupportedCommand.QUERY.toString(), "No such nickname: " + nickname);
+		}
+		else
+		{
+			openQueryPanel(context, contact, message);
+		}
+	}
+	
+	public void openQueryPanel(final String context, final Contact contact, final String message)
+	{
+		
+		final QueryPanel panel = getQueryPanel(contact, true);
+		
+		// focus the new panel (as it's a user requested function)
+		final String effectiveContext;
+		if (panel != null)
+		{
+			effectiveContext = panel.getContext();
+			panel.requestFocus();
+		}
+		else
+		{
+			effectiveContext = context;
+			getConsoleClientAdapter().clientNotification(
+				client, context, NotificationSeverity.WARNING,
+				SupportedCommand.QUERY.toString(), "Query windows unavailable");
+		}
+		
+		// if the user passed a message, send it to the user
+		if (message != null && getClient().ensureConnected(context, SupportedCommand.QUERY.toString()))
+		{
+			getClient().sendChatMessage(
+				effectiveContext, contact.getNickname(),
+				ChatMessageType.TEXT, new ByteBuffer(message));
+		}
+	
+	}
+	
+	protected QueryPanel getQueryPanel(final Contact contact, final boolean okayToCreate)
+	{
+		
+		if (contact == null)
+		{
+			return null;
+		}
+		
+		// search panels for a QueryPanel with said contact
+		for (final ClientPanel panel : panels.values())
+		{
+			if (panel instanceof QueryPanel)
 			{
-				l.clientStateChanged(MainPanel.this);
+				final QueryPanel qp = (QueryPanel)panel;
+				if (contact.equals(qp.getContact()))
+				{
+					// got a match
+					return qp;
+				}
 			}
 		}
 		
+		// no existing panel found
+		if (!okayToCreate)
+		{
+			// not allowed to create a new panel
+			return null;
+		}
+		else
+		{
+			// create one and return it
+			final QueryPanel panel = new QueryPanel(MainPanel.this, createNewContext(), contact);
+			panels.put(panel.getContext(), panel);
+			if (notifyClientPanelCreated(panel))
+			{
+				return panel;
+			}
+			else
+			{
+				// no event handler accepted this new panel
+				// I guess we don't support multiple contexts
+				panel.cleanup();
+				return null;
+			}
+		}
+		
+	}
+	
+	public void unregisterPanel(ClientPanel panel)
+	{
+		panels.put(panel.getContext(), null);
+	}
+	
+	public void clearText()
+	{
+		txtLog.clearText();
+	}
+	
+	public void outputTestData()
+	{
+		txtLog.addTestData();
+		requestAttentionAfterDelay(2000);
+	}
+	
+	protected String createNewContext()
+	{
+		String context;
+		do
+		{
+			context = TextUtil.generateRandomAlphaNumeric(8);
+		} while (panels.get(context) != null);
+		return context;
+	}
+	
+	protected ClientPanel getPanel(String context)
+	{
+		if (context == null)
+		{
+			context = "";
+		}
+		return panels.get(context);
+	}
+	
+	protected ChatPanel getChatPanel(String context)
+	{
+		final ClientPanel panel = getPanel(context);
+		if (panel instanceof ChatPanel)
+		{
+			return (ChatPanel)panel;
+		}
+		return this;
+	}
+	
+	protected boolean notifyClientPanelCreated(final ClientPanel panel)
+	{
+		for (MainPanelListener l : mainListeners)
+		{
+			if (l.clientPanelCreated(this, panel))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
+	{
+		if (!suppressAlert && isDisplayable())
+		{
+			if (!isFocused())
+			{
+				txtLog.setRedLine();
+				requestAttention();
+			}
+			if (!txtLog.isAtEnd())
+			{
+				txtLog.showAndPulseArrow();
+			}
+		}
+		setPasswordMode(false);
+		txtLog.appendTextLine(ConsoleClientAdapter.getOutputPrefix() + message, className);
+		return true;
 	}
 	
 	protected void createControls()
@@ -261,11 +436,27 @@ public class MainPanel extends JPanel
 			{
 				public void linkClicked(LogPane.LinkEvent e)
 				{
-					txtLog_LinkClick(e.getURL());
+					notifyLinkClicked(e.getURL());
 				}
 			});
 		
 		lstContacts = new JList(contacts);
+		lstContacts.addMouseListener(new MouseAdapter()
+			{
+				public void mouseClicked(MouseEvent e)
+				{
+					if (e.getClickCount() == 2)
+					{
+						final Object selection[] = lstContacts.getSelectedValues();
+						if (selection.length == 1 && selection[0] instanceof Contact)
+						{
+							final Contact contact = (Contact)selection[0];
+							openQueryPanel(null, contact, null);
+						}
+					}
+				}
+			});
+		
 		lstContacts.setFocusable(false);
 		JScrollPane scrlContacts = new JScrollPane(lstContacts);
 		scrlContacts.setPreferredSize(new Dimension(160, 0)); // default width
@@ -297,49 +488,32 @@ public class MainPanel extends JPanel
 		
 	}
 	
+	public void addMainPanelListener(MainPanelListener l)
+	{
+		mainListeners.add(l);
+	}
+	
+	public void removeMainPanelListener(MainPanelListener l)
+	{
+		int idx = mainListeners.indexOf(l);
+		mainListeners.remove(idx);
+	}
+	
 	public void setClientExtraVersionInfo(String value)
 	{
 		this.clientExtraVersionInfo = value;
 	}
 	
-	public Color getBorderColor()
-	{
-		return new EtchedBorder().getShadowColor(splitContacts);
-	}
-	
-	public void addMainPanelListener(MainPanelListener l)
-	{
-		listeners.add(l);
-	}
-	
-	public void removeMainPanelListener(MainPanelListener l)
-	{
-		int idx = listeners.indexOf(l);
-		listeners.remove(idx);
-	}
-	
-	protected void txtLog_LinkClick(final java.net.URL url)
-	{
-		for (MainPanelListener l : listeners)
-		{
-			if (l.linkClicked(MainPanel.this, url))
-			{
-				return;
-			}
-		}
-		UIUtil.openURL(url.toString());
-	}
-	
 	protected void txtInput_Input(String[] lines)
 	{
 		txtLog.clearRedLine();
-		clientAdapter.processConsoleInput(client, null, lines);
+		clientAdapter.processConsoleInput(client, getContext(), lines);
 	}
 	
 	protected void txtPassword_Input(String password)
 	{
 		txtLog.clearRedLine();
-		client.authenticate(null, password, false);
+		client.authenticate(getContext(), password, false);
 	}
 	
 	protected void setPasswordMode(boolean passwordMode)
@@ -377,11 +551,15 @@ public class MainPanel extends JPanel
 	
 	public void cleanup()
 	{
-		txtLog.clearText();
-		setVisible(false);
-		if (client.isConnected())
+		if (!cleanupDone)
 		{
-			client.disconnect(null, 2000);
+			cleanupDone = true;
+			client.removeClientListener(clientAdapter);
+			txtLog.clearText();
+			if (client.isConnected())
+			{
+				client.disconnect(null, 2000);
+			}
 		}
 	}
 	

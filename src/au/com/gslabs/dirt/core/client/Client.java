@@ -46,7 +46,7 @@ public class Client
 	public Client()
 	{
 		
-		contacts = new TreeMap<String,Contact>();
+		contacts = new TreeMap<String,Contact>(String.CASE_INSENSITIVE_ORDER);
 		nickname_last = getDefaultNickname();
 		nickname_last_good = false;
 		
@@ -525,15 +525,15 @@ public class Client
 	protected void processServerMessage(ByteBuffer data)
 	{
 		
-		ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(data, 3);
+		final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(data, 3);
 		if (tokens.size() != 3)
 		{
 			throw new IllegalArgumentException("Not enough tokens in server message");
 		}
 		
-		String context = tokens.get(0).toString();
-		String cmdString = tokens.get(1).toString();
-		ByteBuffer params = tokens.get(2);
+		final String context = tokens.get(0).toString();
+		final String cmdString = tokens.get(1).toString();
+		final ByteBuffer params = tokens.get(2);
 		
 		final ServerCommand cmd;
 		try

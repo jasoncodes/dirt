@@ -49,7 +49,7 @@ public class FileUtil
 		File f = null;
 		while (f == null || !f.createNewFile())
 		{
-			f = new File(getTempDir(), TextUtil.generateRandomChars(8)+".tmp");
+			f = new File(getTempDir(), TextUtil.generateRandomAlphaNumeric(8)+".tmp");
 		}
 		return f;
 	}

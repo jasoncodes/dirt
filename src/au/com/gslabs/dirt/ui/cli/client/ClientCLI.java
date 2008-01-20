@@ -77,6 +77,18 @@ public class ClientCLI
 		}
 		
 		@Override
+		protected String getContextForNickname(String nickname, boolean okayToCreate)
+		{
+			return null; // we don't support multiple contexts
+		}
+		
+		@Override
+		protected String getNicknameForContext(String context)
+		{
+			return null; // we don't support multiple contexts
+		}
+		
+		@Override
 		protected void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message)
 		{
 			output(message);

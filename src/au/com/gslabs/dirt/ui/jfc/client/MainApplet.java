@@ -60,15 +60,20 @@ public class MainApplet extends JApplet
 			getRootPane().putClientProperty("windowModified", Boolean.valueOf(panel.isDirty()));
 		}
 		
-		public void panelRequestsAttention(MainPanel panel)
+		public void panelRequestsAttention(ClientPanel panel)
 		{
 			// we could Toolkit.getDefaultToolkit().beep(); but that'll probably annoy users
 		}
 		
-		public boolean linkClicked(MainPanel panel, java.net.URL url)
+		public boolean linkClicked(ClientPanel panel, java.net.URL url)
 		{
 			getAppletContext().showDocument(url, "_blank");
 			return true;
+		}
+		
+		public boolean clientPanelCreated(MainPanel panel, ClientPanel clientPanel)
+		{
+			return false; // no new window support
 		}
 		
 	}

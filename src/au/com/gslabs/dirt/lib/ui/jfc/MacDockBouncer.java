@@ -13,8 +13,6 @@ import net.roydesign.app.Application;
 class MacDockBouncer extends Thread
 {
 	
-	private static final String JNILib_MacOS = "lib/mac/libDirtJNI.jnilib";
-	
 	protected ImageIcon[] icons;
 	protected MacOS mac;
 	
@@ -71,14 +69,14 @@ class MacDockBouncer extends Thread
 		
 		monitors = new HashMap<Frame,FocusMonitor>();
 		
-		FileUtil.loadLibrary(JNILib_MacOS);
+		UIUtil.loadNativeLibrary();
 		mac = new MacOS();
 		
 		icons = new ImageIcon[2];
 		icons[0] = new ImageIcon(FileUtil.getResource("res/icons/dirt.png"));
 		icons[1] = new ImageIcon(FileUtil.getResource("res/icons/dirt_highlight.png"));
 		
-		final Class c = Class.forName("com.apple.cocoa.application.NSApplication");
+		final Class<?> c = Class.forName("com.apple.cocoa.application.NSApplication");
 		final Method shared_app = c.getMethod("sharedApplication", (Class[])null);
 		this.app = shared_app.invoke(null, (Object[])null);
 		final Class[] int_param = new Class[] { Integer.TYPE };

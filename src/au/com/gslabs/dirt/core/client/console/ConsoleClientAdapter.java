@@ -19,6 +19,8 @@ public abstract class ConsoleClientAdapter implements ClientListener
 	}
 	
 	protected abstract void clientConsoleOutput(Client source, String context, String className, boolean suppressAlert, String message);
+	protected abstract String getContextForNickname(String nickname, boolean okayToCreate);
+	protected abstract String getNicknameForContext(String context);
 	
 	public void addConsoleCommandListener(ConsoleCommandListener listener)
 	{
@@ -127,34 +129,38 @@ public abstract class ConsoleClientAdapter implements ClientListener
 			(direction == MessageDirection.OUTBOUND) ||
 			(nick.equals(source.getNickname()));
 		
+		final boolean okayToCreateContext =
+			(direction == MessageDirection.INBOUND) && (visibility != ChatMessageVisibility.PUBLIC);
+		final String preferredContext = getContextForNickname(nick, okayToCreateContext);
+		final boolean usingPreferredContext = (visibility != ChatMessageVisibility.PUBLIC) && (preferredContext != null);
+		final String selectedContext = usingPreferredContext ? preferredContext : context;
+		
+		//todo: the code below needs to use the preferred context if present
 		switch (direction)
 		{
 			
 			case INBOUND:
-				switch (visibility)
+				if (visibility == ChatMessageVisibility.PUBLIC || usingPreferredContext)
 				{
-					case PRIVATE:
-						if (type == ChatMessageType.ACTION)
-						{
-							clientConsoleOutput(source, context, className, suppressAlert, "* *" + nick + "*" + sep + message);
-						}
-						else
-						{
-							clientConsoleOutput(source, context, className, suppressAlert, "*" + nick + "* " + message);
-						}
-						break;
-					case PUBLIC:
-						if (type == ChatMessageType.ACTION)
-						{
-							clientConsoleOutput(source, context, className, suppressAlert, "* " + nick + sep + message);
-						}
-						else
-						{
-							clientConsoleOutput(source, context, className, suppressAlert, "<" + nick + "> " + message);
-						}
-						break;
-					default:
-						throw new RuntimeException("Unknown visibility");
+					if (type == ChatMessageType.ACTION)
+					{
+						clientConsoleOutput(source, selectedContext, className, suppressAlert, "* " + nick + sep + message);
+					}
+					else
+					{
+						clientConsoleOutput(source, selectedContext, className, suppressAlert, "<" + nick + "> " + message);
+					}
+				}
+				else
+				{
+					if (type == ChatMessageType.ACTION)
+					{
+						clientConsoleOutput(source, selectedContext, className, suppressAlert, "* *" + nick + "*" + sep + message);
+					}
+					else
+					{
+						clientConsoleOutput(source, selectedContext, className, suppressAlert, "*" + nick + "* " + message);
+					}
 				}
 				break;
 				
@@ -162,13 +168,27 @@ public abstract class ConsoleClientAdapter implements ClientListener
 				switch (visibility)
 				{
 					case PRIVATE:
-						if (type == ChatMessageType.ACTION)
+						if (usingPreferredContext)
 						{
-							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* * " + source.getNickname() + sep + message);
+							if (type == ChatMessageType.ACTION)
+							{
+								clientConsoleOutput(source, selectedContext, className, true, "* " + source.getNickname() + sep + message);
+							}
+							else
+							{
+								clientConsoleOutput(source, selectedContext, className, true, "<" + source.getNickname() + "> " + message);
+							}
 						}
 						else
 						{
-							clientConsoleOutput(source, context, className, true, "-> *" + nick + "* " + message);
+							if (type == ChatMessageType.ACTION)
+							{
+								clientConsoleOutput(source, selectedContext, className, true, "-> *" + nick + "* * " + source.getNickname() + sep + message);
+							}
+							else
+							{
+								clientConsoleOutput(source, selectedContext, className, true, "-> *" + nick + "* " + message);
+							}
 						}
 						break;
 					case PUBLIC:
@@ -646,7 +666,8 @@ public abstract class ConsoleClientAdapter implements ClientListener
 				if (ensureConnected(client, context, cmd.toString()))
 				{
 					final ChatMessageType type = (cmd == ConsoleCommand.ME) ? ChatMessageType.ACTION : ChatMessageType.TEXT;
-					client.sendChatMessage(context, null, type, new ByteBuffer(params));
+					final String nickname = getNicknameForContext(context);
+					client.sendChatMessage(context, nickname, type, new ByteBuffer(params));
 				}
 				return true;
 				

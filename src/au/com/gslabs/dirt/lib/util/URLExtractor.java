@@ -139,7 +139,7 @@ public class URLExtractor
 	
 	static final Pattern partDelims = Pattern.compile("(\\p{Space}|\"|<|>|&quot;|&lt;|&gt;)+");
 	static final Pattern suffixToIgnore = Pattern.compile("[.,?!]+$");
-	static final Pattern domainEnd = Pattern.compile("\\.(com|net|org|gov|mil|co\\.[a-z]+)(:[0-9]+)?(/|$)");
+	static final Pattern domainEnd = Pattern.compile("\\.(com|net|org|gov|mil|co)(\\.[a-z]+)?(:[0-9]+)?(/|$)");
 	
 	protected void tokenize(String text)
 	{

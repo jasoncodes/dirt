@@ -9,37 +9,27 @@ import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.core.client.*;
 import au.com.gslabs.dirt.core.client.console.*;
 
-public class MainFrame extends JFrame
+public class MainFrame extends ClientFrame
 {
 	
-	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
-	protected final MainPanel panel;
 	protected boolean isDND;
 	
 	MainFrame()
 	{
 		
-		super("");
+		super(new MainPanel());
+		
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		setTitle(resbundle.getString("title"));
 		UIUtil.setIcon(this);
 		setJMenuBar(new MainMenuBar());
 		
 		isDND = false;
 		
-		panel = new MainPanel();
 		panel.getConsoleClientAdapter().addConsoleCommandListener(new CommandAdapter());
-		panel.addMainPanelListener(new MainPanelHandler());
-		getContentPane().add(panel);
+		((MainPanel)panel).addMainPanelListener(new MainPanelHandler());
 		
 		addWindowListener(new WindowAdapter()
 			{
-				
-				@Override
-				public void windowActivated(WindowEvent e)
-				{
-					panel.requestFocusInWindow();
-				}
 				
 				@Override
 				public void windowClosing(WindowEvent event)
@@ -50,7 +40,6 @@ public class MainFrame extends JFrame
 			});
 		
 		updateWindowTitle();
-		UIUtil.setDefaultWindowBounds(this, 850, 330, MainFrame.class);
 		
 	}
 	
@@ -106,53 +95,35 @@ public class MainFrame extends JFrame
 	protected class MainPanelHandler implements MainPanelListener
 	{
 		
-		public void clientStateChanged(MainPanel panel)
+		public boolean clientPanelCreated(MainPanel panel, ClientPanel clientPanel)
 		{
-			updateWindowTitle();
-			getRootPane().putClientProperty("windowModified", Boolean.valueOf(panel.isDirty()));
-		}
-		
-		public void panelRequestsAttention(MainPanel panel)
-		{
-			if (!isDND)
-			{
-				UIUtil.alert(MainFrame.this);
-			}
-		}
-		
-		public boolean linkClicked(MainPanel panel, java.net.URL url)
-		{
-			return false;
+			final JFrame frame = new ClientFrame(clientPanel);
+			UIUtil.setVisibleWithoutFocus(frame);
+			return true;
 		}
 		
 	}
 	
-	protected void updateWindowTitle()
+	@Override
+	protected void doAlert()
 	{
-		
-		String title = panel.getTitle();
-		
-		if (title.length() == 0 || !FileUtil.isMac())
+		if (!isDND)
 		{
-			if (title.length() > 0)
-			{
-				title += " - ";
-			}
-			title += resbundle.getString("title");
+			super.doAlert();
 		}
-		
+	}
+	
+	@Override
+	protected String getTitleSuffix()
+	{
 		if (panel.getClient().isConnected() && isDND)
 		{
-			title += " | DND";
+			return " | DND";
 		}
-		
-		setTitle(title);
-		
-	}
-	
-	protected void cmdPopupQuit_Click()
-	{
-		panel.getConsoleClientAdapter().processConsoleInput(panel.getClient(), null, "/exit");
+		else
+		{
+			return null;
+		}
 	}
 	
 	protected void onClosing()
@@ -186,10 +157,10 @@ public class MainFrame extends JFrame
 			}
 			
 			panel.getClient().quit(null, txtQuitMessage.getText());
+			panel.cleanup();
 			
 		}
 		
-		panel.cleanup();
 		dispose();
 		
 	}
@@ -198,6 +169,11 @@ public class MainFrame extends JFrame
 	// and updated to initially hide the MainFrame, restore it on clicking, provide
 	// status updates in the tooltip, flash when something happens, etc
 	/*
+	protected void cmdPopupQuit_Click()
+	{
+		panel.getConsoleClientAdapter().processConsoleInput(panel.getClient(), null, "/exit");
+	}
+	
 	protected void doMinToTray()
 	{
 	

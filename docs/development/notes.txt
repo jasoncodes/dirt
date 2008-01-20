@@ -1,5 +1,9 @@
-query windows
-	
+check every "protected" and convert things that shouldn't be to "private"
+
+dirt+https_connect://spawncamp.net/localhost:11626
+
+Java 1.6 is x86_64. Need to compile and test libDirtJNI.jnilib
+
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
 	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html
@@ -24,7 +28,14 @@ save/restore frame rect
 	use java.util.prefs.Preferences
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
 	store nicklist width as well as window dimensions
-	
+
+keep selection when doing addTextLine
+	save start/end position, clear selection, add line, restore start/end position
+
+detection of sleep on at least mac and win32
+	http://www.createblog.com/forums/lofiversion/index.php/t162836.html
+	http://developer.apple.com/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/UserSwitchNotifications.html#//apple_ref/doc/uid/20002210-CJBJDAGF
+
 Window Menu
 	Bring all to front (test on all platforms, okay to be Mac only if too hard)
 	Window List. Ideally with diamond for minimized windows
@@ -40,8 +51,11 @@ nicklist
 	double click
 	preserve selections when indexes change
 
-keep selection when doing addTextLine
-	save start/end position, clear selection, add line, restore start/end position
+font selection
+	- Monaco (Mac only, requires fake bold)
+	- DejaVu Sans Mono
+	- Bitstream Vera Sans Mono
+	- Lucida Sans Typewriter
 
 acceleration when scrolling logpane
 
@@ -106,8 +120,6 @@ keyboard support for scrolling logpane (pgup/down in inputarea)
 
 indented wrapping of long lines
 	http://groups.google.com.au/group/comp.lang.java.gui/browse_thread/thread/db1d177fe760cb77
-
-detection of sleep on at least mac and win32
 
 auto-reconnect on resume from sleep && network available
 

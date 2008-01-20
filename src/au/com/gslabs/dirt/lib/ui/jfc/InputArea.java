@@ -439,28 +439,34 @@ public class InputArea extends JScrollPane
 			int minSpaceDepth = Integer.MAX_VALUE;
 			for (int i = 0; i < lines.length; ++i)
 			{
-				int thisTabDepth = 0;
-				int thisSpaceDepth = 0;
-				for (int j = 0; j < lines[i].length(); ++j)
+				if (lines[i].length() > 0)
 				{
-					if (lines[i].charAt(j) == '\t' && thisTabDepth == j)
+					int thisTabDepth = 0;
+					int thisSpaceDepth = 0;
+					for (int j = 0; j < lines[i].length(); ++j)
 					{
-						thisTabDepth++;
+						if (lines[i].charAt(j) == '\t' && thisTabDepth == j)
+						{
+							thisTabDepth++;
+						}
+						if (lines[i].charAt(j) == ' ' && thisSpaceDepth == j)
+						{
+							thisSpaceDepth++;
+						}
 					}
-					if (lines[i].charAt(j) == ' ' && thisSpaceDepth == j)
-					{
-						thisSpaceDepth++;
-					}
+					minTabDepth = Math.min(minTabDepth, thisTabDepth);
+					minSpaceDepth = Math.min(minSpaceDepth, thisSpaceDepth);
 				}
-				minTabDepth = Math.min(minTabDepth, thisTabDepth);
-				minSpaceDepth = Math.min(minSpaceDepth, thisSpaceDepth);
 			}
 			int minDepth = Math.max(minTabDepth, minSpaceDepth);
 			if (minDepth > 0)
 			{
 				for (int i = 0; i < lines.length; ++i)
 				{
-					lines[i] = lines[i].substring(minDepth);
+					if (lines[i].length() > 0)
+					{
+						lines[i] = lines[i].substring(minDepth);
+					}
 				}
 			}
 			again = minDepth > 0;

@@ -149,7 +149,7 @@ public final class TextUtil
 		return mf.format(params);
 	}
 	
-	public static String generateRandomChars(int count)
+	public static String generateRandomAlphaNumeric(int count)
 	{
 		if (random == null)
 		{

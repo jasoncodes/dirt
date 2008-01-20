@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		966C65B60D42CD580083FD51 /* DirtJNI.m in Sources */ = {isa = PBXBuildFile; fileRef = 966C65B50D42CD580083FD51 /* DirtJNI.m */; };
+		966C65CF0D42D0860083FD51 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 966C65CE0D42D0860083FD51 /* AppKit.framework */; };
 		96C58D0D0C5B1BAB00ADBEA3 /* DirtJNI.c in Sources */ = {isa = PBXBuildFile; fileRef = 96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */; };
 		96C58D730C5B22FC00ADBEA3 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96C58D700C5B22FC00ADBEA3 /* AddressBook.framework */; };
 		96C58D740C5B22FC00ADBEA3 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96C58D710C5B22FC00ADBEA3 /* CoreFoundation.framework */; };
@@ -18,6 +20,8 @@
 /* Begin PBXFileReference section */
 		08FB77AAFE841565C02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		32BAE0B70371A74B00C91783 /* DirtJNI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirtJNI_Prefix.pch; sourceTree = "<group>"; };
+		966C65B50D42CD580083FD51 /* DirtJNI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DirtJNI.m; sourceTree = "<group>"; };
+		966C65CE0D42D0860083FD51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DirtJNI.c; sourceTree = "<group>"; };
 		96C58D490C5B21DB00ADBEA3 /* au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS.h; sourceTree = "<group>"; };
 		96C58D700C5B22FC00ADBEA3 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
@@ -38,6 +42,7 @@
 				96C58D740C5B22FC00ADBEA3 /* CoreFoundation.framework in Frameworks */,
 				96C58D750C5B22FC00ADBEA3 /* JavaVM.framework in Frameworks */,
 				96C58E3A0C5B24AF00ADBEA3 /* ApplicationServices.framework in Frameworks */,
+				966C65CF0D42D0860083FD51 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				966C65CE0D42D0860083FD51 /* AppKit.framework */,
 				96E061B00C5B624C00CE3ADB /* au_com_gslabs_dirt_lib_util_jni_MacOS.h */,
 				96C58D490C5B21DB00ADBEA3 /* au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS.h */,
 				96C58E390C5B24AF00ADBEA3 /* ApplicationServices.framework */,
@@ -79,6 +85,7 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				966C65B50D42CD580083FD51 /* DirtJNI.m */,
 				96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */,
 				32BAE0B70371A74B00C91783 /* DirtJNI_Prefix.pch */,
 			);
@@ -122,10 +129,12 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB916408733D950010E9CD /* Build configuration list for PBXProject "DirtJNI" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 0867D691FE84028FC02AAC07 /* DirtJNI */;
 			productRefGroup = 034768DDFF38A45A11DB9C8B /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				D2AAC09C05546B4700DB518D /* DirtJNI */,
 			);
@@ -154,6 +163,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				96C58D0D0C5B1BAB00ADBEA3 /* DirtJNI.c in Sources */,
+				966C65B60D42CD580083FD51 /* DirtJNI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -40,7 +40,7 @@ public class UIUtil
 		{
 			try
 			{
-				loadLibrary();
+				loadNativeLibrary();
 				File temp = FileUtil.getNewTempFile();
 				java.io.InputStream in = FileUtil.getResourceAsStream(path);
 				java.io.FileOutputStream out = new java.io.FileOutputStream(temp);
@@ -95,7 +95,7 @@ public class UIUtil
 		{
 			if (FileUtil.isMac())
 			{
-				Class fileMgr = Class.forName("com.apple.eio.FileManager");
+				Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
 				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] {String.class});
 				openURL.invoke(null, new Object[] {url});
 			}
@@ -214,7 +214,7 @@ public class UIUtil
 		
 	}
 	
-	protected static void loadLibrary() throws java.io.IOException, IllegalAccessException, NoSuchFieldException
+	static void loadNativeLibrary() throws java.io.IOException, IllegalAccessException, NoSuchFieldException
 	{
 		if (FileUtil.isWin())
 		{
@@ -223,6 +223,10 @@ public class UIUtil
 		if (FileUtil.isLinux())
 		{
 			FileUtil.loadLibrary("lib/linux_"+System.getProperty("os.arch")+"/libdirt_lib_ui_jfc.so");
+		}
+		if (FileUtil.isMac())
+		{
+			FileUtil.loadLibrary("lib/mac/libDirtJNI.jnilib");
 		}
 	}
 	
@@ -234,7 +238,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					loadLibrary();
+					loadNativeLibrary();
 					Win32 win32 = new Win32();
 					win32.alert(frame);
 				}
@@ -243,7 +247,7 @@ public class UIUtil
 			{
 				if (!frame.isFocused())
 				{
-					loadLibrary();
+					loadNativeLibrary();
 					Linux linux = new Linux();
 					linux.alert(frame);
 				}
@@ -266,20 +270,122 @@ public class UIUtil
 		}
 		catch (Exception e)
 		{
-			// todo: provide alternate alert (window caption hacking?)
 			System.err.println("Alert() not available");
 			System.err.println(e);
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Sets the opacity (1.0 => fully opaque, 0.0 => fully transparent) of the given Frame.
+	 */
+	// src: http://elliotth.blogspot.com/2007/08/transparent-java-windows-on-x11.html
+	public static void setFrameAlpha(JFrame frame, double alpha)
+	{
+		try
+		{
+			Field peerField = Component.class.getDeclaredField("peer");
+			peerField.setAccessible(true);
+			Object peer = peerField.get(frame);
+			if (peer == null)
+			{
+				return;
+			}
+			
+			if (FileUtil.isMac())
+			{
+				if (System.getProperty("os.version").startsWith("10.4"))
+				{
+					Class<?> cWindowClass = Class.forName("apple.awt.CWindow");
+					if (cWindowClass.isInstance(peer))
+					{
+						// ((apple.awt.CWindow) peer).setAlpha(alpha);
+						Method setAlphaMethod = cWindowClass.getMethod("setAlpha", float.class);
+						setAlphaMethod.invoke(peer, (float) alpha);
+					}
+				}
+				else
+				{
+					frame.getRootPane().putClientProperty("Window.alpha", alpha);
+				}
+			}
+			else if (FileUtil.isWin())
+			{
+				// FIXME: can we do this on Windows?
+			}
+			else
+			{
+				// long windowId = peer.getWindow();
+				Class<?> xWindowPeerClass = Class.forName("sun.awt.X11.XWindowPeer");
+				Method getWindowMethod = xWindowPeerClass.getMethod("getWindow", new Class[0]);
+				long windowId = ((Long) getWindowMethod.invoke(peer, new Object[0])).longValue();
+				
+				long value = (int) (0xff * alpha) << 24;
+				// sun.awt.X11.XAtom.get("_NET_WM_WINDOW_OPACITY").setCard32Property(windowId, value);
+				Class<?> xAtomClass = Class.forName("sun.awt.X11.XAtom");
+				Method getMethod = xAtomClass.getMethod("get", String.class);
+				Method setCard32PropertyMethod = xAtomClass.getMethod("setCard32Property", long.class, long.class);
+				setCard32PropertyMethod.invoke(getMethod.invoke(null, "_NET_WM_WINDOW_OPACITY"), windowId, value);
+			}
+		}
+		catch (Throwable th)
+		{
+			System.err.println("Failed to apply frame alpha:");
+			th.printStackTrace();
+		}
+	}
+	
+	public static void setVisibleWithoutFocus(final JFrame frame)
+	{
+		
+		// ref: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6187066
+		// this method is full of hacks to fake something the JFC UI doesn't let us do
+		
+		frame.addNotify();
+		setFrameAlpha(frame, 0.0);
+		final JMenuBar oldMenu = frame.getJMenuBar();
+		frame.setJMenuBar(null);
+		final boolean oldResizable = frame.isResizable();
+		frame.setResizable(false);
+		final Rectangle oldBounds = frame.getBounds();
+		frame.setBounds(10000,10000,0,0);
+		frame.setFocusableWindowState(false);
+		frame.toBack();
+		frame.setVisible(true);
+		frame.addWindowListener(new WindowAdapter()
+			{
+				public void windowOpened(WindowEvent e)
+				{
+					
+					if (!frame.getFocusableWindowState())
+					{
+						final Window focusedFrame = getActiveWindow();
+						if (focusedFrame != null)
+						{
+							focusedFrame.toFront();
+						}
+						frame.setFocusableWindowState(true);
+					}
+					
+					frame.removeWindowListener(this);
+					frame.setResizable(oldResizable);
+					frame.setJMenuBar(oldMenu);
+					frame.setBounds(oldBounds);
+					setFrameAlpha(frame, 1.0);
+					
+				}
+			});
+		
+	}
+	
 	public static void stealFocus(Window window)
 	{
+		window.setFocusableWindowState(true);
 		if (FileUtil.isWin())
 		{
 			try
 			{
-				loadLibrary();
+				loadNativeLibrary();
 				Win32 win32 = new Win32();
 				win32.stealFocus(window);
 			}

@@ -30,7 +30,7 @@ else
 			then
 				if [ "$1" == "--profile" ]
 				then
-					OPTIONS="$OPTIONS -Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt"
+					OPTIONS="-Dapple.laf.useScreenMenuBar=true -Xdock:name=Dirt $OPTIONS"
 				else
 					BIN="dist/Dirt.app/Contents/MacOS/Dirt"
 					OPTIONS=""
@@ -39,14 +39,8 @@ else
 			if [ "$1" == "--profile" ]
 			then
 				shift
-				PROFILER_LIB_DIR=`echo /Applications/YourKit\ Java\ Profiler\ *.app/bin/mac`
-				if [ ! -d "$PROFILER_LIB_DIR" ]
-				then
-					echo YourKit Java Profiler not found. >&2
-					exit 1;
-				fi
-				export DYLD_LIBRARY_PATH="$PROFILER_LIB_DIR"
-				OPTIONS="$OPTIONS -agentlib:yjpagent"
+				OPTIONS="-agentlib:Shark $OPTIONS"
+				open "/Developer/Applications/Performance Tools/Shark.app"
 			fi
 			;;
 		
