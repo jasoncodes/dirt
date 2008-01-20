@@ -843,19 +843,23 @@ public class Client
 							ChatMessageVisibility.PRIVATE :
 							ChatMessageVisibility.PUBLIC;
 					ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(params, 2);
-					final String nick = tokens.get(0).toString();
+					final String nickname = tokens.get(0).toString();
+					if (getContact(nickname, false) == null)
+					{
+						getContact(nickname, true);
+					}
 					final String message = tokens.get(1).toString();
 					listeners.dispatchEvent(new EventSource<ClientListener>()
 						{
 							public void dispatchEvent(ClientListener l)
 							{
 								if (visibility == ChatMessageVisibility.PUBLIC &&
-								    nick.equals(getNickname()))
+								    nickname.equals(getNickname()))
 								{
 									// server does not double echo our own public messages
-									l.clientChatMessage(Client.this, context, nick, message, MessageDirection.OUTBOUND, type, visibility);
+									l.clientChatMessage(Client.this, context, nickname, message, MessageDirection.OUTBOUND, type, visibility);
 								}
-								l.clientChatMessage(Client.this, context, nick, message, MessageDirection.INBOUND, type, visibility);
+								l.clientChatMessage(Client.this, context, nickname, message, MessageDirection.INBOUND, type, visibility);
 							}
 						});
 				}
