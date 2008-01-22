@@ -1,3 +1,17 @@
+x86_64 jnilib for 64-bit Java on Leopard
+	reflection code for dock bounce needs to be converted to JNI as ObjC proxy not 64-bit
+	http://developer.apple.com/java/javaleopard.html
+	http://lists.apple.com/archives/Java-dev/2007/Dec/msg00067.html
+	JVMArchs may require jarbundler update and/or overriding with our own Info.plist
+		<key>JVMArchs</key>
+		<array>
+			<string>x86_64</string>
+			<string>i386</string>
+			<string>ppc64</string>
+			<string>ppc</string>
+		</array>
+	should probably also symlink as per http://informagen.com/JarBundler/StubFile.html
+
 dirt+https_connect://spawncamp.net/localhost:11626
 
 Spellcheck on at least Mac
@@ -52,10 +66,6 @@ font selection
 	- DejaVu Sans Mono
 	- Bitstream Vera Sans Mono
 	- Lucida Sans Typewriter
-
-x86_64 jnilib for Java 1.6 on Leopard
-	need to find a 64-bit Cocoa equivalent to the SetApplicationDockTileImage Carbon API
-		http://developer.apple.com/samplecode/DockTile/ is 10.5 only
 
 acceleration when scrolling logpane
 
