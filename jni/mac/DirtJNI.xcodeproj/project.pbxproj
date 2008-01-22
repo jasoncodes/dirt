@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		966B2FF50D45F9830017962F /* DirtJNI.h in Headers */ = {isa = PBXBuildFile; fileRef = 966B2FF40D45F9830017962F /* DirtJNI.h */; };
 		966C65B60D42CD580083FD51 /* DirtJNI.m in Sources */ = {isa = PBXBuildFile; fileRef = 966C65B50D42CD580083FD51 /* DirtJNI.m */; };
 		966C65CF0D42D0860083FD51 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 966C65CE0D42D0860083FD51 /* AppKit.framework */; };
 		96C58D0D0C5B1BAB00ADBEA3 /* DirtJNI.c in Sources */ = {isa = PBXBuildFile; fileRef = 96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		08FB77AAFE841565C02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		32BAE0B70371A74B00C91783 /* DirtJNI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirtJNI_Prefix.pch; sourceTree = "<group>"; };
+		966B2FF40D45F9830017962F /* DirtJNI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirtJNI.h; sourceTree = "<group>"; };
 		966C65B50D42CD580083FD51 /* DirtJNI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DirtJNI.m; sourceTree = "<group>"; };
 		966C65CE0D42D0860083FD51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DirtJNI.c; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				966B2FF40D45F9830017962F /* DirtJNI.h */,
 				966C65B50D42CD580083FD51 /* DirtJNI.m */,
 				96C58D0C0C5B1BAB00ADBEA3 /* DirtJNI.c */,
 				32BAE0B70371A74B00C91783 /* DirtJNI_Prefix.pch */,
@@ -99,6 +102,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				966B2FF50D45F9830017962F /* DirtJNI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,8 +196,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc,
 					i386,
+					ppc,
+					ppc64,
+					x86_64,
 				);
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -212,6 +218,8 @@
 				ARCHS = (
 					i386,
 					ppc,
+					ppc64,
+					x86_64,
 				);
 				EXECUTABLE_EXTENSION = jnilib;
 				EXECUTABLE_PREFIX = lib;
@@ -220,7 +228,12 @@
 				HEADER_SEARCH_PATHS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				PREBINDING = NO;
 				PRODUCT_NAME = DirtJNI;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc64 = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc7400 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc970 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_x86_64 = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = Debug;
 		};
@@ -230,6 +243,8 @@
 				ARCHS = (
 					i386,
 					ppc,
+					ppc64,
+					x86_64,
 				);
 				EXECUTABLE_EXTENSION = jnilib;
 				EXECUTABLE_PREFIX = lib;
@@ -238,7 +253,12 @@
 				HEADER_SEARCH_PATHS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				PREBINDING = NO;
 				PRODUCT_NAME = DirtJNI;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc64 = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc7400 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc970 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_x86_64 = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = Release;
 		};

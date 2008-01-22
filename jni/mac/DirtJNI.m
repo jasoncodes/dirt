@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #include "au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS.h"
 #include <jawt_md.h>
+#include "DirtJNI.h"
 
 // src: http://developer.apple.com/samplecode/JSheets/
 // Given a Java component, return an NSWindow*
@@ -45,3 +46,36 @@ NSWindow * GetWindowFromComponent(jobject parent, JNIEnv *env) {
 	// Get the view's parent window; this is what we need to show a sheet
 	return [view window];
 }
+
+#if defined(__USE_LEOPARD_API)
+
+void Dock_setContentImage(CGImageRef imageRef)
+{
+	
+	NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
+
+	NSRect rect;
+	rect.origin.x = 0.0f;
+	rect.origin.y = 0.0f;
+	rect.size.width = CGImageGetWidth(imageRef);
+	rect.size.height = CGImageGetHeight(imageRef);
+	
+	NSImage* image = [[NSImage alloc] initWithSize:rect.size];
+    [image lockFocus];
+    CGContextDrawImage([[NSGraphicsContext currentContext] graphicsPort], *(CGRect*)&rect, imageRef);
+    [image unlockFocus];
+	
+	NSImageView *dockImageView = [[NSImageView alloc] initWithFrame: rect];
+	[dockImageView setImage: image];
+	
+	NSDockTile *dockTile = [NSApp dockTile];
+	[dockTile setContentView: dockImageView];
+	[dockTile display];
+	
+	[image release];
+	
+	[autoreleasepool release];
+	
+}
+
+#endif

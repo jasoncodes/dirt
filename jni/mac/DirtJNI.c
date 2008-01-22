@@ -4,6 +4,7 @@
 #include <Carbon/Carbon.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include <AddressBook/AddressBook.h>
+#include "DirtJNI.h"
 
 // src: <http://developer.apple.com/samplecode/MyFirstJNIProject/index.html>
 
@@ -74,10 +75,7 @@ extern void setDockTile( jint * imagePixels, int width,
 		imagePixels[i] = p.i;
 	}
 	
-	OSStatus   theError;
-	
 	// Several CoreGraphics variables.
-	CGContextRef theContext;
 	CGDataProviderRef theProvider;
 	CGColorSpaceRef theColorspace;
 	CGImageRef theImage;
@@ -85,42 +83,53 @@ extern void setDockTile( jint * imagePixels, int width,
 	// How many bytes in each row?
 	size_t bytesPerRow = width * kNumComponents;
 	
-	// Obtain graphics context in which to render.
-	theContext = BeginCGContextForApplicationDockTile();
+	// Use the pixels passed in as the image source.
 	
-	if ( theContext != NULL ) {   
-		// Use the pixels passed in as the image source.
-		theProvider = CGDataProviderCreateWithData( 
-													NULL, imagePixels, ( bytesPerRow * height ), NULL );
+	theProvider = CGDataProviderCreateWithData(NULL, imagePixels, ( bytesPerRow * height ), NULL );
+	
+	theColorspace = CGColorSpaceCreateDeviceRGB();
+
+	// Create the image. This is similar to creating a PixMap. 
+	// - The width and height were passed as arguments. 
+	// - The next two values (8 and 32) are the bits per pixel component and 
+	//    total bits per pixel, respectively. 
+	// - bytesPerRow was calculated above. 
+	// - Use the colorspace ref obtained previously. 
+	// - The alpha or transparency data is in the first byte of each pixel. 
+	// - Use the data source created a few lines above.
+	// - The remaining parameters are typical defaults. Consult the API docs for 
+	//    more info.
+	theImage = CGImageCreate( width, height, 8, 32, 
+							 bytesPerRow, theColorspace, kCGImageAlphaFirst, 
+							 theProvider, NULL, 0, kCGRenderingIntentDefault );
+	
+	CGDataProviderRelease( theProvider );
+	CGColorSpaceRelease( theColorspace );
+	
+#if defined(__USE_LEOPARD_API)
+	Dock_setContentImage(theImage);
+#else
+	{
+
+		// Obtain graphics context in which to render.
+		CGContextRef theContext = BeginCGContextForApplicationDockTile();
 		
-		theColorspace = CGColorSpaceCreateDeviceRGB();
+		if ( theContext != NULL )
+		{   
+			
+			// Set the created image as the tile.
+			SetApplicationDockTileImage( theImage );
+			
+			CGContextFlush( theContext );
+			
+			EndCGContextForApplicationDockTile( theContext );
+		}
 		
-		// Create the image. This is similar to creating a PixMap. 
-		// - The width and height were passed as arguments. 
-		// - The next two values (8 and 32) are the bits per pixel component and 
-		//    total bits per pixel, respectively. 
-		// - bytesPerRow was calculated above. 
-		// - Use the colorspace ref obtained previously. 
-		// - The alpha or transparency data is in the first byte of each pixel. 
-		// - Use the data source created a few lines above.
-		// - The remaining parameters are typical defaults. Consult the API docs for 
-		//    more info.
-		theImage = CGImageCreate( width, height, 8, 32, 
-								  bytesPerRow, theColorspace, kCGImageAlphaFirst, 
-								  theProvider, NULL, 0, kCGRenderingIntentDefault );
-		
-		CGDataProviderRelease( theProvider );
-		CGColorSpaceRelease( theColorspace );
-		
-		// Set the created image as the tile.
-		theError = SetApplicationDockTileImage( theImage );
-		
-		CGContextFlush( theContext );
-		
-		CGImageRelease( theImage );
-		
-		EndCGContextForApplicationDockTile( theContext );
 	}
+#endif
+
+	CGImageRelease( theImage );
+	
 }
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_setDockTile( 
