@@ -33,7 +33,7 @@ public abstract class ConsoleClientAdapter implements ClientListener
 		listeners.remove(idx);
 	}
 
-	protected boolean clientPreprocessConsoleInput(final Client source, final String context, final String cmd, final String params)
+	private boolean clientPreprocessConsoleInput(final Client source, final String context, final String cmd, final String params)
 	{
 		for (int i = listeners.size() - 1; i >= 0; --i)
 		{
@@ -45,7 +45,7 @@ public abstract class ConsoleClientAdapter implements ClientListener
 		return false;
 	}
 	
-	protected String[] getClientSupportedCommands(final Client source)
+	private String[] getClientSupportedCommands(final Client source)
 	{
 		final ArrayList<String> cmds = new ArrayList<String>();
 		for (int i = listeners.size() - 1; i >= 0; --i)
@@ -432,7 +432,7 @@ public abstract class ConsoleClientAdapter implements ClientListener
 		
 	}
 	
-	protected final class WhoisOutputter
+	private final class WhoisOutputter
 	{
 		private Client source;
 		private String context;
@@ -554,17 +554,17 @@ public abstract class ConsoleClientAdapter implements ClientListener
 		
 	}
 	
-	protected static boolean ensureConnected(Client client, String context, ConsoleCommand cmd)
+	private static boolean ensureConnected(Client client, String context, ConsoleCommand cmd)
 	{
 		return ensureConnected(client, context, (cmd != null && cmd != ConsoleCommand.SAY) ? cmd.toString() : null);
 	}
 	
-	protected static boolean ensureConnected(Client client, String context, String cmd)
+	private static boolean ensureConnected(Client client, String context, String cmd)
 	{
 		return client.ensureConnected(context, cmd);
 	}
 	
-	protected enum ConsoleCommand
+	private enum ConsoleCommand
 	{
 		SAY,
 		ME,
@@ -585,7 +585,7 @@ public abstract class ConsoleClientAdapter implements ClientListener
 		ECHO
 	}
 	
-	protected boolean processConsoleCommand(Client client, final String context, final ConsoleCommand cmd, final String params)
+	private boolean processConsoleCommand(Client client, final String context, final ConsoleCommand cmd, final String params)
 	{
 		
 		switch (cmd)

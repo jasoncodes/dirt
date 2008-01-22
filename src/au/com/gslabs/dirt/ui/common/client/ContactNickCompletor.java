@@ -9,7 +9,7 @@ public class ContactNickCompletor implements au.com.gslabs.dirt.lib.ui.common.Co
 	
 	private static final long OFFLINE_GRACE_MILLISECONDS = 1000 * 60 * 5; // 5 minutes
 	
-	protected Client client;
+	private Client client;
 	
 	public ContactNickCompletor(Client client)
 	{

@@ -33,7 +33,7 @@ public abstract class BaseClientPanel extends JPanel implements ClientPanel
 		
 	}
 	
-	protected boolean isFocused()
+	public boolean isFocused()
 	{
 		return isFocused;
 	}
@@ -59,12 +59,12 @@ public abstract class BaseClientPanel extends JPanel implements ClientPanel
 		return context;
 	}
 	
-	public Color getBorderColor()
+	protected Color getBorderColor()
 	{
 		return new EtchedBorder().getShadowColor(this);
 	}
 	
-	public void requestAttention()
+	protected void requestAttention()
 	{
 		if (!isFocused)
 		{
@@ -75,7 +75,7 @@ public abstract class BaseClientPanel extends JPanel implements ClientPanel
 		}
 	}
 	
-	public void requestAttentionAfterDelay(final long delayMilliseconds)
+	protected void requestAttentionAfterDelay(final long delayMilliseconds)
 	{
 		new Thread(new Runnable() {
 			public void run()
@@ -113,7 +113,7 @@ public abstract class BaseClientPanel extends JPanel implements ClientPanel
 		UIUtil.openURL(url.toString());
 	}
 	
-	public void notifyTitleChanged()
+	protected void notifyTitleChanged()
 	{
 		for (ClientPanelListener l : listeners)
 		{

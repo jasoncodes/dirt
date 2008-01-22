@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class EventListeners<L extends Object>
 {
 	
-	protected final ArrayList<L> listeners = new ArrayList<L>();
-	protected final ArrayList<Invoker> invokers = new ArrayList<Invoker>();
+	private final ArrayList<L> listeners = new ArrayList<L>();
+	private final ArrayList<Invoker> invokers = new ArrayList<Invoker>();
 	
 	public EventListeners()
 	{
@@ -25,11 +25,11 @@ public class EventListeners<L extends Object>
 		invokers.remove(idx);
 	}
 	
-	protected class Dispatcher implements Runnable
+	private class Dispatcher implements Runnable
 	{
 		
-		protected L listener;
-		protected EventSource<L> source;
+		private L listener;
+		private EventSource<L> source;
 		
 		public Dispatcher(L listener, EventSource<L> source)
 		{

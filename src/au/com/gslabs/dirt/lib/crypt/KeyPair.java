@@ -5,9 +5,9 @@ import au.com.gslabs.dirt.lib.util.ByteBuffer;
 public final class KeyPair
 {
 	
-	protected String cipher;
-	protected final ByteBuffer publicKey;
-	protected final ByteBuffer privateKey;
+	private String cipher;
+	private final ByteBuffer publicKey;
+	private final ByteBuffer privateKey;
 	
 	public KeyPair(String cipher, ByteBuffer publicKey, ByteBuffer privateKey)
 	{

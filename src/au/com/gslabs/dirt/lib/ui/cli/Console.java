@@ -9,12 +9,12 @@ import au.com.gslabs.dirt.lib.thread.InterruptibleInputStream;
 public class Console
 {
 	
-	protected jline.ConsoleReader console;
-	protected boolean bailingOut;
-	protected InterruptibleInputStream input;
-	protected boolean passwordMode;
-	protected Completor completor;
-	protected HistoryFilter historyFilter;
+	private jline.ConsoleReader console;
+	private boolean bailingOut;
+	private InterruptibleInputStream input;
+	private boolean passwordMode;
+	private Completor completor;
+	private HistoryFilter historyFilter;
 	
 	public Console()
 	{
@@ -80,7 +80,7 @@ public class Console
 		this.completor = completor;
 	}
 	
-	protected class MyHistory extends jline.History
+	private class MyHistory extends jline.History
 	{
 		@Override
 		public void addToHistory(String buffer)
@@ -128,7 +128,7 @@ public class Console
 	
 	private static final char ESC = (char)27;
 
-	protected void wipeLastLine()
+	private void wipeLastLine()
 	{
 		try
 		{
@@ -144,7 +144,7 @@ public class Console
 		}
 	}
 	
-	protected void clearCurrentLine()
+	private void clearCurrentLine()
 	{
 		try
 		{

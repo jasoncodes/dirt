@@ -9,7 +9,7 @@ import au.com.gslabs.dirt.lib.util.FileUtil;
 public class WindowManager
 {
 	
-	protected final class FrameData
+	private final class FrameData
 	{
 		
 		public final WeakReference<Frame> frame;
@@ -22,8 +22,8 @@ public class WindowManager
 		
 	}
 	
-	protected long lastFocusPriority = 0;
-	protected WeakHashMap<Frame,FrameData> frameDatas = new WeakHashMap<Frame,FrameData>();
+	private long lastFocusPriority = 0;
+	private WeakHashMap<Frame,FrameData> frameDatas = new WeakHashMap<Frame,FrameData>();
 	
 	WindowManager(final Toolkit toolkit)
 	{
@@ -43,7 +43,7 @@ public class WindowManager
 		
 	}
 	
-	protected void addMissingFrames()
+	private void addMissingFrames()
 	{
 		for (Frame f : Frame.getFrames())
 		{
@@ -55,7 +55,7 @@ public class WindowManager
 		updateWindowLastFocused(UIUtil.getActiveWindow());
 	}
 	
-	protected class MyAWTEventListener implements AWTEventListener
+	private class MyAWTEventListener implements AWTEventListener
 	{
 		public void eventDispatched(AWTEvent e)
 		{
@@ -71,7 +71,7 @@ public class WindowManager
 		}
 	}
 	
-	protected FrameData getFrameData(final Frame f)
+	private FrameData getFrameData(final Frame f)
 	{
 		FrameData data = frameDatas.get(f);
 		if (data == null)
@@ -92,7 +92,7 @@ public class WindowManager
 		}
 	}
 	
-	protected void onWindowClosed()
+	private void onWindowClosed()
 	{
 		// on platforms other than Mac, processes don't stay open without windows
 		if (!FileUtil.isMac() && UIUtil.getFirstValidFrame() == null)
@@ -101,7 +101,7 @@ public class WindowManager
 		}
 	}
 	
-	protected void onWindowFocused(final Window w)
+	private void onWindowFocused(final Window w)
 	{
 		updateWindowLastFocused(w);
 	}

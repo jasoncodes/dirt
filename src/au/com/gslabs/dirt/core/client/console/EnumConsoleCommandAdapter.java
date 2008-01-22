@@ -6,7 +6,7 @@ import au.com.gslabs.dirt.core.client.Client;
 public abstract class EnumConsoleCommandAdapter<SupportedCommand extends Enum<SupportedCommand>> implements ConsoleCommandListener
 {
 	
-	protected Class<SupportedCommand> enumType;
+	private Class<SupportedCommand> enumType;
 	
 	protected EnumConsoleCommandAdapter(Class<SupportedCommand> enumType)
 	{

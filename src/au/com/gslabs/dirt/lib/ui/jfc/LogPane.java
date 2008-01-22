@@ -15,11 +15,11 @@ import java.util.*;
 public class LogPane extends JScrollPane
 {
 	
-	protected final boolean synchronousAppend = false;
+	private final boolean synchronousAppend = false;
 	
 	public class LinkEvent extends EventObject
 	{
-		protected URL url;
+		private URL url;
 		public LinkEvent(LogPane source, URL url)
 		{
 			super(source);
@@ -36,13 +36,13 @@ public class LogPane extends JScrollPane
 		public void linkClicked(LinkEvent e);
 	}
 
-	protected JEditorPane editor;
-	protected XHTMLEditorKit kit;
-	protected ArrayList<LinkListener> listeners;
-	protected boolean lastIsAtEnd;
-	protected int redLine;
-	protected Overlay overlay;
-	protected boolean linkActivatedWhileFocused = false;
+	private JEditorPane editor;
+	private XHTMLEditorKit kit;
+	private ArrayList<LinkListener> listeners;
+	private boolean lastIsAtEnd;
+	private int redLine;
+	private Overlay overlay;
+	private boolean linkActivatedWhileFocused = false;
 	
 	public LogPane()
 	{
@@ -77,21 +77,21 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	protected enum OverlayArrowPulseState
+	private enum OverlayArrowPulseState
 	{
 		DRIVE,
 		HOLD,
 		DECAY
 	}
 	
-	protected class Overlay
+	private class Overlay
 	{
 		
-		protected int refcount = 0;
-		protected boolean arrow_visible = false;
-		protected float arrow_pulse_pos = 0f;
-		protected OverlayArrowPulseState arrow_pulse_state;
-		protected javax.swing.Timer arrow_timer = new javax.swing.Timer(0, new ArrowTimerListener());
+		private int refcount = 0;
+		private boolean arrow_visible = false;
+		private float arrow_pulse_pos = 0f;
+		private OverlayArrowPulseState arrow_pulse_state;
+		private javax.swing.Timer arrow_timer = new javax.swing.Timer(0, new ArrowTimerListener());
 		
 		static final int arrow_delay_drive = 50;
 		static final int arrow_delay_hold = 500;
@@ -113,7 +113,7 @@ public class LogPane extends JScrollPane
 		static final float arrow_decay_increment = -0.020f;
 		static final float arrow_decay_multiplier = 0.980f;
 		
-		protected class ArrowTimerListener implements ActionListener
+		private class ArrowTimerListener implements ActionListener
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -177,7 +177,7 @@ public class LogPane extends JScrollPane
 			}
 		}
 		
-		protected void updateRefCount(boolean newValue)
+		private void updateRefCount(boolean newValue)
 		{
 			refcount += newValue ? 1 : -1;
 			if (refcount == 0)
@@ -198,7 +198,7 @@ public class LogPane extends JScrollPane
 			}
 		}
 		
-		protected Polygon getPositionedArrow(boolean includeScrollOffset)
+		private Polygon getPositionedArrow(boolean includeScrollOffset)
 		{
 			Rectangle rectView = getViewport().getViewRect();
 			Polygon p = createArrow();
@@ -210,12 +210,12 @@ public class LogPane extends JScrollPane
 			return p;
 		}
 		
-		protected final float blend(float v1, float v2, float pos)
+		private final float blend(float v1, float v2, float pos)
 		{
 			return (v2-v1)*pos + v1;
 		}
 		
-		protected void drawArrow(Graphics g)
+		private void drawArrow(Graphics g)
 		{
 			
 			Graphics2D g2 = (Graphics2D)g;
@@ -235,7 +235,7 @@ public class LogPane extends JScrollPane
 			
 		}
 		
-		protected void repaintArrowRegion()
+		private void repaintArrowRegion()
 		{
 			Rectangle rect = getPositionedArrow(false).getBounds();
 			rect.grow(8,8);
@@ -250,7 +250,7 @@ public class LogPane extends JScrollPane
 			}
 		}
 		
-		protected Polygon createArrow()
+		private Polygon createArrow()
 		{
 			
 			/*
@@ -320,7 +320,7 @@ public class LogPane extends JScrollPane
 		appendTextLine("Hello World  \u039A\u03B1\u03BB\u03B7\u03BC\u03AD\u03C1\u03B1 \u03BA\u03CC\u03C3\u03BC\u03B5  \u3053\u3093\u306B\u3061\u306F \u4E16\u754C");
 	}
 	
-	protected JEditorPane createEditor()
+	private JEditorPane createEditor()
 	{
 		JEditorPane editor = new Editor();
 		editor.setEditorKit(new XHTMLEditorKit());
@@ -330,7 +330,7 @@ public class LogPane extends JScrollPane
 		return editor;
 	}
 	
-	protected class Editor extends JEditorPane
+	private class Editor extends JEditorPane
 	{
 		
 		@Override
@@ -396,11 +396,11 @@ public class LogPane extends JScrollPane
 		}
 	}
 	
-	protected static boolean tagWrap_InitDone = false;
-	protected static String tagWrap_Pre;
-	protected static String tagWrap_Post;
+	private static boolean tagWrap_InitDone = false;
+	private static String tagWrap_Pre;
+	private static String tagWrap_Post;
 	
-	protected static void tagWrapInit()
+	private static void tagWrapInit()
 	{
 		
 		if (tagWrap_InitDone) return;
@@ -438,13 +438,13 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	protected static String wrapInXHTMLTags(String data)
+	private static String wrapInXHTMLTags(String data)
 	{
 		tagWrapInit();
 		return tagWrap_Pre + data + tagWrap_Post;
 	}
 	
-	protected void addEventListeners()
+	private void addEventListeners()
 	{
 		
 		getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
@@ -560,7 +560,7 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	protected void redispatchToNextFocus(AWTEvent e)
+	private void redispatchToNextFocus(AWTEvent e)
 	{
 		final Container focusRoot = getFocusCycleRootAncestor();
 		final Component nextFocus = focusRoot.getFocusTraversalPolicy().getComponentAfter(focusRoot, (Component)e.getSource());
@@ -568,7 +568,7 @@ public class LogPane extends JScrollPane
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(nextFocus, e);
 	}
 
-	protected void raiseLinkEvent(URL url)
+	private void raiseLinkEvent(URL url)
 	{
 		LinkEvent e = new LinkEvent(this, url);
 		for (int i = listeners.size()-1; i >= 0; --i)
@@ -633,10 +633,10 @@ public class LogPane extends JScrollPane
 		
 	}
 	
-	protected class DoScroll implements Runnable
+	private class DoScroll implements Runnable
 	{
 		
-		protected int pos;
+		private int pos;
 		
 		public DoScroll(int pos)
 		{

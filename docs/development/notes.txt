@@ -1,5 +1,3 @@
-check every "protected" and convert things that shouldn't be to "private"
-
 dirt+https_connect://spawncamp.net/localhost:11626
 
 Java 1.6 is x86_64. Need to compile and test libDirtJNI.jnilib

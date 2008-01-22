@@ -6,10 +6,16 @@ import java.io.*;
 class J2SESocket implements au.com.gslabs.dirt.lib.net.socket.Socket
 {
 	
-	protected Socket socket = null;
+	private Socket socket = null;
 	
 	public J2SESocket()
 	{
+		this(null);
+	}
+	
+	J2SESocket(Socket socket)
+	{
+		this.socket = socket;
 	}
 	
 	public void connect(String host, int port) throws IOException

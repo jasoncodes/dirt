@@ -15,7 +15,7 @@ public final class TextUtil
 	{
 	}
 	
-	protected static Random random = null;
+	private static Random random = null;
 	
 	public static boolean isEmpty(String str)
 	{

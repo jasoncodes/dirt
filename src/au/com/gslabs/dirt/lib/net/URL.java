@@ -8,13 +8,13 @@ package au.com.gslabs.dirt.lib.net;
 public class URL
 {
 	
-	final protected String protocol;
-	final protected String username;
-	final protected String hostname;
-	final protected int port;
-	final protected String path;
+	private final String protocol;
+	private final String username;
+	private final String hostname;
+	private final int port;
+	private final String path;
 	
-	final protected int defaultPort;
+	private final int defaultPort;
 	
 	public URL(URL url, String newUsername, String newPassword, String newPath)
 	{

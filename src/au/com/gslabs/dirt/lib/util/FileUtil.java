@@ -29,7 +29,7 @@ public class FileUtil
 	
 	private static String temp_dir = null;
 
-	protected static ClassLoader getClassLoader()
+	private static ClassLoader getClassLoader()
 	{
 		return new FileUtil().getClass().getClassLoader();
 	}
@@ -78,7 +78,7 @@ public class FileUtil
 		return temp_dir;
 	}
 	
-	protected static class RemoveTemporaryDirectoryShutdownHook extends Thread
+	private static class RemoveTemporaryDirectoryShutdownHook extends Thread
 	{
 		public void start()
 		{
@@ -237,7 +237,7 @@ public class FileUtil
 		}
 	}
 	
-	protected static void initTempDir() throws IOException
+	private static void initTempDir() throws IOException
 	{
 		if (temp_dir == null)
 		{

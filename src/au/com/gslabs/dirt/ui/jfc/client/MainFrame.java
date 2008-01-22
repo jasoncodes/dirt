@@ -12,7 +12,7 @@ import au.com.gslabs.dirt.core.client.console.*;
 public class MainFrame extends ClientFrame
 {
 	
-	protected boolean isDND;
+	private boolean isDND;
 	
 	MainFrame()
 	{
@@ -43,14 +43,14 @@ public class MainFrame extends ClientFrame
 		
 	}
 	
-	protected enum SupportedCommand
+	private enum SupportedCommand
 	{
 		EXIT,
 		DND,
 		BACK
 	}
 	
-	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
+	private class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
 		public CommandAdapter()
@@ -58,6 +58,7 @@ public class MainFrame extends ClientFrame
 			super(SupportedCommand.class);
 		}
 		
+		@Override
 		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
 		{
 			
@@ -92,7 +93,7 @@ public class MainFrame extends ClientFrame
 		
 	}
 	
-	protected class MainPanelHandler implements MainPanelListener
+	private class MainPanelHandler implements MainPanelListener
 	{
 		
 		public boolean clientPanelCreated(MainPanel panel, ClientPanel clientPanel)
@@ -126,7 +127,7 @@ public class MainFrame extends ClientFrame
 		}
 	}
 	
-	protected void onClosing()
+	private void onClosing()
 	{
 		
 		if (panel.isDirty())
@@ -169,12 +170,12 @@ public class MainFrame extends ClientFrame
 	// and updated to initially hide the MainFrame, restore it on clicking, provide
 	// status updates in the tooltip, flash when something happens, etc
 	/*
-	protected void cmdPopupQuit_Click()
+	private void cmdPopupQuit_Click()
 	{
 		panel.getConsoleClientAdapter().processConsoleInput(panel.getClient(), null, "/exit");
 	}
 	
-	protected void doMinToTray()
+	private void doMinToTray()
 	{
 	
 		try
@@ -249,7 +250,7 @@ public class MainFrame extends ClientFrame
 	
 	}
 
-	protected void Popup_DblClick()
+	private void Popup_DblClick()
 	{
 		setVisible(!isVisible());
 		if (isVisible())

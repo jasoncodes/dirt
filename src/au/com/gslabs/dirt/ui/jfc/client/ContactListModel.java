@@ -8,13 +8,13 @@ import javax.swing.*;
 public class ContactListModel extends AbstractListModel
 {
 	
-	protected class Entry implements Comparable<Entry>
+	private class Entry implements Comparable<Entry>
 	{
 		
-		protected Contact contact;
+		private Contact contact;
 		
-		protected UserStatus key_status;
-		protected String key_nickname;
+		private UserStatus key_status;
+		private String key_nickname;
 		
 		public Entry(Contact contact)
 		{
@@ -22,7 +22,7 @@ public class ContactListModel extends AbstractListModel
 			updateKey();
 		}
 		
-		protected void updateKey()
+		private void updateKey()
 		{
 			this.key_status = this.contact.getStatus();
 			this.key_nickname = this.contact.getNickname();

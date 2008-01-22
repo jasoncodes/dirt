@@ -13,11 +13,11 @@ import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
 public class QueryPanel extends BaseClientPanel implements ChatPanel
 {
 	
-	protected final MainPanel main;
-	protected final Contact contact;
+	private final MainPanel main;
+	private final Contact contact;
 	
-	protected LogPane txtLog;
-	protected InputArea txtInput;
+	private LogPane txtLog;
+	private InputArea txtInput;
 	
 	public QueryPanel(MainPanel main, String context, Contact contact)
 	{
@@ -56,7 +56,7 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 		
 	}
 	
-	protected void createControls()
+	private void createControls()
 	{
 		
 		txtInput = new InputArea();
@@ -115,7 +115,7 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 		
 	}
 	
-	protected void txtInput_Input(String[] lines)
+	private void txtInput_Input(String[] lines)
 	{
 		txtLog.clearRedLine();
 		getConsoleClientAdapter().processConsoleInput(getClient(), getContext(), lines);

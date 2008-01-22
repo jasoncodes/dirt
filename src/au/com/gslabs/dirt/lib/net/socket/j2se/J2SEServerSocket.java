@@ -8,7 +8,7 @@ class J2SEServerSocket implements au.com.gslabs.dirt.lib.net.socket.ServerSocket
 	
 	java.net.ServerSocket socket = null;
 	
-	protected void init() throws IOException
+	private void init() throws IOException
 	{
 		
 		if (socket == null)
@@ -49,9 +49,7 @@ class J2SEServerSocket implements au.com.gslabs.dirt.lib.net.socket.ServerSocket
 	public Socket accept() throws IOException
 	{
 		init();
-		J2SESocket s = new J2SESocket();
-		s.socket = socket.accept();
-		return s;
+		return new J2SESocket(socket.accept());
 	}
 	
 	public void close() throws IOException

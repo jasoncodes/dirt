@@ -8,10 +8,10 @@ import java.lang.ref.WeakReference;
 public class ContainerFocusEventProxy
 {
 	
-	protected final ArrayList<FocusListener> focusListeners = new ArrayList<FocusListener>();
-	protected final MyListener listener = new MyListener();
-	protected final WeakHashMap<Component,Object> components = new WeakHashMap<Component,Object>();
-	protected final WeakReference<Component> container;
+	private final ArrayList<FocusListener> focusListeners = new ArrayList<FocusListener>();
+	private final MyListener listener = new MyListener();
+	private final WeakHashMap<Component,Object> components = new WeakHashMap<Component,Object>();
+	private final WeakReference<Component> container;
 	
 	public ContainerFocusEventProxy(Container c)
 	{
@@ -26,7 +26,7 @@ public class ContainerFocusEventProxy
 		}
 	}
 	
-	protected class MyListener implements ContainerListener, FocusListener, WindowFocusListener
+	private class MyListener implements ContainerListener, FocusListener, WindowFocusListener
 	{
 		
 		public void windowGainedFocus(WindowEvent e)
@@ -61,7 +61,7 @@ public class ContainerFocusEventProxy
 		
 	}
 	
-	protected void addComponent(Component c)
+	private void addComponent(Component c)
 	{
 		
 		components.put(c, null);
@@ -79,7 +79,7 @@ public class ContainerFocusEventProxy
 		
 	}
 	
-	protected void removeComponent(Component c)
+	private void removeComponent(Component c)
 	{
 		
 		components.remove(c);
@@ -97,7 +97,7 @@ public class ContainerFocusEventProxy
 		
 	}
 	
-	protected void onFocusEvent(final FocusEvent e)
+	private void onFocusEvent(final FocusEvent e)
 	{
 		
 		final boolean gained = (e.getID() == FocusEvent.FOCUS_GAINED);
@@ -114,7 +114,7 @@ public class ContainerFocusEventProxy
 		
 	}
 	
-	protected void raiseFocusEvent(boolean gained)
+	private void raiseFocusEvent(boolean gained)
 	{
 		final int id = gained ? FocusEvent.FOCUS_GAINED : FocusEvent.FOCUS_LOST;
 		final FocusEvent containerEvent = new FocusEvent(container.get(), id);

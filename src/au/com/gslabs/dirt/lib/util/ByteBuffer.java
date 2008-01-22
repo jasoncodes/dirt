@@ -6,10 +6,10 @@ import java.util.ArrayList;
 public class ByteBuffer
 {
 	
-	protected byte[] data;
-	protected int offset;
-	protected int length;
-	protected boolean shared;
+	private byte[] data;
+	private int offset;
+	private int length;
+	private boolean shared;
 	
 	public ByteBuffer()
 	{
@@ -145,12 +145,12 @@ public class ByteBuffer
 		return bytes;
 	}
 	
-	protected static String makeHexString(byte val, int width)
+	private static String makeHexString(byte val, int width)
 	{
 		return makeHexString(val&0xff, width);
 	}
 	
-	protected static String makeHexString(int val, int width)
+	private static String makeHexString(int val, int width)
 	{
 		
 		String str = Integer.toHexString(val);
@@ -284,7 +284,7 @@ public class ByteBuffer
 		this.shared = false;
 	}
 	
-	protected void ensureOwnCopy()
+	private void ensureOwnCopy()
 	{
 		if (this.shared)
 		{

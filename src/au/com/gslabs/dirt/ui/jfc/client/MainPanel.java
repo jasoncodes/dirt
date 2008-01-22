@@ -16,20 +16,20 @@ import au.com.gslabs.dirt.core.client.enums.*;
 public class MainPanel extends BaseClientPanel implements ChatPanel
 {
 	
-	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
-	protected final Client client;
-	protected final ConsoleClientAdapter clientAdapter;
-	protected final ContactListModel contacts;
+	private final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+	private final Client client;
+	private final ConsoleClientAdapter clientAdapter;
+	private final ContactListModel contacts;
 	
-	protected boolean cleanupDone = false;
-	protected LogPane txtLog;
-	protected InputArea txtInput;
-	protected JPasswordField txtPassword;
-	protected JList lstContacts;
-	protected JComponent activeInputControl;
-	protected JSplitPane splitContacts;
+	private boolean cleanupDone = false;
+	private LogPane txtLog;
+	private InputArea txtInput;
+	private JPasswordField txtPassword;
+	private JList lstContacts;
+	private JComponent activeInputControl;
+	private JSplitPane splitContacts;
 	
-	protected String clientExtraVersionInfo = null;
+	private String clientExtraVersionInfo = null;
 	private final ArrayList<MainPanelListener> mainListeners = new ArrayList<MainPanelListener>();
 	private final WeakHashMap<String,ClientPanel> panels = new WeakHashMap<String,ClientPanel>();
 	
@@ -62,14 +62,14 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		
 	}
 	
-	protected enum SupportedCommand
+	private enum SupportedCommand
 	{
 		QUERY,
 		CLEAR,
 		TEST
 	}
 	
-	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
+	private class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
 		public CommandAdapter()
@@ -115,7 +115,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		
 	}
 	
-	protected class ClientAdapter extends ConsoleClientAdapter
+	private class ClientAdapter extends ConsoleClientAdapter
 	{
 		
 		public ClientAdapter()
@@ -252,7 +252,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 	
 	}
 	
-	protected QueryPanel getQueryPanel(final Contact contact, final boolean okayToCreate)
+	private QueryPanel getQueryPanel(final Contact contact, final boolean okayToCreate)
 	{
 		
 		if (contact == null)
@@ -316,7 +316,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		requestAttentionAfterDelay(2000);
 	}
 	
-	protected String createNewContext()
+	private String createNewContext()
 	{
 		String context;
 		do
@@ -326,7 +326,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		return context;
 	}
 	
-	protected ClientPanel getPanel(String context)
+	private ClientPanel getPanel(String context)
 	{
 		if (context == null)
 		{
@@ -335,7 +335,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		return panels.get(context);
 	}
 	
-	protected ChatPanel getChatPanel(String context)
+	private ChatPanel getChatPanel(String context)
 	{
 		final ClientPanel panel = getPanel(context);
 		if (panel instanceof ChatPanel)
@@ -345,7 +345,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		return this;
 	}
 	
-	protected boolean notifyClientPanelCreated(final ClientPanel panel)
+	private boolean notifyClientPanelCreated(final ClientPanel panel)
 	{
 		for (MainPanelListener l : mainListeners)
 		{
@@ -376,7 +376,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		return true;
 	}
 	
-	protected void createControls()
+	private void createControls()
 	{
 		
 		txtInput = new InputArea();
@@ -504,19 +504,19 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		this.clientExtraVersionInfo = value;
 	}
 	
-	protected void txtInput_Input(String[] lines)
+	private void txtInput_Input(String[] lines)
 	{
 		txtLog.clearRedLine();
 		clientAdapter.processConsoleInput(client, getContext(), lines);
 	}
 	
-	protected void txtPassword_Input(String password)
+	private void txtPassword_Input(String password)
 	{
 		txtLog.clearRedLine();
 		client.authenticate(getContext(), password, false);
 	}
 	
-	protected void setPasswordMode(boolean passwordMode)
+	private void setPasswordMode(boolean passwordMode)
 	{
 		JComponent txtOld = passwordMode ? txtInput : txtPassword;
 		JComponent txtNew = passwordMode ? txtPassword : txtInput;

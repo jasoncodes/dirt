@@ -9,7 +9,7 @@ import java.io.IOException;
 public class Server
 {
 	
-	protected ServerSocket listen;
+	private ServerSocket listen;
 	
 	public Server() throws IOException
 	{

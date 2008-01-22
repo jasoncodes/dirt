@@ -7,11 +7,11 @@ import java.io.*;
 public class InterruptibleInputStream extends InputStream
 {
 	
-	protected InputStream in;
-	protected ReadThread thread;
+	private InputStream in;
+	private ReadThread thread;
 	BlockingQueue<Integer> queue;
-	protected Exception ex;
-	protected int lastRead;
+	private Exception ex;
+	private int lastRead;
 	
 	public InterruptibleInputStream(InputStream in)
 	{
@@ -43,7 +43,7 @@ public class InterruptibleInputStream extends InputStream
 		return (lastRead < 0) ? -1 : lastRead;
 	}
 	
-	protected class ReadThread extends Thread
+	private class ReadThread extends Thread
 	{
 		ReadThread()
 		{

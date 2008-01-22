@@ -13,8 +13,8 @@ import net.roydesign.app.Application;
 public class UIUtil
 {
 	
-	protected static MacDockBouncer dockBouncer = null;
-	protected static WindowManager windowManager = null;
+	private static MacDockBouncer dockBouncer = null;
+	private static WindowManager windowManager = null;
 	
 	private UIUtil()
 	{

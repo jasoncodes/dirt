@@ -20,7 +20,7 @@ import javax.crypto.Mac;
 public class J2SECrypt implements Crypt
 {
 	
-	protected static String getCipherFromTransformation(String transformation)
+	private static String getCipherFromTransformation(String transformation)
 	{
 		int i = transformation.indexOf("/");
 		if (i > -1)
@@ -106,7 +106,7 @@ public class J2SECrypt implements Crypt
 		}
 	}
 	
-	protected SecureRandom sr = null;
+	private SecureRandom sr = null;
 	
 	public ByteBuffer generateRandomBytes(int count) throws CryptException
 	{
@@ -136,7 +136,7 @@ public class J2SECrypt implements Crypt
 		return doBlockCipher(transformation, sharedKey, data, false);
 	}
 	
-	protected static ByteBuffer doBlockCipher_J2SE(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws GeneralSecurityException
+	private static ByteBuffer doBlockCipher_J2SE(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws GeneralSecurityException
 	{
 		String cipher = getCipherFromTransformation(transformation);
 		SecretKeySpec spec = new SecretKeySpec(sharedKey.getBytes(), cipher);
@@ -145,9 +145,9 @@ public class J2SECrypt implements Crypt
 		return new ByteBuffer(c.doFinal(data.getBytes()));
 	}
 	
-	protected static final String transform_AES = "AES/ECB/NoPadding";
+	private static final String transform_AES = "AES/ECB/NoPadding";
 	
-	protected static ByteBuffer doBlockCipher_AES(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
+	private static ByteBuffer doBlockCipher_AES(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
 	{
 		if (!transformation.equals(transform_AES))
 		{
@@ -165,9 +165,9 @@ public class J2SECrypt implements Crypt
 		return new ByteBuffer(buff);
 	}
 	
-	protected static boolean cipher_BadSystemAES = false;
+	private static boolean cipher_BadSystemAES = false;
 	
-	protected ByteBuffer doBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
+	private ByteBuffer doBlockCipher(String transformation, ByteBuffer sharedKey, ByteBuffer data, boolean forEncryption) throws CryptException
 	{
 		
 		if (cipher_BadSystemAES)
@@ -203,8 +203,8 @@ public class J2SECrypt implements Crypt
 		return new J2SEZlibInflator();
 	}
 	
-	protected static final String transform_MD5MAC = "MD5MAC";
-	protected static final String transform_MD5 = "MD5";
+	private static final String transform_MD5MAC = "MD5MAC";
+	private static final String transform_MD5 = "MD5";
 	
 	public ByteBuffer generateMacKey(String transformation) throws CryptException
 	{

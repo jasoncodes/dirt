@@ -110,7 +110,7 @@ public final class MD5 implements Cloneable
 			W[i] = 0;
 	}
 	
-	protected static void copyBytes(int[] dest, int destOffsetBytes, byte[] src, int srcOffsetBytes, int byteCount)
+	private static void copyBytes(int[] dest, int destOffsetBytes, byte[] src, int srcOffsetBytes, int byteCount)
 	{
 		if ((byteCount % 4) != 0)
 		{

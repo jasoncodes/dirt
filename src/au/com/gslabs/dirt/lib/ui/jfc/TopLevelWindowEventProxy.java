@@ -7,8 +7,8 @@ import java.util.*;
 public class TopLevelWindowEventProxy
 {
 	
-	protected Window currentTopLevel = null;
-	protected ArrayList<WindowListener> windowListeners = new ArrayList<WindowListener>();
+	private Window currentTopLevel = null;
+	private ArrayList<WindowListener> windowListeners = new ArrayList<WindowListener>();
 	
 	public TopLevelWindowEventProxy(final Component c)
 	{
@@ -29,7 +29,7 @@ public class TopLevelWindowEventProxy
 		
 	}
 	
-	protected void removeListeners(Window w)
+	private void removeListeners(Window w)
 	{
 		if (w != null)
 		{
@@ -40,7 +40,7 @@ public class TopLevelWindowEventProxy
 		}
 	}
 	
-	protected void addListeners(Window w)
+	private void addListeners(Window w)
 	{
 		if (w != null)
 		{

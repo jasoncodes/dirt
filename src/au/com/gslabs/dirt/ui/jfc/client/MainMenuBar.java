@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
 public class MainMenuBar extends JScreenMenuBar
 {
 	
-	protected final Application app;
+	private final Application app;
 	
 	public MainMenuBar()
 	{
@@ -214,12 +214,12 @@ public class MainMenuBar extends JScreenMenuBar
 		
 	}
 	
-	protected boolean canCloseActiveWindow()
+	private boolean canCloseActiveWindow()
 	{
 		return app.getFramelessJMenuBar() != this;
 	}
 	
-	protected boolean canMinimizeActiveWindow()
+	private boolean canMinimizeActiveWindow()
 	{
 		if (app.getFramelessJMenuBar() != this)
 		{

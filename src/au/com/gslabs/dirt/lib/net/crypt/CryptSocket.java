@@ -10,13 +10,13 @@ import au.com.gslabs.dirt.lib.crypt.*;
 public class CryptSocket
 {
 	
-	protected static final String transformationPublic = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
-	protected static final String transformationBlock = "AES/ECB/NoPadding";
-	protected static final int sendBlockSize = 4096;
-	protected static final int maxBlockKeyAgeBytes = 1024 * 128; // 128 KiB
-	protected static final int maxBlockKeyAgeSeconds = 300; // 5 minutes
+	private static final String transformationPublic = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
+	private static final String transformationBlock = "AES/ECB/NoPadding";
+	private static final int sendBlockSize = 4096;
+	private static final int maxBlockKeyAgeBytes = 1024 * 128; // 128 KiB
+	private static final int maxBlockKeyAgeSeconds = 300; // 5 minutes
 	
-	protected EventListeners<CryptListener> listeners = new EventListeners<CryptListener>();
+	private EventListeners<CryptListener> listeners = new EventListeners<CryptListener>();
 	
 	public void addCryptListener(CryptListener l, Invoker i)
 	{
@@ -28,24 +28,24 @@ public class CryptSocket
 		listeners.remove(l);
 	}
 	
-	protected Socket socket;
-	protected boolean socketOwned;
-	protected InputThread threadInput;
-	protected OutputThread threadOutput;
-	protected boolean active;
-	protected Crypt crypt;
-	protected KeyPair keypair;
-	protected ByteBuffer remotePublicKey;
-	protected ByteBuffer remoteBlockKey;
-	protected ByteBuffer localBlockKey;
-	protected Queue<ByteBuffer> bufferSendUser;
-	protected ByteBuffer bufferSendRaw;
-	protected ZlibDeflater deflater;
-	protected ZlibInflator inflator;
-	protected long blockKeyTTL_Bytes;
-	protected long blockKeyExpire_Time;
+	private Socket socket;
+	private boolean socketOwned;
+	private InputThread threadInput;
+	private OutputThread threadOutput;
+	private boolean active;
+	private Crypt crypt;
+	private KeyPair keypair;
+	private ByteBuffer remotePublicKey;
+	private ByteBuffer remoteBlockKey;
+	private ByteBuffer localBlockKey;
+	private Queue<ByteBuffer> bufferSendUser;
+	private ByteBuffer bufferSendRaw;
+	private ZlibDeflater deflater;
+	private ZlibInflator inflator;
+	private long blockKeyTTL_Bytes;
+	private long blockKeyExpire_Time;
 	
-	protected void clearState()
+	private void clearState()
 	{
 		socket = null;
 		socketOwned = false;
@@ -65,7 +65,7 @@ public class CryptSocket
 		blockKeyExpire_Time = 0;
 	}
 	
-	protected enum MessageType
+	private enum MessageType
 	{
 		
 		PUBLIC_KEY(0),
@@ -85,7 +85,7 @@ public class CryptSocket
 		
 	}
 	
-	protected class InputThread extends Thread
+	private class InputThread extends Thread
 	{
 		
 		public String connectHost;
@@ -154,7 +154,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected class OutputThread extends Thread
+	private class OutputThread extends Thread
 	{
 		
 		public OutputThread()
@@ -212,7 +212,7 @@ public class CryptSocket
 		
 	}
 	
-	protected void outputRaw(ByteBuffer data)
+	private void outputRaw(ByteBuffer data)
 	{
 		synchronized (threadOutput)
 		{
@@ -222,7 +222,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected void sendPublicKey()
+	private void sendPublicKey()
 	{
 		ByteBuffer key = keypair.getPublicKey();
 		ByteBuffer data = new ByteBuffer(key.length() + 4);
@@ -232,7 +232,7 @@ public class CryptSocket
 		outputRaw(data);
 	}
 	
-	protected void sendBlockKey() throws CryptException
+	private void sendBlockKey() throws CryptException
 	{
 		ByteBuffer data = new ByteBuffer(localBlockKey.length() + 4);
 		data.append(ByteConvert.fromU16(0));
@@ -241,7 +241,7 @@ public class CryptSocket
 		outputRaw(data);
 	}
 	
-	protected ByteBuffer padToLocalBlockKeySize(ByteBuffer data) throws CryptException
+	private ByteBuffer padToLocalBlockKeySize(ByteBuffer data) throws CryptException
 	{
 		int blockSize = localBlockKey.length();
 		int bytesInPartialBlock = data.length() % blockSize;
@@ -260,7 +260,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected void sendBufferedUserData() throws CryptException
+	private void sendBufferedUserData() throws CryptException
 	{
 		boolean again = true;
 		while (again)
@@ -278,7 +278,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected void outputUserData(ByteBuffer userData) throws CryptException
+	private void outputUserData(ByteBuffer userData) throws CryptException
 	{
 		
 		blockKeyTTL_Bytes -= userData.length();
@@ -332,7 +332,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected void newBlockKey() throws CryptException
+	private void newBlockKey() throws CryptException
 	{
 		blockKeyTTL_Bytes = maxBlockKeyAgeBytes;
 		blockKeyExpire_Time = System.currentTimeMillis() + maxBlockKeyAgeSeconds * 1000;
@@ -340,7 +340,7 @@ public class CryptSocket
 		sendBlockKey();
 	}
 	
-	protected void processPacket(final ByteBuffer data) throws IOException
+	private void processPacket(final ByteBuffer data) throws IOException
 	{
 		if (data.length() < 4)
 		{
@@ -424,7 +424,7 @@ public class CryptSocket
 		}
 	}
 	
-	protected void onException(final IOException ex)
+	private void onException(final IOException ex)
 	{
 		
 		boolean okayToTriggerEvent = false;
@@ -489,7 +489,7 @@ public class CryptSocket
 		
 	}
 	
-	protected static void closeThread(Thread thread)
+	private static void closeThread(Thread thread)
 	{
 		if (thread != null)
 		{

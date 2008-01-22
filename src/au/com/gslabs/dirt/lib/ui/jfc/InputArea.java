@@ -25,15 +25,15 @@ public class InputArea extends JScrollPane
 		public boolean inputCanAddToHistory(InputArea source, String line);
 	}
 	
-	protected final JTextArea txt;
-	protected final UndoManager undo;
-	protected final ArrayList<InputListener> listeners;
-	protected final ArrayList<String> history;
-	protected String defaultCommand;
-	protected String commandPrefix;
-	protected int history_pos;
-	protected String edit_text;
-	protected Completor completor;
+	private final JTextArea txt;
+	private final UndoManager undo;
+	private final ArrayList<InputListener> listeners;
+	private final ArrayList<String> history;
+	private String defaultCommand;
+	private String commandPrefix;
+	private int history_pos;
+	private String edit_text;
+	private Completor completor;
 	
 	public InputArea()
 	{
@@ -66,7 +66,7 @@ public class InputArea extends JScrollPane
 		
 	}
 	
-	protected void initUndo()
+	private void initUndo()
 	{
 		
 		final Document doc = txt.getDocument();
@@ -124,7 +124,7 @@ public class InputArea extends JScrollPane
 		
 	}
 	
-	protected void addToHistory(String line)
+	private void addToHistory(String line)
 	{
 		if (history.size() < 1 || !history.get(history.size()-1).equals(line))
 		{
@@ -141,7 +141,7 @@ public class InputArea extends JScrollPane
 		edit_text = "";
 	}
 	
-	protected void removeLastHistoryEntry()
+	private void removeLastHistoryEntry()
 	{
 		if (history.size() > 0)
 		{
@@ -154,7 +154,7 @@ public class InputArea extends JScrollPane
 		return txt.requestFocusInWindow();
 	}
 	
-	protected void addEventListeners()
+	private void addEventListeners()
 	{
 		txt.getDocument().addDocumentListener(new DocumentListener()
 			{
@@ -224,7 +224,7 @@ public class InputArea extends JScrollPane
 			});
 	}
 	
-	protected void doTabCompletion()
+	private void doTabCompletion()
 	{
 		
 		if (txt.getSelectionStart() != txt.getSelectionEnd())
@@ -300,7 +300,7 @@ public class InputArea extends JScrollPane
 		
 	}
 	
-	protected void onHistoryUp()
+	private void onHistoryUp()
 	{
 		if (history_pos > 0)
 		{
@@ -317,7 +317,7 @@ public class InputArea extends JScrollPane
 		}
 	}
 	
-	protected void onHistoryDown()
+	private void onHistoryDown()
 	{
 		if ((history_pos+1) <= history.size())
 		{
@@ -330,7 +330,7 @@ public class InputArea extends JScrollPane
 		}
 	}
 	
-	protected void displayHistoryItem()
+	private void displayHistoryItem()
 	{
 		if (history_pos == history.size())
 		{
@@ -343,7 +343,7 @@ public class InputArea extends JScrollPane
 		setInsertionPointEnd();
 	}
 	
-	protected void setInsertionPointEnd()
+	private void setInsertionPointEnd()
 	{
 		int len = txt.getText().length();
 		txt.setSelectionStart(len);
@@ -363,12 +363,12 @@ public class InputArea extends JScrollPane
 		this.completor = completor;
 	}
 	
-	protected void alert()
+	private void alert()
 	{
 		Toolkit.getDefaultToolkit().beep();
 	}
 	
-	protected void processModifierKey(TextModifier mod)
+	private void processModifierKey(TextModifier mod)
 	{
 		if (txt.getSelectedText() == null)
 		{
@@ -386,7 +386,7 @@ public class InputArea extends JScrollPane
 		}
 	}
 	
-	protected void onChange()
+	private void onChange()
 	{
 		if (txt.getText().indexOf("\n") > -1)
 		{
@@ -400,7 +400,7 @@ public class InputArea extends JScrollPane
 		}
 	}
 	
-	protected void inputCompleted(boolean forceDefaultCommand)
+	private void inputCompleted(boolean forceDefaultCommand)
 	{
 		
 		String text = txt.getText();
@@ -429,7 +429,7 @@ public class InputArea extends JScrollPane
 		
 	}
 	
-	protected void processInput(String[] lines, boolean forceDefaultCommand)
+	private void processInput(String[] lines, boolean forceDefaultCommand)
 	{
 		
 		boolean again = lines.length > 1;
@@ -498,7 +498,7 @@ public class InputArea extends JScrollPane
 		
 	}
 	
-	protected boolean canAddToHistory(String line)
+	private boolean canAddToHistory(String line)
 	{
 		boolean safe = true;
 		for (int i = listeners.size()-1; i >= 0; --i)

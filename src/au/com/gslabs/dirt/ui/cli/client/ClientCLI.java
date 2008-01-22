@@ -15,18 +15,18 @@ public class ClientCLI
 		new ClientCLI();
 	}
 	
-	protected Console console;
-	protected Client client;
-	protected ConsoleClientAdapter clientAdapter;
+	private Console console;
+	private Client client;
+	private ConsoleClientAdapter clientAdapter;
 	
-	protected enum SupportedCommand
+	private enum SupportedCommand
 	{
 		ABOUT,
 		CLEAR,
 		EXIT
 	}
 	
-	protected class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
+	private class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
 		public CommandAdapter()
@@ -68,7 +68,7 @@ public class ClientCLI
 		
 	}
 	
-	protected class ClientAdapter extends ConsoleClientAdapter
+	private class ClientAdapter extends ConsoleClientAdapter
 	{
 		
 		public ClientAdapter()

@@ -7,9 +7,10 @@ import au.com.gslabs.dirt.lib.crypt.*;
 public class JZlibBase
 {
 	
-	protected ZStream stream;
-	protected byte[] bufferOutput = null;
-	protected final int bufferSize = 4096;
+	protected final ZStream stream;
+	
+	private byte[] bufferOutput = null;
+	private final int bufferSize = 4096;
 	
 	public JZlibBase()
 	{

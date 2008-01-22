@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 public class ClientFrame extends JFrame
 {
 	
-	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+	private final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
 	
 	protected final ClientPanel panel;
 	
@@ -50,7 +50,7 @@ public class ClientFrame extends JFrame
 		
 	}
 	
-	protected class ClientPanelHandler implements ClientPanelListener
+	private class ClientPanelHandler implements ClientPanelListener
 	{
 		
 		public void panelTitleChanged(ClientPanel panel)

@@ -20,7 +20,7 @@ public class Duration implements Comparable<Duration>
 		LONG
 	}
 	
-	protected long milliseconds;
+	private long milliseconds;
 	
 	public Duration(Date from, Date to)
 	{

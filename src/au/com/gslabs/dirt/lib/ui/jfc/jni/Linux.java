@@ -14,6 +14,6 @@ public class Linux
 		setDemandsAttention(frame);
 	}
 
-	protected native void setDemandsAttention(Frame frame);
+	private native void setDemandsAttention(Frame frame);
 
 }

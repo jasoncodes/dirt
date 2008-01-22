@@ -10,7 +10,7 @@ import au.com.gslabs.dirt.lib.net.crypt.*;
 public class Client
 {
 	
-	protected final EventListeners<ClientListener> listeners = new EventListeners<ClientListener>();
+	private final EventListeners<ClientListener> listeners = new EventListeners<ClientListener>();
 	
 	public void addClientListener(ClientListener l, Invoker i)
 	{
@@ -22,22 +22,22 @@ public class Client
 		listeners.remove(l);
 	}
 	
-	protected Map<String,Contact> contacts;
-	protected CryptSocket socket;
-	protected boolean connected;
-	protected String nickname_current;
-	protected String nickname_last;
-	protected boolean nickname_last_good;
-	protected URL server_url_last;
-	protected ByteBuffer authseed;
-	protected String server_name;
-	protected String server_hostname;
-	protected Timer tmrPing;
-	protected TimerTask tmrTaskPing;
-	protected TimerTask tmrTaskNoPong;
-	protected ByteBuffer ping_data;
-	protected long ping_sent;
-	protected long latency;
+	private Map<String,Contact> contacts;
+	private CryptSocket socket;
+	private boolean connected;
+	private String nickname_current;
+	private String nickname_last;
+	private boolean nickname_last_good;
+	private URL server_url_last;
+	private ByteBuffer authseed;
+	private String server_name;
+	private String server_hostname;
+	private Timer tmrPing;
+	private TimerTask tmrTaskPing;
+	private TimerTask tmrTaskNoPong;
+	private ByteBuffer ping_data;
+	private long ping_sent;
+	private long latency;
 	
 	private static final long initial_ping_delay = 5000;
 	private static final long ping_interval = 30000;
@@ -75,7 +75,7 @@ public class Client
 		
 	}
 	
-	protected String getUserDetails()
+	private String getUserDetails()
 	{
 		
 		String username;
@@ -130,7 +130,7 @@ public class Client
 		return name;
 	}
 	
-	protected Contact getContact(String nickname, boolean createOrReset)
+	private Contact getContact(String nickname, boolean createOrReset)
 	{
 		if (nickname == null || nickname.length() == 0)
 		{
@@ -164,7 +164,7 @@ public class Client
 		return Collections.unmodifiableMap(contacts);
 	}
 	
-	protected String getUserAgent()
+	private String getUserAgent()
 	{
 		
 		final HashSet<String> extras = new HashSet<String>();
@@ -203,7 +203,7 @@ public class Client
 		
 	}
 	
-	protected static void cancelTimerTask(TimerTask task)
+	private static void cancelTimerTask(TimerTask task)
 	{
 		if (task != null)
 		{
@@ -222,7 +222,7 @@ public class Client
 		}
 	}
 	
-	protected class TimerTaskPing extends TimerTask
+	private class TimerTaskPing extends TimerTask
 	{
 		public void run()
 		{
@@ -246,7 +246,7 @@ public class Client
 		}
 	}
 	
-	protected void onPong(ByteBuffer data)
+	private void onPong(ByteBuffer data)
 	{
 		if (data.equals(ping_data))
 		{
@@ -259,7 +259,7 @@ public class Client
 		}
 	}
 	
-	protected class TimerTaskNoPong extends TimerTask
+	private class TimerTaskNoPong extends TimerTask
 	{
 		public void run()
 		{
@@ -279,9 +279,9 @@ public class Client
 		}
 	}
 	
-	protected Thread shutdownHook;
+	private Thread shutdownHook;
 	
-	protected class ShutdownHook extends Thread
+	private class ShutdownHook extends Thread
 	{
 		public void run()
 		{
@@ -293,7 +293,7 @@ public class Client
 		}
 	}
 	
-	protected void onConnected()
+	private void onConnected()
 	{
 		
 		connected = true;
@@ -322,7 +322,7 @@ public class Client
 		
 	}
 	
-	protected void onDisconnected()
+	private void onDisconnected()
 	{
 		
 		Contact contact = getContact(getNickname());
@@ -414,7 +414,7 @@ public class Client
 		connect(context, (URL)null);
 	}
 	
-	protected void resetState()
+	private void resetState()
 	{
 		
 		connected = false;
@@ -477,7 +477,7 @@ public class Client
 		
 	}
 	
-	protected void raiseStateChanged()
+	private void raiseStateChanged()
 	{
 		listeners.dispatchEvent(new EventSource<ClientListener>()
 			{
@@ -488,7 +488,7 @@ public class Client
 			});
 	}
 	
-	protected void onConnectionError(Exception ex)
+	private void onConnectionError(Exception ex)
 	{
 		resetState();
 		String msg = "Connection error: " + ex.toString();
@@ -522,7 +522,7 @@ public class Client
 		return (latency > -1) ? new Duration(latency) : null;
 	}
 	
-	protected void processServerMessage(ByteBuffer data)
+	private void processServerMessage(ByteBuffer data)
 	{
 		
 		final ArrayList<ByteBuffer> tokens = ByteConvert.tokenizeNull(data, 3);
@@ -555,7 +555,7 @@ public class Client
 		
 	}
 	
-	protected void onNewNickname(String nick_new)
+	private void onNewNickname(String nick_new)
 	{
 		this.nickname_current = nick_new;
 		this.nickname_last = nick_new;
@@ -563,7 +563,7 @@ public class Client
 		raiseStateChanged();
 	}
 	
-	protected enum ServerCommand
+	private enum ServerCommand
 	{
 		PING,
 		PONG,
@@ -591,7 +591,7 @@ public class Client
 		NICK
 	}
 	
-	protected boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
+	private boolean processServerMessage(final String context, final ServerCommand cmd, final ByteBuffer params)
 	{
 		
 		switch (cmd)
@@ -909,14 +909,14 @@ public class Client
 		
 	}
 	
-	protected void dumpMessageData(String context, String cmdString, ByteBuffer params)
+	private void dumpMessageData(String context, String cmdString, ByteBuffer params)
 	{
 		notification(context, NotificationSeverity.DEBUG, null,
 			"Message data:\n\tContext: " + context + "\n\tCommand: "+cmdString+
 			"\n\tParams:\n\t\t"+params.toHexString(true).replace("\n","\n\t\t"));
 	}
 	
-	protected void sendToServer(String context, String command, ByteBuffer params)
+	private void sendToServer(String context, String command, ByteBuffer params)
 	{
 		if (context == null) context = "";
 		if (command == null) command = "";
@@ -1018,7 +1018,7 @@ public class Client
 		}
 	}
 	
-	protected boolean ensureMinTokenCount(String context, String cmdString, ArrayList<ByteBuffer> tokens, int countMin)
+	private boolean ensureMinTokenCount(String context, String cmdString, ArrayList<ByteBuffer> tokens, int countMin)
 	{
 		if (tokens != null && tokens.size() >= countMin)
 		{
@@ -1031,7 +1031,7 @@ public class Client
 		}
 	}
 	
-	protected void notification(final String context, final NotificationSeverity severity, final String type, final String message)
+	private void notification(final String context, final NotificationSeverity severity, final String type, final String message)
 	{
 		listeners.dispatchEvent(new EventSource<ClientListener>()
 			{

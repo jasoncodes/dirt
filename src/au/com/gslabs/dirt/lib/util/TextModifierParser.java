@@ -12,8 +12,8 @@ public class TextModifierParser
 		XHTML
 	}
 	
-	protected static final boolean useInlineStyles = true;
-	protected static final String[] html_colour_codes = new String[]
+	private static final boolean useInlineStyles = true;
+	private static final String[] html_colour_codes = new String[]
 		{
 			"#ffffff", "#000000", "#000080", "#008000",
 			"#ff0000", "#800000", "#800080", "#ff8000",
@@ -32,10 +32,10 @@ public class TextModifierParser
 		return parser.parse(text);
 	}
 	
-	protected OutputFormat outputFormat;
-	protected boolean detectURLs;
-	protected StringBuffer result;
-	protected ArrayList<Entry> active;
+	private OutputFormat outputFormat;
+	private boolean detectURLs;
+	private StringBuffer result;
+	private ArrayList<Entry> active;
 	
 	public TextModifierParser(OutputFormat outputFormat, boolean detectURLs)
 	{
@@ -78,7 +78,7 @@ public class TextModifierParser
 		
 	}
 	
-	protected int tagFind(TextModifier tag)
+	private int tagFind(TextModifier tag)
 	{
 		for (int i = active.size()-1; i >= 0; --i)
 		{
@@ -90,7 +90,7 @@ public class TextModifierParser
 		return -1;
 	}
 	
-	protected void tagSet(TextModifier tag)
+	private void tagSet(TextModifier tag)
 	{
 		
 		Entry newEntry = new Entry();
@@ -113,7 +113,7 @@ public class TextModifierParser
 		
 	}
 	
-	protected void tagClearAll()
+	private void tagClearAll()
 	{
 		for (int idx = active.size()-1; idx >= 0; --idx)
 		{
@@ -122,7 +122,7 @@ public class TextModifierParser
 		active.clear();
 	}
 	
-	protected void tagClear(TextModifier tag)
+	private void tagClear(TextModifier tag)
 	{
 		int idxToClear = tagFind(tag);
 		if (idxToClear > -1)
@@ -147,7 +147,7 @@ public class TextModifierParser
 		}
 	}
 	
-	protected void tagToggle(TextModifier tag)
+	private void tagToggle(TextModifier tag)
 	{
 		if (tagFind(tag) > -1)
 		{
@@ -159,7 +159,7 @@ public class TextModifierParser
 		}
 	}
 	
-	protected void outputTag(Entry entry, boolean opening)
+	private void outputTag(Entry entry, boolean opening)
 	{
 		if (entry.supressed) return;
 		final String tagName;
@@ -227,7 +227,7 @@ public class TextModifierParser
 		}
 	}
 	
-	protected void outputTag(String tagName, boolean opening, String attributes)
+	private void outputTag(String tagName, boolean opening, String attributes)
 	{
 		if (outputFormat == OutputFormat.XHTML)
 		{
@@ -246,12 +246,12 @@ public class TextModifierParser
 		}
 	}
 	
-	protected int colour_pos;
-	protected boolean had_comma;
-	protected boolean last_was_comma;
-	protected int[] colour_number = new int[2];
+	private int colour_pos;
+	private boolean had_comma;
+	private boolean last_was_comma;
+	private int[] colour_number = new int[2];
 
-	protected void resetColourParser()
+	private void resetColourParser()
 	{
 		colour_pos = 0;
 		colour_number[0] = -1;
@@ -260,7 +260,7 @@ public class TextModifierParser
 		last_was_comma = false;
 	}
 	
-	protected void colourCodeEnd()
+	private void colourCodeEnd()
 	{
 		if (colour_pos == 1 && colour_number[0] < 0)
 		{

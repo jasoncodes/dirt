@@ -13,7 +13,7 @@ import au.com.gslabs.dirt.lib.util.TextUtil;
 public class XHTMLEditorKit extends HTMLEditorKit
 {
 	
-	protected XHTMLParser parser = null;
+	private XHTMLParser parser = null;
 	
 	protected Parser getParser()
 	{
@@ -27,7 +27,7 @@ public class XHTMLEditorKit extends HTMLEditorKit
 	private class XHTMLParser extends Parser
 	{
 		
-		protected SAXParser parser = null;
+		private SAXParser parser = null;
 		
 		public void parse(Reader reader, ParserCallback callback, boolean ignoreCharSet) throws IOException
 		{
@@ -114,7 +114,7 @@ public class XHTMLEditorKit extends HTMLEditorKit
 			callback.handleStartTag(HTML.getTag(mapTagName(qName)), attributeSet, -1);
 		}
 		
-		protected String mapTagName(String tagName)
+		private String mapTagName(String tagName)
 		{
 			if (tagName.toLowerCase().equals("span"))
 			{
@@ -171,7 +171,7 @@ public class XHTMLEditorKit extends HTMLEditorKit
 			
 		}
 		
-		protected EntityResolver resolver = null;
+		private EntityResolver resolver = null;
 		
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 		{

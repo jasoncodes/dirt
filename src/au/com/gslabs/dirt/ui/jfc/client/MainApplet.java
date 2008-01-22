@@ -9,9 +9,9 @@ import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
 public class MainApplet extends JApplet
 {
 	
-	protected final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
-	protected final MainPanel panel;
-	protected final JLabel lblTitle;
+	private final ResourceBundle resbundle = ResourceBundle.getBundle("res/strings");
+	private final MainPanel panel;
+	private final JLabel lblTitle;
 	
 	public MainApplet()
 	{
@@ -51,7 +51,7 @@ public class MainApplet extends JApplet
 		
 	}
 	
-	protected class MainPanelHandler implements MainPanelListener
+	private class MainPanelHandler implements MainPanelListener
 	{
 		
 		public void clientStateChanged(MainPanel panel)
@@ -78,7 +78,7 @@ public class MainApplet extends JApplet
 		
 	}
 	
-	protected void updateWindowTitle()
+	private void updateWindowTitle()
 	{
 		
 		String title = panel.getTitle();

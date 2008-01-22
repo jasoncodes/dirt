@@ -14,7 +14,7 @@ public class MacOS
 	{
 	}
 	
-	protected native void setDockTile(int[] pixels, int width, int height);
+	private native void setDockTile(int[] pixels, int width, int height);
 	
 	public void setDockIcon(ImageIcon icon)
 	{

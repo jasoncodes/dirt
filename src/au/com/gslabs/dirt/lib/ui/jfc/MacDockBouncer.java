@@ -13,19 +13,19 @@ import net.roydesign.app.Application;
 class MacDockBouncer extends Thread
 {
 	
-	protected ImageIcon[] icons;
-	protected MacOS mac;
+	private final ImageIcon[] icons;
+	private final MacOS mac;
 	
-	final Object app;
-	final Method request_attention;
-	final Object[] request_params;
-	final Method cancel_attention;
+	private final Object app;
+	private final Method request_attention;
+	private final Object[] request_params;
+	private final Method cancel_attention;
 	
-	protected class FocusMonitor
+	private class FocusMonitor
 	{
 		final public Frame frame;
 		public boolean hasBeenFocused;
-		final protected WindowAdapter listener;
+		final private WindowAdapter listener;
 		public FocusMonitor(Frame frame)
 		{
 			this.frame = frame;
@@ -58,8 +58,8 @@ class MacDockBouncer extends Thread
 		}
 	}
 	
-	protected Map<Frame,FocusMonitor> monitors;
-	protected WeakReference<Frame> lastFocusedAlertFrame;
+	private Map<Frame,FocusMonitor> monitors;
+	private WeakReference<Frame> lastFocusedAlertFrame;
 	
 	public MacDockBouncer() throws Exception
 	{
@@ -114,7 +114,7 @@ class MacDockBouncer extends Thread
 		
 	}
 	
-	protected Integer requestAttention()
+	private Integer requestAttention()
 	{
 		try
 		{
@@ -126,7 +126,7 @@ class MacDockBouncer extends Thread
 		}
 	}
 	
-	protected void cancelAttention(Integer requestID)
+	private void cancelAttention(Integer requestID)
 	{
 		try
 		{
@@ -153,11 +153,11 @@ class MacDockBouncer extends Thread
 		return monitors.keySet().toArray(new Frame[0]);
 	}
 	
-	protected Integer requestID = null;
-	protected int currentIcon = 0;
-	protected long bounceStopTick = 0;
+	private Integer requestID = null;
+	private int currentIcon = 0;
+	private long bounceStopTick = 0;
 	
-	protected void reset()
+	private void reset()
 	{
 		if (requestID != null)
 		{

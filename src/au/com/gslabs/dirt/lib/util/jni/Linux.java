@@ -9,9 +9,9 @@ public class Linux
 	{
 	}
 	
-	protected native int getuid();
-	protected native byte[] getPwUid_Gecos(int uid);
-	protected native byte[] getPwUid_Name(int uid);
+	private native int getuid();
+	private native byte[] getPwUid_Gecos(int uid);
+	private native byte[] getPwUid_Name(int uid);
 	
 	public String getMyFullName() throws UnsupportedEncodingException
 	{

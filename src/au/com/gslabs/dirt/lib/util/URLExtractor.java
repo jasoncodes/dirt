@@ -8,8 +8,8 @@ public class URLExtractor
 	
 	public class Token
 	{
-		protected String text;
-		protected String url;
+		private String text;
+		private String url;
 		public Token(String text, String url)
 		{
 			this.text = text;
@@ -124,7 +124,7 @@ public class URLExtractor
 		return src;
 	}
 	
-	protected void addToken(String text, String url)
+	private void addToken(String text, String url)
 	{
 		Token lastToken = tokens.size() > 0 ? tokens.get(tokens.size()-1) : null;
 		if (url == null && lastToken != null && lastToken.url == null)
@@ -141,7 +141,7 @@ public class URLExtractor
 	static final Pattern suffixToIgnore = Pattern.compile("[.,?!]+$");
 	static final Pattern domainEnd = Pattern.compile("\\.(com|net|org|gov|mil|co)(\\.[a-z]+)?(:[0-9]+)?(/|$)");
 	
-	protected void tokenize(String text)
+	private void tokenize(String text)
 	{
 		
 		// break the string up based on delimiter characters
