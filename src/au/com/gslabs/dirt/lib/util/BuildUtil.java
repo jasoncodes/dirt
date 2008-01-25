@@ -97,6 +97,24 @@ public class BuildUtil
 		return array;
 	}
 	
+	/**
+	 * Unfortunately non-validating compilers don't always strip whitespace when asked
+	 */
+	public static void stripWhitespace(final Node node)
+	{
+		for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
+		{
+			while (child instanceof Text && ((Text)child).isElementContentWhitespace())
+			{
+				final Node next = child.getNextSibling();
+				child.getParentNode().removeChild(child);
+				if (next == null) break;
+				child = next;
+			}
+			stripWhitespace(child);
+		}
+	}
+	
 	public static void fixMacBundlePlist(File file) throws Exception
 	{
 		
@@ -105,7 +123,7 @@ public class BuildUtil
 		factory.setIgnoringElementContentWhitespace(true);
 		final DocumentBuilder builder = factory.newDocumentBuilder();
 		final Document document = builder.parse(file);
-		final NodeList keys = document.getDocumentElement().getElementsByTagName("key");
+		stripWhitespace(document.getDocumentElement());
 		
 		final Node nodeJava = plistDictLookup(document.getDocumentElement().getFirstChild(), "Java");
 		if (plistDictLookup(nodeJava, "JVMArchs") == null)

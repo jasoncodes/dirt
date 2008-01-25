@@ -1,4 +1,5 @@
 dirt+https_connect://spawncamp.net/localhost:11626
+	http://www.javaworld.com/javaworld/javatips/jw-javatip111.html?page=1
 
 save/restore frame rect
 	persistence needs to support query windows
