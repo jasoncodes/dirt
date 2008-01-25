@@ -4,11 +4,16 @@ package au.com.gslabs.dirt.lib.util;
 
 import java.io.*;
 import java.util.*;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
 
 public class BuildUtil
 {
 	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
 		if (args.length == 3 && args[0].equals("--append-source-date-to-version"))
 		{
@@ -28,6 +33,10 @@ public class BuildUtil
 		else if (args.length == 1 && args[0].equals("--print-javahome"))
 		{
 			System.out.println(System.getProperty("java.home"));
+		}
+		else if (args.length == 2 && args[0].equals("--fix-mac-bundle-plist"))
+		{
+			fixMacBundlePlist(new File(args[1]));
 		}
 		else
 		{
@@ -59,6 +68,62 @@ public class BuildUtil
 			latestModified = Math.max(latestModified, thisModified);
 		}
 		return new Date(latestModified);
+	}
+	
+	public static Node plistDictLookup(final Node dict, final String key)
+	{
+		for (Node child = dict.getFirstChild(); child != null; child = child.getNextSibling())
+		{
+			if (child.getNodeName().equals("key"))
+			{
+				if (key.equals(child.getFirstChild().getNodeValue()))
+				{
+					return child.getNextSibling();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static Node plistCreateStringArray(final Document document, final String[] values)
+	{
+		final Node array = document.createElement("array");
+		for (String value : values)
+		{
+			final Node entry = document.createElement("string");
+			entry.appendChild(document.createTextNode(value));
+			array.appendChild(entry);
+		}
+		return array;
+	}
+	
+	public static void fixMacBundlePlist(File file) throws Exception
+	{
+		
+		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		factory.setIgnoringElementContentWhitespace(true);
+		final DocumentBuilder builder = factory.newDocumentBuilder();
+		final Document document = builder.parse(file);
+		final NodeList keys = document.getDocumentElement().getElementsByTagName("key");
+		
+		final Node nodeJava = plistDictLookup(document.getDocumentElement().getFirstChild(), "Java");
+		if (plistDictLookup(nodeJava, "JVMArchs") == null)
+		{
+			
+			final Node keyJVMArchs = document.createElement("key");
+			keyJVMArchs.appendChild(document.createTextNode("JVMArchs"));
+			nodeJava.appendChild(keyJVMArchs);
+			nodeJava.appendChild(plistCreateStringArray(document, new String[] { "x86_64", "x86", "ppc64", "ppc" } ));
+			
+		}
+		
+		final Source source = new DOMSource(document);
+		final Result result = new StreamResult(file);
+		final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+		xformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+		xformer.transform(source, result);
+		
 	}
 	
 }

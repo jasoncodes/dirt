@@ -1,16 +1,3 @@
-x86_64 jnilib for 64-bit Java on Leopard
-	http://developer.apple.com/java/javaleopard.html
-	http://lists.apple.com/archives/Java-dev/2007/Dec/msg00067.html
-	JVMArchs may require jarbundler update and/or overriding with our own Info.plist
-		<key>JVMArchs</key>
-		<array>
-			<string>x86_64</string>
-			<string>i386</string>
-			<string>ppc64</string>
-			<string>ppc</string>
-		</array>
-	should probably also symlink as per http://informagen.com/JarBundler/StubFile.html
-
 dirt+https_connect://spawncamp.net/localhost:11626
 
 save/restore frame rect

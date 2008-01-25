@@ -186,6 +186,20 @@
 			jvmversion="1.5*"
 			extraclasspath="/System/Library/Java/"
 			/>
+		<java
+			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
+			classpath="${build}/main-scratch"
+			failonerror="true"
+			fork="true"
+			>
+			<arg value="--fix-mac-bundle-plist" />
+			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
+		</java>
+		<delete file="${dist}/Dirt.app/Contents/MacOS/Dirt"/>
+		<exec executable="ln">
+			<arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+			<arg value="${dist}/Dirt.app/Contents/MacOS/Dirt"/>
+		</exec>
 	</target>
 	
 	<target name="mac-dist" depends="mac-bundle" if="isMac">
