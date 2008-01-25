@@ -16,11 +16,6 @@ class MacDockBouncer extends Thread
 	private final ImageIcon[] icons;
 	private final MacOS mac;
 	
-	private final Object app;
-	private final Method request_attention;
-	private final Object[] request_params;
-	private final Method cancel_attention;
-	
 	private class FocusMonitor
 	{
 		final public Frame frame;
@@ -76,15 +71,6 @@ class MacDockBouncer extends Thread
 		icons[0] = new ImageIcon(FileUtil.getResource("res/icons/dirt.png"));
 		icons[1] = new ImageIcon(FileUtil.getResource("res/icons/dirt_highlight.png"));
 		
-		final Class<?> c = Class.forName("com.apple.cocoa.application.NSApplication");
-		final Method shared_app = c.getMethod("sharedApplication", (Class[])null);
-		this.app = shared_app.invoke(null, (Object[])null);
-		final Class[] int_param = new Class[] { Integer.TYPE };
-		this.request_attention = c.getMethod("requestUserAttention", int_param);
-		final Field f = c.getField("UserAttentionRequestInformational");
-		this.request_params = new Object[] { f.getInt(null) };
-		this.cancel_attention = c.getMethod("cancelUserAttentionRequest", int_param);
-		
 		Runtime.getRuntime().addShutdownHook(new Thread()
 			{
 				public void run()
@@ -118,10 +104,12 @@ class MacDockBouncer extends Thread
 	{
 		try
 		{
-			return (Integer)request_attention.invoke(app, request_params);
+			return Integer.valueOf(mac.requestAttention(false));
 		}
 		catch (Exception ex)
 		{
+			System.err.println("Error requesting attention:");
+			ex.printStackTrace();
 			return null;
 		}
 	}
@@ -130,11 +118,12 @@ class MacDockBouncer extends Thread
 	{
 		try
 		{
-			Object[] cancel_params = new Object[] { requestID };
-			cancel_attention.invoke(app, cancel_params);
+			mac.cancelAttention(requestID);
 		}
 		catch (Exception ex)
 		{
+			System.err.println("Error cancelling attention:");
+			ex.printStackTrace();
 		}
 	}
 	

@@ -1,5 +1,4 @@
 x86_64 jnilib for 64-bit Java on Leopard
-	reflection code for dock bounce needs to be converted to JNI as ObjC proxy not 64-bit
 	http://developer.apple.com/java/javaleopard.html
 	http://lists.apple.com/archives/Java-dev/2007/Dec/msg00067.html
 	JVMArchs may require jarbundler update and/or overriding with our own Info.plist

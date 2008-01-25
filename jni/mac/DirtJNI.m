@@ -79,3 +79,18 @@ void Dock_setContentImage(CGImageRef imageRef)
 }
 
 #endif
+
+JNIEXPORT jint JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_requestAttention(JNIEnv *env, jobject this, jboolean critical)
+{
+	NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
+	int requestID = [NSApp requestUserAttention: critical?NSCriticalRequest:NSInformationalRequest];
+	[autoreleasepool release];
+	return requestID;
+}
+
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_cancelAttention(JNIEnv *env, jobject this, jint requestID)
+{
+	NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
+	[NSApp cancelUserAttentionRequest: requestID];
+	[autoreleasepool release];
+}

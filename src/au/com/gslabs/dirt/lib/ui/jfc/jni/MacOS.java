@@ -14,6 +14,9 @@ public class MacOS
 	{
 	}
 	
+	public native int requestAttention(boolean critical);
+	public native void cancelAttention(int requestID);
+	
 	private native void setDockTile(int[] pixels, int width, int height);
 	
 	public void setDockIcon(ImageIcon icon)
