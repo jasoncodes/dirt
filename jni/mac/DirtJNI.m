@@ -72,6 +72,7 @@ void Dock_setContentImage(CGImageRef imageRef)
 	[dockTile setContentView: dockImageView];
 	[dockTile display];
 	
+	[dockImageView release];
 	[image release];
 	
 	[autoreleasepool release];

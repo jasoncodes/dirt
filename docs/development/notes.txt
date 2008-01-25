@@ -1,6 +1,3 @@
-dirt+https_connect://spawncamp.net/localhost:11626
-	http://www.javaworld.com/javaworld/javatips/jw-javatip111.html?page=1
-
 save/restore frame rect
 	persistence needs to support query windows
 	use java.util.prefs.Preferences
@@ -15,6 +12,17 @@ Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
 	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html
 	http://software.jessies.org/salma-hayek/'s PTextArea uses ispell (and NSSpellChecker via ispell wrapper)
+
+dirt+https_connect://spawncamp.net/localhost:11626
+	setup a test proxy that requires auth, preferably on localhost
+	optionally connect to proxy to connect to remote on port 443 (HTTPConnectProxy?)
+		is there any way we can use the browser's settings (incl. auth) when in an applet?
+		see if HttpURLConnection does http auth for us or not. if so, see how it does it. (java.net.Authenticator?)
+			Google results suggests HttpURLConnection will. However, if we can't do the same ourselves, this is a show stopper.
+			security settings may prevent opening a Socket to the proxy directly, also a possibly show stopper
+	once connected to remote, setup SSL using SSLSocket
+	use HTTPConnectProxy again to connect to localhost:11626
+	http://www.javaworld.com/javaworld/javatips/jw-javatip111.html?page=1
 
 Cmd-F to search log text
 
