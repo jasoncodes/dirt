@@ -166,7 +166,6 @@ CLDC/MIDP (J2ME)
 	Random Thoughts
 		Copy MPP sample into a working dir
 		Get it running on an emulator and actual device
-		
 		Get generics working in test code
 		Get HTML renderer working in test code
 			Needs append support
@@ -183,6 +182,8 @@ CLDC/MIDP (J2ME)
 				platform version which is copied to correct name post javac
 		Customise sample build.xml and integrate into main build.xml
 			Use fileset/pattern set to isolate CLDC code from main build
+			this will need to be very selective about what .java files to pull over to a
+				temp src dir in build/. Separate build dir will locate dependancy issues.
 	Resources
 		Free SDK for Mac OS X
 			http://mpowerplayer.com/
