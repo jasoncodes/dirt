@@ -4,6 +4,8 @@ save/restore frame rect
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
 	store nicklist width as well as window dimensions
 
+logging
+
 detection of sleep on at least mac and win32
 	http://www.createblog.com/forums/lofiversion/index.php/t162836.html
 	http://developer.apple.com/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/UserSwitchNotifications.html#//apple_ref/doc/uid/20002210-CJBJDAGF

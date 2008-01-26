@@ -373,7 +373,7 @@ public class Client
 	
 	public void connect(String context, String url)
 	{
-		connect(context, new URL(url, "dirt", 11626));
+		connect(context, TextUtil.isEmpty(url) ? null : new URL(url, "dirt", 11626));
 	}
 	
 	public void connect(String context, URL url)

@@ -82,6 +82,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 	{
 		QUERY,
 		CLEAR,
+		CONNECT,
 		TEST
 	}
 	
@@ -99,6 +100,15 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 			
 			switch (cmd)
 			{
+				
+				case CONNECT:
+					final String defaultServer = Preferences.getInstance().getDefaultServer();
+					if (params.length() == 0 && !TextUtil.isEmpty(defaultServer))
+					{
+						source.connect(context, defaultServer);
+						return true;
+					}
+					return false; // use default handler
 				
 				case QUERY:
 					String[] tokens = TextUtil.splitQuotedHeadTail(params);

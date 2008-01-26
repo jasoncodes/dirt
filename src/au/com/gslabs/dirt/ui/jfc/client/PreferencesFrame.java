@@ -103,8 +103,8 @@ public class PreferencesFrame extends JFrame
 		
 		mainPanel.add(new JLabel("Preferred Nickname:"));
 		mainPanel.add(txtNickname);
-		//mainPanel.add(new JLabel("Default Server:"));
-		//mainPanel.add(txtDefaultServer);
+		mainPanel.add(new JLabel("Default Server:"));
+		mainPanel.add(txtDefaultServer);
 		//mainPanel.add(new JLabel());
 		//mainPanel.add(chkLogChat);
 		mainPanel.add(new JLabel());
