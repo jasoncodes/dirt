@@ -59,6 +59,19 @@ public class ClientJFC extends Application
 		return ResourceBundle.getBundle("res/strings").getString("name");
 	}
 	
+	public static void showPreferences()
+	{
+		for (Frame f : UIUtil.getWindowManager().getOrderedValidFrames(true))
+		{
+			if (f instanceof PreferencesFrame)
+			{
+				UIUtil.stealFocus(f);
+				return;
+			}
+		}
+		new PreferencesFrame().setVisible(true);
+	}
+	
 	public class ReopenApplicationHelper implements Runnable
 	{
 		

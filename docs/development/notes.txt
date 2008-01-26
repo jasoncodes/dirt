@@ -1,8 +1,5 @@
 preferences
-	add event hook to Preferences
-	implement default nick
 	implement default server
-	implement sound
 	implement logging
 
 save/restore frame rect

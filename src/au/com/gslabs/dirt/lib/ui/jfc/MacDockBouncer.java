@@ -19,11 +19,13 @@ class MacDockBouncer extends Thread
 	private class FocusMonitor
 	{
 		final public Frame frame;
+		public int count;
 		public boolean hasBeenFocused;
 		final private WindowAdapter listener;
 		public FocusMonitor(Frame frame)
 		{
 			this.frame = frame;
+			this.count = 0;
 			this.hasBeenFocused = false;
 			this.listener = new WindowAdapter()
 				{
@@ -75,7 +77,7 @@ class MacDockBouncer extends Thread
 			{
 				public void run()
 				{
-					mac.setDockIcon(icons[0]);
+					mac.setDockIcon(icons[0], null);
 				}
 			});
 			
@@ -132,7 +134,13 @@ class MacDockBouncer extends Thread
 		synchronized (this)
 		{
 			bounceStopTick = System.currentTimeMillis() + 1000;
-			monitors.put(frame, new FocusMonitor(frame));
+			FocusMonitor monitor = monitors.get(frame);
+			if (monitor == null)
+			{
+				monitor = new FocusMonitor(frame);
+				monitors.put(frame, monitor);
+			}
+			monitor.count++;
 			notify();
 		}
 	}
@@ -140,6 +148,16 @@ class MacDockBouncer extends Thread
 	public Frame[] getAlertingFrames()
 	{
 		return monitors.keySet().toArray(new Frame[0]);
+	}
+	
+	public int getAlertCount()
+	{
+		int count = 0;
+		for (FocusMonitor monitor : monitors.values())
+		{
+			count += monitor.count;
+		}
+		return count;
 	}
 	
 	private Integer requestID = null;
@@ -155,7 +173,7 @@ class MacDockBouncer extends Thread
 		}
 		bounceStopTick = 0;
 		currentIcon = 0;
-		mac.setDockIcon(icons[0]);
+		mac.setDockIcon(icons[0], null);
 	}
 	
 	public void run()
@@ -215,7 +233,7 @@ class MacDockBouncer extends Thread
 			{
 				
 				currentIcon = ++currentIcon % 2;
-				mac.setDockIcon(icons[currentIcon]);
+				mac.setDockIcon(icons[currentIcon], String.valueOf(getAlertCount()));
 				
 				if (bounceStopTick > System.currentTimeMillis())
 				{

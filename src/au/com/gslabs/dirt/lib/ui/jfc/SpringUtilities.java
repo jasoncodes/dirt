@@ -26,6 +26,18 @@ public class SpringUtilities
 		System.out.println("maximumSize = " + c.getMaximumSize());
 	}
 	
+	private static SpringLayout getSpringLayout(Container parent)
+	{
+		try
+		{
+			return (SpringLayout)parent.getLayout();
+		}
+		catch (ClassCastException exc)
+		{
+			throw new IllegalArgumentException("The container must use SpringLayout.");
+		}
+	}
+	
 	/**
 	 * Aligns the first <code>rows</code> * <code>cols</code>
 	 * components of <code>parent</code> in
@@ -46,15 +58,7 @@ public class SpringUtilities
 	                            int xPad, int yPad)
 	{
 		
-		final SpringLayout layout;
-		try
-		{
-			layout = (SpringLayout)parent.getLayout();
-		}
-		catch (ClassCastException exc)
-		{
-			throw new IllegalArgumentException("The first argument to makeGrid must use SpringLayout.");
-		}
+		final SpringLayout layout = getSpringLayout(parent);
 		
 		final Spring xPadSpring = Spring.constant(xPad);
 		final Spring yPadSpring = Spring.constant(yPad);
@@ -163,16 +167,7 @@ public class SpringUtilities
 	                                   int xPad, int yPad)
 	{
 		
-		final SpringLayout layout;
-		try
-		{
-			layout = (SpringLayout)parent.getLayout();
-		}
-		catch (ClassCastException exc)
-		{
-			System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
-			return;
-		}
+		final SpringLayout layout = getSpringLayout(parent);
 		
 		//Align all cells in each column and make them the same width.
 		Spring x = Spring.constant(initialX);

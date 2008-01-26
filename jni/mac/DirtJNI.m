@@ -47,9 +47,7 @@ NSWindow * GetWindowFromComponent(jobject parent, JNIEnv *env) {
 	return [view window];
 }
 
-#if defined(__USE_LEOPARD_API)
-
-void Dock_setContentImage(CGImageRef imageRef)
+void Dock_setContentImage(CGImageRef imageRef, CFStringRef label_ref)
 {
 	
 	NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
@@ -65,21 +63,71 @@ void Dock_setContentImage(CGImageRef imageRef)
     CGContextDrawImage([[NSGraphicsContext currentContext] graphicsPort], *(CGRect*)&rect, imageRef);
     [image unlockFocus];
 	
+	NSString *label = (NSString*)label_ref; // toll free bridging
+	    
+#if defined(__USE_LEOPARD_API)
+	
 	NSImageView *dockImageView = [[NSImageView alloc] initWithFrame: rect];
 	[dockImageView setImage: image];
 	
 	NSDockTile *dockTile = [NSApp dockTile];
 	[dockTile setContentView: dockImageView];
+	[dockTile setBadgeLabel: label];
 	[dockTile display];
 	
 	[dockImageView release];
+	
+#else
+	
+	if (!label || ![label length])
+	{
+		[NSApp setApplicationIconImage: image];
+	}
+	else
+	{
+			
+		NSImage *iconImageBuffer = [image copy];
+		
+		NSDictionary *attributes = [[NSDictionary alloc] initWithObjectsAndKeys:
+									[NSFont fontWithName:@"Helvetica-Bold" size:26], NSFontAttributeName,
+									[NSColor whiteColor], NSForegroundColorAttributeName, nil];
+		
+		NSSize numSize = [label sizeWithAttributes:attributes];
+		NSSize iconSize = [iconImageBuffer size];
+		
+		[iconImageBuffer lockFocus];
+		[iconImageBuffer drawAtPoint:NSMakePoint(0, 0)
+						 fromRect:NSMakeRect(0, 0, iconSize.width, iconSize.height) 
+						 operation:NSCompositeSourceOver 
+						 fraction:1.0f];
+		float width = (numSize.width > numSize.height) ? numSize.width : numSize.height;
+		float height = numSize.height;
+		width += 16;
+		height += 16;
+		NSRect circleRect = NSMakeRect(iconSize.width - width, iconSize.height - height, width, height);
+		NSBezierPath *bp = [NSBezierPath bezierPathWithOvalInRect:circleRect];
+		[[NSColor colorWithCalibratedRed:0.8f green:0.0f blue:0.0f alpha:1.0f] set];
+		[bp fill];
+		[label drawAtPoint:NSMakePoint(NSMidX(circleRect) - numSize.width / 2.0f, 
+										   NSMidY(circleRect) - numSize.height / 2.0f + 2.0f) 
+										   withAttributes:attributes];
+		
+		[iconImageBuffer unlockFocus];
+		
+		[NSApp setApplicationIconImage: iconImageBuffer];
+		
+		[iconImageBuffer release];
+		[attributes release];
+	
+	}
+	
+#endif
+	
 	[image release];
 	
 	[autoreleasepool release];
 	
 }
-
-#endif
 
 JNIEXPORT jint JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_requestAttention(JNIEnv *env, jobject this, jboolean critical)
 {

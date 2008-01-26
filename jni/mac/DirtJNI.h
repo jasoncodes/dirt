@@ -12,6 +12,4 @@
 #define __USE_LEOPARD_API
 #endif
 
-#if defined(__USE_LEOPARD_API)
-void Dock_setContentImage(CGImageRef imageRef);
-#endif
+void Dock_setContentImage(CGImageRef imageRef, CFStringRef label);

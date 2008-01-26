@@ -62,10 +62,13 @@ public class WindowManager
 			switch (e.getID())
 			{
 				case WindowEvent.WINDOW_CLOSED:
-					onWindowClosed();
+					onWindowClosed((Window)e.getSource());
 					break;
 				case WindowEvent.WINDOW_GAINED_FOCUS:
 					onWindowFocused((Window)e.getSource());
+					break;
+				case WindowEvent.WINDOW_OPENED:
+					onWindowOpened((Window)e.getSource());
 					break;
 			}
 		}
@@ -92,7 +95,7 @@ public class WindowManager
 		}
 	}
 	
-	private void onWindowClosed()
+	private void onWindowClosed(final Window w)
 	{
 		// on platforms other than Mac, processes don't stay open without windows
 		if (!FileUtil.isMac() && UIUtil.getFirstValidFrame() == null)
@@ -104,6 +107,26 @@ public class WindowManager
 	private void onWindowFocused(final Window w)
 	{
 		updateWindowLastFocused(w);
+	}
+	
+	private void onWindowOpened(final Window w)
+	{
+		doMinimumSizeWorkaround(w);
+	}
+	
+	private static void doMinimumSizeWorkaround(final Window w)
+	{
+		w.addComponentListener(new ComponentAdapter()
+			{
+				public void componentResized(ComponentEvent event)
+				{
+					Dimension current = w.getSize();
+					Dimension minimum = w.getMinimumSize();
+					w.setSize(
+						Math.max((int)current.getWidth(), (int)minimum.getWidth()),
+						Math.max((int)current.getHeight(), (int)minimum.getHeight()));
+				}
+			});
 	}
 	
 	public Frame[] getOrderedValidFrames(final boolean mostRecentFirst)

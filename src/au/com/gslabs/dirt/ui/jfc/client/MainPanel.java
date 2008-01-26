@@ -21,6 +21,9 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 	private final ConsoleClientAdapter clientAdapter;
 	private final ContactListModel contacts;
 	
+	private final Preferences prefs;
+	private final ActionListener prefListener;
+	
 	private boolean cleanupDone = false;
 	private LogPane txtLog;
 	private InputArea txtInput;
@@ -60,6 +63,19 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 				}
 			});
 		
+		prefs = Preferences.getInstance();
+		prefListener = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					if (e.getActionCommand().equals(Preferences.NICKNAME))
+					{
+						loadPreferredNickname();
+					}
+				}
+			};
+		prefs.addActionListener(prefListener);
+		loadPreferredNickname();
 	}
 	
 	private enum SupportedCommand
@@ -202,6 +218,18 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 			notifyTitleChanged();
 		}
 		
+	}
+	
+	private void loadPreferredNickname()
+	{
+		String nickname = prefs.getNickname();
+		boolean isGood = true;
+		if (TextUtil.isEmpty(nickname))
+		{
+			nickname = prefs.getDefaultNickname();
+			isGood = false;
+		}
+		client.setPreferredNickname(nickname, isGood);
 	}
 	
 	public void openQueryPanel(final String context, final String nickname, final String message)
@@ -554,6 +582,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		if (!cleanupDone)
 		{
 			cleanupDone = true;
+			prefs.removeActionListener(prefListener);
 			client.removeClientListener(clientAdapter);
 			txtLog.clearText();
 			if (client.isConnected())

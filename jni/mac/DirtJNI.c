@@ -57,7 +57,7 @@ typedef union
 
 // Args include the array of pixel RGBA values, and the actual image width and height.
 extern void setDockTile( jint * imagePixels, int width, 
-						 int height ) {
+						 int height, CFStringRef label ) {
 	// How many bytes in each pixel? Java uses 4-byte ints.
 	int kNumComponents = 4;
 	
@@ -106,44 +106,39 @@ extern void setDockTile( jint * imagePixels, int width,
 	CGDataProviderRelease( theProvider );
 	CGColorSpaceRelease( theColorspace );
 	
-#if defined(__USE_LEOPARD_API)
-	Dock_setContentImage(theImage);
-#else
-	{
-
-		// Obtain graphics context in which to render.
-		CGContextRef theContext = BeginCGContextForApplicationDockTile();
-		
-		if ( theContext != NULL )
-		{   
-			
-			// Set the created image as the tile.
-			SetApplicationDockTileImage( theImage );
-			
-			CGContextFlush( theContext );
-			
-			EndCGContextForApplicationDockTile( theContext );
-		}
-		
-	}
-#endif
-
+	Dock_setContentImage(theImage, label);
+	
 	CGImageRelease( theImage );
 	
 }
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_setDockTile( 
 																				 JNIEnv *env, jobject this, jintArray pixels, jint width, 
-																				 jint height ) {
+																				 jint height, jstring label ) {
+	
+	CFStringRef label_str;
+	
+	if (!label)
+	{
+		label_str = NULL;
+	}
+	else
+	{
+		const jchar *label_chars = (*env)->GetStringChars(env, label, NULL);
+		label_str = CFStringCreateWithCharacters(kCFAllocatorDefault, label_chars, (*env)->GetStringLength(env, label));
+		(*env)->ReleaseStringChars(env, label, label_chars);
+	}
+	
 	// Obtain a pointer to the array to pass to the native function.
 	jint *theArray = (*env)->GetIntArrayElements( env, pixels, NULL );
 	
-	if ( theArray != NULL ) {
-		// Call the library function.
-		// Note that no adjustments are made to the primitive values.
-		setDockTile( theArray, width, height );
+	if ( theArray != NULL )
+	{
 		
-		// Tell the VM we are no longer interested in the array.
+		setDockTile( theArray, width, height, label_str );
+		
 		(*env)->ReleaseIntArrayElements( env, pixels, theArray, 0 );
+		
 	}
+	
 }

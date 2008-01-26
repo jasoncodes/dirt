@@ -98,7 +98,7 @@ public class MainMenuBar extends JScreenMenuBar
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					new PreferencesFrame().setVisible(true);
+					ClientJFC.showPreferences();
 				}
 			});
 		if (!mnuPreferences.isAutomaticallyPresent())

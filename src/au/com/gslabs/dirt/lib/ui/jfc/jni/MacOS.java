@@ -17,9 +17,9 @@ public class MacOS
 	public native int requestAttention(boolean critical);
 	public native void cancelAttention(int requestID);
 	
-	private native void setDockTile(int[] pixels, int width, int height);
+	private native void setDockTile(int[] pixels, int width, int height, String label);
 	
-	public void setDockIcon(ImageIcon icon)
+	public void setDockIcon(ImageIcon icon, String label)
 	{
 		
 		Image image = icon.getImage();
@@ -45,7 +45,7 @@ public class MacOS
 			}
 			
 			// pass the pixel array off to the JNI code to set the dock icon
-			setDockTile(pixels, width, height);
+			setDockTile(pixels, width, height, label);
 			
 		}
 		catch ( InterruptedException e )

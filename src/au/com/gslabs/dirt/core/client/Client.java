@@ -47,8 +47,7 @@ public class Client
 	{
 		
 		contacts = new TreeMap<String,Contact>(String.CASE_INSENSITIVE_ORDER);
-		nickname_last = getDefaultNickname();
-		nickname_last_good = false;
+		setPreferredNickname(getDefaultNickname(), false);
 		
 		socket = new CryptSocket();
 		socket.addCryptListener(new CryptListener()
@@ -558,9 +557,14 @@ public class Client
 	private void onNewNickname(String nick_new)
 	{
 		this.nickname_current = nick_new;
-		this.nickname_last = nick_new;
-		this.nickname_last_good = true;
+		setPreferredNickname(nick_new, true);
 		raiseStateChanged();
+	}
+	
+	public void setPreferredNickname(String nickname, boolean isGood)
+	{
+		this.nickname_last = nickname;
+		this.nickname_last_good = isGood;
 	}
 	
 	private enum ServerCommand
