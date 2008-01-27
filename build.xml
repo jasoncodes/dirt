@@ -158,8 +158,40 @@
 		<os family="windows" />
 	</condition>
 	
-	<target name="win-bundle" depends="jar" if="isWindows">
+	<condition property="isUnix">
+		<and>
+			<os family="unix" />
+			<not>
+				<os family="mac" />
+			</not>
+		</and>
+	</condition>
+	<target name="win-bundle" depends="win-bundle-win32,win-bundle-mingw" />
+	
+	<target name="win-bundle-win32" depends="jar" if="isWindows">
 		<launch4j configFile="./lib/l4j/dirt.xml" />
+	</target>
+
+	<target name="win-bundle-mingw" depends="jar" if="isUnix">
+		<delete dir="${build}/l4j-bin" />
+		<mkdir dir="${build}/l4j-bin" />
+		<exec executable="which" outputproperty="mingw-windres">
+			<arg value="i586-mingw32msvc-windres" />
+		</exec>
+		<exec executable="ln">
+			<arg value="-s"/>
+			<arg value="${mingw-windres}"/>
+			<arg value="${build}/l4j-bin/windres"/>
+		</exec>
+		<exec executable="which" outputproperty="mingw-ld">
+			<arg value="i586-mingw32msvc-ld" />
+		</exec>
+		<exec executable="ln">
+			<arg value="-s"/>
+			<arg value="${mingw-ld}"/>
+			<arg value="${build}/l4j-bin/ld"/>
+		</exec>
+		<launch4j configFile="./lib/l4j/dirt.xml" bindir="${build}/l4j-bin" />
 	</target>
 
 	<target name="mac-bundle" depends="jar" if="isMac">
