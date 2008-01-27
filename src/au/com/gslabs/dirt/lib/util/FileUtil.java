@@ -217,8 +217,8 @@ public class FileUtil
 			else if (isWin())
 			{
 				loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
-				au.com.gslabs.dirt.lib.ui.jfc.jni.Win32 win32 =
-					new au.com.gslabs.dirt.lib.ui.jfc.jni.Win32();
+				au.com.gslabs.dirt.lib.util.jni.Win32 win32 =
+					new au.com.gslabs.dirt.lib.util.jni.Win32();
 				return win32.getMyFullName();
 			}
 			else

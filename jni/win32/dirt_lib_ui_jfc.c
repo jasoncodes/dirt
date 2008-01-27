@@ -8,6 +8,7 @@
 #include <jawt_md.h>
 
 #include "au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h"
+#include "au_com_gslabs_dirt_lib_util_jni_Win32.h"
 
 static HWND GetWindowHWND(JNIEnv *env, jobject window)
 { 

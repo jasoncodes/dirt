@@ -27,6 +27,5 @@ public class Win32
 	private native void FlashWindow(Window window);
 	private native void ForceForegroundWindow(Window window);
 	private native void SetIcon(Window window, String filename);
-	public native String getMyFullName();
 
 }

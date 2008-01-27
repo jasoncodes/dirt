@@ -29,6 +29,9 @@ dirt_lib_ui_jfc.dll: dirt_lib_ui_jfc.o
 dirt_lib_ui_jfc.o: dirt_lib_ui_jfc.c au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
 	$(CC) $(CFLAGS) dirt_lib_ui_jfc.c
 
+au_com_gslabs_dirt_lib_util_jni_Win32.h: ../../build/main-classes/au/com/gslabs/dirt/lib/util/jni/Win32.class
+	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.util.jni.Win32
+
 au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h: ../../build/main-classes/au/com/gslabs/dirt/lib/ui/jfc/jni/Win32.class
 	javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.ui.jfc.jni.Win32
 

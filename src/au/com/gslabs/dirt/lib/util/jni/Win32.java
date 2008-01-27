@@ -1,13 +1,13 @@
 package au.com.gslabs.dirt.lib.util.jni;
 
-public class MacOS
+public class Win32
 {
 
-	public MacOS()
+	public Win32()
 	{
 	}
 	
 	public native String getMyFullName();
-	public native String getAppSupportPath();
+	public native String getAppDataPath();
 	
 }
