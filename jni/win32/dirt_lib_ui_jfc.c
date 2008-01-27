@@ -31,13 +31,13 @@ static HWND GetWindowHWND(JNIEnv *env, jobject window)
 }
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_FlashWindow
-  (JNIEnv *env, jobject canvas, jobject window)
+  (JNIEnv *env, jobject this, jobject window)
 {
 	FlashWindow(GetWindowHWND(env, window), TRUE);
 }
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_ForceForegroundWindow
-  (JNIEnv *env, jobject canvas, jobject window)
+  (JNIEnv *env, jobject this, jobject window)
 {
 
 	HWND hWnd = GetWindowHWND(env, window);
@@ -78,7 +78,7 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_ForceForegro
 }
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetIcon
-  (JNIEnv *env, jobject canvas, jobject window, jstring filename)
+  (JNIEnv *env, jobject this, jobject window, jstring filename)
 {
 	int pxBig = GetSystemMetrics(SM_CXICON);
 	int pxSmall = GetSystemMetrics(SM_CXSMICON);
@@ -89,4 +89,13 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetIcon
 	(*env)->ReleaseStringUTFChars(env, filename, path);
 	SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)icoBig);
 	SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)icoSmall);
+}
+
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetWindowAlpha
+  (JNIEnv *env, jobject this, jobject window, jdouble alpha)
+{
+	HWND hWnd = GetWindowHWND(env, window);
+	BYTE bAlpha = (BYTE)(alpha*255.0);
+	SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(hWnd, 0, bAlpha, LWA_ALPHA);
 }
