@@ -20,8 +20,6 @@ public class MainFrame extends ClientFrame
 		super(new MainPanel());
 		
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		UIUtil.setIcon(this);
-		setJMenuBar(new MainMenuBar());
 		
 		isDND = false;
 		
