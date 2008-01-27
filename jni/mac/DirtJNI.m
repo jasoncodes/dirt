@@ -143,3 +143,32 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_MacOS_cancelAttent
 	[NSApp cancelUserAttentionRequest: requestID];
 	[autoreleasepool release];
 }
+
+JNIEXPORT jstring JNICALL Java_au_com_gslabs_dirt_lib_util_jni_MacOS_getAppSupportPath(JNIEnv *env, jobject this)
+{
+	
+	jstring output;
+	
+	NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
+	
+	NSArray *applicationSupportDirectoryPaths =
+	NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+										NSUserDomainMask, YES);
+	if ([applicationSupportDirectoryPaths count] > 0)
+	{
+		NSString *path = [applicationSupportDirectoryPaths objectAtIndex:0];
+		jsize buflength = [path length];
+		unichar buffer[buflength];
+		[path getCharacters:buffer];
+		output = (*env)->NewString(env, (jchar *)buffer, buflength);
+	}
+	else
+	{
+		output = NULL;
+	}
+	
+	[autoreleasepool release];
+	
+	return output;
+	
+}

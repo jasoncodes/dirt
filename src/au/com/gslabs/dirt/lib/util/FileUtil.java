@@ -216,7 +216,7 @@ public class FileUtil
 			}
 			else if (isWin())
 			{
-				loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
+				loadLibrary("lib/win32/dirt_lib_util.dll");
 				au.com.gslabs.dirt.lib.util.jni.Win32 win32 =
 					new au.com.gslabs.dirt.lib.util.jni.Win32();
 				return win32.getMyFullName();
@@ -235,6 +235,66 @@ public class FileUtil
 			ex.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static String getAppDataDir()
+	{
+		
+		try
+		{
+			
+			if (isMac())
+			{
+				loadLibrary("lib/mac/libDirtJNI.jnilib");
+				au.com.gslabs.dirt.lib.util.jni.MacOS mac =
+					new au.com.gslabs.dirt.lib.util.jni.MacOS();
+				String dir = mac.getAppSupportPath();
+				if (dir != null)
+				{
+					File path = new File(dir, "Dirt");
+					path.mkdir();
+					return path.toString();
+				}
+			}
+			
+			if (isWin())
+			{
+				FileUtil.loadLibrary("lib/win32/dirt_lib_util.dll");
+				au.com.gslabs.dirt.lib.util.jni.Win32 win32 = new au.com.gslabs.dirt.lib.util.jni.Win32();
+				String dir = win32.getAppDataPath();
+				if (dir != null)
+				{
+					File path = new File(dir, "Dirt");
+					path.mkdir();
+					return path.toString();
+				}
+			}
+			
+		}
+		catch (SecurityException ex)
+		{
+		}
+		catch (Throwable ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		try
+		{
+			String dir = System.getProperty("user.home");
+			if (dir != null)
+			{
+				File path = new File(dir, ".Dirt");
+				path.mkdir();
+				return path.toString();
+			}
+			return null;
+		}
+		catch (SecurityException ex)
+		{
+			return null;
+		}
+		
 	}
 	
 	private static void initTempDir() throws IOException

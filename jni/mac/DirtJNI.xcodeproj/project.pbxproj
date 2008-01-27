@@ -117,6 +117,7 @@
 				D2AAC09905546B4700DB518D /* Headers */,
 				D2AAC09B05546B4700DB518D /* Frameworks */,
 				D2AAC09A05546B4700DB518D /* Sources */,
+				96DB7E240D4C346100269D74 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -158,6 +159,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "javah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.ui.jfc.jni.MacOS\njavah -classpath ../../build/main-classes au.com.gslabs.dirt.lib.util.jni.MacOS\n";
+		};
+		96DB7E240D4C346100269D74 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp build/Release/libDirtJNI.jnilib ../../lib/mac/";
 		};
 /* End PBXShellScriptBuildPhase section */
 
