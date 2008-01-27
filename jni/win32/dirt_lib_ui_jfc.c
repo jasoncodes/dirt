@@ -1,14 +1,12 @@
 #define _WIN32_WINNT 0x5000
+
 #include <windows.h>
-#include <security.h>
-#include <lmaccess.h>
 
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
 
 #include "au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h"
-#include "au_com_gslabs_dirt_lib_util_jni_Win32.h"
 
 static HWND GetWindowHWND(JNIEnv *env, jobject window)
 { 
@@ -91,44 +89,4 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_SetIcon
 	(*env)->ReleaseStringUTFChars(env, filename, path);
 	SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)icoBig);
 	SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)icoSmall);
-}
-
-NET_API_STATUS WINAPI (*netapibufferfree)(PVOID);
-
-int loadAPI()
-{
-	HANDLE h = LoadLibrary("netapi32.dll");
-	if (!h)
-		return FALSE;
-	if (!(netapibufferfree = (void *) GetProcAddress (h, "NetApiBufferFree")))
-		return FALSE;
-	return TRUE;
-}
-
-JNIEXPORT jstring JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Win32_getMyFullName
-  (JNIEnv *env, jobject obj)
-{
-	
-	short buff[4096];
-	DWORD len = sizeof(buff)/sizeof(buff[0]);
-	if (GetUserNameExW(NameDisplay, buff, &len))
-	{
-		return (*env)->NewString(env, buff, len);
-	}
-	
-	len = sizeof(buff)/sizeof(buff[0]);
-	if (loadAPI() && GetUserNameW(buff, &len))
-	{
-		USER_INFO_3 *buffer;
-		DWORD rc = NetUserGetInfo(NULL, buff, 3, (void*)&buffer);
-		if (rc == ERROR_SUCCESS)
-		{
-			jstring result = (*env)->NewString(env, buffer->usri3_full_name, lstrlenW(buffer->usri3_full_name));
-			netapibufferfree(buffer);
-			return result;
-		}
-	}
-	
-	return 0;
-	
 }

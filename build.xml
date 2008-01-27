@@ -128,6 +128,7 @@
 				<include name="lib/mac/jdic_misc.jar" />
 				<include name="lib/mac/libDirtJNI.jnilib" />
 				<include name="lib/win32/dirt_lib_ui_jfc.dll" />
+				<include name="lib/win32/dirt_lib_util.dll" />
 				<include name="lib/stub/jdic.jar" />
 				<include name="lib/win32/jdic.jar" />
 				<include name="lib/win32/tray.dll" />

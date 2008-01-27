@@ -1,2 +1,4 @@
 au_com_gslabs_dirt_lib_ui_jfc_jni_Win32.h
+au_com_gslabs_dirt_lib_util_jni_Win32.h
 dirt_lib_ui_jfc.dll
+dirt_lib_util.dll
