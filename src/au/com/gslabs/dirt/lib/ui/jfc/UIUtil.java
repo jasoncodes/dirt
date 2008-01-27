@@ -314,7 +314,7 @@ public class UIUtil
 			{
 				loadNativeLibrary();
 				Win32 win32 = new Win32();
-				win32.setWindowAlpha(alpha);
+				win32.setWindowAlpha(frame, alpha);
 			}
 			else
 			{
