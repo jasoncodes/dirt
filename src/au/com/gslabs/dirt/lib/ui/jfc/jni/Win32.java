@@ -32,6 +32,6 @@ public class Win32
 	private native void FlashWindow(Window window);
 	private native void ForceForegroundWindow(Window window);
 	private native void SetIcon(Window window, String filename);
-	private native void SetWindowAlpha(Window window, double alpha)
+	private native void SetWindowAlpha(Window window, double alpha);
 
 }

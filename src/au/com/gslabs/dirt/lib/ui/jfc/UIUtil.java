@@ -279,7 +279,7 @@ public class UIUtil
 	/**
 	 * Sets the opacity (1.0 => fully opaque, 0.0 => fully transparent) of the given Frame.
 	 */
-	// src: http://elliotth.blogspot.com/2007/08/transparent-java-windows-on-x11.html
+	// original src: http://elliotth.blogspot.com/2007/08/transparent-java-windows-on-x11.html
 	public static void setFrameAlpha(JFrame frame, double alpha)
 	{
 		try
@@ -294,7 +294,8 @@ public class UIUtil
 			
 			if (FileUtil.isMac())
 			{
-				if (System.getProperty("os.version").startsWith("10.4"))
+				if (System.getProperty("os.version").startsWith("10.3") ||
+					System.getProperty("os.version").startsWith("10.4"))
 				{
 					Class<?> cWindowClass = Class.forName("apple.awt.CWindow");
 					if (cWindowClass.isInstance(peer))
@@ -311,7 +312,9 @@ public class UIUtil
 			}
 			else if (FileUtil.isWin())
 			{
-				// FIXME: can we do this on Windows?
+				loadNativeLibrary();
+				Win32 win32 = new Win32();
+				win32.setWindowAlpha(alpha);
 			}
 			else
 			{
