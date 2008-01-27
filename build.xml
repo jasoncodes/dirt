@@ -85,6 +85,7 @@
 			<FileSet dir="${res}/styles/logpane/" />
 		</copy>
 		<mkdir dir="${build}/main-scratch/res/xml" />
+		<copy file="${res}/xml/PropertyList-1.0.dtd" todir="${build}/main-scratch/res/xml" />
 		<mkdir dir="${build}/main-scratch/res/xml/xhtml" />
 		<mkdir dir="${build}/main-scratch/res/xml/xhtml/dtd" />
 		<copy todir="${build}/main-scratch/res/xml/xhtml/dtd">

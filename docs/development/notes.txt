@@ -4,6 +4,14 @@ save/restore frame rect
 	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
 	store nicklist width as well as window dimensions
 
+badge should use Leopard API if available on 32-bit
+	http://trac.transmissionbt.com/browser/trunk/macosx/Badger.m
+
+notification preferences
+	bounce (never, once, continuous)
+	flash
+	badge
+
 logging
 	Log writer API
 	Log reader API

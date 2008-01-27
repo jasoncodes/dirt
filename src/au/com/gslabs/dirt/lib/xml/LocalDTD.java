@@ -19,6 +19,10 @@ public class LocalDTD implements EntityResolver
 		this.addMapping("-//W3C//DTD XHTML 1.1//EN",
 			"res/xml/xhtml/dtd/xhtml11-flat.dtd");
 		
+		// Apple Property List
+		this.addMapping("-//Apple Computer//DTD PLIST 1.0//EN",
+			"res/xml/PropertyList-1.0.dtd");
+		
 	}
 
 	private void addMapping(String publicID, String res)
@@ -33,6 +37,10 @@ public class LocalDTD implements EntityResolver
 		if (res != null)
 		{
 			InputStream stream = FileUtil.getResourceAsStream(res);
+			if (stream == null)
+			{
+				throw new SAXException("Error loading " + res);
+			}
 			InputSource local = new InputSource(stream);
 			local.setPublicId(publicID);
 			local.setSystemId(systemID);

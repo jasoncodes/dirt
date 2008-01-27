@@ -5,6 +5,8 @@ package au.com.gslabs.dirt.lib.util;
 import java.io.*;
 import java.util.*;
 import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import au.com.gslabs.dirt.lib.xml.LocalDTD;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
@@ -118,12 +120,20 @@ public class BuildUtil
 	public static void fixMacBundlePlist(File file) throws Exception
 	{
 		
-		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(false);
-		factory.setIgnoringElementContentWhitespace(true);
-		final DocumentBuilder builder = factory.newDocumentBuilder();
-		final Document document = builder.parse(file);
-		stripWhitespace(document.getDocumentElement());
+		final Document document;
+		
+		{
+			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setValidating(true);
+			factory.setIgnoringComments(true);
+			factory.setIgnoringElementContentWhitespace(true);
+			final DocumentBuilder builder = factory.newDocumentBuilder();
+			builder.setEntityResolver(new LocalDTD());
+			InputSource source = new InputSource();
+			source.setCharacterStream(new InputStreamReader(new FileInputStream(file)));
+			document = builder.parse(source);
+			stripWhitespace(document.getDocumentElement());
+		}
 		
 		final Node nodeJava = plistDictLookup(document.getDocumentElement().getFirstChild(), "Java");
 		if (plistDictLookup(nodeJava, "JVMArchs") == null)
@@ -136,11 +146,14 @@ public class BuildUtil
 			
 		}
 		
-		final Source source = new DOMSource(document);
-		final Result result = new StreamResult(file);
-		final Transformer xformer = TransformerFactory.newInstance().newTransformer();
-		xformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-		xformer.transform(source, result);
+		{
+			final Source source = new DOMSource(document);
+			final Result result = new StreamResult(file);
+			final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.apple.com/DTDs/PropertyList-1.0.dtd");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.transform(source, result);
+		}
 		
 	}
 	
