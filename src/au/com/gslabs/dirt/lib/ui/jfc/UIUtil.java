@@ -294,7 +294,7 @@ public class UIUtil
 			}
 			if (peer == null)
 			{
-				throw new IllegalArgumentsException("Frame does not have a peer");
+				throw new IllegalArgumentException("Frame does not have a peer");
 			}
 			
 			if (FileUtil.isMac())
