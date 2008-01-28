@@ -289,7 +289,12 @@ public class UIUtil
 			Object peer = peerField.get(frame);
 			if (peer == null)
 			{
-				return;
+				frame.addNotify();
+				peer = peerField.get(frame);
+			}
+			if (peer == null)
+			{
+				throw new IllegalArgumentsException("Frame does not have a peer");
 			}
 			
 			if (FileUtil.isMac())
@@ -344,7 +349,6 @@ public class UIUtil
 		// ref: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6187066
 		// this method is full of hacks to fake something the JFC UI doesn't let us do
 		
-		frame.addNotify();
 		setFrameAlpha(frame, 0.0);
 		final JMenuBar oldMenu = frame.getJMenuBar();
 		frame.setJMenuBar(null);
