@@ -1,6 +1,3 @@
-badge should use Leopard API if available on 32-bit
-	http://trac.transmissionbt.com/browser/trunk/macosx/Badger.m
-
 notification preferences
 	dock bounce (disabled, once, continuous)
 	dock badge (disabled, show message count)
@@ -133,9 +130,7 @@ LogPane test face has rendering issues. Probably need some nice way to handle li
 http://en.wikipedia.org/wiki/STUN
 http://code.google.com/apis/talk/libjingle/important_concepts.html#portssocketsconnections
 
-Mac OS X integration
-	http://developer.apple.com/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html#//apple_ref/doc/uid/TP40001909-212120
-	http://homepage.mac.com/sroy/mrjadapter/
+512px icon for Mac OS X
 
 inputarea needs colour popup on Cmd-K
 
