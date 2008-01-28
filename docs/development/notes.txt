@@ -1,20 +1,10 @@
-save/restore frame rects
-	implement getPanelPreferenceKeys on QueryPanel
-	add a Preferences get/set method which takes a window key, setting key and int value
-	set/get window position using this API in ClientFrame
-	default window size should probably be done via panel.getPreferredSize();
-	default window position has no cascading
-	after load position (either from prefs or default), position cascades until unique
-	store nicklist width as well as window dimensions
-		this will have to be done by MainPanel/MainFrame
-
 badge should use Leopard API if available on 32-bit
 	http://trac.transmissionbt.com/browser/trunk/macosx/Badger.m
 
 notification preferences
-	bounce (never, once, continuous)
-	flash
-	badge
+	dock bounce (disabled, once, continuous)
+	dock badge (disabled, show message count)
+	flash (disabled, once, continuous)
 
 File, Connect
 

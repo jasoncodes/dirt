@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.util.ArrayList;
 import org.jdesktop.jdic.tray.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
@@ -31,6 +32,10 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 	private JList lstContacts;
 	private JComponent activeInputControl;
 	private JSplitPane splitContacts;
+	private JScrollPane scrlContacts;
+	
+	private String lastServerName = null;
+	private String lastServerHostname = null;
 	
 	private String clientExtraVersionInfo = null;
 	private final ArrayList<MainPanelListener> mainListeners = new ArrayList<MainPanelListener>();
@@ -60,6 +65,14 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 				public void focusGained(FocusEvent e)
 				{
 					activeInputControl.requestFocusInWindow();
+				}
+			});
+		
+		new TopLevelWindowEventProxy(this).addWindowListener(new WindowAdapter()
+			{
+				public void windowOpened(WindowEvent e)
+				{
+					resetSplitterPosition();
 				}
 			});
 		
@@ -226,6 +239,14 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 				setPasswordMode(false);
 			}
 			notifyTitleChanged();
+			if (!TextUtil.isEmpty(client.getServerName()))
+			{
+				lastServerName = client.getServerName();
+			}
+			if (!TextUtil.isEmpty(client.getServerHostname()))
+			{
+				lastServerHostname = client.getServerHostname();
+			}
 		}
 		
 	}
@@ -477,6 +498,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 					notifyLinkClicked(e.getURL());
 				}
 			});
+		txtLog.setPreferredSize(new Dimension(670, 290));
 		
 		lstContacts = new JList(contacts);
 		lstContacts.addMouseListener(new MouseAdapter()
@@ -496,8 +518,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 			});
 		
 		lstContacts.setFocusable(false);
-		JScrollPane scrlContacts = new JScrollPane(lstContacts);
-		scrlContacts.setPreferredSize(new Dimension(160, 0)); // default width
+		scrlContacts = new JScrollPane(lstContacts);
 		if (FileUtil.isMac())
 		{
 			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -524,6 +545,16 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		txtInput.setBorder(borderTextArea);
 		txtPassword.setBorder(borderTextArea);
 		
+	}
+	
+	private void resetSplitterPosition()
+	{
+		final int contactsWidth = Preferences.getInstance().getPanelInt(getPanelPreferenceKeys(), "contactsWidth", 160);
+		splitContacts.setDividerLocation(
+			splitContacts.getSize().width -
+			splitContacts.getInsets().right -
+			splitContacts.getDividerSize() -
+			contactsWidth);
 	}
 	
 	public void addMainPanelListener(MainPanelListener l)
@@ -572,6 +603,36 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		}
 	}
 	
+	public java.awt.geom.Point2D.Double getDefaultNormalisedScreenPosition()
+	{
+		return new java.awt.geom.Point2D.Double(0.875, 0.9);
+	}
+	
+	public String[] getPanelPreferenceKeys()
+	{
+		ArrayList<String> keys = new ArrayList<String>();
+		for (String baseKey : getPanelPreferenceBaseKeys())
+		{
+			keys.add("Main:"+baseKey);
+		}
+		keys.add("Main");
+		return keys.toArray(new String[0]);
+	}
+	
+	public String[] getPanelPreferenceBaseKeys()
+	{
+		ArrayList<String> keys = new ArrayList<String>();
+		if (!TextUtil.isEmpty(lastServerName))
+		{
+			keys.add(lastServerName);
+		}
+		if (!TextUtil.isEmpty(lastServerHostname))
+		{
+			keys.add(lastServerHostname);
+		}
+		return keys.toArray(new String[0]);
+	}
+	
 	public Client getClient()
 	{
 		return client;
@@ -592,6 +653,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		if (!cleanupDone)
 		{
 			cleanupDone = true;
+			Preferences.getInstance().setPanelInt(getPanelPreferenceKeys(), "contactsWidth", scrlContacts.getSize().width);
 			prefs.removeActionListener(prefListener);
 			client.removeClientListener(clientAdapter);
 			txtLog.clearText();

@@ -3,8 +3,11 @@ package au.com.gslabs.dirt.ui.jfc.client;
 import au.com.gslabs.dirt.core.client.Client;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Rectangle;
 
 public class Preferences
 {
@@ -127,6 +130,126 @@ public class Preferences
 	public void setNotificationSoundEnabled(boolean newValue)
 	{
 		prefs.putBoolean(NOTIFICATION_SOUND_ENABLED, newValue);
+	}
+	
+	protected java.util.prefs.Preferences[] getPanelPreferences(String[] panelKeys, boolean createIfNotExist)
+	{
+		
+		final Map<String,java.util.prefs.Preferences> selectedPrefs = new HashMap<String,java.util.prefs.Preferences>();
+		
+		final java.util.prefs.Preferences panelPrefs = prefs.node("panels");
+		for (final String panelKey : panelKeys)
+		{
+			if (createIfNotExist || containsNode(panelPrefs, panelKey))
+			{
+				final java.util.prefs.Preferences panelPref = panelPrefs.node(panelKey);
+				selectedPrefs.put(panelKey, panelPref);
+			}
+		}
+		
+		return selectedPrefs.values().toArray(new java.util.prefs.Preferences[0]);
+		
+	}
+	
+	protected static boolean arrayContains(Object[] haystack, Object needle)
+	{
+		for (Object item : haystack)
+		{
+			if ((needle == null && item == null) || (needle != null && needle.equals(item)))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected static boolean containsKey(java.util.prefs.Preferences prefs, String key)
+	{
+		try
+		{
+			return arrayContains(prefs.keys(), key);
+		}
+		catch (java.util.prefs.BackingStoreException ex)
+		{
+			System.err.println("Preferences retrieval error:");
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
+	protected static boolean containsNode(java.util.prefs.Preferences prefs, String key)
+	{
+		try
+		{
+			return prefs.nodeExists(key);
+		}
+		catch (java.util.prefs.BackingStoreException ex)
+		{
+			System.err.println("Preferences retrieval error:");
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
+	public int getPanelInt(String[] panelKeys, String prefKey, int defaultValue)
+	{
+		
+		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, false))
+		{
+			if (containsKey(panelPref, prefKey))
+			{
+				return panelPref.getInt(prefKey, defaultValue);
+			}
+		}
+		
+		return defaultValue;
+		
+	}
+	
+	public void setPanelInt(String[] panelKeys, String prefKey, int value)
+	{
+		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, true))
+		{
+			panelPref.putInt(prefKey, value);
+		}
+	}
+	
+	public Rectangle getPanelRectangle(String[] panelKeys, String prefKey, Rectangle defaultValue)
+	{
+		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, false))
+		{
+			if (containsNode(panelPref, prefKey))
+			{
+				java.util.prefs.Preferences rectPref = panelPref.node(prefKey);
+				if (containsKey(rectPref, "x") && containsKey(rectPref, "y") &&
+					containsKey(rectPref, "width") && containsKey(rectPref, "height"))
+				{
+					Rectangle rect = new Rectangle();
+					rect.x = rectPref.getInt("x", Integer.MIN_VALUE);
+					rect.y = rectPref.getInt("y", Integer.MIN_VALUE);
+					rect.width = rectPref.getInt("width", Integer.MIN_VALUE);
+					rect.height = rectPref.getInt("height", Integer.MIN_VALUE);
+					if (rect.x != Integer.MIN_VALUE && rect.y != Integer.MIN_VALUE &&
+						rect.width != Integer.MIN_VALUE && rect.height != Integer.MIN_VALUE)
+					{
+						return rect;
+					}
+				}
+			}
+		}
+		return defaultValue;
+	}
+	
+	public void setPanelRectangle(String[] panelKeys, String prefKey, Rectangle value)
+	{
+		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, true))
+		{
+			java.util.prefs.Preferences rectPref = panelPref.node(prefKey);
+			rectPref.putInt("x", value.x);
+			rectPref.putInt("y", value.y);
+			rectPref.putInt("width", value.width);
+			rectPref.putInt("height", value.height);
+		}
 	}
 	
 }

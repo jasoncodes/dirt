@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.core.client.*;
@@ -105,6 +106,7 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 					notifyLinkClicked(e.getURL());
 				}
 			});
+		txtLog.setPreferredSize(new Dimension(550, 230));
 		add(txtLog, BorderLayout.CENTER);
 		
 		final Color borderColor = getBorderColor();
@@ -119,6 +121,27 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 	{
 		txtLog.clearRedLine();
 		getConsoleClientAdapter().processConsoleInput(getClient(), getContext(), lines);
+	}
+	
+	public java.awt.geom.Point2D.Double getDefaultNormalisedScreenPosition()
+	{
+		return new java.awt.geom.Point2D.Double(0.1, 0.8);
+	}
+	
+	public String[] getPanelPreferenceKeys()
+	{
+		ArrayList<String> keys = new ArrayList<String>();
+		for (String baseKey : main.getPanelPreferenceBaseKeys())
+		{
+			keys.add("Query:"+baseKey+":"+getContact().getNickname());
+		}
+		keys.add("Query::"+getContact().getNickname());
+		for (String baseKey : main.getPanelPreferenceBaseKeys())
+		{
+			keys.add("Query:"+baseKey+":");
+		}
+		keys.add("Query");
+		return keys.toArray(new String[0]);
 	}
 	
 	public Contact getContact()

@@ -1,5 +1,6 @@
 package au.com.gslabs.dirt.ui.jfc.client;
 
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -40,12 +41,16 @@ public class ClientFrame extends JFrame
 				@Override
 				public void windowClosed(WindowEvent event)
 				{
+					Preferences.getInstance().setPanelRectangle(panel.getPanelPreferenceKeys(), "panelBounds", getBounds());
 					panel.cleanup();
 				}
 				
 			});
 		
-		UIUtil.setDefaultWindowBounds(this, 850, 330, ClientFrame.class);
+		Rectangle bounds = UIUtil.getDefaultWindowBounds(this, panel.getDefaultNormalisedScreenPosition());
+		bounds = Preferences.getInstance().getPanelRectangle(panel.getPanelPreferenceKeys(), "panelBounds", bounds);
+		UIUtil.setWindowBoundsWithCascade(this, bounds);
+		
 		updateWindowTitle();
 		
 	}

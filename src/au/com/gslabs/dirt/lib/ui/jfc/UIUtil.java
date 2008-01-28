@@ -133,31 +133,66 @@ public class UIUtil
 		}
 	}
 	
-	/**
-	 * Returns window bounds suitable for the specified width and height
-	 */
-	public static Rectangle getDefaultWindowBounds(int width, int height)
+	public static Rectangle getDefaultWindowBounds(final Window window, final java.awt.geom.Point2D.Double normalisedScreenPos)
 	{
 		
-		Rectangle rectMax = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		final Rectangle rectMax = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		
-		width = Math.min(width, rectMax.width);
-		height = Math.min(height, rectMax.height);
+		final Dimension preferredSize = window.getPreferredSize();
+		final int width = Math.min(preferredSize.width, rectMax.width);
+		final int height = Math.min(preferredSize.height, rectMax.height);
 		
-		Rectangle rect = new Rectangle(width, height);
-		rect.x = rectMax.x + (rectMax.width-width)*7/8;
-		rect.y = rectMax.y + (rectMax.height-height)*9/10;
+		final Rectangle rect = new Rectangle(width, height);
+		rect.x = rectMax.x + (int)( (rectMax.width-width)*normalisedScreenPos.x );
+		rect.y = rectMax.y + (int)( (rectMax.height-height)*normalisedScreenPos.y );
 		
 		// if the gap on the bottom is bigger than the gap on the right
-		int gapBottom = (rectMax.y+rectMax.height)-(rect.y+rect.height);
-		int gapRight = (rectMax.x+rectMax.width)-(rect.x+rect.width);
-		if (gapBottom > gapRight)
+		if (normalisedScreenPos.x >= 0.8 && normalisedScreenPos.y >= 0.8)
 		{
-			// make the bottom gap match the right gap
-			rect.y = rectMax.y+rectMax.height-rect.height - gapRight;
+			final int gapBottom = (rectMax.y+rectMax.height)-(rect.y+rect.height);
+			final int gapRight = (rectMax.x+rectMax.width)-(rect.x+rect.width);
+			if (gapBottom > gapRight)
+			{
+				// make the bottom gap match the right gap
+				rect.y = rectMax.y+rectMax.height-rect.height - gapRight;
+			}
 		}
 		
 		return rect;
+		
+	}
+	
+	public static void setWindowBoundsWithCascade(final Window window, final Rectangle bounds)
+	{
+		
+		final Rectangle rect = new Rectangle(bounds);
+		
+		final Frame[] frames = getWindowManager().getOrderedValidFrames(true);
+		
+		boolean conflictFound;
+		do
+		{
+			
+			conflictFound = false;
+			for (Frame frame : frames)
+			{
+				if (frame.getLocation().equals(rect.getLocation()))
+				{
+					conflictFound = true;
+					break;
+				}
+			}
+			
+			if (conflictFound)
+			{
+				rect.x += 20;
+				rect.y += 20;
+			}
+			
+		}
+		while (conflictFound);
+		
+		window.setBounds(rect);
 		
 	}
 	
@@ -188,30 +223,6 @@ public class UIUtil
 	public static WindowManager getWindowManager()
 	{
 		return windowManager;
-	}
-	
-	public static void setDefaultWindowBounds(final JFrame frame, final int width, final int height, final Class cascadeClass)
-	{
-		
-		Rectangle bounds = getDefaultWindowBounds(width, height);
-		
-		if (cascadeClass != null)
-		{
-			for (final Frame f : getWindowManager().getOrderedValidFrames(true))
-			{
-				if (f != frame && cascadeClass.isInstance(f))
-				{
-					// found a window to cascade from
-					final Rectangle srcBounds = f.getBounds();
-					bounds.x = srcBounds.x + 20;
-					bounds.y = srcBounds.y + 20;
-					break;
-				}
-			}
-		}
-		
-		frame.setBounds(bounds);
-		
 	}
 	
 	static void loadNativeLibrary() throws java.io.IOException, IllegalAccessException, NoSuchFieldException
