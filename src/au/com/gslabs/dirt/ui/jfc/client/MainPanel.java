@@ -667,18 +667,35 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		return client.isConnected() && client.getNickname() != null;
 	}
 	
+	public void detach()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
 	public void cleanup()
 	{
 		if (!cleanupDone)
 		{
 			cleanupDone = true;
+			
 			prefs.removeActionListener(prefListener);
 			client.removeClientListener(clientAdapter);
+			
 			txtLog.clearText();
+			
 			if (client.isConnected())
 			{
 				client.disconnect(null, 2000);
 			}
+			
+			for (final ClientPanel panel : panels.values())
+			{
+				if (panel != this)
+				{
+					panel.detach();
+				}
+			}
+			
 		}
 	}
 	

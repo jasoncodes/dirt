@@ -15,6 +15,7 @@ public interface ClientPanel
 	public ConsoleClientAdapter getConsoleClientAdapter();
 	public String getTitle();
 	public void cleanup();
+	public void detach();
 	public boolean isDirty();
 	public String[] getPanelPreferenceKeys();
 	public Dimension getPreferredSize();

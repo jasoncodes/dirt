@@ -149,6 +149,15 @@ public class InputArea extends JScrollPane
 		}
 	}
 	
+	public void setEnabled(boolean newValue)
+	{
+		super.setEnabled(newValue);
+		txt.setEnabled(newValue);
+		getHorizontalScrollBar().setEnabled(newValue);
+		getVerticalScrollBar().setEnabled(newValue);
+		getViewport().getView().setEnabled(newValue);
+	}
+	
 	public boolean requestFocusInWindow()
 	{
 		return txt.requestFocusInWindow();

@@ -171,8 +171,14 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 	
 	public void cleanup()
 	{
-		main.unregisterPanel(this);
+		detach();
 		txtLog.clearText();
+	}
+	
+	public void detach()
+	{
+		main.unregisterPanel(this);
+		txtInput.setEnabled(false);
 	}
 	
 	public void clearText()
