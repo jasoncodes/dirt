@@ -523,6 +523,25 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		{
 			scrlContacts.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		}
+		scrlContacts.addComponentListener(new ComponentAdapter()
+			{
+				
+				ActionRateLimiter limiter = new ActionRateLimiter(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e)
+						{
+							Preferences.getInstance().setPanelInt(
+								getPanelPreferenceKeys(), "contactsWidth", scrlContacts.getSize().width);
+						}
+					}, 1000);
+				
+				@Override
+				public void componentResized(ComponentEvent e)
+				{
+					limiter.trigger();
+				}
+				
+			});
 		
 		splitContacts = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, txtLog, scrlContacts);
 		splitContacts.setResizeWeight(1); // keep the contact pane fixed width
@@ -653,7 +672,6 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 		if (!cleanupDone)
 		{
 			cleanupDone = true;
-			Preferences.getInstance().setPanelInt(getPanelPreferenceKeys(), "contactsWidth", scrlContacts.getSize().width);
 			prefs.removeActionListener(prefListener);
 			client.removeClientListener(clientAdapter);
 			txtLog.clearText();

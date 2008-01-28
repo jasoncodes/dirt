@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
+import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
 import java.util.ResourceBundle;
 
@@ -41,8 +41,36 @@ public class ClientFrame extends JFrame
 				@Override
 				public void windowClosed(WindowEvent event)
 				{
-					Preferences.getInstance().setPanelRectangle(panel.getPanelPreferenceKeys(), "panelBounds", getBounds());
 					panel.cleanup();
+				}
+				
+			});
+		
+		addComponentListener(new ComponentAdapter()
+			{
+				
+				ActionRateLimiter limiter = new ActionRateLimiter(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e)
+						{
+							if ((getExtendedState() & JFrame.ICONIFIED) == 0)
+							{
+								Preferences.getInstance().setPanelRectangle(
+									panel.getPanelPreferenceKeys(), "panelBounds", getBounds());
+							}
+						}
+					}, 1000);
+					
+				@Override
+				public void componentMoved(ComponentEvent e)
+				{
+					limiter.trigger();
+				}
+				
+				@Override
+				public void componentResized(ComponentEvent e)
+				{
+					limiter.trigger();
 				}
 				
 			});
