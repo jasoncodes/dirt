@@ -2,6 +2,7 @@
 #include "au_com_gslabs_dirt_lib_util_jni_Linux.h"
 
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 

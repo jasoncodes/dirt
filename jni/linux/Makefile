@@ -42,11 +42,11 @@ libs: libdirt_lib_ui_jfc.so libdirt_lib_util.so
 	@false
 
 libdirt_lib_ui_jfc.so: dirt_lib_ui_jfc_jni.c au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h /usr/include/X11/Intrinsic.h
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/lib/$(ARCH) -ljawt -lXt -lX11 dirt_lib_ui_jfc_jni.c -o $@
+	$(CC) -Werror -Wall $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -L$(JAVA_HOME)/lib/$(ARCH) -ljawt -lXt -lX11 dirt_lib_ui_jfc_jni.c -o $@
 	cp libdirt_lib_ui_jfc.so ../../lib/linux_$(ARCH)/
 
 libdirt_lib_util.so: dirt_lib_util_jni.c au_com_gslabs_dirt_lib_util_jni_Linux.h
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(JAVA_HOME)/lib/$(ARCH) dirt_lib_util_jni.c -o $@
+	$(CC) -Werror -Wall $(INCLUDES) $(LDFLAGS) -ldl -L$(JAVA_HOME)/lib/$(ARCH) dirt_lib_util_jni.c -o $@
 	cp libdirt_lib_util.so ../../lib/linux_$(ARCH)/
 
 all: clean libs

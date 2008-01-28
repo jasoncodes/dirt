@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
+#include <X11/Xatom.h>
 #include "au_com_gslabs_dirt_lib_ui_jfc_jni_Linux.h"
 
 JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Linux_setDemandsAttention
@@ -52,5 +53,42 @@ JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Linux_setDemandsAt
 	ds->FreeDrawingSurfaceInfo(dsi);
     ds->Unlock(ds);
     awt.FreeDrawingSurface(ds);
+	
+}
+
+JNIEXPORT void JNICALL Java_au_com_gslabs_dirt_lib_ui_jfc_jni_Linux_setWindowAlpha
+  (JNIEnv *env, jobject canvas, jobject frame, jdouble alpha)
+{
+	
+	JAWT awt;
+	JAWT_DrawingSurface* ds;
+	JAWT_DrawingSurfaceInfo* dsi;
+	JAWT_X11DrawingSurfaceInfo* dsi_x11;
+	jint lock;
+	jint result;
+	
+	awt.version = JAWT_VERSION_1_4;
+	result = JAWT_GetAWT(env, &awt);
+	
+	ds = awt.GetDrawingSurface(env, frame);
+	lock = ds->Lock(ds);
+	dsi = ds->GetDrawingSurfaceInfo(ds);
+	dsi_x11 = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
+	
+	if (alpha >= 0.0 && alpha < 1.0)
+	{
+		unsigned int real_opacity = (alpha * 0xffffffff);
+		XChangeProperty(dsi_x11->display, dsi_x11->drawable, XInternAtom(dsi_x11->display, "_NET_WM_WINDOW_OPACITY", False),
+			XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &real_opacity, 1L);
+	}
+	else
+	{
+		XDeleteProperty(dsi_x11->display, dsi_x11->drawable, XInternAtom(dsi_x11->display, "_NET_WM_WINDOW_OPACITY", False));
+	}
+	XSync(dsi_x11->display, False);
+	
+	ds->FreeDrawingSurfaceInfo(dsi);
+	ds->Unlock(ds);
+	awt.FreeDrawingSurface(ds);
 	
 }

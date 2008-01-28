@@ -323,17 +323,9 @@ public class UIUtil
 			}
 			else
 			{
-				// long windowId = peer.getWindow();
-				Class<?> xWindowPeerClass = Class.forName("sun.awt.X11.XWindowPeer");
-				Method getWindowMethod = xWindowPeerClass.getMethod("getWindow", new Class[0]);
-				long windowId = ((Long) getWindowMethod.invoke(peer, new Object[0])).longValue();
-				
-				long value = (int) (0xff * alpha) << 24;
-				// sun.awt.X11.XAtom.get("_NET_WM_WINDOW_OPACITY").setCard32Property(windowId, value);
-				Class<?> xAtomClass = Class.forName("sun.awt.X11.XAtom");
-				Method getMethod = xAtomClass.getMethod("get", String.class);
-				Method setCard32PropertyMethod = xAtomClass.getMethod("setCard32Property", long.class, long.class);
-				setCard32PropertyMethod.invoke(getMethod.invoke(null, "_NET_WM_WINDOW_OPACITY"), windowId, value);
+				loadNativeLibrary();
+				Linux linux = new Linux();
+				linux.setWindowAlpha(frame, alpha);
 			}
 		}
 		catch (Throwable th)

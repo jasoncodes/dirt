@@ -15,5 +15,7 @@ public class Linux
 	}
 
 	private native void setDemandsAttention(Frame frame);
+	
+	public native void setWindowAlpha(Frame frame, double alpha);
 
 }
