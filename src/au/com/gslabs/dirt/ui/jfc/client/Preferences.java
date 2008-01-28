@@ -3,8 +3,6 @@ package au.com.gslabs.dirt.ui.jfc.client;
 import au.com.gslabs.dirt.core.client.Client;
 import au.com.gslabs.dirt.lib.util.TextUtil;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Rectangle;
@@ -135,7 +133,7 @@ public class Preferences
 	protected java.util.prefs.Preferences[] getPanelPreferences(String[] panelKeys, boolean createIfNotExist)
 	{
 		
-		final Map<String,java.util.prefs.Preferences> selectedPrefs = new HashMap<String,java.util.prefs.Preferences>();
+		final ArrayList<java.util.prefs.Preferences> selectedPrefs = new ArrayList<java.util.prefs.Preferences>();
 		
 		final java.util.prefs.Preferences panelPrefs = prefs.node("panels");
 		for (final String panelKey : panelKeys)
@@ -143,11 +141,14 @@ public class Preferences
 			if (createIfNotExist || containsNode(panelPrefs, panelKey))
 			{
 				final java.util.prefs.Preferences panelPref = panelPrefs.node(panelKey);
-				selectedPrefs.put(panelKey, panelPref);
+				if (!selectedPrefs.contains(panelPref))
+				{
+					selectedPrefs.add(panelPref);
+				}
 			}
 		}
 		
-		return selectedPrefs.values().toArray(new java.util.prefs.Preferences[0]);
+		return selectedPrefs.toArray(new java.util.prefs.Preferences[0]);
 		
 	}
 	
