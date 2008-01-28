@@ -1,8 +1,12 @@
-save/restore frame rect
-	persistence needs to support query windows
-	use java.util.prefs.Preferences
-	http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html
+save/restore frame rects
+	implement getPanelPreferenceKeys on QueryPanel
+	add a Preferences get/set method which takes a window key, setting key and int value
+	set/get window position using this API in ClientFrame
+	default window size should probably be done via panel.getPreferredSize();
+	default window position has no cascading
+	after load position (either from prefs or default), position cascades until unique
 	store nicklist width as well as window dimensions
+		this will have to be done by MainPanel/MainFrame
 
 badge should use Leopard API if available on 32-bit
 	http://trac.transmissionbt.com/browser/trunk/macosx/Badger.m
@@ -11,6 +15,8 @@ notification preferences
 	bounce (never, once, continuous)
 	flash
 	badge
+
+File, Connect
 
 logging
 	Log writer API
@@ -80,6 +86,13 @@ font selection
 	- Lucida Sans Typewriter
 
 acceleration when scrolling logpane
+
+translucency options
+	UIUtil.setFrameAlpha
+		X11 code confirmed
+		Win32 code has redraw issues under Parallels Coherence
+	change based on focus
+	per window setting
 
 pretty <blockquote />
 	support for multiline message rendering
