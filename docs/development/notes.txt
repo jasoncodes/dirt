@@ -1,9 +1,11 @@
-notification preferences
-	dock bounce (disabled, once, continuous)
-	dock badge (disabled, show message count)
-	flash (disabled, once, continuous)
+Spaces
+	try making the menu frame non-focusable
 
-File, Connect
+detection of sleep on Mac and Win32
+	http://www.createblog.com/forums/lofiversion/index.php/t162836.html
+	http://developer.apple.com/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/UserSwitchNotifications.html#//apple_ref/doc/uid/20002210-CJBJDAGF
+	WM_POWERBROADCAST
+	if was sleeping show a reconnect prompt (sheet?) on resume
 
 logging
 	Log writer API
@@ -14,9 +16,15 @@ logging
 	file associations
 	Spotlight plugin
 
-detection of sleep on at least mac and win32
-	http://www.createblog.com/forums/lofiversion/index.php/t162836.html
-	http://developer.apple.com/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/UserSwitchNotifications.html#//apple_ref/doc/uid/20002210-CJBJDAGF
+notification preferences
+	dock bounce (disabled, once, continuous)
+	dock badge (disabled, show message count)
+	flash (disabled, once, continuous)
+
+File, Connect dialog
+	Nickname
+	Hostname
+	[Connect]
 
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
