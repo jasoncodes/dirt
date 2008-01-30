@@ -1,5 +1,6 @@
-Spaces
-	try making the menu frame non-focusable
+acceleration when scrolling logpane
+
+move pos/size persistence into a helper class which monitors the component for changes or dispose
 
 detection of sleep on Mac and Win32
 	http://www.createblog.com/forums/lofiversion/index.php/t162836.html
@@ -72,6 +73,7 @@ nicklist
 		http://java.sun.com/developer/technicalArticles/GUI/jlist/
 	context menu
 	double click
+	status icons
 	preserve selections when indexes change
 
 font selection
@@ -79,8 +81,6 @@ font selection
 	- DejaVu Sans Mono
 	- Bitstream Vera Sans Mono
 	- Lucida Sans Typewriter
-
-acceleration when scrolling logpane
 
 translucency options
 	UIUtil.setFrameAlpha

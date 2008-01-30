@@ -21,6 +21,8 @@ public class PreferencesFrame extends JFrame
 	private JTextField txtDefaultServer;
 	private JCheckBox chkLogChat;
 	private JCheckBox chkNotificationSound;
+	private JCheckBox chkLastReadMarkerClearOnBlur;
+	private JCheckBox chkLastReadMarkerClearOnInput;
 	
 	public PreferencesFrame()
 	{
@@ -95,11 +97,15 @@ public class PreferencesFrame extends JFrame
 		txtDefaultServer = new JTextField();
 		chkLogChat = new JCheckBox("Log Chat Messages");
 		chkNotificationSound = new JCheckBox("Notification Sounds");
+		chkLastReadMarkerClearOnBlur = new JCheckBox("Clear Last Read Marker On Focus Lost");
+		chkLastReadMarkerClearOnInput = new JCheckBox("Clear Last Read Marker On Input");
 		
 		trapChangeEvent(txtNickname);
 		trapChangeEvent(txtDefaultServer);
 		trapChangeEvent(chkLogChat);
 		trapChangeEvent(chkNotificationSound);
+		trapChangeEvent(chkLastReadMarkerClearOnBlur);
+		trapChangeEvent(chkLastReadMarkerClearOnInput);
 		
 		mainPanel.add(new JLabel("Preferred Nickname:"));
 		mainPanel.add(txtNickname);
@@ -109,6 +115,10 @@ public class PreferencesFrame extends JFrame
 		//mainPanel.add(chkLogChat);
 		mainPanel.add(new JLabel());
 		mainPanel.add(chkNotificationSound);
+		mainPanel.add(new JLabel());
+		mainPanel.add(chkLastReadMarkerClearOnBlur);
+		mainPanel.add(new JLabel());
+		mainPanel.add(chkLastReadMarkerClearOnInput);
 		
 		SpringUtilities.makeCompactGrid(
 			mainPanel, mainPanel.getComponentCount()/2, 2, 
@@ -125,6 +135,8 @@ public class PreferencesFrame extends JFrame
 		txtDefaultServer.setText(prefs.getDefaultServer());
 		chkLogChat.setSelected(prefs.getLogChatEnabled());
 		chkNotificationSound.setSelected(prefs.getNotificationSoundEnabled());
+		chkLastReadMarkerClearOnBlur.setSelected(prefs.getLastReadMarkerClearOnBlur());
+		chkLastReadMarkerClearOnInput.setSelected(prefs.getLastReadMarkerClearOnInput());
 	}
 	
 	private boolean save()
@@ -133,6 +145,8 @@ public class PreferencesFrame extends JFrame
 		prefs.setDefaultServer(txtDefaultServer.getText());
 		prefs.setLogChatEnabled(chkLogChat.isSelected());
 		prefs.setNotificationSoundEnabled(chkNotificationSound.isSelected());
+		prefs.setLastReadMarkerClearOnBlur(chkLastReadMarkerClearOnBlur.isSelected());
+		prefs.setLastReadMarkerClearOnInput(chkLastReadMarkerClearOnInput.isSelected());
 		return true;
 	}
 	

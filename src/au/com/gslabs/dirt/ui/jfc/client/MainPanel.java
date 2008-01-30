@@ -60,7 +60,10 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 			{
 				public void focusLost(FocusEvent e)
 				{
-					txtLog.clearRedLine();
+					if (Preferences.getInstance().getLastReadMarkerClearOnBlur())
+					{
+						txtLog.clearRedLine();
+					}
 				}
 				public void focusGained(FocusEvent e)
 				{
@@ -594,13 +597,19 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 	
 	private void txtInput_Input(String[] lines)
 	{
-		txtLog.clearRedLine();
+		if (Preferences.getInstance().getLastReadMarkerClearOnInput())
+		{
+			txtLog.clearRedLine();
+		}
 		clientAdapter.processConsoleInput(client, getContext(), lines);
 	}
 	
 	private void txtPassword_Input(String password)
 	{
-		txtLog.clearRedLine();
+		if (Preferences.getInstance().getLastReadMarkerClearOnInput())
+		{
+			txtLog.clearRedLine();
+		}
 		client.authenticate(getContext(), password, false);
 	}
 	

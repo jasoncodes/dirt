@@ -35,7 +35,10 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 			{
 				public void focusLost(FocusEvent e)
 				{
-					txtLog.clearRedLine();
+					if (Preferences.getInstance().getLastReadMarkerClearOnBlur())
+					{
+						txtLog.clearRedLine();
+					}
 				}
 				public void focusGained(FocusEvent e)
 				{
@@ -119,7 +122,10 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 	
 	private void txtInput_Input(String[] lines)
 	{
-		txtLog.clearRedLine();
+		if (Preferences.getInstance().getLastReadMarkerClearOnInput())
+		{
+			txtLog.clearRedLine();
+		}
 		getConsoleClientAdapter().processConsoleInput(getClient(), getContext(), lines);
 	}
 	

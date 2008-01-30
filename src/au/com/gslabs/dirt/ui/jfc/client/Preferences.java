@@ -14,6 +14,8 @@ public class Preferences
 	public static final String DEFAULT_SERVER = "defaultServer";
 	public static final String LOG_CHAT_ENABLED = "logChatEnabled";
 	public static final String NOTIFICATION_SOUND_ENABLED = "notificationSoundEnabled";
+	public static final String LASTREADMARKER_CLEAR_BLUR = "lastReadMarkerClearOnBlur";
+	public static final String LASTREADMARKER_CLEAR_INPUT = "lastReadMarkerClearOnInput";
 	
 	private static Preferences theInstance = null;
 	private final java.util.prefs.Preferences prefs;
@@ -128,6 +130,26 @@ public class Preferences
 	public void setNotificationSoundEnabled(boolean newValue)
 	{
 		prefs.putBoolean(NOTIFICATION_SOUND_ENABLED, newValue);
+	}
+	
+	public boolean getLastReadMarkerClearOnBlur()
+	{
+		return prefs.getBoolean(LASTREADMARKER_CLEAR_BLUR, true);
+	}
+	
+	public void setLastReadMarkerClearOnBlur(boolean newValue)
+	{
+		prefs.putBoolean(LASTREADMARKER_CLEAR_BLUR, newValue);
+	}
+	
+	public boolean getLastReadMarkerClearOnInput()
+	{
+		return prefs.getBoolean(LASTREADMARKER_CLEAR_INPUT, false);
+	}
+	
+	public void setLastReadMarkerClearOnInput(boolean newValue)
+	{
+		prefs.putBoolean(LASTREADMARKER_CLEAR_INPUT, newValue);
 	}
 	
 	protected java.util.prefs.Preferences[] getPanelPreferences(String[] panelKeys, boolean createIfNotExist)
