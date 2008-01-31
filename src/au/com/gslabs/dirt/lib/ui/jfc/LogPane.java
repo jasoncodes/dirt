@@ -511,6 +511,7 @@ public class LogPane extends JScrollPane
 							raiseLinkEvent(evt.getURL());
 						}
 						linkActivatedWhileFocused = true;
+						editor.transferFocus();
 					}
 				}
 			});
