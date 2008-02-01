@@ -353,13 +353,16 @@ public class UIUtil
 		// ref: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6187066
 		// this method is full of hacks to fake something the JFC UI doesn't let us do
 		
-		setFrameAlpha(frame, 0.0);
 		final JMenuBar oldMenu = frame.getJMenuBar();
 		frame.setJMenuBar(null);
 		final boolean oldResizable = frame.isResizable();
 		frame.setResizable(false);
-		final Rectangle oldBounds = frame.getBounds();
-		frame.setBounds(10000,10000,0,0);
+		if (FileUtil.isMac())
+		{
+			setFrameAlpha(frame, 0.0);
+			final Rectangle oldBounds = frame.getBounds();
+			frame.setBounds(10000,10000,0,0);
+		}
 		frame.setFocusableWindowState(false);
 		frame.toBack();
 		frame.setVisible(true);
@@ -381,8 +384,12 @@ public class UIUtil
 					frame.removeWindowListener(this);
 					frame.setResizable(oldResizable);
 					frame.setJMenuBar(oldMenu);
-					frame.setBounds(oldBounds);
-					setFrameAlpha(frame, 1.0);
+					
+					if (FileUtil.isMac())
+					{
+						frame.setBounds(oldBounds);
+						setFrameAlpha(frame, 1.0);
+					}
 					
 				}
 			});
