@@ -38,7 +38,7 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	
 	public String getName()
 	{
-		return "General";
+		return "Notifications";
 	}
 	
 	public void load()
