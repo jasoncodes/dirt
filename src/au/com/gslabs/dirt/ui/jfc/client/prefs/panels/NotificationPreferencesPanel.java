@@ -16,6 +16,8 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	public NotificationPreferencesPanel()
 	{
 		
+		super("Notifications", "notifications");
+		
 		setLayout(new SpringLayout());
 		
 		chkNotificationSound = new JCheckBox("Notification Sounds");
@@ -34,11 +36,6 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 			INIT_LOCATION, INIT_LOCATION, 
 			PADDING, PADDING);
 		
-	}
-	
-	public String getName()
-	{
-		return "Notifications";
 	}
 	
 	public void load()

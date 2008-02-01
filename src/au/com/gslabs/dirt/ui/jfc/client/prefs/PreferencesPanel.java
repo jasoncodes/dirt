@@ -3,17 +3,37 @@ package au.com.gslabs.dirt.ui.jfc.client.prefs;
 import java.awt.event.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.ui.jfc.UIUtil;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 
 public abstract class PreferencesPanel extends JPanel
 {
 	
-	public abstract String getName();
+	private final String name;
+	private final ImageIcon icon;
+	
 	public abstract void load();
 	public abstract boolean save();
 	
-	protected PreferencesPanel()
+	protected PreferencesPanel(String name, String iconName)
 	{
+		this(name, new ImageIcon(FileUtil.getResource("res/icons/preferences-mac-"+iconName+".png")));
+	}
+	
+	protected PreferencesPanel(String name, ImageIcon icon)
+	{
+		this.name = name;
+		this.icon = icon;
 		setOpaque(false);
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public ImageIcon getIcon()
+	{
+		return icon;
 	}
 	
 	public PreferencesFrame getPreferencesFrame()

@@ -80,6 +80,8 @@
 		<copy file="${res}/icons/dirt32.png" todir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt.ico" todir="${build}/main-scratch/res/icons" />
 		<copy file="${res}/icons/dirt_highlight.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/preferences-mac-general.png" todir="${build}/main-scratch/res/icons" />
+		<copy file="${res}/icons/preferences-mac-notifications.png" todir="${build}/main-scratch/res/icons" />
 		<mkdir dir="${build}/main-scratch/res/styles" />
 		<copy todir="${build}/main-scratch/res/styles/logpane/">
 			<FileSet dir="${res}/styles/logpane/" />
@@ -220,15 +222,15 @@
 			jvmversion="1.5*"
 			extraclasspath="/System/Library/Java/"
 			/>
-		<java
+	<!--	<java
 			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
 			classpath="${build}/main-scratch"
 			failonerror="true"
 			fork="true"
 			>
-			<arg value="--fix-mac-bundle-plist" />
+			<arg value="- -fix-mac-bundle-plist" />
 			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
-		</java>
+		</java>-->
 		<delete file="${dist}/Dirt.app/Contents/MacOS/Dirt"/>
 		<exec executable="ln">
 			<arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>

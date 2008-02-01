@@ -222,7 +222,7 @@ public class PreferencesFrame extends JFrame
 		
 	}
 	
-	public class ToolbarAction extends AbstractAction
+	protected class ToolbarAction extends AbstractAction
 	{
 		final String name;
 		public ToolbarAction(String name, Icon icon)

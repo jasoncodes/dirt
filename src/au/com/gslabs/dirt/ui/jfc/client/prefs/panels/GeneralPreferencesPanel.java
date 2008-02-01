@@ -19,6 +19,8 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 	public GeneralPreferencesPanel()
 	{
 		
+		super("General", "general");
+		
 		setLayout(new SpringLayout());
 		
 		txtNickname = new JTextField();
@@ -50,11 +52,6 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 			INIT_LOCATION, INIT_LOCATION, 
 			PADDING, PADDING);
 		
-	}
-	
-	public String getName()
-	{
-		return "General";
 	}
 	
 	public void load()
