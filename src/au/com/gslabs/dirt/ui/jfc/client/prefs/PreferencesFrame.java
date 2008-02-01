@@ -15,15 +15,26 @@ public class PreferencesFrame extends JFrame
 	private final boolean autoSave = FileUtil.isMac();
 	private final Preferences prefs = Preferences.getInstance();
 	
+	// generic
 	private JTabbedPane tabPane;
+	
+	// mac unified
+	private JPanel cardPanel;
+	private CardLayout cardLayout;
+	private ToggleButtonToolBar toolbar;
+	private ButtonGroup toolbarGroup;
 	
 	public PreferencesFrame()
 	{
 		
-		super("Preferences");
+		super("Dirt Preferences");
 		if (MRJAdapter.isSwingUsingScreenMenuBar())
 		{
 			setJMenuBar(new MainMenuBar());
+		}
+		if (isMacUnified())
+		{
+			getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 		}
 		UIUtil.setIcon(this);
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -55,6 +66,14 @@ public class PreferencesFrame extends JFrame
 		
 	}
 	
+	public static boolean isMacUnified()
+	{
+		return
+			FileUtil.isMac() &&
+			System.getProperty("os.version").startsWith("10.") &&
+			System.getProperty("os.version").compareTo("10.5") > 0;
+	}
+	
 	public Preferences getPreferences()
 	{
 		return prefs;
@@ -68,8 +87,30 @@ public class PreferencesFrame extends JFrame
 	private void createMainPanel()
 	{
 		
-		tabPane = new JTabbedPane();
-		getContentPane().add(tabPane, BorderLayout.CENTER);
+		if (isMacUnified())
+		{
+			
+			toolbarGroup = new ButtonGroup();
+			
+			toolbar = new ToggleButtonToolBar();
+			toolbar.setFloatable(false);
+			getContentPane().add(toolbar, BorderLayout.NORTH);
+			
+			cardPanel = new JPanel();
+			cardPanel.setBackground(SystemColor.control);
+			cardPanel.setBorder(BorderFactory.createMatteBorder(1,0,0,0, new Color(0f,0f,0f,0.6f)));
+			cardLayout = new CardLayout();
+			cardPanel.setLayout(cardLayout);
+			getContentPane().add(cardPanel, BorderLayout.CENTER);
+			
+		}
+		else
+		{
+			
+			tabPane = new JTabbedPane();
+			getContentPane().add(tabPane, BorderLayout.CENTER);
+			
+		}
 		
 		addPanel(new GeneralPreferencesPanel());
 		addPanel(new NotificationPreferencesPanel());
@@ -79,17 +120,45 @@ public class PreferencesFrame extends JFrame
 	
 	private void addPanel(PreferencesPanel panel)
 	{
-		tabPane.addTab(panel.getName(), panel);
+		if (isMacUnified())
+		{
+			cardPanel.add(panel, panel.getName());
+			ToolbarAction action = new ToolbarAction(panel.getName(), panel.getIcon());
+			JToggleButton btn = toolbar.addToggleButton(action);
+			toolbarGroup.add(btn);
+			btn.setFocusable(false);
+			if (toolbarGroup.getSelection() == null)
+			{
+			    btn.setSelected(true);
+			}
+		}
+		else
+		{
+			tabPane.addTab(panel.getName(), panel);
+		}
 	}
 	
 	private PreferencesPanel[] getPanels()
 	{
-		final PreferencesPanel[] panels = new PreferencesPanel[tabPane.getTabCount()];
-		for (int i = 0; i < tabPane.getTabCount(); ++i)
+		if (isMacUnified())
 		{
-			panels[i] = (PreferencesPanel)tabPane.getComponentAt(i);
+			final PreferencesPanel[] panels = new PreferencesPanel[cardPanel.getComponentCount()];
+			int i = 0;
+			for (Component c : cardPanel.getComponents())
+			{
+				panels[i++] = (PreferencesPanel)c;
+			}
+			return panels;
 		}
-		return panels;
+		else
+		{
+			final PreferencesPanel[] panels = new PreferencesPanel[tabPane.getTabCount()];
+			for (int i = 0; i < tabPane.getTabCount(); ++i)
+			{
+				panels[i] = (PreferencesPanel)tabPane.getComponentAt(i);
+			}
+			return panels;
+		}
 	}
 	
 	private void load()
@@ -149,6 +218,47 @@ public class PreferencesFrame extends JFrame
 		if (pnlButtons.getComponentCount() > 0)
 		{
 			getContentPane().add(pnlButtons, BorderLayout.SOUTH);
+		}
+		
+	}
+	
+	public class ToolbarAction extends AbstractAction
+	{
+		final String name;
+		public ToolbarAction(String name, Icon icon)
+		{
+			super(name, icon);
+			this.name = name;
+		}
+		public void actionPerformed(ActionEvent e)
+		{
+			cardLayout.show(cardPanel, name);
+		}
+	}
+	
+	protected class ToggleButtonToolBar extends JToolBar
+	{
+		
+		public ToggleButtonToolBar()
+		{
+			super();
+		}
+		
+		JToggleButton addToggleButton(Action a)
+		{
+			JToggleButton tb = new JToggleButton(
+					(String)a.getValue(Action.NAME),
+					(Icon)a.getValue(Action.SMALL_ICON)
+				);
+			tb.setMargin(new Insets(1,1,1,1));
+			tb.setText(null);
+			tb.setEnabled(a.isEnabled());
+			tb.setToolTipText((String)a.getValue(Action.SHORT_DESCRIPTION));
+			tb.setAction(a);
+			tb.setVerticalTextPosition(BOTTOM);
+			tb.setHorizontalTextPosition(CENTER);
+			add(tb);
+			return tb;
 		}
 		
 	}
