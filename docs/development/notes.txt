@@ -19,7 +19,7 @@ logging
 
 notification preferences
 	dock bounce (disabled, once, continuous)
-	dock badge (disabled, show message count)
+	dock show unread count (bool)
 	flash (disabled, once, continuous)
 
 File, Connect dialog

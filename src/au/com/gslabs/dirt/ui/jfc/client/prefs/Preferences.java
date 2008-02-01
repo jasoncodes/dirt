@@ -15,8 +15,42 @@ public class Preferences
 	public static final String DEFAULT_SERVER = "defaultServer";
 	public static final String LOG_CHAT_ENABLED = "logChatEnabled";
 	public static final String NOTIFICATION_SOUND_ENABLED = "notificationSoundEnabled";
+	public static final String NOTIFICATION_DOCK_BOUNCE = "notificationDockBounce";
 	public static final String LASTREADMARKER_CLEAR_BLUR = "lastReadMarkerClearOnBlur";
 	public static final String LASTREADMARKER_CLEAR_INPUT = "lastReadMarkerClearOnInput";
+	
+	interface PreferenceEnum
+	{
+		public String getKey();
+	}
+	
+	public enum NotificationDockBounce implements PreferenceEnum
+	{
+		
+		NEVER ("never", "Never"),
+		ONCE ("once", "Once"),
+		FOREVER ("forever", "Continously");
+		
+		final String key;
+		final String name;
+		
+		NotificationDockBounce(String key, String name)
+		{
+			this.key = key;
+			this.name = name;
+		}
+		
+		public String getKey()
+		{
+			return this.key;
+		}
+		
+		public String toString()
+		{
+			return this.name;
+		}
+		
+	}
 	
 	private static Preferences theInstance = null;
 	private final java.util.prefs.Preferences prefs;
@@ -274,6 +308,34 @@ public class Preferences
 			rectPref.putInt("width", value.width);
 			rectPref.putInt("height", value.height);
 		}
+	}
+	
+	protected PreferenceEnum getEnum(String key, Class<? extends PreferenceEnum> enumClass, PreferenceEnum defValue)
+	{
+		String strValue = prefs.get(key, null);
+		for (PreferenceEnum option : enumClass.getEnumConstants())
+		{
+			if (option.getKey().equals(strValue))
+			{
+				return option;
+			}
+		}
+		return defValue;
+	}
+	
+	protected void setEnum(String key, PreferenceEnum value)
+	{
+		prefs.put(key, value.getKey());
+	}
+	
+	public NotificationDockBounce getNotificationDockBounce()
+	{
+		return (NotificationDockBounce)getEnum(NOTIFICATION_DOCK_BOUNCE, NotificationDockBounce.class, NotificationDockBounce.ONCE);
+	}
+	
+	public void setNotificationDockBounce(NotificationDockBounce newValue)
+	{
+		setEnum(NOTIFICATION_DOCK_BOUNCE, newValue);
 	}
 	
 }

@@ -37,8 +37,8 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 		add(txtNickname);
 		add(new JLabel("Default Server:"));
 		add(txtDefaultServer);
-		//add(new JLabel());
-		//add(chkLogChat);
+		//todo//add(new JLabel());
+		//todo//add(chkLogChat);
 		
 		add(new JLabel());
 		add(chkLastReadMarkerClearOnBlur);

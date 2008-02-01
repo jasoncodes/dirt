@@ -11,6 +11,7 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	private static final int INIT_LOCATION = 6;
 	
 	private JCheckBox chkNotificationSound;
+	private JComboBox cmbNotificationDockBounce;
 	
 	public NotificationPreferencesPanel()
 	{
@@ -18,11 +19,15 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 		setLayout(new SpringLayout());
 		
 		chkNotificationSound = new JCheckBox("Notification Sounds");
+		cmbNotificationDockBounce = new JComboBox(Preferences.NotificationDockBounce.class.getEnumConstants());
 		
 		trapChangeEvent(chkNotificationSound);
+		trapChangeEvent(cmbNotificationDockBounce);
 		
 		add(new JLabel());
 		add(chkNotificationSound);
+		//todo//add(new JLabel("Dock Bounce:"));
+		//todo//add(cmbNotificationDockBounce);
 		
 		SpringUtilities.makeCompactGrid(
 			this, getComponentCount()/2, 2, 
@@ -39,11 +44,13 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	public void load()
 	{
 		chkNotificationSound.setSelected(getPreferences().getNotificationSoundEnabled());
+		cmbNotificationDockBounce.setSelectedItem(getPreferences().getNotificationDockBounce());
 	}
 	
 	public boolean save()
 	{
 		getPreferences().setNotificationSoundEnabled(chkNotificationSound.isSelected());
+		getPreferences().setNotificationDockBounce((Preferences.NotificationDockBounce)cmbNotificationDockBounce.getSelectedItem());
 		return true;
 	}
 	

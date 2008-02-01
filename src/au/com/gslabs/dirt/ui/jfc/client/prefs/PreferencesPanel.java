@@ -42,6 +42,17 @@ public abstract class PreferencesPanel extends JPanel
 			});
 	}
 	
+	protected void trapChangeEvent(JComboBox cmb)
+	{
+		cmb.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					if (isAutoSave()) save();
+				}
+			});
+	}
+	
 	protected void trapChangeEvent(JTextField txt)
 	{
 		txt.addFocusListener(new FocusListener()
