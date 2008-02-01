@@ -13,6 +13,7 @@ import au.com.gslabs.dirt.core.client.*;
 import au.com.gslabs.dirt.core.client.console.*;
 import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
 import au.com.gslabs.dirt.core.client.enums.*;
+import au.com.gslabs.dirt.ui.jfc.client.prefs.Preferences;
 
 public class MainPanel extends BaseClientPanel implements ChatPanel
 {
@@ -501,7 +502,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 					notifyLinkClicked(e.getURL());
 				}
 			});
-		txtLog.setPreferredSize(new Dimension(670, 290));
+		txtLog.setPreferredSize(new Dimension(580, 300));
 		
 		lstContacts = new JList(contacts);
 		lstContacts.addMouseListener(new MouseAdapter()
@@ -699,7 +700,7 @@ public class MainPanel extends BaseClientPanel implements ChatPanel
 			
 			for (final ClientPanel panel : panels.values())
 			{
-				if (panel != this)
+				if (panel != null && panel != this)
 				{
 					panel.detach();
 				}

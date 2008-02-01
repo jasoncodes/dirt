@@ -10,6 +10,7 @@ import au.com.gslabs.dirt.lib.util.*;
 import au.com.gslabs.dirt.core.client.*;
 import au.com.gslabs.dirt.core.client.console.*;
 import au.com.gslabs.dirt.ui.common.client.ContactNickCompletor;
+import au.com.gslabs.dirt.ui.jfc.client.prefs.Preferences;
 
 public class QueryPanel extends BaseClientPanel implements ChatPanel
 {
@@ -109,7 +110,7 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 					notifyLinkClicked(e.getURL());
 				}
 			});
-		txtLog.setPreferredSize(new Dimension(550, 230));
+		txtLog.setPreferredSize(new Dimension(620, 250));
 		add(txtLog, BorderLayout.CENTER);
 		
 		final Color borderColor = getBorderColor();
@@ -131,7 +132,7 @@ public class QueryPanel extends BaseClientPanel implements ChatPanel
 	
 	public java.awt.geom.Point2D.Double getDefaultNormalisedScreenPosition()
 	{
-		return new java.awt.geom.Point2D.Double(0.1, 0.8);
+		return new java.awt.geom.Point2D.Double(0.2, 0.3);
 	}
 	
 	public String[] getPanelPreferenceKeys()

@@ -10,6 +10,7 @@ import java.awt.Window;
 import java.awt.Frame;
 import javax.swing.JFrame;
 import java.util.ResourceBundle;
+import au.com.gslabs.dirt.ui.jfc.client.prefs.PreferencesFrame;
 
 public class ClientJFC extends Application
 {

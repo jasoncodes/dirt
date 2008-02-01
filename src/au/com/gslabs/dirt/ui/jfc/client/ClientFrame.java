@@ -7,6 +7,7 @@ import javax.swing.event.*;
 import au.com.gslabs.dirt.lib.ui.jfc.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
 import java.util.ResourceBundle;
+import au.com.gslabs.dirt.ui.jfc.client.prefs.Preferences;
 
 public class ClientFrame extends JFrame
 {

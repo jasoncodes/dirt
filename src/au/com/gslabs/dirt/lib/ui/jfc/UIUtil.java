@@ -357,11 +357,11 @@ public class UIUtil
 		frame.setJMenuBar(null);
 		final boolean oldResizable = frame.isResizable();
 		frame.setResizable(false);
+		final Rectangle oldBounds = frame.getBounds();
 		if (FileUtil.isMac())
 		{
 			setFrameAlpha(frame, 0.0);
-			final Rectangle oldBounds = frame.getBounds();
-			frame.setBounds(10000,10000,0,0);
+			frame.setBounds(10000, 10000, 0, 0);
 		}
 		frame.setFocusableWindowState(false);
 		frame.toBack();

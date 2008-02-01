@@ -149,7 +149,10 @@ public class MainMenuBar extends JScreenMenuBar
 					UIUtil.getWindowManager().cycleThroughWindows(backwards);
 				}
 			});
-		mnuWindow.add(mnuCycleWindows);
+		if (FileUtil.isMac())
+		{
+			mnuWindow.add(mnuCycleWindows);
+		}
 		
 		// change the accelerator when shift is held down
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()

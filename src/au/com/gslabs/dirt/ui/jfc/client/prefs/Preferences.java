@@ -1,4 +1,4 @@
-package au.com.gslabs.dirt.ui.jfc.client;
+package au.com.gslabs.dirt.ui.jfc.client.prefs;
 
 import au.com.gslabs.dirt.core.client.Client;
 import au.com.gslabs.dirt.lib.util.TextUtil;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Rectangle;
+import au.com.gslabs.dirt.ui.jfc.client.ClientJFC;
 
 public class Preferences
 {
@@ -23,7 +24,7 @@ public class Preferences
 	
 	private Preferences()
 	{
-		prefs = java.util.prefs.Preferences.userNodeForPackage(Preferences.class);
+		prefs = java.util.prefs.Preferences.userNodeForPackage(ClientJFC.class);
 		prefs.addPreferenceChangeListener(new java.util.prefs.PreferenceChangeListener()
 			{
 				public void preferenceChange(java.util.prefs.PreferenceChangeEvent evt)

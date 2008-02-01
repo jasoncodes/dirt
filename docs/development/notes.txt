@@ -51,6 +51,8 @@ Copying blocks of text without "[hh:mm] <Nick> "
 	Selection to should be automatically expanded to whole lines (and restored after copy)
 
 file transfers
+	NAT traversal
+		Investigate jstunt <http://www1.ietf.org/mail-archive/web/p2prg/current/msg00789.html>
 
 trigger windowClosing events via mnuQuit
 	/exit should do the same (after sending a /quit "$@")
