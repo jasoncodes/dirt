@@ -229,6 +229,7 @@ public class UIUtil
 	{
 		if (FileUtil.isWin())
 		{
+			System.loadLibrary("jawt");
 			FileUtil.loadLibrary("lib/win32/dirt_lib_ui_jfc.dll");
 		}
 		if (FileUtil.isLinux())
