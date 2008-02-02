@@ -17,6 +17,7 @@ public abstract class PreferencesPanel extends JPanel
 	protected PreferencesPanel(String name, String iconName)
 	{
 		this(name, new ImageIcon(FileUtil.getResource("res/icons/preferences-mac-"+iconName+".png")));
+		setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 	}
 	
 	protected PreferencesPanel(String name, ImageIcon icon)

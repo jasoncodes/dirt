@@ -29,6 +29,9 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 		chkLastReadMarkerClearOnBlur = new JCheckBox("Clear Last Read Marker On Focus Lost");
 		chkLastReadMarkerClearOnInput = new JCheckBox("Clear Last Read Marker On Input");
 		
+		chkLastReadMarkerClearOnBlur.setOpaque(false);
+		chkLastReadMarkerClearOnInput.setOpaque(false);
+		
 		trapChangeEvent(txtNickname);
 		trapChangeEvent(txtDefaultServer);
 		trapChangeEvent(chkLogChat);

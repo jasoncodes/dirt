@@ -23,6 +23,8 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 		chkNotificationSound = new JCheckBox("Notification Sounds");
 		cmbNotificationDockBounce = new JComboBox(Preferences.NotificationDockBounce.class.getEnumConstants());
 		
+		chkNotificationSound.setOpaque(false);
+		
 		trapChangeEvent(chkNotificationSound);
 		trapChangeEvent(cmbNotificationDockBounce);
 		

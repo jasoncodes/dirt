@@ -108,6 +108,7 @@ public class PreferencesFrame extends JFrame
 		{
 			
 			tabPane = new JTabbedPane();
+			tabPane.setBorder(BorderFactory.createEmptyBorder(8,8,0,8));
 			getContentPane().add(tabPane, BorderLayout.CENTER);
 			
 		}
@@ -120,8 +121,10 @@ public class PreferencesFrame extends JFrame
 	
 	private void addPanel(PreferencesPanel panel)
 	{
+		
 		if (isMacUnified())
 		{
+			
 			cardPanel.add(panel, panel.getName());
 			ToolbarAction action = new ToolbarAction(panel.getName(), panel.getIcon());
 			JToggleButton btn = toolbar.addToggleButton(action);
@@ -131,11 +134,15 @@ public class PreferencesFrame extends JFrame
 			{
 			    btn.setSelected(true);
 			}
+			
 		}
 		else
 		{
+			
 			tabPane.addTab(panel.getName(), panel);
+			
 		}
+		
 	}
 	
 	private PreferencesPanel[] getPanels()
@@ -187,6 +194,7 @@ public class PreferencesFrame extends JFrame
 		
 		JPanel pnlButtons = new JPanel();
 		pnlButtons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		pnlButtons.setBorder(BorderFactory.createEmptyBorder(6,6,6,6));
 		
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener()
