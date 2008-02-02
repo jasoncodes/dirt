@@ -17,11 +17,6 @@ logging
 	file associations
 	Spotlight plugin
 
-notification preferences
-	dock bounce (disabled, once, continuous)
-	dock show unread count (bool)
-	flash (disabled, once, continuous)
-
 File, Connect dialog
 	Nickname
 	Hostname

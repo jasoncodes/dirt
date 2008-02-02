@@ -17,7 +17,7 @@ public class Preferences
 	public static final String NOTIFICATION_SOUND_ENABLED = "notificationSoundEnabled";
 	public static final String NOTIFICATION_DOCK_BOUNCE = "notificationDockBounce";
 	public static final String NOTIFICATION_DOCK_FLASH = "notificationDockFlash";
-	public static final String NOTIFICATION_DOCK_BADGE = "notificationDockBadge";
+	public static final String NOTIFICATION_DOCK_SHOW_UNREAD_COUNT = "notificationDockShowUnreadCount";
 	public static final String LASTREADMARKER_CLEAR_BLUR = "lastReadMarkerClearOnBlur";
 	public static final String LASTREADMARKER_CLEAR_INPUT = "lastReadMarkerClearOnInput";
 	
@@ -358,14 +358,14 @@ public class Preferences
 		setEnum(NOTIFICATION_DOCK_FLASH, newValue);
 	}
 	
-	public boolean getNotificationDockBadgeEnabled()
+	public boolean getNotificationDockShowUnreadCount()
 	{
-		return prefs.getBoolean(NOTIFICATION_DOCK_BADGE, true);
+		return prefs.getBoolean(NOTIFICATION_DOCK_SHOW_UNREAD_COUNT, true);
 	}
 	
-	public void setNotificationDockBadgeEnabled(boolean newValue)
+	public void setNotificationDockShowUnreadCount(boolean newValue)
 	{
-		prefs.putBoolean(NOTIFICATION_DOCK_BADGE, newValue);
+		prefs.putBoolean(NOTIFICATION_DOCK_SHOW_UNREAD_COUNT, newValue);
 	}
 	
 }

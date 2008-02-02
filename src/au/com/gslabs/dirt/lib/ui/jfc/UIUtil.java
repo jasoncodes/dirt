@@ -242,20 +242,20 @@ public class UIUtil
 		}
 	}
 	
-	public static void alert(Frame frame)
+	public static void alert(final Frame frame, int bounceCount, int flashCount, boolean enableAlertCount)
 	{
 		try
 		{
 			if (FileUtil.isWin())
 			{
-				if (!frame.isFocused())
+				if (!frame.isFocused() && flashCount != 0)
 				{
 					loadNativeLibrary();
 					Win32 win32 = new Win32();
 					win32.alert(frame);
 				}
 			}
-			else if (FileUtil.isLinux())
+			else if (FileUtil.isLinux() && flashCount != 0)
 			{
 				if (!frame.isFocused())
 				{
@@ -273,7 +273,7 @@ public class UIUtil
 						dockBouncer = new MacDockBouncer();
 					}
 				}
-				dockBouncer.addFrame(frame);
+				dockBouncer.addFrame(frame, bounceCount, flashCount, enableAlertCount);
 			}
 			else
 			{

@@ -112,11 +112,19 @@ public class ClientFrame extends JFrame
 	
 	protected void doAlert()
 	{
-		UIUtil.alert(ClientFrame.this);
+		
+		final Preferences prefs = Preferences.getInstance();
+		UIUtil.alert(
+			ClientFrame.this,
+			prefs.getNotificationDockBounce().intValue(),
+			prefs.getNotificationDockFlash().intValue(),
+			prefs.getNotificationDockShowUnreadCount());
+		
 		if (Preferences.getInstance().getNotificationSoundEnabled())
 		{
 			java.awt.Toolkit.getDefaultToolkit().beep();
 		}
+		
 	}
 	
 	protected void updateWindowTitle()

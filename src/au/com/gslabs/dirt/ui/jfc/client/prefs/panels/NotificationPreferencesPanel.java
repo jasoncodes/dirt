@@ -1,8 +1,9 @@
 package au.com.gslabs.dirt.ui.jfc.client.prefs.panels;
 
-import au.com.gslabs.dirt.ui.jfc.client.prefs.*;
 import javax.swing.*;
+import au.com.gslabs.dirt.ui.jfc.client.prefs.*;
 import au.com.gslabs.dirt.lib.ui.jfc.SpringUtilities;
+import au.com.gslabs.dirt.lib.util.FileUtil;
 
 public class NotificationPreferencesPanel extends PreferencesPanel
 {
@@ -12,7 +13,7 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	
 	private JComboBox cmbNotificationDockBounce;
 	private JComboBox cmbNotificationDockFlash;
-	private JCheckBox chkNotificationDockBadge;
+	private JCheckBox chkNotificationDockShowUnreadCount;
 	private JCheckBox chkNotificationSound;
 	
 	public NotificationPreferencesPanel()
@@ -24,22 +25,25 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 		
 		cmbNotificationDockBounce = new JComboBox(Preferences.NotificationIterations.class.getEnumConstants());
 		cmbNotificationDockFlash = new JComboBox(Preferences.NotificationIterations.class.getEnumConstants());
-		chkNotificationDockBadge = new JCheckBox("Show Unread Message Count");
-		chkNotificationDockBadge.setOpaque(false);
+		chkNotificationDockShowUnreadCount = new JCheckBox("Show Unread Message Count");
+		chkNotificationDockShowUnreadCount.setOpaque(false);
 		chkNotificationSound = new JCheckBox("Play Notification Sound");
 		chkNotificationSound.setOpaque(false);
 		
 		trapChangeEvent(cmbNotificationDockBounce);
 		trapChangeEvent(cmbNotificationDockFlash);
-		trapChangeEvent(chkNotificationDockBadge);
+		trapChangeEvent(chkNotificationDockShowUnreadCount);
 		trapChangeEvent(chkNotificationSound);
 		
-		add(new JLabel("Dock Icon Bounce:"));
-		add(cmbNotificationDockBounce);
 		add(new JLabel("Notification Flash:"));
 		add(cmbNotificationDockFlash);
-		add(new JLabel());
-		add(chkNotificationDockBadge);
+		if (FileUtil.isMac())
+		{
+			add(new JLabel("Dock Icon Bounce:"));
+			add(cmbNotificationDockBounce);
+			add(new JLabel());
+			add(chkNotificationDockShowUnreadCount);
+		}
 		add(new JLabel());
 		add(chkNotificationSound);
 		
@@ -56,7 +60,7 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 		cmbNotificationDockBounce.setSelectedItem(getPreferences().getNotificationDockBounce());
 		cmbNotificationDockFlash.setSelectedItem(getPreferences().getNotificationDockFlash());
 		chkNotificationSound.setSelected(getPreferences().getNotificationSoundEnabled());
-		chkNotificationDockBadge.setSelected(getPreferences().getNotificationDockBadgeEnabled());
+		chkNotificationDockShowUnreadCount.setSelected(getPreferences().getNotificationDockShowUnreadCount());
 		setEventsEnabled(true);
 	}
 	
@@ -64,7 +68,7 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	{
 		getPreferences().setNotificationDockBounce((Preferences.NotificationIterations)cmbNotificationDockBounce.getSelectedItem());
 		getPreferences().setNotificationDockFlash((Preferences.NotificationIterations)cmbNotificationDockFlash.getSelectedItem());
-		getPreferences().setNotificationDockBadgeEnabled(chkNotificationDockBadge.isSelected());
+		getPreferences().setNotificationDockShowUnreadCount(chkNotificationDockShowUnreadCount.isSelected());
 		getPreferences().setNotificationSoundEnabled(chkNotificationSound.isSelected());
 		return true;
 	}

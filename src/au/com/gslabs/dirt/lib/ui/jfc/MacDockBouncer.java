@@ -19,13 +19,13 @@ class MacDockBouncer extends Thread
 	private class FocusMonitor
 	{
 		final public Frame frame;
-		public int count;
+		public long bounceStopTick;
+		public int countAlert = 0, countFlash = 0;
 		public boolean hasBeenFocused;
 		final private WindowAdapter listener;
 		public FocusMonitor(Frame frame)
 		{
 			this.frame = frame;
-			this.count = 0;
 			this.hasBeenFocused = false;
 			this.listener = new WindowAdapter()
 				{
@@ -129,18 +129,19 @@ class MacDockBouncer extends Thread
 		}
 	}
 	
-	public void addFrame(Frame frame)
+	public void addFrame(Frame frame, int bounceCount, int flashCount, boolean enableAlertCount)
 	{
 		synchronized (this)
 		{
-			bounceStopTick = System.currentTimeMillis() + 1000;
 			FocusMonitor monitor = monitors.get(frame);
 			if (monitor == null)
 			{
 				monitor = new FocusMonitor(frame);
 				monitors.put(frame, monitor);
 			}
-			monitor.count++;
+			monitor.countAlert = enableAlertCount ? (monitor.countAlert + 1) : 0;
+			monitor.countFlash = flashCount;
+			monitor.bounceStopTick = bounceCount > 0 ? System.currentTimeMillis() + 1000 * bounceCount : bounceCount;
 			notify();
 		}
 	}
@@ -155,14 +156,13 @@ class MacDockBouncer extends Thread
 		int count = 0;
 		for (FocusMonitor monitor : monitors.values())
 		{
-			count += monitor.count;
+			count += monitor.countAlert;
 		}
 		return count;
 	}
 	
 	private Integer requestID = null;
 	private int currentIcon = 0;
-	private long bounceStopTick = 0;
 	
 	private void reset()
 	{
@@ -171,9 +171,45 @@ class MacDockBouncer extends Thread
 			cancelAttention(requestID);
 			requestID = null;
 		}
-		bounceStopTick = 0;
 		currentIcon = 0;
 		mac.setDockIcon(icons[0], null);
+	}
+	
+	protected void updateIconState()
+	{
+		
+		currentIcon = ++currentIcon % 2;
+		
+		// transitioning from 0 to 1 means we are going active
+		// lets check if we can do that
+		if (currentIcon == 1) 
+		{
+			boolean canActive = false;
+			for (FocusMonitor monitor : monitors.values())
+			{
+				canActive |= (monitor.countFlash != 0);
+				if (monitor.countFlash > 0)
+				{
+					monitor.countFlash--;
+				}
+			}
+			if (!canActive)
+			{
+				currentIcon = 0;
+			}
+		}
+	}
+	
+	protected boolean shouldBeBouncing()
+	{
+		for (FocusMonitor monitor : monitors.values())
+		{
+			if (monitor.bounceStopTick < 0 || monitor.bounceStopTick > System.currentTimeMillis())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void run()
@@ -232,10 +268,12 @@ class MacDockBouncer extends Thread
 			if (active)
 			{
 				
-				currentIcon = ++currentIcon % 2;
-				mac.setDockIcon(icons[currentIcon], String.valueOf(getAlertCount()));
+				updateIconState();
+				final int badgeCount = getAlertCount();
+				final String badgeStr = badgeCount > 0 ? String.valueOf(badgeCount) : "";
+				mac.setDockIcon(icons[currentIcon], badgeStr);
 				
-				if (bounceStopTick > System.currentTimeMillis())
+				if (shouldBeBouncing())
 				{
 					if (requestID == null)
 					{
