@@ -27,9 +27,8 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 		txtDefaultServer = new JTextField();
 		chkLogChat = new JCheckBox("Log Chat Messages");
 		chkLastReadMarkerClearOnBlur = new JCheckBox("Clear Last Read Marker On Focus Lost");
-		chkLastReadMarkerClearOnInput = new JCheckBox("Clear Last Read Marker On Input");
-		
 		chkLastReadMarkerClearOnBlur.setOpaque(false);
+		chkLastReadMarkerClearOnInput = new JCheckBox("Clear Last Read Marker On Input");
 		chkLastReadMarkerClearOnInput.setOpaque(false);
 		
 		trapChangeEvent(txtNickname);
@@ -59,11 +58,13 @@ public class GeneralPreferencesPanel extends PreferencesPanel
 	
 	public void load()
 	{
+		setEventsEnabled(false);
 		txtNickname.setText(getPreferences().getNickname());
 		txtDefaultServer.setText(getPreferences().getDefaultServer());
 		chkLogChat.setSelected(getPreferences().getLogChatEnabled());
 		chkLastReadMarkerClearOnBlur.setSelected(getPreferences().getLastReadMarkerClearOnBlur());
 		chkLastReadMarkerClearOnInput.setSelected(getPreferences().getLastReadMarkerClearOnInput());
+		setEventsEnabled(true);
 	}
 	
 	public boolean save()

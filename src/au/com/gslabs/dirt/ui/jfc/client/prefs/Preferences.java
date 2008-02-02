@@ -16,6 +16,8 @@ public class Preferences
 	public static final String LOG_CHAT_ENABLED = "logChatEnabled";
 	public static final String NOTIFICATION_SOUND_ENABLED = "notificationSoundEnabled";
 	public static final String NOTIFICATION_DOCK_BOUNCE = "notificationDockBounce";
+	public static final String NOTIFICATION_DOCK_FLASH = "notificationDockFlash";
+	public static final String NOTIFICATION_DOCK_BADGE = "notificationDockBadge";
 	public static final String LASTREADMARKER_CLEAR_BLUR = "lastReadMarkerClearOnBlur";
 	public static final String LASTREADMARKER_CLEAR_INPUT = "lastReadMarkerClearOnInput";
 	
@@ -24,19 +26,21 @@ public class Preferences
 		public String getKey();
 	}
 	
-	public enum NotificationDockBounce implements PreferenceEnum
+	public enum NotificationIterations implements PreferenceEnum
 	{
 		
-		NEVER ("never", "Never"),
-		ONCE ("once", "Once"),
-		FOREVER ("forever", "Continously");
+		NEVER ("never", 0, "Never"),
+		ONCE ("once", 1, "Once"),
+		FOREVER ("forever", -1, "Continously");
 		
 		final String key;
+		final int value;
 		final String name;
 		
-		NotificationDockBounce(String key, String name)
+		NotificationIterations(String key, int value, String name)
 		{
 			this.key = key;
+			this.value = value;
 			this.name = name;
 		}
 		
@@ -45,12 +49,18 @@ public class Preferences
 			return this.key;
 		}
 		
+		public int intValue()
+		{
+			return this.value;
+		}
+		
 		public String toString()
 		{
 			return this.name;
 		}
 		
 	}
+	
 	
 	private static Preferences theInstance = null;
 	private final java.util.prefs.Preferences prefs;
@@ -328,14 +338,34 @@ public class Preferences
 		prefs.put(key, value.getKey());
 	}
 	
-	public NotificationDockBounce getNotificationDockBounce()
+	public NotificationIterations getNotificationDockBounce()
 	{
-		return (NotificationDockBounce)getEnum(NOTIFICATION_DOCK_BOUNCE, NotificationDockBounce.class, NotificationDockBounce.ONCE);
+		return (NotificationIterations)getEnum(NOTIFICATION_DOCK_BOUNCE, NotificationIterations.class, NotificationIterations.ONCE);
 	}
 	
-	public void setNotificationDockBounce(NotificationDockBounce newValue)
+	public void setNotificationDockBounce(NotificationIterations newValue)
 	{
 		setEnum(NOTIFICATION_DOCK_BOUNCE, newValue);
+	}
+
+	public NotificationIterations getNotificationDockFlash()
+	{
+		return (NotificationIterations)getEnum(NOTIFICATION_DOCK_FLASH, NotificationIterations.class, NotificationIterations.FOREVER);
+	}
+	
+	public void setNotificationDockFlash(NotificationIterations newValue)
+	{
+		setEnum(NOTIFICATION_DOCK_FLASH, newValue);
+	}
+	
+	public boolean getNotificationDockBadgeEnabled()
+	{
+		return prefs.getBoolean(NOTIFICATION_DOCK_BADGE, true);
+	}
+	
+	public void setNotificationDockBadgeEnabled(boolean newValue)
+	{
+		prefs.putBoolean(NOTIFICATION_DOCK_BADGE, newValue);
 	}
 	
 }

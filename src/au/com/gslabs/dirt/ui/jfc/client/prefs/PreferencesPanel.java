@@ -11,6 +11,8 @@ public abstract class PreferencesPanel extends JPanel
 	private final String name;
 	private final ImageIcon icon;
 	
+	private boolean eventsEnabled = true;
+	
 	public abstract void load();
 	public abstract boolean save();
 	
@@ -37,6 +39,11 @@ public abstract class PreferencesPanel extends JPanel
 		return icon;
 	}
 	
+	protected void setEventsEnabled(boolean eventsEnabled)
+	{
+		this.eventsEnabled = eventsEnabled;
+	}
+	
 	public PreferencesFrame getPreferencesFrame()
 	{
 		return (PreferencesFrame)UIUtil.getTopLevelWindow(this);
@@ -47,9 +54,17 @@ public abstract class PreferencesPanel extends JPanel
 		return getPreferencesFrame().getPreferences();
 	}
 	
-	protected boolean isAutoSave()
+	private boolean isAutoSave()
 	{
 		return getPreferencesFrame().isAutoSave();
+	}
+	
+	private void onAutoSaveEvent()
+	{
+		if (eventsEnabled && isAutoSave())
+		{
+			save();
+		}
 	}
 	
 	protected void trapChangeEvent(AbstractButton btn)
@@ -58,7 +73,7 @@ public abstract class PreferencesPanel extends JPanel
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					if (isAutoSave()) save();
+					onAutoSaveEvent();
 				}
 			});
 	}
@@ -69,7 +84,7 @@ public abstract class PreferencesPanel extends JPanel
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					if (isAutoSave()) save();
+					onAutoSaveEvent();
 				}
 			});
 	}
@@ -83,7 +98,7 @@ public abstract class PreferencesPanel extends JPanel
 				}
 				public void focusLost(FocusEvent e)
 				{
-					if (isAutoSave()) save();
+					onAutoSaveEvent();
 				}
 			});
 	}

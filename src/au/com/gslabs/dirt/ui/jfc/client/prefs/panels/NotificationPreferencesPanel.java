@@ -10,8 +10,10 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	private static final int PADDING = 6;
 	private static final int INIT_LOCATION = 6;
 	
-	private JCheckBox chkNotificationSound;
 	private JComboBox cmbNotificationDockBounce;
+	private JComboBox cmbNotificationDockFlash;
+	private JCheckBox chkNotificationDockBadge;
+	private JCheckBox chkNotificationSound;
 	
 	public NotificationPreferencesPanel()
 	{
@@ -20,18 +22,26 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 		
 		setLayout(new SpringLayout());
 		
-		chkNotificationSound = new JCheckBox("Notification Sounds");
-		cmbNotificationDockBounce = new JComboBox(Preferences.NotificationDockBounce.class.getEnumConstants());
-		
+		cmbNotificationDockBounce = new JComboBox(Preferences.NotificationIterations.class.getEnumConstants());
+		cmbNotificationDockFlash = new JComboBox(Preferences.NotificationIterations.class.getEnumConstants());
+		chkNotificationDockBadge = new JCheckBox("Show Unread Message Count");
+		chkNotificationDockBadge.setOpaque(false);
+		chkNotificationSound = new JCheckBox("Play Notification Sound");
 		chkNotificationSound.setOpaque(false);
 		
-		trapChangeEvent(chkNotificationSound);
 		trapChangeEvent(cmbNotificationDockBounce);
+		trapChangeEvent(cmbNotificationDockFlash);
+		trapChangeEvent(chkNotificationDockBadge);
+		trapChangeEvent(chkNotificationSound);
 		
+		add(new JLabel("Dock Icon Bounce:"));
+		add(cmbNotificationDockBounce);
+		add(new JLabel("Notification Flash:"));
+		add(cmbNotificationDockFlash);
+		add(new JLabel());
+		add(chkNotificationDockBadge);
 		add(new JLabel());
 		add(chkNotificationSound);
-		//todo//add(new JLabel("Dock Bounce:"));
-		//todo//add(cmbNotificationDockBounce);
 		
 		SpringUtilities.makeCompactGrid(
 			this, getComponentCount()/2, 2, 
@@ -42,14 +52,20 @@ public class NotificationPreferencesPanel extends PreferencesPanel
 	
 	public void load()
 	{
-		chkNotificationSound.setSelected(getPreferences().getNotificationSoundEnabled());
+		setEventsEnabled(false);
 		cmbNotificationDockBounce.setSelectedItem(getPreferences().getNotificationDockBounce());
+		cmbNotificationDockFlash.setSelectedItem(getPreferences().getNotificationDockFlash());
+		chkNotificationSound.setSelected(getPreferences().getNotificationSoundEnabled());
+		chkNotificationDockBadge.setSelected(getPreferences().getNotificationDockBadgeEnabled());
+		setEventsEnabled(true);
 	}
 	
 	public boolean save()
 	{
+		getPreferences().setNotificationDockBounce((Preferences.NotificationIterations)cmbNotificationDockBounce.getSelectedItem());
+		getPreferences().setNotificationDockFlash((Preferences.NotificationIterations)cmbNotificationDockFlash.getSelectedItem());
+		getPreferences().setNotificationDockBadgeEnabled(chkNotificationDockBadge.isSelected());
 		getPreferences().setNotificationSoundEnabled(chkNotificationSound.isSelected());
-		getPreferences().setNotificationDockBounce((Preferences.NotificationDockBounce)cmbNotificationDockBounce.getSelectedItem());
 		return true;
 	}
 	
