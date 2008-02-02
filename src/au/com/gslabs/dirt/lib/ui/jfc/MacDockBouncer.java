@@ -1,7 +1,6 @@
 package au.com.gslabs.dirt.lib.ui.jfc;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
 import au.com.gslabs.dirt.lib.ui.jfc.jni.MacOS;
