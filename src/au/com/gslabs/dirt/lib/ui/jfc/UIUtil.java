@@ -9,6 +9,7 @@ import java.lang.reflect.*;
 import javax.swing.*;
 import au.com.gslabs.dirt.lib.util.FileUtil;
 import net.roydesign.app.Application;
+import java.util.Map;
 
 public class UIUtil
 {
@@ -131,6 +132,30 @@ public class UIUtil
 		{
 			JOptionPane.showMessageDialog(null, "Error opening URL:\n" + e.getLocalizedMessage());
 		}
+	}
+	
+	public static String getDefaultScreenID()
+	{
+		return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getIDstring();
+	}
+	
+	public static Map<String,Rectangle> getScreenBounds()
+	{
+		
+		final Map<String,Rectangle> screens = new java.util.HashMap<String,Rectangle>();
+		
+		for (final GraphicsDevice dev : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
+		{
+			java.awt.Rectangle bounds = null;
+			for (java.awt.GraphicsConfiguration gc : dev.getConfigurations())
+			{
+				bounds = (bounds == null) ? gc.getBounds() : bounds.union(gc.getBounds());
+			}
+			screens.put(dev.getIDstring(), bounds);
+		}
+		
+		return screens;
+		
 	}
 	
 	public static Rectangle getDefaultWindowBounds(final Window window, final java.awt.geom.Point2D.Double normalisedScreenPos)

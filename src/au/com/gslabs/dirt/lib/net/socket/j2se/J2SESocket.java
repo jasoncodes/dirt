@@ -21,15 +21,6 @@ class J2SESocket implements au.com.gslabs.dirt.lib.net.socket.Socket
 	public void connect(String host, int port) throws IOException
 	{
 		
-		// prefer AAAA records when available
-		try
-		{
-			System.setProperty("java.net.preferIPv6Addresses", "true");
-		}
-		catch (SecurityException ex)
-		{
-		}
-		
 		// get a list of all the addresses for the hostname supplied
 		final InetAddress[] addresses;
 		if (host != null)

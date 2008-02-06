@@ -282,7 +282,7 @@ public class Preferences
 		}
 	}
 	
-	public Rectangle getPanelRectangle(String[] panelKeys, String prefKey, Rectangle defaultValue)
+	public Rectangle getPanelBounds(final String[] panelKeys, final String prefKey, final Rectangle defaultValue)
 	{
 		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, false))
 		{
@@ -308,7 +308,7 @@ public class Preferences
 		return defaultValue;
 	}
 	
-	public void setPanelRectangle(String[] panelKeys, String prefKey, Rectangle value)
+	public void setPanelBounds(final String[] panelKeys, final String prefKey, final Rectangle value)
 	{
 		for (java.util.prefs.Preferences panelPref : getPanelPreferences(panelKeys, true))
 		{

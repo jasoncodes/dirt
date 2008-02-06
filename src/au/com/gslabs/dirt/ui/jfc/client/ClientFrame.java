@@ -56,7 +56,7 @@ public class ClientFrame extends JFrame
 						{
 							if ((getExtendedState() & JFrame.ICONIFIED) == 0)
 							{
-								Preferences.getInstance().setPanelRectangle(
+								Preferences.getInstance().setPanelBounds(
 									panel.getPanelPreferenceKeys(), "panelBounds", getBounds());
 							}
 						}
@@ -77,7 +77,7 @@ public class ClientFrame extends JFrame
 			});
 		
 		Rectangle bounds = UIUtil.getDefaultWindowBounds(this, panel.getDefaultNormalisedScreenPosition());
-		bounds = Preferences.getInstance().getPanelRectangle(panel.getPanelPreferenceKeys(), "panelBounds", bounds);
+		bounds = Preferences.getInstance().getPanelBounds(panel.getPanelPreferenceKeys(), "panelBounds", bounds);
 		UIUtil.setWindowBoundsWithCascade(this, bounds);
 		
 		updateWindowTitle();

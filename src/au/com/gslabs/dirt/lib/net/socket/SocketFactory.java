@@ -11,5 +11,6 @@ public abstract class SocketFactory
 	public abstract Socket createSocket();
 	public abstract ServerSocket createServerSocket();
 	public abstract String getHostName();
+	public abstract String[] getHostAddresses();
 	
 }

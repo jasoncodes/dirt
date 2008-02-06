@@ -10,23 +10,10 @@ class J2SEServerSocket implements au.com.gslabs.dirt.lib.net.socket.ServerSocket
 	
 	private void init() throws IOException
 	{
-		
 		if (socket == null)
 		{
-			
-			// prefer AAAA records when available
-			try
-			{
-				System.setProperty("java.net.preferIPv6Addresses", "true");
-			}
-			catch (SecurityException ex)
-			{
-			}
-			
 			socket = new java.net.ServerSocket();
-			
 		}
-		
 	}
 	
 	public void setReuseAddress(boolean on) throws IOException

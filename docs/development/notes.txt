@@ -1,3 +1,14 @@
+window positions should be stored relative to the display's origin along with a display identifier
+when restoring window positions, if the display doesn't exist, use the primary display.
+use UIUtil.getDefaultScreenID and UIUtil.getScreenBounds in get/setPanelBounds
+
+CTCP
+	/ping does /ctcp ping
+	some interface to allow CTCP hooks
+		to be used to implement PING, TIME and in the future DCC
+	implement PING
+	implement TIME
+
 acceleration when scrolling logpane
 
 move pos/size persistence into a helper class which monitors the component for changes or dispose
@@ -25,6 +36,7 @@ File, Connect dialog
 Spellcheck on at least Mac
 	Google JavaSpellingFramework.sit and NSSpellChecker
 	http://elliotth.blogspot.com/2005/05/spin-control-and-non-gui-nsapplication.html
+	http://elliotth.blogspot.com/2006/05/when-appkit-methods-return-nil.html
 	http://software.jessies.org/salma-hayek/'s PTextArea uses ispell (and NSSpellChecker via ispell wrapper)
 
 dirt+https_connect://spawncamp.net/localhost:11626
@@ -48,11 +60,14 @@ Copying blocks of text without "[hh:mm] <Nick> "
 file transfers
 	NAT traversal
 		Investigate jstunt <http://www1.ietf.org/mail-archive/web/p2prg/current/msg00789.html>
+	
 
 trigger windowClosing events via mnuQuit
 	/exit should do the same (after sending a /quit "$@")
 
-aliases and bindings
+alias, bind, timers
+	do we really need these? (expecially 3.0 compatibility?)
+		should we just wait and implement scripting instead?
 
 keep selection when doing addTextLine
 	save start/end position, clear selection, add line, restore start/end position
@@ -100,8 +115,6 @@ pretty <blockquote />
 modifier sequences should count as a delimiter when doing tab completion
 	should share the existing tokenizer code
 		pull the tokenizer out of TextModifierParser?
-
-timers
 
 resizing is slow with lots of text
 
