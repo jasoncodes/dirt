@@ -2,22 +2,25 @@ package au.com.gslabs.dirt.core.client.console;
 
 import java.util.ArrayList;
 import au.com.gslabs.dirt.core.client.Client;
+import java.lang.reflect.ParameterizedType;
 
 public abstract class EnumConsoleCommandAdapter<SupportedCommand extends Enum<SupportedCommand>> implements ConsoleCommandListener
 {
 	
-	private Class<SupportedCommand> enumType;
+	private final Class<SupportedCommand> enumType;
 	
-	protected EnumConsoleCommandAdapter(Class<SupportedCommand> enumType)
+	@SuppressWarnings("unchecked") // cast from non-generic Type to Class<SupportedCommand>
+	protected EnumConsoleCommandAdapter()
 	{
-		this.enumType = enumType;
+		final ParameterizedType thisType = (ParameterizedType)getClass().getGenericSuperclass();
+		this.enumType = (Class<SupportedCommand>)thisType.getActualTypeArguments()[0];
 	}
 	
 	public final String[] getSupportedCommands(ConsoleClientAdapter adapter, Client source)
 	{
-		SupportedCommand[] cmds = enumType.getEnumConstants();
-		ArrayList<String> names = new ArrayList<String>(cmds.length);
-		for (SupportedCommand cmd : cmds)
+		final SupportedCommand[] cmds = enumType.getEnumConstants();
+		final ArrayList<String> names = new ArrayList<String>(cmds.length);
+		for (final SupportedCommand cmd : cmds)
 		{
 			names.add(cmd.toString());
 		}
@@ -29,7 +32,7 @@ public abstract class EnumConsoleCommandAdapter<SupportedCommand extends Enum<Su
 	public final boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, String cmd, String params)
 	{
 		
-		SupportedCommand cmdEnum;
+		final SupportedCommand cmdEnum;
 		
 		try
 		{

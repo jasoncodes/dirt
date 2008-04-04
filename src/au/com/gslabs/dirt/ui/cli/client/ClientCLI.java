@@ -29,11 +29,6 @@ public class ClientCLI
 	private class CommandAdapter extends EnumConsoleCommandAdapter<SupportedCommand>
 	{
 		
-		public CommandAdapter()
-		{
-			super(SupportedCommand.class);
-		}
-		
 		@Override
 		protected boolean processConsoleInput(ConsoleClientAdapter adapter, Client source, String context, SupportedCommand cmd, String params)
 		{

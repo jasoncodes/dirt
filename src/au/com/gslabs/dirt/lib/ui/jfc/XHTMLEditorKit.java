@@ -66,13 +66,16 @@ public class XHTMLEditorKit extends HTMLEditorKit
 			}
 			catch (Exception inner)
 			{
-				System.err.println("Error loading SAX parser: " + inner);
+				System.err.println("Error loading SAX parser");
+				inner.printStackTrace();
 				String[] options = { "Quit" };
 				JOptionPane.showOptionDialog(
 					null, inner.toString(), "Error loading SAX parser",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
 					null, options, options[0]);
-				System.exit(1);
+				IOException ex = new IOException("Erorr loading SAX parser");
+				ex.initCause(inner);
+				throw ex;
 			}
 			
 			try

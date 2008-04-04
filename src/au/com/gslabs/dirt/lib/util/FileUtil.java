@@ -72,8 +72,7 @@ public class FileUtil
 		}
 		catch (IOException ex)
 		{
-			System.err.println(ex);
-			System.exit(1);
+			throw new RuntimeException("Error initialising temporary directory", ex);
 		}
 		return temp_dir;
 	}

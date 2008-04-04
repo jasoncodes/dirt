@@ -1,6 +1,19 @@
+RSA_AES_256_CBC_SHA1
+
+java.io.IOException: Error parsing XHTML org.xml.sax.SAXParseException: An invalid XML character (Unicode: 0x1b) was found in the element content of the document.
+Client should strip < 0x20 from message data before rendering
+
+client.disconnect() doesn't cancel pending client.connect()
+[21:53] *** Connecting to dirt://example.com/
+[21:53] *** Error DISCONNECT: Not connected
+[21:55] *** Error: Connection error: java.net.ConnectException: Operation timed out
+
 window positions should be stored relative to the display's origin along with a display identifier
 when restoring window positions, if the display doesn't exist, use the primary display.
 use UIUtil.getDefaultScreenID and UIUtil.getScreenBounds in get/setPanelBounds
+non-Mac probably also doesn't play nice with zoomed state (and maybe minimized). need some testing
+
+preference to not show a window at startup and/or on dock click
 
 CTCP
 	/ping does /ctcp ping
@@ -103,6 +116,7 @@ translucency options
 
 pretty <blockquote />
 	support for multiline message rendering
+	should it trigger for all multiline pastes? (and act as a safety for flooding)
 	ability to drag or paste text from browser and have it render as <blockquote/> with cite and title
 		at worst use a dialog to paste meta data into
 	pretty renderer for <blockquote/>
