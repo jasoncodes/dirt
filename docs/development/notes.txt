@@ -1,5 +1,8 @@
 RSA_AES_256_CBC_SHA1
 
+[17:11] <Blacksage> One day I'm going to make http://www.Google.com.au/search?q=index+of+%2F+%s my default search in firefox ;)
+clicking on this link does nothing
+
 java.io.IOException: Error parsing XHTML org.xml.sax.SAXParseException: An invalid XML character (Unicode: 0x1b) was found in the element content of the document.
 Client should strip < 0x20 from message data before rendering
 
