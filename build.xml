@@ -222,15 +222,19 @@
 			jvmversion="1.5*"
 			extraclasspath="/System/Library/Java/"
 			/>
-	<!--	<java
+		<!--
+		Enabling this will rewrite the resulting plist to request a 64-bit JVM if available.
+		As of 2008-05-04, Apple's Java 1.6.0_05 does not render the Preferences' Unified toolbar correctly.
+		<java
 			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
 			classpath="${build}/main-scratch"
 			failonerror="true"
 			fork="true"
 			>
-			<arg value="- -fix-mac-bundle-plist" />
+			<arg value="--fix-mac-bundle-plist" />
 			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
-		</java>-->
+		</java>
+		-->
 		<delete file="${dist}/Dirt.app/Contents/MacOS/Dirt"/>
 		<exec executable="ln">
 			<arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>

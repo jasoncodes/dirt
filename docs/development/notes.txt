@@ -1,3 +1,5 @@
+http://henrik.nyh.se/2007/04/adium-tip-swap-buffers
+
 RSA_AES_256_CBC_SHA1
 
 [17:11] <Blacksage> One day I'm going to make http://www.Google.com.au/search?q=index+of+%2F+%s my default search in firefox ;)
@@ -15,6 +17,16 @@ window positions should be stored relative to the display's origin along with a 
 when restoring window positions, if the display doesn't exist, use the primary display.
 use UIUtil.getDefaultScreenID and UIUtil.getScreenBounds in get/setPanelBounds
 non-Mac probably also doesn't play nice with zoomed state (and maybe minimized). need some testing
+
+automatic updates
+	http://elliotth.blogspot.com/2007_09_01_archive.html
+	http://www.threerings.net/code/getdown/
+	https://updater.dev.java.net/
+	Windows will require a separate download and some funky stuff to get around file locks on the .exe
+	All other platforms (Mac bundles and direct .jar launching) can just replace the .jar directly and restart
+	Will additionally have to check if the .jar is writable by the user. If not, prompt for additional privs.
+		gnome-sudo? kde-sudo? do shell script with administrator privileges? "runas" on Windows?
+			http://brainstorm.ubuntu.com/idea/7172/
 
 preference to not show a window at startup and/or on dock click
 
