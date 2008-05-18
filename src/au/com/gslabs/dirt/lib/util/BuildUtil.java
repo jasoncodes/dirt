@@ -100,7 +100,7 @@ public class BuildUtil
 	}
 	
 	/**
-	 * Unfortunately non-validating compilers don't always strip whitespace when asked
+	 * Unfortunately non-validating parsers don't always strip whitespace when asked
 	 */
 	public static void stripWhitespace(final Node node)
 	{
