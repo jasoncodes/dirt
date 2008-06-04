@@ -231,7 +231,7 @@
 			failonerror="true"
 			fork="true"
 			>
-			<arg value="--fix-mac-bundle-plist" />
+			<arg value="- -fix-mac-bundle-plist" />
 			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
 		</java>
 		-->
