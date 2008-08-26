@@ -9,11 +9,9 @@ public abstract class EnumConsoleCommandAdapter<SupportedCommand extends Enum<Su
 	
 	private final Class<SupportedCommand> enumType;
 	
-	@SuppressWarnings("unchecked") // cast from non-generic Type to Class<SupportedCommand>
-	protected EnumConsoleCommandAdapter()
+	protected EnumConsoleCommandAdapter(final Class<SupportedCommand> enumType)
 	{
-		final ParameterizedType thisType = (ParameterizedType)getClass().getGenericSuperclass();
-		this.enumType = (Class<SupportedCommand>)thisType.getActualTypeArguments()[0];
+		this.enumType = enumType;
 	}
 	
 	public final String[] getSupportedCommands(ConsoleClientAdapter adapter, Client source)
