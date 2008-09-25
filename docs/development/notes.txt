@@ -1,3 +1,7 @@
+"http://foo/  http://bar/" doesn't highlight correctly due to nbsps
+
+nicklist doesn't strip formatting from away messages
+
 http://henrik.nyh.se/2007/04/adium-tip-swap-buffers
 
 RSA_AES_256_CBC_SHA1

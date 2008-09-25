@@ -224,14 +224,15 @@
 			/>
 		<!--
 		Enabling this will rewrite the resulting plist to request a 64-bit JVM if available.
-		As of 2008-05-04, Apple's Java 1.6.0_05 does not render the Preferences' Unified toolbar correctly.
+		As of 2008-09-26, Apple's 64-bit Java 1.6.0_07 does not render apple.awt.brushMetalLook
+		(which is used to give the Preferences window a Unified look)
 		<java
 			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
 			classpath="${build}/main-scratch"
 			failonerror="true"
 			fork="true"
 			>
-			<arg value="- -fix-mac-bundle-plist" />
+			<arg value="&#45;&#45;fix-mac-bundle-plist" />
 			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
 		</java>
 		-->
