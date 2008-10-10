@@ -7,7 +7,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.*;
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import au.com.gslabs.dirt.lib.util.FileUtil;
+import au.com.gslabs.dirt.lib.util.TextUtil;
 import net.roydesign.app.Application;
 import java.util.Map;
 
@@ -499,6 +501,16 @@ public class UIUtil
 		// initialise our window manager
 		windowManager = new WindowManager(toolkit);
 		
+	}
+	
+	private final static char EM_DASH = '\u2014';
+	
+	public static void setPreferredWidthEms(JTextComponent txt, int widthEms)
+	{
+		String orgText = txt.getText();
+		txt.setText(TextUtil.repeat(EM_DASH, widthEms));
+		txt.setPreferredSize(txt.getPreferredSize());
+		txt.setText(orgText);
 	}
 	
 }
