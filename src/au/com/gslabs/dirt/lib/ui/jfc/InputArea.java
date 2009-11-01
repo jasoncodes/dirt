@@ -399,13 +399,13 @@ public class InputArea extends JScrollPane
 	{
 		if (txt.getText().indexOf("\n") > -1)
 		{
-			SwingUtilities.invokeLater(new Runnable()
+			new JFCInvoker().invoke(new Runnable()
 				{
 					public void run()
 					{
 						inputCompleted(true);
 					}
-				});
+				}, false);
 		}
 	}
 	
