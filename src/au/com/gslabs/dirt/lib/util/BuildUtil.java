@@ -145,6 +145,26 @@ public class BuildUtil
 			nodeJava.appendChild(plistCreateStringArray(document, new String[] { "x86_64", "x86", "ppc64", "ppc" } ));
 			
 		}
+	
+		if (true)
+		{
+			// <key>LSMinimumSystemVersionByArchitecture</key>
+			// <dict>
+			//     <key>x86_64</key>
+			//     <string>10.6.0</string>
+			// </dict>
+			final Node keyMinSysVer = document.createElement("key");
+			keyMinSysVer.appendChild(document.createTextNode("LSMinimumSystemVersionByArchitecture"));
+			document.getDocumentElement().getFirstChild().appendChild(keyMinSysVer);
+			final Node valMinSysVer = document.createElement("dict");
+			document.getDocumentElement().getFirstChild().appendChild(valMinSysVer);
+			final Node key_x86_64 = document.createElement("key");
+			key_x86_64.appendChild(document.createTextNode("x86_64"));
+			valMinSysVer.appendChild(key_x86_64);
+			final Node val_x86_64 = document.createElement("string");
+			val_x86_64.appendChild(document.createTextNode("10.6.0"));
+			valMinSysVer.appendChild(val_x86_64);
+		}
 		
 		{
 			final Source source = new DOMSource(document);
