@@ -222,20 +222,15 @@
 			jvmversion="1.5*"
 			extraclasspath="/System/Library/Java/"
 			/>
-		<!--
-		Enabling this will rewrite the resulting plist to request a 64-bit JVM if available.
-		As of 2008-09-26, Apple's 64-bit Java 1.6.0_07 does not render apple.awt.brushMetalLook
-		(which is used to give the Preferences window a Unified look)
 		<java
 			classname="au.com.gslabs.dirt.lib.util.BuildUtil"
 			classpath="${build}/main-scratch"
 			failonerror="true"
 			fork="true"
 			>
-			<arg value="&#45;&#45;fix-mac-bundle-plist" />
+			<arg value="--fix-mac-bundle-plist" />
 			<arg value="${dist}/Dirt.app/Contents/Info.plist" />
 		</java>
-		-->
 	</target>
 	
 	<target name="mac-dist" depends="mac-bundle" if="isMac">
