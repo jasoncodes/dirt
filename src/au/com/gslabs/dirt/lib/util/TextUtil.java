@@ -317,7 +317,7 @@ public final class TextUtil
 	
 	public static String repeat(char c, int n)
 	{
-		StringBuffer out = new StringBuffer(n);
+		StringBuilder out = new StringBuilder(n);
 		for (int i = 0; i < n; ++i)
 		{
 			out.append(c);
