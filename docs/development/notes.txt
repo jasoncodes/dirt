@@ -1,6 +1,16 @@
-"http://foo/  http://bar/" doesn't highlight correctly due to nbsps
+"http://foo/  http://bar/" doesn't URL correctly due to nbsps
+
+“example.com” doesn't URL properly
+
+add java.awt.Desktop call as default to au.com.gslabs.dirt.lib.ui.jfc.UIUtil.openURL(String) with current code as fallback <http://java.sun.com/developer/technicalArticles/J2SE/Desktop/javase6/desktop_api/>
 
 nicklist doesn't strip formatting from away messages
+
+InputArea currently delays all \n processing via invokeLater.
+Only the removal of existing text should be delayed.
+Processing of input should happen synchronously and the text to be removed added to a queue
+The invoke later code will then process the queue and remove the text from the input control
+	(and preserve the current cursor position and selection if any)
 
 http://henrik.nyh.se/2007/04/adium-tip-swap-buffers
 
@@ -81,6 +91,7 @@ dirt+https_connect://spawncamp.net/localhost:11626
 	once connected to remote, setup SSL using SSLSocket
 	use HTTPConnectProxy again to connect to localhost:11626
 	http://www.javaworld.com/javaworld/javatips/jw-javatip111.html?page=1
+	http://java.sun.com/j2se/1.5.0/docs/guide/net/proxies.html
 
 Cmd-F to search log text
 
