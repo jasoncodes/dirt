@@ -506,12 +506,11 @@ public class UIUtil
 	
 	private final static char EM_DASH = '\u2014';
 	
-	public static void setPreferredWidthEms(JTextComponent txt, int widthEms)
+	public static Dimension getWidthEmsDimension(int widthEms)
 	{
-		String orgText = txt.getText();
-		txt.setText(TextUtil.repeat(EM_DASH, widthEms));
-		txt.setPreferredSize(txt.getPreferredSize());
-		txt.setText(orgText);
+		JTextField template = new JTextField();
+		template.setText(TextUtil.repeat(EM_DASH, widthEms));
+		return template.getPreferredSize();
 	}
 	
 }
