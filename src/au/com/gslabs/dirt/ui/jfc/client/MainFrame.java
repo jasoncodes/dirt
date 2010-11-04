@@ -39,6 +39,15 @@ public class MainFrame extends ClientFrame
 		
 		updateWindowTitle();
 		
+		ActionListener gcPerformer = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.gc();
+			}
+		};
+		new javax.swing.Timer(60*1000, gcPerformer).start();
+		
 	}
 	
 	private enum SupportedCommand
