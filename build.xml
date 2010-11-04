@@ -257,25 +257,13 @@
 		<copy file="${base}/Dirt.tmproj.template" tofile="${base}/Dirt.tmproj" overwrite="false" />
 	</target>
 	
-	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,webstart,applet" />
+	<target name="dist" depends="scripts,jar,mac-bundle,win-bundle,applet" />
 
 	<target name="all" depends="clean,dist" />
 	
 	<target name="clean">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
-	</target>
-	
-	<target name="webstart" depends="jar-main" if="isMac">
-		<mkdir dir="${dist}/webstart" />
-		<copy file="${build}/main/main.jar" todir="${dist}/webstart" />
-		<copy file="${res}/icons/dirt.gif" todir="${dist}/webstart" />
-		<copy file="${res}/dirt.jnlp" todir="${dist}/webstart" />
-		<mkdir dir="${dist}/webstart/mac" />
-		<copy file="${lib}/mac/jdic_misc.jar" todir="${dist}/webstart/mac" />
-		<jar jarfile="${dist}/webstart/mac/apple.jar">
-			<fileset dir="${apple}" excludes="Extensions/**" />
-		</jar>
 	</target>
 	
 	<target name="applet" depends="jar-main">
