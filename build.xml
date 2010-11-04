@@ -12,7 +12,7 @@
 	
 	<taskdef
 		name="jarbundler"
-		classpath="${lib}/ant/jarbundler-1.9.jar"
+		classpath="${lib}/ant/jarbundler-2.1.0.jar"
 		classname="net.sourceforge.jarbundler.JarBundler" />
 	
 	<taskdef name="launch4j"
