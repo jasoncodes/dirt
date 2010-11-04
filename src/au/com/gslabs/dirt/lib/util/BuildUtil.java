@@ -106,7 +106,7 @@ public class BuildUtil
 	{
 		for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
 		{
-			while (child instanceof Text && ((Text)child).isElementContentWhitespace())
+			while (isWhitespaceNode(child))
 			{
 				final Node next = child.getNextSibling();
 				child.getParentNode().removeChild(child);
@@ -117,6 +117,16 @@ public class BuildUtil
 		}
 	}
 	
+	public static boolean isWhitespaceNode(final Node node)
+	{
+		if (node instanceof Text)
+		{
+			String data = ((Text)node).getData();
+			return data != null && data.matches("\\s*");
+		}
+		return false;
+	}
+	
 	public static void fixMacBundlePlist(File file) throws Exception
 	{
 		
@@ -124,7 +134,6 @@ public class BuildUtil
 		
 		{
 			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setValidating(true);
 			factory.setIgnoringComments(true);
 			factory.setIgnoringElementContentWhitespace(true);
 			final DocumentBuilder builder = factory.newDocumentBuilder();
