@@ -35,7 +35,8 @@
 			source="1.5"
 			deprecation="on"
 			debug="true"
-			debuglevel="lines,vars,source">
+			debuglevel="lines,vars,source"
+			includeantruntime="false">
 			<classpath>
 				<pathelement location="${lib}/stub/jdic.jar" />
 				<pathelement location="${lib}/common/jline-0.9.91.jar" />
@@ -58,7 +59,8 @@
 			source="1.4"
 			debug="true"
 			debuglevel="lines,vars,source"
-			deprecation="on">
+			deprecation="on"
+			includeantruntime="false">
 			<compilerarg value="-Xlint:all,-serial" />
 		</javac>
 		<copy todir="${build}/onejar" file="${lib}/one-jar/doc/one-jar-license.txt" />
