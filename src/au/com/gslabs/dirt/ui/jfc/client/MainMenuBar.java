@@ -84,6 +84,17 @@ public class MainMenuBar extends JScreenMenuBar
 			{
 				public void actionPerformed(ActionEvent e)
 				{
+					for (final Frame frame : UIUtil.getWindowManager().getOrderedValidFrames(true))
+					{
+						if (frame instanceof MainFrame)
+						{
+							MainFrame mainFrame = (MainFrame)frame;
+							if (!mainFrame.canCloseWindow())
+							{
+								return;
+							}
+						}
+					}
 					System.exit(0);
 				}
 			});

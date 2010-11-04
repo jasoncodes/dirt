@@ -134,43 +134,48 @@ public class MainFrame extends ClientFrame
 		}
 	}
 	
-	private void onClosing()
+	public boolean canCloseWindow()
 	{
 		
-		if (panel.isDirty())
+		if (!panel.isDirty()) return true;
+		
+		final JTextField txtQuitMessage = new JTextField();
+		txtQuitMessage.setText("Closing");
+		final String title = "Confirm Disconnect";
+		final Object[] message = {
+				"Closing this window will disconnect from " + panel.getClient().getServerName() + ".",
+				new JLabel(),
+				"Quit Message:",
+				txtQuitMessage
+			};
+		final String[] options = { "Disconnect", "Cancel" };
+		
+		int result = JOptionPane.showOptionDialog(
+			this, message, title,
+			JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+			options, options[0]);
+		
+		// if anything but Disconnect (the first option) is chosen
+		// (i.e. cancel button or confirm window closed),
+		// the user wants to cancel the operation
+		if (result != 0)
 		{
-			
-			final JTextField txtQuitMessage = new JTextField();
-			txtQuitMessage.setText("Closing");
-			final String title = "Confirm Disconnect";
-			final Object[] message = {
-					"Closing this window will disconnect from " + panel.getClient().getServerName() + ".",
-					new JLabel(),
-					"Quit Message:",
-					txtQuitMessage
-				};
-			final String[] options = { "Disconnect", "Cancel" };
-			
-			int result = JOptionPane.showOptionDialog(
-				this, message, title,
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
-				options, options[0]);
-			
-			// if anything but Disconnect (the first option) is chosen
-			// (i.e. cancel button or confirm window closed),
-			// the user wants to cancel the operation
-			if (result != 0)
-			{
-				return; 
-			}
-			
-			panel.getClient().quit(null, txtQuitMessage.getText());
-			panel.cleanup();
-			
+			return false;
 		}
 		
-		dispose();
+		panel.getClient().quit(null, txtQuitMessage.getText());
 		
+		return true;
+		
+	}
+	
+	private void onClosing()
+	{
+		if (canCloseWindow())
+		{
+			panel.cleanup();
+			dispose();
+		}
 	}
 	
 	// this code needs to be possibly split off into it's own class in dirt.lib.ui.jfc
