@@ -204,21 +204,7 @@ public class Client
 	
 	private static void cancelTimerTask(TimerTask task)
 	{
-		if (task != null)
-		{
-			try
-			{
-				if (!task.cancel())
-				{
-					throw new Exception("cancelTask() failed");
-				}
-			}
-			catch (Exception ex)
-			{
-				System.err.println("Timer task cancel failed:");
-				ex.printStackTrace();
-			}
-		}
+		if (task != null) task.cancel();
 	}
 	
 	private class TimerTaskPing extends TimerTask
