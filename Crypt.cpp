@@ -163,7 +163,7 @@ Crypt::~Crypt()
 
 static RandomNumberGenerator& GetRNG()
 {
-	static AutoSeededRandomPool random_pool(true, 128);
+	static AutoSeededRandomPool random_pool(false, 128);
 	return random_pool;
 }
 
