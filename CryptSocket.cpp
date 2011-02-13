@@ -795,7 +795,7 @@ void CryptSocketServer::Listen(const wxString &host, wxUint16 port)
 		if (ok)
 		{
 			addr.Service(port);
-			m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT);
+			m_sck = new wxSocketServer(addr, wxSOCKET_NOWAIT|wxSOCKET_REUSEADDR);
 			InitSocketEvents();
 			ok = m_sck->Ok();
 		}
