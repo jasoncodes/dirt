@@ -23,7 +23,8 @@
 #ifndef Client_H_
 #define Client_H_
 
-class FileTransfer;
+#include "FileTransfer.h"
+
 class URL;
 class ClientTimers;
 class ClientTimersEvent;

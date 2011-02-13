@@ -27,8 +27,8 @@ struct ModifierMapping
 {
 	bool ctrl, alt, shift;
 	int key_code;
-	wxChar modifier_char;
-	wxChar *alternate_modifier;
+	const wxChar modifier_char;
+	const wxChar *alternate_modifier;
 	bool is_colour_popup;
 };
 
