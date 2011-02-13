@@ -24,3 +24,5 @@ Dirt.kdevelop.pcs
 dirtlogs.cgi
 .gdb_history
 .DS_Store
+*.o
+

@@ -20,12 +20,13 @@ dlltest.dsp
 License.txt
 Readme.txt
 Doxyfile
-crypto50.zip
 doc
 *.layout
 Makefile.win
 crypto++.mcp
 adhoc.cpp.proto
 TestVectors
-crypto51.zip
+cryptopp521.zip
+cryptest.exe
 a.out
+*.o
