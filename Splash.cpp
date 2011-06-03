@@ -142,9 +142,7 @@ protected:
 	void OnPaint(wxPaintEvent &WXUNUSED(event))
 	{
 		wxPaintDC dc(this);
-		dc.BeginDrawing();
 		dc.DrawBitmap(*m_bmp, 0, 0);
-		dc.EndDrawing();
 	}
 
 	void OnSize(wxSizeEvent &event)
@@ -249,7 +247,6 @@ protected:
 		wxPaintDC dc(this);
 		wxSize size = GetSize();
 		
-		dc.BeginDrawing();
 		wxMemoryDC dcBitmap(&dc);
 		dcBitmap.SelectObject(*GetDarkBitmap());
 		dc.Blit(0, 0, size.x, size.y, &dcBitmap, GetPosition().x, GetPosition().y);
@@ -312,8 +309,6 @@ protected:
 			focus_rect.Deflate(4);
 			DrawFocusRect(dc, focus_rect);
 		}
-
-		dc.EndDrawing();
 
 	}
 
