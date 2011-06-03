@@ -848,7 +848,7 @@ wxString GetOSDescription()
 		<< wxString(name.release, wxConvLocal);
 
 #ifdef __WXMAC__
-	signed long MacVersion;
+	SInt32 MacVersion;
 	if (Gestalt(gestaltSystemVersion, &MacVersion) == noErr)
 	{
 		wxString tmp = wxString::Format(wxT("%x"), MacVersion);
