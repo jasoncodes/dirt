@@ -54,7 +54,7 @@ END_EVENT_TABLE()
 #ifdef __WXMAC__
 static OSErr AEHandleGURL(const AppleEvent *theAppleEvent,
                           AppleEvent* reply,
-                          long handlerRefCon);
+                          SRefCon handlerRefCon);
 #endif
 
 #ifdef __WIN32__
@@ -649,7 +649,7 @@ void DirtApp::MacPowerCallback(void *x, io_service_t y, natural_t message_type, 
 
 static OSErr AEHandleGURL(const AppleEvent *theAppleEvent, 
                           AppleEvent* reply, 
-                          long handlerRefCon)
+                          SRefCon handlerRefCon)
 {
 
     OSErr   err;  
