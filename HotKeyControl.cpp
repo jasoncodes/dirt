@@ -182,11 +182,9 @@ wxString HotKeyControl::HotKeyToString(int keycode, wxUint8 modifiers)
 				str << wxT("Caps");
 				break;
 			case WXK_PAGEUP:
-			case WXK_PRIOR:  // Page up
 				str << wxT("PgUp");
 				break;
 			case WXK_PAGEDOWN:
-			case WXK_NEXT:   // Page down
 				str << wxT("PgDn");
 				break;
 			case WXK_END:
@@ -285,14 +283,8 @@ wxString HotKeyControl::HotKeyToString(int keycode, wxUint8 modifiers)
 			case WXK_NUMPAD_DOWN:
 				str << wxT("NumDown");
 				break;
-			case WXK_NUMPAD_PRIOR:
-				str << wxT("NumPrior");
-				break;
 			case WXK_NUMPAD_PAGEUP:
 				str << wxT("NumPgUp");
-				break;
-			case WXK_NUMPAD_NEXT:
-				str << wxT("NumNext");
 				break;
 			case WXK_NUMPAD_PAGEDOWN:
 				str << wxT("NumPgDn");
