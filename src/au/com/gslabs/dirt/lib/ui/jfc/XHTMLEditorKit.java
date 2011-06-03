@@ -73,7 +73,7 @@ public class XHTMLEditorKit extends HTMLEditorKit
 					null, inner.toString(), "Error loading SAX parser",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
 					null, options, options[0]);
-				IOException ex = new IOException("Erorr loading SAX parser");
+				IOException ex = new IOException("Error loading SAX parser");
 				ex.initCause(inner);
 				throw ex;
 			}
