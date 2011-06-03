@@ -329,7 +329,7 @@ int SwitchBar::HitTest(const wxPoint& pt)
 {
 	for (int i = 0; i < GetButtonCount(); ++i)
 	{
-		if (GetButtonRect(i).Inside(pt))
+		if (GetButtonRect(i).Contains(pt))
 		{
 			return i;
 		}
