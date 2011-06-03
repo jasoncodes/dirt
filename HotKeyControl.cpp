@@ -79,17 +79,6 @@ void HotKeyControl::OnKillFocus(wxFocusEvent &event)
 	event.Skip();
 }
 
-#if !wxUSE_HOTKEY
-enum wxHotkeyModifier
-{
-    wxMOD_NONE = 0,
-    wxMOD_ALT = 1,
-    wxMOD_CONTROL = 2,
-    wxMOD_SHIFT = 4,
-    wxMOD_WIN = 8
-};
-#endif
-
 wxString HotKeyControl::HotKeyToString(int keycode, wxUint8 modifiers)
 {
 
