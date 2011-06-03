@@ -265,7 +265,7 @@ InputControl::InputControl(
 	m_txtBestSize->Show(false);
 	m_txtBestSize->SetFont(GetFont());
 
-	SetBestSize(m_txtBestSize->GetBestSize());
+	SetInitialSize(m_txtBestSize->GetBestSize());
 	SetSize(m_txtBestSize->GetBestSize());
 
 	SetFont(LogControl::GetDefaultFixedWidthFont());

@@ -37,7 +37,7 @@ public:
 		int size = wxMax(GetSize().y, min_size);
 		m_best_size = wxSize(size, size);
 		SetSize(m_best_size);
-		SetBestSize(m_best_size);
+		SetInitialSize(m_best_size);
 	}
 
 protected:
@@ -54,7 +54,7 @@ public:
 	{
 		int size = wxMax(GetSize().y, min_size);
 		SetSize(size, size);
-		SetBestSize(GetSize());
+		SetInitialSize(GetSize());
 	}
 
 #ifdef __WXMSW__

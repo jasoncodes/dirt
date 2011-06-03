@@ -92,7 +92,7 @@ public:
 		: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL | wxCLIP_CHILDREN),
 		m_img(img.Copy()), m_bmp(NULL)
 	{
-		SetBestSize(wxSize(m_img.GetWidth(), m_img.GetHeight()));
+		SetInitialSize(wxSize(m_img.GetWidth(), m_img.GetHeight()));
 		m_img2 = m_img.Copy();
 		unsigned char *ptr = m_img2.GetData();
 		unsigned char *ptr_end = ptr + m_img2.GetWidth() * m_img2.GetHeight() * 3;
@@ -205,7 +205,7 @@ public:
 		: wxControl(parent, id, wxDefaultPosition, wxSize(68, 26), wxNO_BORDER)
 	{
 
-		SetBestSize(GetSize());
+		SetInitialSize(GetSize());
 
 		m_caption = caption;
 		m_mnemonic_pos = mnemonic_pos;

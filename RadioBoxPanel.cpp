@@ -79,7 +79,7 @@ void RadioBoxPanel::SetSizes()
 	size.y += m_pnl->GetSize().y + 8;
 	m_boxRadio->SetSize(size);
 	SetSize(size);
-	SetBestSize(size);
+	SetInitialSize(size);
 }
 
 void RadioBoxPanel::OnSize(wxSizeEvent &WXUNUSED(event))
