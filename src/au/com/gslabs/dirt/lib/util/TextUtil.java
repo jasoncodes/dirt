@@ -182,59 +182,33 @@ public final class TextUtil
 		
 		StringBuffer sb = new StringBuffer(string.length());
 		
-		boolean lastWasBlankChar = false;
 		int len = string.length();
 		char c;
 
 		for (int i = 0; i < len; i++)
 		{
 			c = string.charAt(i);
-			if (c == ' ')
+			// HTML Special Chars
+			switch (c)
 			{
-				// blanks get special treatment:
-				// since continuous whitespace in HTML collapses to one space
-				// we need to insert non-breaking spaces to pad it out
-				// unfortunately if we add just non-breaking spaces,
-				// we'll lose the ability to word wrap. A nice compromise
-				// is to replace every second whitespace character with an &nbsp;
-				if (lastWasBlankChar)
-				{
-					lastWasBlankChar = false;
-					sb.append("&nbsp;");
-				}
-				else
-				{
-					lastWasBlankChar = true;
-					sb.append(' ');
-				}
-			}
-			else
-			{
-				lastWasBlankChar = false;
-				
-				// HTML Special Chars
-				switch (c)
-				{
-					case '"':
-						sb.append("&quot;");
-						break;
-					case '&':
-						sb.append("&amp;");
-						break;
-					case '<':
-						sb.append("&lt;");
-						break;
-					case '>':
-						sb.append("&gt;");
-						break;
-					case '\n':
-						sb.append("<br />");
-						break;
-					default:
-						sb.append(c);
-						break;
-				}
-				
+				case '"':
+					sb.append("&quot;");
+					break;
+				case '&':
+					sb.append("&amp;");
+					break;
+				case '<':
+					sb.append("&lt;");
+					break;
+				case '>':
+					sb.append("&gt;");
+					break;
+				case '\n':
+					sb.append("<br />");
+					break;
+				default:
+					sb.append(c);
+					break;
 			}
 		}
 		
