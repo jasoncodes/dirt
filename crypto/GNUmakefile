@@ -18,7 +18,7 @@ include ../Makefile.cross-compile
 
 # the gcc that comes with OSX seems to die hard on optimizations
 ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
-        CXXFLAGS := $(subst -O1,,$(CXXFLAGS))
+        CXXFLAGS := $(subst -O1,,$(CXXFLAGS)) -arch i386
 endif
 
 # overwrite CXXFLAGS with debug mode stuff if wx is debug version

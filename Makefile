@@ -34,7 +34,7 @@ else
 		EXTRA_CLEAN=dirtlogs.cgi
 	else
 		ifneq (,$(findstring wx_mac,$(WX_BASENAME)))
-			CXXFLAGS_EXTRA = -I/Developer/Headers/FlatCarbon
+			CXXFLAGS_EXTRA = -I/Developer/Headers/FlatCarbon -arch i386
 			EXTRAS_TO_COMPILE=mac_bundle
 			EXTRA_CLEAN=DirtMac.tbz
 			BINARY_SUFFIX=.bin
