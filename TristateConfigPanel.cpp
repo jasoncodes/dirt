@@ -131,7 +131,7 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &WXUNUSED(event))
 	if (m_filespec.Length())
 	{
 		wxFileName fn(m_txt->GetValue());
-		wxFileDialog dlg(parent, m_boxRadio->GetTitle(), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), m_filespec, wxOPEN|wxFILE_MUST_EXIST);
+		wxFileDialog dlg(parent, m_boxRadio->GetLabelText(), fn.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR), fn.GetFullName(), m_filespec, wxOPEN|wxFILE_MUST_EXIST);
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			m_txt->SetValue(dlg.GetPath());
@@ -140,7 +140,7 @@ void TristateConfigPanel::OnBrowse(wxCommandEvent &WXUNUSED(event))
 	}
 	else
 	{
-		wxDirDialog dlg(parent, m_boxRadio->GetTitle(), m_txt->GetValue(), wxDD_NEW_DIR_BUTTON);
+		wxDirDialog dlg(parent, m_boxRadio->GetLabelText(), m_txt->GetValue(), wxDD_NEW_DIR_BUTTON);
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			m_txt->SetValue(dlg.GetPath());
