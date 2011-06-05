@@ -100,11 +100,13 @@ void SwitchBarCanvas::SetTitle(const wxString &title)
 	int button_index = m_parent->GetSwitchBar()->GetIndexFromUserData(this);
 	wxASSERT(button_index > -1);
 	m_parent->GetSwitchBar()->SetButtonCaption(button_index, title);
+#if NATIVE_MDI
 	if (GetParent() != m_parent)
 	{
 		SwitchBarParent *frame = (SwitchBarParent*)GetParent();
 		frame->SetTitle(title);
 	}
+#endif
 }
 
 wxIcon SwitchBarCanvas::GetIcon()
