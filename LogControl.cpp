@@ -1358,6 +1358,7 @@ void LogControl::OnFindDialog(wxFindDialogEvent &event)
 		}
 
 		wxString to_find = event.GetFindString();
+		if (to_find.Length() < 1) return;
 		if (!case_sensitive)
 		{
 			to_find.MakeLower();

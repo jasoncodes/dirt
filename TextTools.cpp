@@ -589,7 +589,7 @@ wxString ConvertUrlsToLinks(const wxString &text)
 			wxString prefix, suffix;
 
 			const wxString extra_chars_to_remove = wxT(".,?!");
-			while (extra_chars_to_remove.Find(token.Right(1)) > -1)
+			while (token.Length() > 0 && extra_chars_to_remove.Find(token.Right(1)) > -1)
 			{
 				suffix = token.Right(1) + suffix;
 				token = token.Left(token.Length() - 1);
