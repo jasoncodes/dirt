@@ -20,7 +20,6 @@ WXPREFIX := $(shell $(WXCONFIG) --prefix)
 WXVERSION := $(shell $(WXCONFIG) --version)
 CC = g++
 WINDRES = windres
-REZ = $(shell $(WXCONFIG) --rezflags)
 BUNDLE = Dirt.app/Contents
 
 ifneq (,$(findstring wx_gtk2,$(WX_BASENAME)))
@@ -151,7 +150,6 @@ mac_bundle: \
 
 
 $(BUNDLE)/MacOS/Dirt: Dirt$(BINARY_SUFFIX)
-	$(REZ) Dirt$(BINARY_SUFFIX)
 	cp Dirt$(BINARY_SUFFIX) $(BUNDLE)/MacOS/Dirt
 
 $(BUNDLE)/MacOS:
