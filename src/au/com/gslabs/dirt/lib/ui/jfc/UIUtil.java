@@ -463,14 +463,18 @@ public class UIUtil
 		return true;
 	}
 	
+	public static void preInitSwing()
+	{
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("apple.awt.graphics.UseQuartz", "true");
+	}
+	
 	public static void initSwing(String appName)
 	{
 		
 		// set L&F to platform default
 		try
 		{
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("apple.awt.graphics.UseQuartz", "true");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Throwable t)

@@ -17,6 +17,7 @@ public class ClientJFC extends Application
 	
 	public static void init() throws Throwable
 	{
+		UIUtil.preInitSwing();
 		SwingUtilities.invokeAndWait(new Runnable()
 			{
 				public void run()
